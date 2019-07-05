@@ -195,7 +195,7 @@ class Games:
             # only bother with this shit if someone besides the bot reacted
             if len(players) > 1:
                 for player in players:
-                    remove = player.id != '552650993595318282' and (c.is_banned(player.id) or crimsogames.checkBalance(player.id) < cost)
+                    remove = player.id != self.bot.user.id and (c.is_banned(player.id) or crimsogames.checkBalance(player.id) < cost)
                     if remove:
                         await self.bot.remove_reaction(cache_msg, reaction.emoji, player)
                 # if winner, get winners; if not, get losers
@@ -208,13 +208,13 @@ class Games:
             # flatten list of lists into list
             losers = [item for sublist in losers for item in sublist]
             # kick out crimsoBOT
-            losers = [user for user in losers if user.id != '552650993595318282']
+            losers = [user for user in losers if user.id != self.bot.user.id]
             # stats + debit the losers
             [crimsogames.win(loser.id, -cost) for loser in losers]
             [crimsogames.guess_luck(loser.id, n, False) for loser in losers]
         if len(winners) != 0:
             # check for winners that are not crimsoBot and not in losers
-            winners = [user for user in winners if (user.id != '552650993595318282' and user not in losers)]
+            winners = [user for user in winners if (user.id != self.bot.user.id and user not in losers)]
             # stats + debit & award crimsoCOIN to winners
             [crimsogames.win(winner.id, winning_amount - cost) for winner in winners]
             [crimsogames.guess_luck(winner.id, n, True) for winner in winners]

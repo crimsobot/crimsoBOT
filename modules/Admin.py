@@ -55,9 +55,13 @@ class Admin:
         title = 'crimsoBOT info'
         descr = 'crimsoBOT is a poorly-coded, homebrew bot that\'s hosted (at the moment) on crimso\'s laptop.\n'
         thumb = 'https://i.imgur.com/9UTNIGi.png'
+        auth_url = 'https://discordapp.com/api/oauth2/authorize?client_id={}&permissions={}&scope=bot'.format(
+            self.bot.user.id,
+            473300048
+        )
         embed = c.crimbed(title, descr, thumb)
         embed.add_field(name='crimsoBOT\'s Discord server', value='https://discord.gg/Kj3WNHX', inline=False)
-        embed.add_field(name='Invite crimsoBOT to your server', value='https://discordapp.com/api/oauth2/authorize?client_id=552650993595318282&permissions=473300048&scope=bot', inline=False)
+        embed.add_field(name='Invite crimsoBOT to your server', value=auth_url, inline=False)
         embed.add_field(name='Support crimsoBOT and get stickers!', value='https://www.patreon.com/crimso', inline=False)
         embed.set_footer(text='Thanks for using crimsoBOT!')
         await self.bot.send_message(ctx.message.channel, embed=embed)

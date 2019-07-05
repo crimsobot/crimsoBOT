@@ -115,7 +115,7 @@ async def on_message(message):
     #     return
     # DM logger
     dm = str(message.channel).startswith('Direct M')
-    if dm == True and message.author.id != '552650993595318282' and message.content.startswith('>') == False: # crimsoBOT
+    if dm == True and message.author.id != bot.user.id and message.content.startswith('>') == False: # crimsoBOT
         try:
             link = message.attachments[0]['url']
         except:
