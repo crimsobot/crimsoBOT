@@ -1,9 +1,8 @@
 import os
 from config import TOKEN
 
-# root directory for bot
-root_dir = os.path.dirname(__file__) #<-- absolute dir the script is in
+PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 print(TOKEN)
-print(root_dir)
-os.execl("C:/Windows/System32/cmd.exe", "/k",'"D:/Python36/python.exe "'+root_dir+'/bot.py"')
+print(PROJECT_DIR)
+os.execl("C:/Windows/System32/cmd.exe", "/k",'"D:/Python36/python.exe "'+PROJECT_DIR+'/bot.py"')

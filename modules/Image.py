@@ -1,15 +1,12 @@
 import discord
 from discord.ext import commands
 import asyncio
-import os
 from .clib import crimsotools as c
 from .clib import imagetools as imagetools
 
 # lists for games in progress
 emoji_channels = []
 
-# path to root
-root_dir = os.path.dirname(__file__) #<-- absolute dir the script is in
 
 class Image:
     def __init__(self,bot):
@@ -27,7 +24,7 @@ class Image:
                 mention = str(ctx.message.mentions[0].name)
             imagetools.boop(booper,mention)
             await self.bot.send_file(ctx.message.channel,
-                                        root_dir+'\\img\\booped.jpg')
+                                        c.clib_path_join('img', 'booped.jpg'))
 
     @commands.command(pass_context=True,
                       brief='Convert image to emojis!',
@@ -44,7 +41,7 @@ class Image:
         c.checkin('eimg', ctx.message.server, ctx.message.author, emoji_channels)
         asyncio.sleep(10)
         # read in lines of emojis
-        line_list = open(root_dir+'\\img\\emoji.txt',
+        line_list = open(c.clib_path_join('img', 'emoji.txt'),
                          encoding='utf8',
                          errors='ignore').readlines()
         # strip newlines
@@ -70,7 +67,7 @@ class Image:
         c.checkin('eimg2', ctx.message.server, ctx.message.author, emoji_channels)
         asyncio.sleep(10)
         # read in lines of emojis
-        line_list = open(root_dir+'\\img\\emoji.txt',
+        line_list = open(c.clib_path_join('img', 'emoji.txt'),
                          encoding='utf8',
                          errors='ignore').readlines()
         # strip newlines
@@ -86,7 +83,7 @@ class Image:
     async def bless(self, ctx):
         """bless bless"""
         # read in lines of emojis
-        line_list = open(root_dir+'\\img\\bless.txt',
+        line_list = open(c.clib_path_join('img', 'emoji.txt'),
                          encoding='utf8',
                          errors='ignore').readlines()
         # check-in
@@ -104,7 +101,7 @@ class Image:
     async def gimme_last(self, ctx):
         await self.bot.send_message(ctx.message.author,'Last eimg:')
         # read in lines of emojis
-        line_list = open(root_dir+'\\img\\emoji.txt',
+        line_list = open(c.clib_path_join('img', 'emoji.txt'),
                          encoding='utf8',
                          errors='ignore').readlines()
         # strip newlines
@@ -123,7 +120,7 @@ class Image:
             # get user object
             user = await self.bot.get_user_info(userid)
             # read in lines of emojis
-            line_list = open(root_dir+'\\ref\\emojiface.txt',
+            line_list = open(c.clib_path_join('img', 'emojiface.txt'),
                              encoding='utf8',
                              errors='ignore').readlines()
             # strip newlines
@@ -141,7 +138,7 @@ class Image:
         """crimsoBOT avatar as emojis!"""
         # read in lines of emojis
         c.checkin('eface', ctx.message.server, ctx.message.author, emoji_channels)
-        line_list = open(root_dir+'\\ref\\emojiface.txt', encoding='utf8', errors='ignore').readlines()
+        line_list = open(c.clib_path_join('img', 'emojiface.txt'), encoding='utf8', errors='ignore').readlines()
         # strip newlines
         line_list = [line.replace('\n','') for line in line_list]
         for line in line_list:
@@ -171,7 +168,7 @@ class Image:
         if ctx.message.author.id != '310618614497804289':
             return
         # read in lines of emojis
-        line_list = open(root_dir+'\\games\\emojilist.txt',
+        line_list = open(c.clib_path_join('games', 'emojilist.txt'),
                          encoding='utf8',
                          errors='ignore').readlines()
         # strip newlines
@@ -191,13 +188,13 @@ class Image:
     async def needping(self, ctx, image=None):
         """SOMEONE needs PING. User mention, attachment, link, or emoji."""
         imagetools.fishe(ctx, image)
-        await self.bot.send_file(ctx.message.channel, root_dir+'\\img\\needping.png')
+        await self.bot.send_file(ctx.message.channel, c.clib_path_join('img', 'needping.png'))
 
     @commands.command(pass_context=True)
     async def needban(self, ctx, image=None):
         """SOMEONE needs BAN. User mention, attachment, link, or emoji."""
         imagetools.ban_overlay(ctx, image)
-        await self.bot.send_file(ctx.message.channel, root_dir+'\\img\\needban.png')
+        await self.bot.send_file(ctx.message.channel, c.clib_path_join('img', 'needban.png'))
     
     @commands.command(pass_context=True)
     async def xokked(self, ctx, image=None):
@@ -236,7 +233,7 @@ class Image:
         if msg is not None:
             await self.bot.delete_message(msg)
         await self.bot.delete_message(prompt)
-        await self.bot.send_file(ctx.message.channel, root_dir+'\\img\\pingbadge.png')
+        await self.bot.send_file(ctx.message.channel, c.clib_path_join('img', 'pingbadge.png'))
 
 
 def setup(bot):

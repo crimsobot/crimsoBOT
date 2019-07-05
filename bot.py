@@ -11,13 +11,12 @@ from config import TOKEN
 import modules.clib.crimsotools as c
 import modules.clib.markovtools as m
 
+PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
+
 bot = commands.Bot(command_prefix = '>')
 
 # names of cogs to load
 extensions = ['Admin', 'Chat', 'Games', 'Image', 'Mystery', 'Text', 'Utilities']
-
-# root directory for bot
-root_dir = os.path.dirname(__file__) #<-- absolute dir the script is in
 
 @bot.event
 async def on_ready():
@@ -77,7 +76,7 @@ async def reminder():
     """"Sends a disappearing random reminder in default channel."""
     await bot.wait_until_ready()
     # open reminder text file, strip newlines at end
-    reminderList = open(root_dir+'\\ref\\reminders.txt',
+    reminderList = open(c.clib_path_join('text', 'reminders.txt'),
                         encoding='utf-8', errors='ignore').readlines()
     reminderList = [line[:-1] for line in reminderList]
     reminderList = [line.replace('\\n','\n') for line in reminderList]
@@ -190,8 +189,8 @@ async def on_server_join(server):
 def reboot(msg):
     c.botlog(msg)
     bot.close()
-    print(root_dir)
-    os.execl("C:/Windows/System32/cmd.exe", "/k",'"D:/Python36/python.exe "'+root_dir+'/bot.py"')
+    print(PROJECT_DIR)
+    os.execl("C:/Windows/System32/cmd.exe", "/k",'"D:/Python36/python.exe "'+PROJECT_DIR+'/bot.py"')
 
 @bot.command(pass_context=True, hidden=True)
 async def cboot_(ctx):

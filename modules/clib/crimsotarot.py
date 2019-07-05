@@ -1,12 +1,11 @@
-import os
 import random
 import PIL
 from PIL import Image
 from PIL import ImageOps
 from PIL import ImageDraw
 
-# path to root
-script_dir = os.path.dirname(__file__) #<-- absolute dir the script is in
+from . import crimsotools as c
+
 
 def bgDraw(size):
     """ input: tuple
@@ -278,7 +277,7 @@ def reading(spread):
                (2*w + 3*space, space)]
         interpret = ['**PAST · PRESENT · FUTURE**']
         for ii in range(len(cards)):
-            card = script_dir+'\\deck\\'+cards[ii]['image']
+            card = c.clib_path_join('tarot', 'deck', cards[ii]['image'])
             reverse = True if random.random() < 0.1 else False
             cardPaste(bg, card, pos[ii], reverse)
             if reverse == False:
@@ -286,7 +285,7 @@ def reading(spread):
             else:
                 string = cards[ii]['name'] + ' (reversed): ' + cards[ii]['desc0']
             interpret.append(string)
-        bg.save(script_dir+'\\reading.png')
+        bg.save(c.clib_path_join('tarot', 'reading.png'))
     elif spread == 'celtic':
         pass
     return interpret

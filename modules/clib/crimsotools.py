@@ -5,8 +5,6 @@ import os
 import pickle
 import datetime
 
-# root directory for bot
-root_dir = os.path.dirname(__file__) #<-- absolute dir the script is in
 
 class CrimsoBOTUser(object):
     pass
@@ -14,7 +12,7 @@ class CrimsoBOTUser(object):
 def fetch(userID):
     """ input: discord user ID
        output: CrimsoBOTUser object"""
-    filename = '{}\\users\\{}.pickle'.format(root_dir, userID)
+    filename = clib_path_join('users', userID + '.pickle')
     # find user's file; if none exists, create it
     try:
         with open(filename, 'rb') as f:
@@ -30,8 +28,7 @@ def fetch(userID):
 def close(user):
     """ input: crimsoBOT user object
        output: none"""
-    # filename = root_dir+'\\users\\'+user.ID+'.pickle'
-    filename = '{}\\users\\{}.pickle'.format(root_dir, user.ID)
+    filename = clib_path_join('users', user.ID + '.pickle')
     # pickle user's info
     try:
         with open(filename, 'wb') as f:
@@ -44,7 +41,7 @@ def botlog(event_string):
     """Log a string with timestamp to console and a text file."""
     stamp = '{n.year:04d}-{n.month:02d}-{n.day:02d} {n.hour:02d}:{n.minute:02d}:{n.second:02d} | {ev}'.format(n=datetime.datetime.now(), ev=event_string)
     print(stamp)
-    with open(root_dir+'\\text\\botlog.txt', 'a', encoding='utf-8', errors='ignore') as f:
+    with open(clib_path_join('text', 'botlog.txt'), 'a', encoding='utf-8', errors='ignore') as f:
         f.write(stamp+'\n')
 
 def checkin(cmd, serverName, channel, running):
@@ -109,7 +106,7 @@ def who_is_banned():
     """ input: none
        output: sorted list of CrimsoBOTUser objects"""
     cb_user_object_list = [] # list of CrimsoBOTUser objects
-    filelist = [f for f in os.listdir('D://Dropbox (Personal)//Personal//Python//crimsoBOT//users')]
+    filelist = [f for f in os.listdir(clib_path_join('users'))]
     for f in filelist:
         cb_user_object_list.append(fetch(f[:-7]))
     # remove attributeless
@@ -120,3 +117,9 @@ def who_is_banned():
             cb_user_object_list[i].banned = False
     cb_user_object_list = [user for user in cb_user_object_list if user.banned is True]
     return cb_user_object_list
+
+
+def clib_path_join(*paths):
+    clib_path = os.path.dirname(os.path.abspath(__file__))
+
+    return os.path.join(clib_path, *paths)

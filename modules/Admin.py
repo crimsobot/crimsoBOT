@@ -1,10 +1,7 @@
 import discord
 from discord.ext import commands
-import os
 from .clib import crimsotools as c
 
-# path to root
-root_dir = os.path.dirname(__file__) #<-- absolute dir the script is in
 
 class Admin:
     def __init__(self,bot):
@@ -125,7 +122,7 @@ class Admin:
     @commands.command(pass_context=True, hidden=True)
     async def logs(self, ctx, n):
         if ctx.message.author.id =='310618614497804289':
-            with open(root_dir+'\\ref\\botlog.txt', 'r', encoding='utf8', errors='ignore') as f:
+            with open(c.clib_path_join('text', 'botlog.txt'), 'r', encoding='utf8', errors='ignore') as f:
                 msg = f.readlines()[-int(n):]
                 msg = ''.join(msg)
             log_msgs = c.crimsplit(msg, '\n', 1900)

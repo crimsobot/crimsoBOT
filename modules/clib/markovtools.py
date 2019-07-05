@@ -3,9 +3,9 @@ import markovify
 import random as r
 import nltk
 import re
-import os
 
-script_dir = os.path.dirname(__file__) #<-- absolute dir the script is in
+from . import crimsotools as c
+
 
 class POSifiedText(markovify.Text):
     def word_split(self, sentence):
@@ -32,26 +32,26 @@ def textClean(input):
 def learner(list):
     """ input: list
        output: none"""
-    # pickle.dump('\n'.join(list), open(script_dir+'\\ref\\crimso.p', 'ab'))
-    with open(script_dir+'\\ref\\crimso.txt', 'a', encoding='utf8', errors='ignore') as f:
+    # pickle.dump('\n'.join(list), open(c.clib_path_join('text', 'crimso.p'), 'ab'))
+    with open(c.clib_path_join('text', 'crimso.txt'), 'a', encoding='utf8', errors='ignore') as f:
         f.write('%s\n' % list)
             
 def scraper(list):
     """ input: list
        output: none"""
-    # pickle.dump('\n'.join(list), open(script_dir+'\\ref\\crimso.p', 'ab'))
-    with open(script_dir+'\\ref\\scrape.txt', 'a', encoding='utf8', errors='ignore') as f:
+    # pickle.dump('\n'.join(list), open(c.clib_path_join('text', 'crimso.p'), 'ab'))
+    with open(c.clib_path_join('text', 'scrape.txt'), 'a', encoding='utf8', errors='ignore') as f:
         f.write('%s\n' % list)
 
 def markovScatter(list):
     """Write text file from list of strings."""
-    with open(script_dir+'\\ref\\scatterbrain.txt', 'w', encoding='utf8', errors='ignore') as f:
+    with open(c.clib_path_join('text', 'scatterbrain.txt'), 'w', encoding='utf8', errors='ignore') as f:
         for item in list:
             if item.startswith('>') == False:
                 if item.startswith('?') == False:
                     f.write("%s\n" % item)
 
-    g = open(script_dir+'\\ref\\scatterbrain.txt','r', encoding='utf8', errors='ignore')
+    g = open(c.clib_path_join('text', 'scatterbrain.txt'),'r', encoding='utf8', errors='ignore')
     li = g.read()
     g.close()
 
@@ -85,12 +85,12 @@ def markovScatter(list):
 
 def markovPoem(number_lines):
     """Write a poem."""
-    g = open(script_dir+'\\ref\\all.txt', encoding='utf8', errors='ignore')
+    g = open(c.clib_path_join('text', 'all.txt'), encoding='utf8', errors='ignore')
     text1 = g.read()
     g.close()
     text1 = textClean(text1)
 
-    h = open(script_dir+'\\ref\\randoms.txt', encoding='utf8', errors='ignore')
+    h = open(c.clib_path_join('text', 'randoms.txt'), encoding='utf8', errors='ignore')
     text2 = h.read()
     h.close()
     text2 = textClean(text2)
@@ -113,7 +113,7 @@ def markovPoem(number_lines):
 
 def wisdom():
     """Wisdom."""
-    f = open(script_dir+'\\ref\\wisdom.txt', encoding='utf8', errors='ignore')
+    f = open(c.clib_path_join('text', 'wisdom.txt'), encoding='utf8', errors='ignore')
     text = f.read()
     f.close()
 
@@ -128,7 +128,7 @@ def wisdom():
 
 def rovin():
     """Wisdom."""
-    f = open(script_dir+'\\ref\\rovin.txt', encoding='utf8', errors='ignore')
+    f = open(c.clib_path_join('text', 'rovin.txt'), encoding='utf8', errors='ignore')
     text = f.read()
     f.close()
 
@@ -142,7 +142,7 @@ def rovin():
     return output
 
 def crimso():
-    f = open(script_dir+'\\ref\\crimso.txt', encoding='utf8', errors='ignore')
+    f = open(c.clib_path_join('text', 'crimso.txt'), encoding='utf8', errors='ignore')
     text = f.read()
     f.close()
 

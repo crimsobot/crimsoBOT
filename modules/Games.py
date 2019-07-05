@@ -1,4 +1,3 @@
-import os
 import re
 import discord
 from discord.ext import commands
@@ -13,8 +12,6 @@ madlibs_channels = []
 guess_channels = []
 emojistory_channels = []
 
-# path to root
-root_dir = os.path.dirname(__file__) #<-- absolute dir the script is in
 
 class Games:
     def __init__(self, bot):

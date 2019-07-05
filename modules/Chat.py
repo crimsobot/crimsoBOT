@@ -6,9 +6,6 @@ from datetime import datetime
 from .clib import crimsotools as c
 from .clib import markovtools as m
 
-# path to root
-root_dir = os.path.dirname(__file__) #<-- absolute dir the script is in
-
 class Chat:
     def __init__(self,bot):
         self.bot = bot
@@ -30,8 +27,9 @@ class Chat:
     async def scrape(self, ctx, place='here', join='space', n=10000):
         """Scrape messages from channel. >scrape [here/dm/channel_id] [space/newline]."""
         if ctx.message.author.id == '310618614497804289' or '179313752464818178':
-            if os.path.exists(root_dir+'\\ref\\scrape.txt'):
-                os.remove(root_dir+'\\ref\\scrape.txt')
+            file = c.clib_path_join('text', 'scrape.txt')
+            if os.path.exists(file):
+                os.remove(file)
             channel = ctx.message.channel
             await self.bot.delete_message(ctx.message)
             # grab message contents (which are strings):
@@ -39,7 +37,7 @@ class Chat:
                 if not msg.pinned:
                     m.scraper(msg.content)
             text = []
-            for line in reversed(list(open(root_dir+'\\ref\\scrape.txt', encoding='utf8', errors='ignore'))):
+            for line in reversed(list(open(file, encoding='utf8', errors='ignore'))):
                 text.append(line.rstrip())
             # haiku only
             for i in range(len(text)):

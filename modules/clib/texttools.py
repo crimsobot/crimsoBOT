@@ -1,7 +1,8 @@
 import re
-import os
 from datetime import datetime
-from . import astronomy
+
+from . import astronomy, crimsotools as c
+
 
 def block(input):
     block = ":regional_indicator_"
@@ -216,7 +217,7 @@ def emojitime(emoji, location):
     mm = str(format(now.minute, '02d'))
     time_string = '{}:{}'.format(hh,mm)
     # then the file of things...
-    filename = 'D:\\Dropbox (Personal)\\Personal\\Python\\crimsoBOT\\ref\\emojidigits.txt'
+    filename = c.clib_path_join('text', 'emojidigits.txt')
     with open(filename, encoding='utf-8', errors='ignore') as f:
         lines = f.readlines()
     # remove space

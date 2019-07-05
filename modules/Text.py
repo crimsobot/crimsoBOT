@@ -1,7 +1,6 @@
 import discord
 from discord.ext import commands
 import asyncio
-import os
 from .clib import crimsotools as c
 from .clib import texttools as texttools
 from .clib import imagetools as imagetools
@@ -9,8 +8,6 @@ from .clib import imagetools as imagetools
 # lists for games in progress
 eface_channels = []
 
-# path to root
-root_dir = os.path.dirname(__file__) #<-- absolute dir the script is in
 
 class Text:
     def __init__(self,bot):

@@ -3,16 +3,14 @@ import random
 import discord
 from collections import Counter
 from datetime import datetime
-import crimsotools as c
+from . import crimsotools as c
 
-# path to root
-root_dir = os.path.dirname(__file__) #<-- absolute dir the script is in
 
 def emojistring():
     """ input: none
        output: string"""
     emojis = []
-    for line in open(root_dir+'\\emojilist.txt', encoding='utf-8', errors='ignore'):
+    for line in open(c.clib_path_join('text', 'emojilist.txt'), encoding='utf-8', errors='ignore'):
         line = line.replace('\n','')
         emojis.append(line)
     emojis = ''.join(emojis)
@@ -37,7 +35,7 @@ def winner_list(winners):
     return winners_
 
 def getStory():
-    story = open(root_dir+'\\madlibs.txt',
+    story = open(c.clib_path_join('text', 'madlibs.txt'),
                 encoding='utf-8', errors='ignore').readlines()
     story = [line[:-1] for line in story]
     story = [line.replace('\\n','\n') for line in story]
@@ -178,7 +176,7 @@ def leaders(place1, place2, trait='coin'):
     """ input: int, int
        output: sorted list of CrimsoBOTUser objects"""
     cb_user_object_list = [] # list of CrimsoBOTUser objects
-    filelist = [f for f in os.listdir('D://Dropbox (Personal)//Personal//Python//crimsoBOT//users')]
+    filelist = [f for f in os.listdir(c.clib_path_join('users'))]
     for f in filelist:
         cb_user_object_list.append(c.fetch(f[:-7]))
     # remove attributeless

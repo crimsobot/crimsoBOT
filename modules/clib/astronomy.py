@@ -1,4 +1,3 @@
-import os
 from geopy.geocoders import Nominatim
 import requests
 from io import BytesIO
@@ -10,9 +9,6 @@ import pandas as pd
 from pyshorteners import Shortener
 
 from config import N2YO_API_KEY, MAPQUEST_API_KEY, BITLY_TOKEN
-
-# path to root
-script_dir = os.path.dirname(__file__) #<-- absolute dir the script is in
 
 # suppress a 'caveat' by pandas
 pd.set_option('mode.chained_assignment', None)

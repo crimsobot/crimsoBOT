@@ -16,8 +16,8 @@ import numpy as np
 import matplotlib.pylab as plt
 from scipy.signal import convolve2d
 
-# path to root
-script_dir = os.path.dirname(__file__) #<-- absolute dir the script is in
+from . import crimsotools as c
+
 
 def remove_U(word):
     word_U = (word.encode('unicode-escape')).decode('utf-8', 'strict')
@@ -53,7 +53,7 @@ def bigmoji(emoji):
                 filename = '23-20e3'
             else: # numbers zero-nine
                 filename = '3'+filename
-        path = script_dir+'\\emoji\\'+filename+'.png'
+        path = c.clib_path_join('emoji', '')+filename+'.png'
     # test if real path
     # try:
     #     open(path, 'rb')
@@ -103,11 +103,11 @@ def color(str):
     else:
         color = hex_to_rgb(str)
     img = Image.new('RGB', (300, 100), color)
-    img.save(script_dir+'\\img\\color.jpg')
+    img.save(c.clib_path_join('img', 'color.jpg'))
 
 def boop(the_booper,the_booped):
     # font selection
-    f = ImageFont.truetype(script_dir+'\\img\\Roboto-Blackitalic.ttf', 36)
+    f = ImageFont.truetype(c.clib_path_join('img', 'Roboto-Blackitalic.ttf'), 36)
 
     # add line breaks if needed to inputs
     def lineBreak(input):
@@ -128,7 +128,7 @@ def boop(the_booper,the_booped):
     the_booped = lineBreak(the_booped)
 
     # open original image
-    img = Image.open(script_dir+'\\img\\boop.jpg')
+    img = Image.open(c.clib_path_join('img', 'boop.jpg'))
 
     # temp image made to rotate 'the_booped" text'
     txt = Image.new('L', (500,100))
@@ -140,15 +140,15 @@ def boop(the_booper,the_booped):
     # draw on original image
     draw.text((10, 450), the_booper, font=f, fill=(255,255,255))
     img.paste(ImageOps.colorize(w, (0,0,0), (255,255,255)), (370,0), w)
-    img.save(script_dir+'\\img\\booped.jpg')
+    img.save(c.clib_path_join('img', 'booped.jpg'))
 
 def fishe(ctx, user_input):
     img = imageFetch(ctx, user_input)
     img = img.convert('RGBA')
     img = img.resize((71,105), resample=Image.BICUBIC)
-    base = Image.open(script_dir+'\\img\\fishe_on_head.png')
+    base = Image.open(c.clib_path_join('img', 'fishe_on_head.png'))
     base.paste(img, (7,4))
-    base.save(script_dir+'\\img\\needping.png')
+    base.save(c.clib_path_join('img', 'needping.png'))
 
 def xok(ctx, user_input):
     img = imageFetch(ctx, user_input)
@@ -157,9 +157,9 @@ def xok(ctx, user_input):
     ratio = width / 120
     img = img.resize((int(width/ratio),int(height/ratio)), resample=Image.BICUBIC)
     width, height = img.size
-    base = Image.open(script_dir+'\\img\\xokked_base.png')
+    base = Image.open(c.clib_path_join('img', 'xokked_base.png'))
     base.paste(img, (30, 118-int(height/2)))
-    filename = script_dir+'\\img\\get_xokked.png'
+    filename = c.clib_path_join('img', 'get_xokked.png')
     base.save(filename)
     return filename
 
@@ -171,10 +171,10 @@ def ban_overlay(ctx, user_input):
         ratio = max(width,height) / 500
         img = img.resize((int(width/ratio),int(height/ratio)), resample=Image.BICUBIC)
     width, height = img.size
-    ban = Image.open(script_dir+'\\img\\ban.png')
+    ban = Image.open(c.clib_path_join('img', 'ban.png'))
     ban = ban.resize((width, height), resample=Image.BICUBIC)
     img.paste(ban, (0,0), ban)
-    img.save(script_dir+'\\img\\needban.png')
+    img.save(c.clib_path_join('img', 'needban.png'))
 
 def pingbadge(ctx, user_input, pos):
     img = imageFetch(ctx, user_input)
@@ -185,7 +185,7 @@ def pingbadge(ctx, user_input, pos):
         img = img.resize((int(width/ratio),int(height/ratio)), resample=Image.BICUBIC)
     width, height = img.size
     size = int(width/3)
-    badge = Image.open(script_dir+'\\img\\roundping.png')
+    badge = Image.open(c.clib_path_join('img', 'roundping.png'))
     badge = badge.resize((size, size), resample=Image.BICUBIC)
     if pos == '1':
         corner = (0, 0)
@@ -198,7 +198,7 @@ def pingbadge(ctx, user_input, pos):
     else:
         return False
     img.paste(badge, corner, badge)
-    img.save(script_dir+'\\img\\pingbadge.png')
+    img.save(c.clib_path_join('img', 'pingbadge.png'))
 
 ### so begins EMOJI IMAGE
 def hex_to_sRGB(base):
@@ -211,7 +211,7 @@ def hex_to_sRGB(base):
 
 # color lists
 colorList = []
-with open(script_dir+'\\img\\colors.txt', 'r') as file:
+with open(c.clib_path_join('img', 'colors.txt'), 'r') as file:
     [colorList.append(line[0:6]) for line in file]
 
 colorList_sRGB = []
@@ -236,7 +236,7 @@ def emojiLookup(hex_in):
     nearest = min(colorList_sRGB, key=lambda fc:delta_e_cie2000(color_in, fc))
     nearest = convert_color(nearest, sRGBColor)
     nearest = nearest.get_rgb_hex()
-    with open(script_dir+'\\img\\colors.txt', 'r') as file:
+    with open(c.clib_path_join('img', 'colors.txt'), 'r') as file:
         for line in file:
             if nearest[1:] in line:
                 return line[7:-1]
@@ -263,10 +263,10 @@ def emojiImage(ctx, user_input):
     newimage = quantizetopalette(img, palimage, dither=False)
     # find color of each pixel, turn into emoji in string
     rgb_im = newimage.convert('RGB',dither=None)
-    newimage.save(script_dir+'\\img\\eimg.png')
+    newimage.save(c.clib_path_join('img', 'eimg.png'))
     x,y = newimage.size
     x,y = img.size
-    f = open(script_dir+'\\img\\emoji.txt', 'w', encoding='utf-8', \
+    f = open(c.clib_path_join('img', 'emoji.txt'), 'w', encoding='utf-8', \
              errors='ignore')
     for yy in range(0,y):
         msg_string = ''
@@ -297,10 +297,10 @@ def emojiImage2(ctx, user_input):
     if ratio > 3:
         return False
     img = img.resize((36,int(36*ratio)),resample=Image.BICUBIC)
-    img.save(script_dir+'\\img\\eimg2.png')
+    img.save(c.clib_path_join('img', 'eimg2.png'))
     img = img.convert('RGB',dither=None)
     x,y = img.size
-    f = open(script_dir+'\\img\\emoji.txt', 'w', encoding='utf-8', \
+    f = open(c.clib_path_join('img', 'emoji.txt'), 'w', encoding='utf-8', \
              errors='ignore')
     for yy in range(0,y):
         msg_string = ''
@@ -315,7 +315,7 @@ def emojiImage2(ctx, user_input):
 def makeMosaic(colors):
     """Make a mosaic!"""
     # first, some stuff
-    img_path = script_dir+'\\img\\mosaicTiles\\'
+    img_path = c.clib_path_join('img', 'mosaicTiles')
     width = 50
     height = 100
     
@@ -349,7 +349,7 @@ def makeMosaic(colors):
             mosaic.paste(img_list[k], (i,j))
             k = k + 1
 
-    mosaic.save(root_dir+'\\mosaic.png')
+    mosaic.save(c.clib_path_join('img', 'mosaic.png'))
 
 def imagePalette(ctx, n, user_input):
     """Get colors of image palette!"""
@@ -361,13 +361,13 @@ def imagePalette(ctx, n, user_input):
         ratio = max(width,height) / 800
         img = img.resize((int(width/ratio),int(height/ratio)),
                          resample=Image.BICUBIC)
-    img.save(script_dir+'\\img\\before.png')
+    img.save(c.clib_path_join('img', 'before.png'))
     # change transparent BG to white, bc I don't know why
     img.load() # required for png.split()
     background = Image.new("RGB", img.size, (255, 255, 255))
     background.paste(img, mask=img.split()[3]) # 3 is the alpha channel
     img = background.quantize(colors=n, method=1, kmeans=n)
-    img.save(script_dir+'\\img\\resample.png')
+    img.save(c.clib_path_join('img', 'resample.png'))
     list = img.convert('RGB').getcolors()
     list = sorted(list, key=lambda tup: tup[0],reverse=True)
     colors = []
@@ -389,9 +389,9 @@ def acid(ctx, window, user_input):
     img2 = img.convert('RGBA')
     alpha = img2.split()[-1]
     img = img.convert('RGB')
-    img.save(script_dir+'\\img\\acid_before.jpg')
+    img.save(c.clib_path_join('img', 'acid_before.jpg'))
     # open as raster
-    raster = plt.imread(script_dir+'\\img\\acid_before.jpg')
+    raster = plt.imread(c.clib_path_join('img', 'acid_before.jpg'))
     # create acidify kernel
     kernel = np.ones((window+1,window+1))
     kernel /= (window+1)
@@ -402,13 +402,13 @@ def acid(ctx, window, user_input):
         acid_channel = convolve2d(raster[:,:,channel], kernel, mode='same', boundary='symm')
         acid_raster.append(acid_channel)
     acid_raster = np.stack(acid_raster, axis=2).astype('uint8')
-    plt.imsave(script_dir+'\\img\\acid.png', acid_raster)
+    plt.imsave(c.clib_path_join('img', 'acid.png'), acid_raster)
     # open as PIL image to apply alpha mask
-    img = Image.open(script_dir+'\\img\\acid.png')
+    img = Image.open(c.clib_path_join('img', 'acid.png'))
     img.putalpha(alpha)
-    filename = script_dir+'\\img\\acid_.png'
+    filename = c.clib_path_join('img', 'acid_.png')
     img.save(filename)
     return filename
-    # acid = Image.open(script_dir+'\\img\\acid.jpg')
+    # acid = Image.open(c.clib_path_join('img', 'acid.jpg'))
     # acid = Image.blend(img,acid,0.618)
-    # acid.save(script_dir+'\\img\\acid.png')
+    # acid.save(c.clib_path_join('img', 'acid.png'))

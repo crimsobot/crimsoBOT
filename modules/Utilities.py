@@ -1,12 +1,9 @@
 import discord
 from discord.ext import commands
-import os
 from .clib import crimsotools as c
 from .clib import imagetools as imagetools
 from .clib import astronomy as astronomy
 
-# path to root
-root_dir = os.path.dirname(__file__) #<-- absolute dir the script is in
 
 class Utilities:
     def __init__(self,bot):
@@ -27,7 +24,7 @@ class Utilities:
         """Get color sample from hex value."""
         imagetools.color(str(hex_value))
         await self.bot.send_file(ctx.message.channel,
-                                 root_dir+'\\img\\color.jpg',
+                                 c.clib_path_join('img', 'color.jpg'),
                                  content='**'+hex_value+'**')
 
     @commands.command(pass_context=True,
@@ -47,10 +44,10 @@ class Utilities:
             return commands.CommandInvokeError(False)
         hex = imagetools.imagePalette(ctx, int(number_of_colors), link)
         await self.bot.send_file(ctx.message.channel,
-                                 root_dir+'\\img\\resample.png',
+                                 c.clib_path_join('img', 'resample.png'),
                                  content='**Resampled image:**')
         await self.bot.send_file(ctx.message.channel,
-                                 root_dir+'\\img\\mosaic.png',
+                                 c.clib_path_join('img', 'mosaic.png'),
                                  content='**'+hex.upper()+'**')
         c.botlog('palette COMPLETE on {}/{}!'.format(ctx.message.server, ctx.message.channel))
 

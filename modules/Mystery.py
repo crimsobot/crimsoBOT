@@ -1,12 +1,9 @@
 import discord
 from discord.ext import commands
 import discord.errors as de
-import os
 from .clib import crimsotools as c
 from .clib import crimsotarot as tarot
 
-# path to root
-root_dir = os.path.dirname(__file__) #<-- absolute dir the script is in
 
 class Mystery:
     def __init__(self,bot):
@@ -17,7 +14,7 @@ class Mystery:
         """Tarot readings by crimsoBOT."""
         descriptions = tarot.reading(spread)
         await self.bot.send_file(ctx.message.channel,
-                                 root_dir+'\\tarot\\reading.png',
+                                 c.clib_path_join('tarot', 'reading.png'),
                                  content='\n'.join(descriptions))
 
 def setup(bot):
