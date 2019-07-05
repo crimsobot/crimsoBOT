@@ -320,15 +320,15 @@ def makeMosaic(colors):
     height = 100
     
     # delete tiles
-    filelist = [f for f in os.listdir(img_path)]
-    for f in filelist:
-        os.remove(os.path.join(img_path, f))
+    for f in os.listdir(img_path):
+        if f != '.gitignore':
+            os.remove(os.path.join(img_path, f))
 
     # generate tile for each passed color
     counter = 1
     for color in colors:
         img = Image.new('RGB', (width, height), color)
-        img.save(img_path + str('%02i' % counter)+'.jpg')
+        img.save(os.path.join(img_path, str('%02i' % counter) + '.jpg'))
         counter += 1
 
     img_list   = []
