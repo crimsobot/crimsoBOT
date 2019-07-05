@@ -83,7 +83,7 @@ class Image:
     async def bless(self, ctx):
         """bless bless"""
         # read in lines of emojis
-        line_list = open(c.clib_path_join('img', 'emoji.txt'),
+        line_list = open(c.clib_path_join('img', 'bless.txt'),
                          encoding='utf8',
                          errors='ignore').readlines()
         # check-in
