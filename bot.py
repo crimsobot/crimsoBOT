@@ -27,33 +27,33 @@ async def on_ready():
 async def on_resumed():
     c.botlog('crimsoBOT RECONNECT')
 
-# @bot.event
-# async def on_command_error(error, ctx):
-#     """Displays error messages to user for cooldown and CommandNotFound, and suppresses verbose error text for both in the console."""
-#     if isinstance(error, commands.errors.CommandOnCooldown):
-#         c.botlog('Cooldown: %s // %s: %s' % (ctx.message.author, ctx.message.content, error))
-#         msg = await bot.send_message(ctx.message.channel, content='**eat glass.** %.0fs cooldown.' % error.retry_after)
-#         await asyncio.sleep(7)
-#         await bot.delete_message(msg)
-#     elif isinstance(error, commands.errors.CommandInvokeError):
-#         try:
-#             c.botlog('Invoke: %s // %s: %s' % (ctx.message.author, ctx.message.content, error))
-#             msg = await bot.send_message(ctx.message.channel, content=':poop: `E R R O R` :poop:')
-#             await asyncio.sleep(7)
-#             await bot.delete_message(msg)
-#         except discord.errors.Forbidden:
-#             c.botlog('Forbidden: %s // %s: %s' % (ctx.message.server, ctx.message.channel.id, error))
-#     elif isinstance(error, commands.errors.MissingRequiredArgument):
-#         c.botlog('Argument: %s // %s: %s' % (ctx.message.author, ctx.message.content, error))
-#         msg = await bot.send_message(ctx.message.channel, content='*this command requires more arguments. try `>help [cmd]`*')
-#         await asyncio.sleep(7)
-#         await bot.delete_message(msg)
-#     # elif isinstance(error, commands.errors.CommandNotFound):
-#     #     c.botlog('NotFound: %s/%s // %s: %s' % (ctx.message.author, ctx.message.server.id, ctx.message.content, error))
-#     elif isinstance(error, commands.errors.CommandNotFound):
-#         c.botlog('Forbidden: %s/%s // %s: %s' % (ctx.message.server.id, ctx.message.channel, ctx.message.content, error))
-#     else:
-#         raise error
+@bot.event
+async def on_command_error(error, ctx):
+    """Displays error messages to user for cooldown and CommandNotFound, and suppresses verbose error text for both in the console."""
+    if isinstance(error, commands.errors.CommandOnCooldown):
+        c.botlog('Cooldown: %s // %s: %s' % (ctx.message.author, ctx.message.content, error))
+        msg = await bot.send_message(ctx.message.channel, content='**eat glass.** %.0fs cooldown.' % error.retry_after)
+        await asyncio.sleep(7)
+        await bot.delete_message(msg)
+    elif isinstance(error, commands.errors.CommandInvokeError):
+        try:
+            c.botlog('Invoke: %s // %s: %s' % (ctx.message.author, ctx.message.content, error))
+            msg = await bot.send_message(ctx.message.channel, content=':poop: `E R R O R` :poop:')
+            await asyncio.sleep(7)
+            await bot.delete_message(msg)
+        except discord.errors.Forbidden:
+            c.botlog('Forbidden: %s // %s: %s' % (ctx.message.server, ctx.message.channel.id, error))
+    elif isinstance(error, commands.errors.MissingRequiredArgument):
+        c.botlog('Argument: %s // %s: %s' % (ctx.message.author, ctx.message.content, error))
+        msg = await bot.send_message(ctx.message.channel, content='*this command requires more arguments. try `>help [cmd]`*')
+        await asyncio.sleep(7)
+        await bot.delete_message(msg)
+    # elif isinstance(error, commands.errors.CommandNotFound):
+    #     c.botlog('NotFound: %s/%s // %s: %s' % (ctx.message.author, ctx.message.server.id, ctx.message.content, error))
+    elif isinstance(error, commands.errors.CommandNotFound):
+        c.botlog('Forbidden: %s/%s // %s: %s' % (ctx.message.server.id, ctx.message.channel, ctx.message.content, error))
+    else:
+        raise error
 
 def reorder(string_in):
     """Reorders a string. Called iteratively to give scrolling effect."""
@@ -200,10 +200,10 @@ async def cboot_(ctx):
 #load cogs (modules)
 if __name__ == '__main__':
     for extension in extensions:
-        # try:
-        bot.load_extension('modules.{}'.format(extension))
-        # except Exception as error:
-        #     c.botlog('{} cannot be loaded. [{}]'.format(extension, error))
+        try:
+            bot.load_extension('modules.{}'.format(extension))
+        except Exception as error:
+            c.botlog('{} cannot be loaded. [{}]'.format(extension, error))
 
 # creat task for loop change_status
 bot.loop.create_task(change_status())
