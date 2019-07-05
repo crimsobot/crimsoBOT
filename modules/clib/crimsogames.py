@@ -35,7 +35,7 @@ def winner_list(winners):
     return winners_
 
 def getStory():
-    story = open(c.clib_path_join('text', 'madlibs.txt'),
+    story = open(c.clib_path_join('games', 'madlibs.txt'),
                 encoding='utf-8', errors='ignore').readlines()
     story = [line[:-1] for line in story]
     story = [line.replace('\\n','\n') for line in story]
