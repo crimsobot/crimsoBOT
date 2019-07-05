@@ -1,4 +1,3 @@
-import pickle
 import markovify
 import random as r
 import nltk

@@ -4,6 +4,9 @@ import asyncio
 import os
 import pickle
 import datetime
+import sys
+
+sys.modules['crimsotools'] = sys.modules[__name__]
 
 
 class CrimsoBOTUser(object):
