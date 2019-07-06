@@ -16,7 +16,7 @@ def fetch(user_id):
     """ input: discord user ID
        output: CrimsoBOTUser object"""
 
-    filename = clib_path_join('users', user_id + '.pickle')
+    filename = clib_path_join('users', str(user_id) + '.pickle')
 
     # Unserialize from user file
     try:
@@ -33,6 +33,9 @@ def fetch(user_id):
         with open(filename, 'rb') as f:
             user = pickle.load(f)
 
+    # Migrate from old string IDs
+    user.ID = int(user.ID)
+
     return user
 
 
@@ -40,7 +43,7 @@ def close(user):
     """ input: crimsoBOT user object
        output: none"""
 
-    filename = clib_path_join('users', user.ID + '.pickle')
+    filename = clib_path_join('users', str(user.ID) + '.pickle')
 
     # Serialize to user file
     try:
@@ -67,7 +70,7 @@ def botlog(event_string):
         f.write(stamp + '\n')
 
 
-def checkin(cmd, server_name, channel, running):
+def checkin(cmd, guild, channel, running):
     """Is game already running in channel/DM?"""
 
     if channel.id in running:
@@ -75,21 +78,25 @@ def checkin(cmd, server_name, channel, running):
     else:
         running.append(channel.id)
 
-        if server_name is None:
-            server_name = '*'
+        if guild:
+            guild_name = guild.name
+        else:
+            guild_name = '*'
 
-        print('----IN PROGRESS---- | {} running on {}/{} ({})...'.format(cmd, server_name, channel, channel.id))
+        print('----IN PROGRESS---- | {} running on {}/{} ({})...'.format(cmd, guild_name, channel, channel.id))
 
 
-def checkout(cmd, server_name, channel, running):
+def checkout(cmd, guild, channel, running):
     """Is game already running in channel/DM?"""
 
     running.remove(channel.id)
 
-    if server_name is None:
-        server_name = '*'
+    if guild:
+        guild_name = guild.name
+    else:
+        guild_name = '*'
 
-    botlog(cmd + ' COMPLETE on {}/{}!'.format(server_name, channel))
+    botlog(cmd + ' COMPLETE on {}/{}!'.format(guild_name, channel))
 
 
 def crimbed(title, description, thumbnail=None, color=0x5AC037):
@@ -175,46 +182,45 @@ def clib_path_join(*paths):
     return os.path.join(utils_path, '..', 'data', *paths)
 
 
-def get_server_info_embed(server):
+def get_guild_info_embed(guild):
     # initialize embed
     embed = Embed(
-        title=server.name,
+        title=guild.name,
         description='**`{s}`** has `{m}` members, `{r}` roles and is owned by `{s.owner}`'.format(
-            s=server, m=len(server.members), r=len(server.roles)
+            s=guild, m=len(guild.members), r=len(guild.roles)
         )
     )
 
     # number of channels to show, which to show
-    channel_list = [x for x in sorted(server.channels, key=lambda c: c.position) if x.type == ChannelType.text]
-    show = min(10, len(server.channels))
+    channel_list = [x for x in sorted(guild.channels, key=lambda c: c.position) if x.type == ChannelType.text]
+    show = min(10, len(guild.channels))
     channel_text = '\n'.join([('· {channel.name}'.format(channel=channel)) for channel in channel_list[:show]])
     embed.add_field(
-        name='Channels ({}/{} shown)'.format(show, len(server.channels)),
+        name='Channels ({}/{} shown)'.format(show, len(guild.channels)),
         value=channel_text or 'No channels.',
         inline=False
     )
 
     # number of roles to show, which to show
-    role_list = [x for x in sorted(server.roles, key=lambda r: r.position, reverse=True) if not x.is_everyone]
-    # role_list = [x for x in server.roles if not x.is_everyone][0:10]
+    role_list = [x for x in guild.roles if not x.is_default()]
     show = min(10, len(role_list))
     role_text = '\n'.join(['· {s}{name}'.format(s='@' if r.mentionable else '', name=r.name) for r in role_list[:show]])
     embed.add_field(
-        name='Roles ({}/{} shown)'.format(show, len(server.roles) - 1),  # minus 1 to not include @everyone
+        name='Roles ({}/{} shown)'.format(show, len(guild.roles) - 1),  # minus 1 to not include @everyone
         value=role_text or 'No roles.',
         inline=False
     )
 
     # list emojis; truncate if need be
-    show = len(server.emojis)
+    show = len(guild.emojis)
     total = show
-    char_count = sum([len(emoji.name) for emoji in server.emojis])
+    char_count = sum([len(emoji.name) for emoji in guild.emojis])
     if char_count > 500:
         while char_count > 500:
-            server.emojis = server.emojis[:-1]
-            show = len(server.emojis)
-            char_count = sum([len(emoji.name) for emoji in server.emojis])
-    emoji_text = ' '.join(['`:{e.name}:`'.format(e=emoji) for emoji in server.emojis[:show]])
+            guild.emojis = guild.emojis[:-1]
+            show = len(guild.emojis)
+            char_count = sum([len(emoji.name) for emoji in guild.emojis])
+    emoji_text = ' '.join(['`:{e.name}:`'.format(e=emoji) for emoji in guild.emojis[:show]])
     embed.add_field(
         name='Emojis ({}/{} shown)'.format(show, total),
         value=emoji_text or 'No custom emojis.',
@@ -222,7 +228,7 @@ def get_server_info_embed(server):
     )
 
     # footer, thumbnail
-    embed.set_footer(text='Server ID: #{server.id}'.format(server=server))
-    embed.set_thumbnail(url=server.icon_url)
+    embed.set_footer(text='Server ID: #{guild.id}'.format(guild=guild))
+    embed.set_thumbnail(url=guild.icon_url)
 
     return embed

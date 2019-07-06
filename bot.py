@@ -13,9 +13,6 @@ PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 bot = commands.Bot(command_prefix='>')
 
-# names of cogs to load
-extensions = ['admin', 'chat', 'games', 'image', 'mystery', 'text', 'utilities']
-
 
 @bot.event
 async def on_ready():
@@ -29,7 +26,7 @@ async def on_resumed():
 
 
 @bot.event
-async def on_command_error(error, ctx):
+async def on_command_error(ctx, error):
     """
     Displays error messages to user for cooldown and CommandNotFound,
     and suppresses verbose error text for both in the console.
@@ -38,30 +35,27 @@ async def on_command_error(error, ctx):
     if isinstance(error, commands.errors.CommandOnCooldown):
         c.botlog('Cooldown: %s // %s: %s' % (ctx.message.author, ctx.message.content, error))
 
-        msg = await bot.send_message(ctx.message.channel, content='**eat glass.** %.0fs cooldown.' % error.retry_after)
+        msg = await ctx.send('**eat glass.** %.0fs cooldown.' % error.retry_after)
         await asyncio.sleep(7)
-        await bot.delete_message(msg)
+        await msg.delete()
     elif isinstance(error, commands.errors.CommandInvokeError):
         try:
             c.botlog('Invoke: %s // %s: %s' % (ctx.message.author, ctx.message.content, error))
 
-            msg = await bot.send_message(ctx.message.channel, content=':poop: `E R R O R` :poop:')
+            msg = await ctx.send(':poop: `E R R O R` :poop:')
             await asyncio.sleep(7)
-            await bot.delete_message(msg)
+            await msg.delete()
         except discord.errors.Forbidden:
-            c.botlog('Forbidden: %s // %s: %s' % (ctx.message.server, ctx.message.channel.id, error))
+            c.botlog('Forbidden: %s // %s: %s' % (ctx.message.guild, ctx.message.channel.id, error))
     elif isinstance(error, commands.errors.MissingRequiredArgument):
         c.botlog('Argument: %s // %s: %s' % (ctx.message.author, ctx.message.content, error))
 
-        msg = await bot.send_message(
-            ctx.message.channel,
-            content='*this command requires more arguments. try `>help [cmd]`*'
-        )
+        msg = await ctx.send('*this command requires more arguments. try `>help [cmd]`*')
         await asyncio.sleep(7)
-        await bot.delete_message(msg)
+        await msg.delete()
     elif isinstance(error, commands.errors.CommandNotFound):
         c.botlog('NotFound/Forbidden: %s/%s // %s: %s' % (
-            ctx.message.server.id, ctx.message.channel, ctx.message.content, error
+            ctx.message.guild.id, ctx.message.channel, ctx.message.content, error
         ))
     else:
         raise error
@@ -74,7 +68,6 @@ def reorder(string_in):
     return string_out
 
 
-@bot.event
 async def change_status():
     """Slow scrolling effect for "Playing" status message."""
 
@@ -84,11 +77,10 @@ async def change_status():
     current_status = 'crimsoBOT is watching...'
     while not bot.is_closed:
         current_status = reorder(current_status)
-        await bot.change_presence(game=discord.Game(name=current_status))
+        await bot.change_presence(activity=discord.Game(name=current_status))
         await asyncio.sleep(7)
 
 
-@bot.event
 async def reminder():
     """"Sends a disappearing random reminder in default channel."""
 
@@ -101,9 +93,9 @@ async def reminder():
     reminder_list = [line.replace('\\n', '\n') for line in reminder_list]
 
     channel_list = [
-        discord.Object(id='280298381807714304'),  # ooer
-        # discord.Object(id='552650673418797069'), # crimso
-        # discord.Object(id='445699717842731011'), # BCP
+        bot.get_channel(280298381807714304),  # ooer
+        # bot.get_channel(552650673418797069), # crimso
+        # bot.get_channel(445699717842731011), # BCP
     ]
 
     # send in current channel on startup, and then...
@@ -114,23 +106,23 @@ async def reminder():
 
         # then send to each channel in list
         for channel in channel_list:
-            msg = await bot.send_message(channel, random.choice(reminder_list))
+            msg = await channel.send(random.choice(reminder_list))
 
             # delete after 10s if no reaction
             await asyncio.sleep(10)
-            cache_msg = discord.utils.get(bot.messages, id=msg.id)
+            cache_msg = discord.utils.get(bot.cached_messages, id=msg.id)
             if not cache_msg.reactions:
-                await bot.delete_message(msg)
+                await msg.delete()
 
 
 # channels to learn what crimso says
 channel_list = [
-    '552650673418797069',  # crimsoBOT/general
-    '554799675912355861',  # crimsoBOT/botspam
-    '280298381807714304',  # ooer/general
-    '281918354133090305',  # ooer/serious
-    '420809381735825418',  # ooer/botto
-    '325969983441993729',  # ooer/botspam
+    552650673418797069,  # crimsoBOT/general
+    554799675912355861,  # crimsoBOT/botspam
+    280298381807714304,  # ooer/general
+    281918354133090305,  # ooer/serious
+    420809381735825418,  # ooer/botto
+    325969983441993729,  # ooer/botspam
 ]
 
 banned_users = []
@@ -142,15 +134,15 @@ async def on_message(message):
         return
 
     # DM logger
-    dm = str(message.channel).startswith('Direct M')
-    if dm and message.author.id != bot.user.id and not message.content.startswith('>'):  # crimsoBOT
+    is_dm = isinstance(message.channel, discord.DMChannel)
+    if is_dm and message.author.id != bot.user.id and not message.content.startswith('>'):  # crimsoBOT
         try:
             link = message.attachments[0]['url']
         except Exception:
             link = ''
 
-        await bot.send_message(
-            discord.Object(id='588708864363462656'),
+        dms_channel = bot.get_channel(588708864363462656)
+        await dms_channel.send(
             '`{} ({}):`\n{} {}'.format(message.channel, message.channel.id, message.content, link)
         )
 
@@ -158,76 +150,72 @@ async def on_message(message):
     await bot.process_commands(message)
 
     # learn from crimso
-    if message.author.id == '310618614497804289':
+    if message.author.id == 310618614497804289:
         if message.channel.id in channel_list:
             m.learner(message.content)
 
     # respond to ping
     if bot.user in message.mentions:
-        await bot.send_message(message.channel, m.crimso())
+        await message.channel.send(m.crimso())
 
     # random chat
-    if random.random() < 0.001 and not dm:
-        await bot.send_message(message.channel, m.crimso())
+    if random.random() < 0.001 and not is_dm:
+        await message.channel.send(m.crimso())
 
 
-banned_servers = [
-    '551596695138467853',
-    '553727143629160453',
-    '481246881310179339',
+banned_guild_ids = [
+    551596695138467853,
+    553727143629160453,
+    481246881310179339,
 ]
 
 
 @bot.event
-async def on_server_join(server):
-    """Notify me when added to server"""
+async def on_guild_join(guild):
+    """Notify me when added to guild"""
 
-    if server.id in banned_servers:
-        await bot.leave_server(server)
-        c.botlog('Banned server {} attempted to add crimsoBOT.'.format(server.id))
+    if guild.id in banned_guild_ids:
+        await guild.leave()
+        c.botlog('Banned guild {} attempted to add crimsoBOT.'.format(guild.id))
         return
 
-    c.botlog("Joined {server.owner}'s {server} [{server.id}]".format(server=server))
+    c.botlog("Joined {guild.owner}'s {guild} [{guild.id}]".format(guild=guild))
 
-    embed = c.get_server_info_embed(server)
+    embed = c.get_guild_info_embed(guild)
 
     # ...and send
-    user = await bot.get_user_info('310618614497804289')  # is crimso
+    user = await bot.get_user(310618614497804289)  # is crimso
     try:
-        await bot.send_message(user, 'Added to {server}'.format(server=server), embed=embed)
+        await user.send('Added to {guild}'.format(guild=guild), embed=embed)
     except Exception:
-        await bot.send_message(user, 'Added to {server}'.format(server=server))
+        await user.send('Added to {guild}'.format(guild=guild))
 
 
-def reboot(msg):
+async def reboot(msg):
     c.botlog(msg)
-    bot.close()
+    await bot.close()
     os.execl('C:/Windows/System32/cmd.exe', '/k', '"D:/Python36/python.exe "' + PROJECT_DIR + '/bot.py"')
 
 
-@bot.command(pass_context=True, hidden=True)
+@bot.command(hidden=True)
 async def cboot_(ctx):
-    if ctx.message.author.id == '310618614497804289':
-        reboot('Rebooting...')
-
+    if ctx.message.author.id == 310618614497804289:
+        await reboot('Rebooting...')
 
 # load cogs (modules)
 if __name__ == '__main__':
+    # create task for loop change_status
+    bot.loop.create_task(change_status())
+
+    # create task for reminder
+    # bot.loop.create_task(reminder())
+
+    # load in extensions/cogs
+    extensions = ['admin', 'chat', 'games', 'image', 'mystery', 'text', 'utilities']
     for extension in extensions:
         try:
             bot.load_extension('crimsobot.cogs.{}'.format(extension))
         except Exception as error:
             c.botlog('{} cannot be loaded. [{}]'.format(extension, error))
 
-# creat task for loop change_status
-bot.loop.create_task(change_status())
-
-# create task for reminder
-# bot.loop.create_task(reminder())
-
-while True:
-    try:
-        bot.close()
-        bot.run(TOKEN, reconnect=True)
-    except Exception:
-        reboot('Connection error encountered! Retrying...')
+    bot.run(TOKEN)

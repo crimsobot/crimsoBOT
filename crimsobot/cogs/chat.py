@@ -1,18 +1,17 @@
 import os
 import random
 
-import discord
 from discord.ext import commands
 
 import crimsobot.utils.markov as m
 import crimsobot.utils.tools as c
 
 
-class Chat:
+class Chat(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(pass_context=True)
+    @commands.command()
     async def scatterbrain(self, ctx):
         """Short-term memory mania."""
 
@@ -20,27 +19,27 @@ class Chat:
         messages = []
 
         # grab message contents (which are strings):
-        async for message in self.bot.logs_from(channel, limit=500):
-            if str(message.author) != 'crimsoBOT#0992':
+        async for message in channel.history(limit=500):
+            if message.author.id != self.bot.user.id:
                 messages.append(message.content)
 
         output = m.scatter(messages)
-        await self.bot.say(output)
+        await ctx.send(output)
 
-    @commands.command(pass_context=True, hidden=True)
+    @commands.command(hidden=True)
     async def scrape(self, ctx, place='here', join='space', n=10000):
         """Scrape messages from channel. >scrape [here/dm/channel_id] [space/newline]."""
 
-        if ctx.message.author.id == '310618614497804289' or '179313752464818178':
+        if ctx.message.author.id in (310618614497804289, 179313752464818178):
             file = c.clib_path_join('text', 'scrape.txt')
             if os.path.exists(file):
                 os.remove(file)
 
             channel = ctx.message.channel
-            await self.bot.delete_message(ctx.message)
+            await ctx.message.delete()
 
             # grab message contents (which are strings):
-            async for msg in self.bot.logs_from(channel, limit=n):
+            async for msg in channel.history(limit=n):
                 if not msg.pinned:
                     m.scraper(msg.content)
 
@@ -65,14 +64,14 @@ class Chat:
                 elif place == 'here':
                     dest = ctx.message.channel
                 else:
-                    dest = discord.Object(id=place)
+                    dest = self.bot.get_channel(place)
             except AttributeError:
                 raise commands.errors.CommandInvokeError('wrong place!')
 
             for msg in msgs:
-                await self.bot.send_message(dest, msg)
+                await dest.send(msg)
 
-    @commands.command(pass_context=True)
+    @commands.command()
     async def poem(self, ctx):
         """Spits out a poem."""
 
@@ -98,16 +97,16 @@ class Chat:
             random.randint(fake_author[choice][1], fake_author[choice][2])
         ))
 
-        await self.bot.send_message(ctx.message.channel, embed=embed)
+        await ctx.send(embed=embed)
 
-    @commands.command(pass_context=True)
+    @commands.command()
     async def wisdom(self, ctx):
         """Crimsonic wisdom."""
 
         embed = c.crimbed('**CRIMSONIC WISDOM**', m.wisdom(), None)
-        await self.bot.send_message(ctx.message.channel, embed=embed)
+        await ctx.send(embed=embed)
 
-    @commands.command(pass_context=True, aliases=['monty'])
+    @commands.command(aliases=['monty'])
     async def montyward(self, ctx):
         """Monty mindfuck!"""
 
@@ -126,23 +125,23 @@ class Chat:
         embed = c.crimbed(title, descr, 'https://i.imgur.com/wOFf7PF.jpg')
         embed.set_footer(text=random.choice(footer_text) + ' Sleep tight.')
 
-        await self.bot.send_message(ctx.message.channel, embed=embed)
+        await ctx.send(embed=embed)
 
-    # @commands.command(pass_context=True, hidden=True)
+    # @commands.command(hidden=True)
     # async def final(self, ctx):
-    #     await self.bot.say('`Final warning...`')
+    #     await ctx.send('`Final warning...`')
     #
     #     channel = ctx.message.channel
     #     now = datetime.utcnow()
     #     then = now.replace(hour=2, minute=25)
     #
     #     # grab message contents (which are strings):
-    #     async for message in self.bot.logs_from(channel, limit=10000):
-    #         if str(message.author.id) == '310618614497804289':
+    #     async for message in channel.history(limit=10000):
+    #         if message.author.id == 310618614497804289:
     #             if message.timestamp > then:
     #                 m.learner(message.content)
     #
-    #     await self.bot.say('`Task complete.`')
+    #     await ctx.send('`Task complete.`')
 
 
 def setup(bot):

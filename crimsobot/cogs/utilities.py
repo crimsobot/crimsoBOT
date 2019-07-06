@@ -1,3 +1,4 @@
+import discord
 from discord.ext import commands
 
 import crimsobot.utils.astronomy as astronomy
@@ -5,34 +6,36 @@ import crimsobot.utils.image as imagetools
 import crimsobot.utils.tools as c
 
 
-class Utilities:
+class Utilities(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(pass_context=True)
-    @commands.cooldown(1, 10, commands.BucketType.server)
+    @commands.command()
+    @commands.cooldown(1, 10, commands.BucketType.guild)
     async def ping(self, ctx):
         """Need ping? 10s cooldown after use."""
 
-        msg = await self.bot.say('<:ping:569954524932997122>...')
+        msg = await ctx.send('<:ping:569954524932997122>...')
         time_in = ctx.message.timestamp
         time_out = msg.timestamp
         ping = (time_out - time_in).microseconds / 1000
-        await self.bot.edit_message(msg, '<:ping:569954524932997122>...{:d}ms'.format(int(ping)))
+        await msg.edit('<:ping:569954524932997122>...{:d}ms'.format(int(ping)))
 
-    @commands.command(pass_context=True)
+    @commands.command()
     async def color(self, ctx, hex_value):
         """Get color sample from hex value."""
 
         imagetools.make_color_img(str(hex_value))
-        await self.bot.send_file(
-            ctx.message.channel,
-            c.clib_path_join('img', 'color.jpg'),
-            content='**' + hex_value + '**'
+        await ctx.send(
+            '**' + hex_value + '**',
+            file=discord.File(
+                c.clib_path_join('img', 'color.jpg'),
+                'color.jpg'
+            )
         )
 
-    @commands.command(pass_context=True)
-    @commands.cooldown(2, 8, commands.BucketType.server)
+    @commands.command()
+    @commands.cooldown(2, 8, commands.BucketType.guild)
     async def palette(self, ctx, number_of_colors, link=None):
         """
         Get an image's main colors! Specify # of colors (1-10).
@@ -42,7 +45,7 @@ class Utilities:
         • Images with transparency will sometimes produce a less-than-stellar palette.
         """
 
-        print('----IN PROGRESS---- | palette running on {}/{}...'.format(ctx.message.server, ctx.message.channel))
+        print('----IN PROGRESS---- | palette running on {}/{}...'.format(ctx.message.guild, ctx.message.channel))
 
         try:
             if not 1 <= int(number_of_colors) <= 10:
@@ -51,62 +54,65 @@ class Utilities:
             return commands.CommandInvokeError(False)
 
         hex_color = imagetools.get_image_palette(ctx, int(number_of_colors), link)
-        await self.bot.send_file(
-            ctx.message.channel,
-            c.clib_path_join('img', 'resample.png'),
-            content='**Resampled image:**'
+        await ctx.send(
+            '**Resampled image:**',
+            file=discord.File(
+                c.clib_path_join('img', 'resample.png'),
+                'resample.png'
+            )
         )
-        await self.bot.send_file(
-            ctx.message.channel,
-            c.clib_path_join('img', 'mosaic.png'),
-            content='**' + hex_color.upper() + '**'
+        await ctx.send(
+            '**' + hex_color.upper() + '**',
+            file=discord.File(
+                c.clib_path_join('img', 'mosaic.png'),
+                'mosaic.png'
+            )
         )
 
-        c.botlog('palette COMPLETE on {}/{}!'.format(ctx.message.server, ctx.message.channel))
+        c.botlog('palette COMPLETE on {}/{}!'.format(ctx.message.guild, ctx.message.channel))
 
-    @commands.command(pass_context=True, hidden=True)
+    @commands.command(hidden=True)
     async def dearcrimso(self, ctx, *, arg):
         """Leave a message in crimso's inbox. Spam = ban"""
 
-        if ctx.message.server is not None:
-            server = str(ctx.message.server.name)
+        if ctx.message.guild is not None:
+            guild = str(ctx.message.guild.name)
             channel = str(ctx.message.channel.id)
         else:
-            server = '***'
+            guild = '***'
             channel = 'direct message'
 
         user = str(ctx.message.author)
         userid = str(ctx.message.author.id)
-        c.botlog(server + '/' + channel + '\n            ' + user + '(' + userid + '): ' + arg)
+        c.botlog(guild + '/' + channel + '\n            ' + user + '(' + userid + '): ' + arg)
 
-    @commands.command(pass_context=True, hidden=True)
+    @commands.command(hidden=True)
     async def csay(self, ctx, dest, tts, *, msg):
-        if ctx.message.author.id == '310618614497804289':
+        if ctx.message.author.id == 310618614497804289:
             if dest[0] == 'c':
                 recip = self.bot.get_channel(dest[1:])
             elif dest[0] == 'd':
-                recip = await self.bot.get_user_info(dest[1:])
+                recip = await self.bot.fetch_user(dest[1:])
+
             if tts == '1':
                 tts = True
             else:
                 tts = False
-            await self.bot.send_message(recip, msg, tts=tts)
 
-    @commands.command(pass_context=True)
+            await recip.send(msg, tts=tts)
+
+    @commands.command()
     async def bigmoji(self, ctx, emoji):
         """Get larger version of either a default or custom emoji!"""
 
         path = imagetools.bigmoji(emoji)
 
         try:
-            if path.startswith('http'):
-                await self.bot.send_message(ctx.message.channel, path)
-            else:
-                await self.bot.send_file(ctx.message.channel, path)
+            await ctx.send(path)
         except Exception:
             await self.bot.say('*Not a valid emoji.*')
 
-    @commands.command(pass_context=True, brief='Get info on when to see the ISS from the location you search!')
+    @commands.command(brief='Get info on when to see the ISS from the location you search!')
     @commands.cooldown(1, 30, commands.BucketType.user)
     async def iss(self, ctx, *location):
         """
@@ -134,9 +140,9 @@ class Utilities:
         for i in range(len(string_list)):
             header_string = 'Visible ISS passes (local time) for {} ({}°, {}°):\n'.format(location, lat, lon)
             header_string += 'Source: <{}>\n'.format(url)
-            await self.bot.say((header_string if i == 0 else '') + '```{}```'.format(string_list[i]))
+            await ctx.send((header_string if i == 0 else '') + '```{}```'.format(string_list[i]))
 
-    @commands.command(pass_context=True, aliases=['map'])
+    @commands.command(aliases=['map'])
     @commands.cooldown(3, 10, commands.BucketType.channel)
     async def location(self, ctx, *location):
         """Get a map of a location."""
@@ -147,9 +153,9 @@ class Utilities:
         if map_url is not False:
             embed = c.crimbed('Map of {}\n{}'.format(location, map_url), None, None)
             embed.set_image(url=map_url)
-            await self.bot.send_message(ctx.message.channel, embed=embed)
+            await ctx.send(embed=embed)
         else:
-            await self.bot.say('*Location not found.*')
+            await ctx.send('*Location not found.*')
 
 
 def setup(bot):

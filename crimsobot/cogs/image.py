@@ -1,5 +1,6 @@
 import asyncio
 
+import discord
 from discord.ext import commands
 
 import crimsobot.utils.image as imagetools
@@ -9,11 +10,11 @@ import crimsobot.utils.tools as c
 emoji_channels = []
 
 
-class Image:
+class Image(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(pass_context=True, brief='Boop the snoot! Must mention someone to boop.')
+    @commands.command(brief='Boop the snoot! Must mention someone to boop.')
     async def boop(self, ctx, mention):
         booper = str(ctx.message.author.nick)
         if booper == 'None':
@@ -24,9 +25,9 @@ class Image:
                 mention = str(ctx.message.mentions[0].name)
 
             imagetools.boop(booper, mention)
-            await self.bot.send_file(ctx.message.channel, c.clib_path_join('img', 'booped.jpg'))
+            await ctx.send(file=discord.File(c.clib_path_join('img', 'booped.jpg'), 'boop.jpg'))
 
-    @commands.command(pass_context=True)
+    @commands.command()
     @commands.cooldown(1, 120, commands.BucketType.user)
     async def eimg(self, ctx, image=None):
         """
@@ -37,10 +38,10 @@ class Image:
         Try >eimg2 if you want to preserve more detail.
         """
 
-        await self.bot.send_message(ctx.message.author, 'Please wait...')
+        await ctx.message.author.send('Please wait...')
 
         imagetools.make_emoji_image(ctx, image)
-        c.checkin('eimg', ctx.message.server, ctx.message.author, emoji_channels)
+        c.checkin('eimg', ctx.message.guild, ctx.message.author, emoji_channels)
         await asyncio.sleep(10)
 
         # read in lines of emojis
@@ -53,12 +54,12 @@ class Image:
 
         # send line-by-line as DM
         for line in line_list:
-            await self.bot.send_message(ctx.message.author, line)
+            await ctx.message.author.send(line)
             await asyncio.sleep(1)
 
-        c.checkout('eimg', ctx.message.server, ctx.message.author, emoji_channels)
+        c.checkout('eimg', ctx.message.guild, ctx.message.author, emoji_channels)
 
-    @commands.command(pass_context=True)
+    @commands.command()
     @commands.cooldown(1, 120, commands.BucketType.user)
     async def eimg2(self, ctx, image=None):
         """
@@ -68,10 +69,10 @@ class Image:
         A one-pixel-wide line is likely not going to show up in the final product.
         """
 
-        await self.bot.send_message(ctx.message.author, 'Please wait...')
+        await ctx.message.author.send('Please wait...')
 
         imagetools.make_emoji_image_v2(ctx, image)
-        c.checkin('eimg2', ctx.message.server, ctx.message.author, emoji_channels)
+        c.checkin('eimg2', ctx.message.guild, ctx.message.author, emoji_channels)
         await asyncio.sleep(10)
 
         # read in lines of emojis
@@ -84,12 +85,12 @@ class Image:
 
         # send line-by-line as DM
         for line in line_list:
-            await self.bot.send_message(ctx.message.author, line)
+            await ctx.message.author.send(line)
             await asyncio.sleep(1)
 
-        c.checkout('eimg2', ctx.message.server, ctx.message.author, emoji_channels)
+        c.checkout('eimg2', ctx.message.guild, ctx.message.author, emoji_channels)
 
-    @commands.command(pass_context=True, hidden=True)
+    @commands.command(hidden=True)
     @commands.cooldown(1, 4 * 60 * 60, commands.BucketType.user)
     async def bless(self, ctx):
         """bless bless"""
@@ -100,22 +101,22 @@ class Image:
                          errors='ignore').readlines()
 
         # check-in
-        c.checkin('bless', ctx.message.server, ctx.message.author, emoji_channels)
+        c.checkin('bless', ctx.message.guild, ctx.message.author, emoji_channels)
 
         # strip newlines
         line_list = [line.replace('\n', '') for line in line_list]
 
         # send line-by-line as DM
         for line in line_list:
-            await self.bot.send_message(ctx.message.author, line)
+            await ctx.message.author.send(line)
             await asyncio.sleep(1)
 
-        c.checkout('bless', ctx.message.server, ctx.message.author, emoji_channels)
+        c.checkout('bless', ctx.message.guild, ctx.message.author, emoji_channels)
 
-    @commands.command(pass_context=True, hidden=True)
+    @commands.command(hidden=True)
     @commands.cooldown(1, 60, commands.BucketType.user)
     async def gimme_last(self, ctx):
-        await self.bot.send_message(ctx.message.author, 'Last eimg:')
+        await ctx.message.author.send('Last eimg:')
 
         # read in lines of emojis
         line_list = open(c.clib_path_join('img', 'emoji.txt'),
@@ -129,41 +130,43 @@ class Image:
         c.botlog('{} is using gimme_last...'.format(ctx.message.author))
 
         for line in line_list:
-            await self.bot.send_message(ctx.message.author, line)
+            await ctx.message.author.send(line)
             await asyncio.sleep(1)
 
         c.botlog("{}'s gimme_last is done!".format(ctx.message.author))
 
-    @commands.command(pass_context=True, hidden=True)
+    @commands.command(hidden=True)
     async def eface_pm(self, ctx, userid, *, arg):
         """crimsoBOT avatar as emojis!"""
 
-        if ctx.message.author.id == '310618614497804289':
-            # get user object
-            user = await self.bot.get_user_info(userid)
+        if ctx.message.author.id != 310618614497804289:
+            return
 
-            # read in lines of emojis
-            line_list = open(c.clib_path_join('text', 'emojiface.txt'),
-                             encoding='utf8',
-                             errors='ignore').readlines()
+        # get user object
+        user = await self.bot.fetch_user(userid)
 
-            # strip newlines
-            line_list = [line.replace('\n', '') for line in line_list]
-            line_list = line_list[0:-1]
+        # read in lines of emojis
+        line_list = open(c.clib_path_join('text', 'emojiface.txt'),
+                         encoding='utf8',
+                         errors='ignore').readlines()
 
-            # send line-by-line as DM
-            for line in line_list:
-                await self.bot.send_message(user, line)
-                await asyncio.sleep(1)
+        # strip newlines
+        line_list = [line.replace('\n', '') for line in line_list]
+        line_list = line_list[0:-1]
 
-            await self.bot.send_message(user, arg)
+        # send line-by-line as DM
+        for line in line_list:
+            await user.send(line)
+            await asyncio.sleep(1)
 
-    @commands.command(pass_context=True, hidden=True)
+        await user.send(arg)
+
+    @commands.command(hidden=True)
     @commands.cooldown(1, 8 * 60 * 60, commands.BucketType.user)
     async def eface(self, ctx):
         """crimsoBOT avatar as emojis!"""
 
-        c.checkin('eface', ctx.message.server, ctx.message.author, emoji_channels)
+        c.checkin('eface', ctx.message.guild, ctx.message.author, emoji_channels)
 
         # read in lines of emojis
         line_list = open(c.clib_path_join('text', 'emojiface.txt'), encoding='utf8', errors='ignore').readlines()
@@ -171,13 +174,13 @@ class Image:
         # strip newlines
         line_list = [line.replace('\n', '') for line in line_list]
         for line in line_list:
-            await self.bot.send_message(ctx.message.author, line)
+            await ctx.message.author.send(line)
             await asyncio.sleep(1)
 
-        c.checkout('eface', ctx.message.server, ctx.message.author, emoji_channels)
+        c.checkout('eface', ctx.message.guild, ctx.message.author, emoji_channels)
 
-    @commands.command(pass_context=True)
-    @commands.cooldown(2, 10, commands.BucketType.server)
+    @commands.command()
+    @commands.cooldown(2, 10, commands.BucketType.guild)
     async def acidify(self, ctx, number_of_hits, image=None):
         """1-3 hits only. Can use image link, attachment, mention, or emoji."""
 
@@ -188,19 +191,19 @@ class Image:
         except ValueError:
             raise commands.CommandInvokeError('not 1-3 hits')
 
-        print('----IN PROGRESS---- | acidify running on {}/{}...'.format(ctx.message.server, ctx.message.channel))
+        print('----IN PROGRESS---- | acidify running on {}/{}...'.format(ctx.message.guild, ctx.message.channel))
 
         filename = imagetools.acid(ctx, int(number_of_hits), image)
 
         # pluralize 'hit' if need be
         ess = '' if int(number_of_hits) == 1 else 's'
-        await self.bot.send_file(ctx.message.channel, filename, content='**{} hit{}:**'.format(number_of_hits, ess))
+        await ctx.send('**{} hit{}:**'.format(number_of_hits, ess), file=discord.File(filename))
 
-        c.botlog('acidify COMPLETE on {}/{}!'.format(ctx.message.server, ctx.message.channel))
+        c.botlog('acidify COMPLETE on {}/{}!'.format(ctx.message.guild, ctx.message.channel))
 
-    @commands.command(pass_context=True, hidden=True)
+    @commands.command(hidden=True)
     async def inspect(self, ctx, user_id=None):
-        if ctx.message.author.id != '310618614497804289':
+        if ctx.message.author.id != 310618614497804289:
             return
 
         # read in lines of emojis
@@ -213,41 +216,40 @@ class Image:
 
         # send line-by-line as DM
         if user_id is not None:
-            user = await self.bot.get_user_info(user_id)
+            user = await self.bot.fetch_user(user_id)
         else:
             user = ctx.message.author
 
         c.botlog('{} is using inspect...'.format(user))
 
         for line in line_list:
-            await self.bot.send_message(user, line)
+            await user.send(line)
             await asyncio.sleep(1)
 
         c.botlog("{}'s inspection is done!".format(user))
 
-    @commands.command(pass_context=True)
+    @commands.command()
     async def needping(self, ctx, image=None):
         """SOMEONE needs PING. User mention, attachment, link, or emoji."""
 
         imagetools.fishe(ctx, image)
-        await self.bot.send_file(ctx.message.channel, c.clib_path_join('img', 'needping.png'))
+        await ctx.send(file=discord.File(c.clib_path_join('img', 'needping.png'), 'needping.png'))
 
-    @commands.command(pass_context=True)
+    @commands.command()
     async def needban(self, ctx, image=None):
         """SOMEONE needs BAN. User mention, attachment, link, or emoji."""
 
         imagetools.ban_overlay(ctx, image)
-        await self.bot.send_file(ctx.message.channel, c.clib_path_join('img', 'needban.png'))
+        await ctx.send(file=discord.File(c.clib_path_join('img', 'needban.png'), 'needban.png'))
 
-    @commands.command(pass_context=True)
+    @commands.command()
     async def xokked(self, ctx, image=None):
         """Get xokked! User mention, attachment, link, or emoji."""
 
         filename = imagetools.xok(ctx, image)
-        await self.bot.send_file(ctx.message.channel, filename)
+        await ctx.send(file=discord.File(filename, 'xokked.png'))
 
-    @commands.command(pass_context=True,
-                      aliases=['pingbadge'])
+    @commands.command(aliases=['pingbadge'])
     async def verpingt(self, ctx, image=None):
         """Add Discord notification badge to an image."""
 
@@ -259,7 +261,7 @@ class Image:
 
         thumb = 'https://emojipedia-us.s3.amazonaws.com/thumbs/120/twitter/185/input-symbol-for-numbers_1f522.png'
         embed = c.crimbed('Choose a corner:', '1. Top left\n2. Top right\n3. Bottom left\n4. Bottom right', thumb)
-        prompt = await self.bot.send_message(ctx.message.channel, embed=embed)
+        prompt = await ctx.send(embed=embed)
 
         # define check for position vote
         def check(msg):
@@ -272,7 +274,7 @@ class Image:
                 return False
 
         # define default position, listen for user to specify different one
-        msg = await self.bot.wait_for_message(timeout=15, check=check)
+        msg = await self.bot.wait_for('message', check=check, timeout=15)
         if msg is None:
             position = '4'
         else:
@@ -283,9 +285,9 @@ class Image:
 
         # delete prompt and vote, send image
         if msg is not None:
-            await self.bot.delete_message(msg)
-        await self.bot.delete_message(prompt)
-        await self.bot.send_file(ctx.message.channel, c.clib_path_join('img', 'pingbadge.png'))
+            await msg.delete()
+        await prompt.delete()
+        await ctx.send(file=discord.File(c.clib_path_join('img', 'pingbadge.png'), 'verpingt.png'))
 
 
 def setup(bot):

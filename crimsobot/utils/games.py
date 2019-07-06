@@ -89,7 +89,7 @@ def get_keys(format_string):
 
 
 def win(user_id, amount):
-    """ input: discord user ID, float
+    """ input: discord user ID (int), float
        output: none"""
 
     # make sure amount is numeric
@@ -114,7 +114,7 @@ def win(user_id, amount):
 
 
 def daily(user_id, lucky_number):
-    """ input: discord user ID (string)
+    """ input: discord user ID (int), int
        output: string"""
 
     # fetch user

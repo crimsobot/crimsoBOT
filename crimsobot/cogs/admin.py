@@ -3,22 +3,22 @@ from discord.ext import commands
 import crimsobot.utils.tools as c
 
 
-class Admin:
+class Admin(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(pass_context=True, hidden=True)
+    @commands.command(hidden=True)
     async def ban(self, ctx, user_mention):
         """Ban user from using crimsoBOT."""
 
-        if ctx.message.author.id != '310618614497804289':
+        if ctx.message.author.id != 310618614497804289:
             return
 
         if len(ctx.message.mentions) == 1:
             for user in ctx.message.mentions:
                 discord_user_object = user
 
-        if discord_user_object.id == '310618614497804289':
+        if discord_user_object.id == 310618614497804289:
             return
 
         c.ban(discord_user_object.id)
@@ -30,14 +30,14 @@ class Admin:
             None
         )
 
-        msg = await self.bot.say(embed=embed)
-        await self.bot.add_reaction(msg, '👺')
+        msg = await ctx.send(embed=embed)
+        await msg.add_reaction('👺')
 
-    @commands.command(pass_context=True, hidden=True)
+    @commands.command(hidden=True)
     async def unban(self, ctx, user_mention):
         """Unban user from using crimsoBOT."""
 
-        if ctx.message.author.id != '310618614497804289':
+        if ctx.message.author.id != 310618614497804289:
             return
 
         if len(ctx.message.mentions) == 1:
@@ -54,24 +54,24 @@ class Admin:
             None
         )
 
-        msg = await self.bot.say(embed=embed)
-        await self.bot.add_reaction(msg, '🛐')
+        msg = await ctx.send(embed=embed)
+        await msg.add_reaction('🛐')
 
-    @commands.command(pass_context=True, hidden=True)
+    @commands.command(hidden=True)
     async def banlist(self, ctx):
         """List of banned users."""
 
         cb_user_object_list = c.who_is_banned()
         banned_users = []
         for user in cb_user_object_list:
-            discord_user_object = await self.bot.get_user_info(user.ID)
+            discord_user_object = await self.bot.fetch_user(user.ID)
             banned_users.append('· {u.name}#{u.discriminator}'.format(u=discord_user_object))
 
         # number_of_banned_users = len(banned_users)
         msg_string = '\n'.join(banned_users)
         msg_list = c.crimsplit(msg_string, '\n', limit=1990)
         for msg in msg_list:
-            await self.bot.say('```{}```'.format(msg))
+            await ctx.send('```{}```'.format(msg))
 
     @commands.command(pass_context=True)
     async def info(self, ctx):
@@ -94,30 +94,32 @@ class Admin:
         )
         embed.set_footer(text='Thanks for using crimsoBOT!')
 
-        await self.bot.send_message(ctx.message.channel, embed=embed)
+        await ctx.send(embed=embed)
 
     @commands.command(pass_context=True)
     async def servers(self, ctx):
         """List crimsoBOT's servers."""
 
-        servers = list(self.bot.servers)
-        await self.bot.say(f'**Connected on {str(len(servers))} servers:**\n' + '\n'.join(
-            '`[{s.id}]` | {s.name}'.format(s=server) for server in servers))
+        guilds = list(self.bot.guilds)
+        await ctx.send(
+            '**Connected on {} servers:**\n'.format(len(guilds)) +
+            '\n'.join('`[{g.id}]` | {g.name}'.format(g=guild) for guild in guilds)
+        )
 
     @commands.command(pass_context=True)
     async def serverinfo(self, ctx, server_id=None):
         """Member count, owner, channel names, roles, and emojis."""
 
         if server_id is None:
-            server = ctx.message.server
+            guild = ctx.message.guild
         else:
-            server = self.bot.get_server(server_id)
+            guild = self.bot.get_guild(server_id)
 
-        embed = c.get_server_info_embed(server)
+        embed = c.get_guild_info_embed(guild)
 
         # ...and send
         try:
-            await self.bot.send_message(ctx.message.channel, embed=embed)
+            await ctx.send(embed=embed)
         except Exception:
             print('Too long still!')
 
@@ -125,21 +127,21 @@ class Admin:
     async def save_from(self, ctx, server_id):
         """Pull crimsoBOT from a server."""
 
-        if ctx.message.author.id == '310618614497804289':
-            server = self.bot.get_server(server_id)
-            await self.bot.leave_server(server)
-            c.botlog('crimsoBOT REMOVED from {server} [{server.id}]'.format(server=server))
+        if ctx.message.author.id == 310618614497804289:
+            guild = self.bot.get_guild(server_id)
+            await guild.leave()
+            c.botlog('crimsoBOT REMOVED from {guild} [{guild.id}]'.format(guild=guild))
 
     @commands.command(pass_context=True, hidden=True)
     async def logs(self, ctx, n):
-        if ctx.message.author.id == '310618614497804289':
+        if ctx.message.author.id == 310618614497804289:
             with open(c.clib_path_join('text', 'botlog.txt'), 'r', encoding='utf8', errors='ignore') as f:
                 msg = f.readlines()[-int(n):]
                 msg = ''.join(msg)
 
             log_msgs = c.crimsplit(msg, '\n', 1900)
             for msg in log_msgs:
-                await self.bot.send_message(ctx.message.author, '```' + msg + '```')
+                await ctx.message.author.send('```' + msg + '```')
 
 
 def setup(bot):

@@ -15,18 +15,18 @@ guess_channels = []
 emojistory_channels = []
 
 
-class Games:
+class Games(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(pass_context=True, aliases=['madlib'], brief='Multiplayer mad libs! Play solo in DMs.')
+    @commands.command(aliases=['madlib'], brief='Multiplayer mad libs! Play solo in DMs.')
     async def madlibs(self, ctx):
         """
         Fill in the blanks to make an unexpected story out of a famous copypasta or a snippet of popular literature.
         The bot will take your answer if it starts with the proper prefix.
         """
 
-        chk = c.checkin('madlibs', ctx.message.server, ctx.message.channel, madlibs_channels)
+        chk = c.checkin('madlibs', ctx.message.guild, ctx.message.channel, madlibs_channels)
         if chk is False:
             raise commands.errors.CommandInvokeError('In list')
 
@@ -41,7 +41,7 @@ class Games:
                 'Give answers by typing `[prefix] [part of speech]`\n'
         )
         embed = c.crimbed(title, descr)
-        await self.bot.send_message(ctx.message.channel, embed=embed)
+        await ctx.send(embed=embed)
 
         # fetch the story and its keys
         story = crimsogames.get_story()
@@ -60,9 +60,9 @@ class Games:
                 embed = c.crimbed('PREFIX: ' + p, 'I need `{}{}`'.format(p, key[1:]))
             else:
                 embed = c.crimbed('PREFIX: ' + p, 'I need `{}{}`'.format(p, key))
-            await self.bot.send_message(ctx.message.channel, embed=embed)
+            await ctx.send(embed=embed)
 
-            # check message for author, server, content
+            # check message for author, channel, content
             def check(msg):
                 banned = c.is_banned(msg.author.id)
                 has_prefix = msg.content.startswith(p)
@@ -71,14 +71,14 @@ class Games:
                 return not banned and has_prefix and in_channel
 
             # return term if message passes check
-            term = await self.bot.wait_for_message(timeout=60, check=check)
+            term = await self.bot.wait_for('message', check=check)
 
             # end game if timeout
             if term is None:
                 embed = c.crimbed('**MADLIBS** has timed out!', None)
-                await self.bot.send_message(ctx.message.channel, embed=embed)
+                await ctx.send(embed=embed)
 
-                c.checkout('madlibs', ctx.message.server, ctx.message.channel, madlibs_channels)
+                c.checkout('madlibs', ctx.message.guild, ctx.message.channel, madlibs_channels)
 
                 return
 
@@ -95,12 +95,12 @@ class Games:
         authors = list(set(authors))
         authors_ = crimsogames.winner_list(authors)
         embed = c.crimbed("{}'s madlib!".format(authors_), story)
-        await self.bot.send_message(ctx.message.channel, embed=embed)
+        await ctx.send(embed=embed)
 
         # if channel, remove channel from list
-        c.checkout('madlibs', ctx.message.server, ctx.message.channel, madlibs_channels)
+        c.checkout('madlibs', ctx.message.guild, ctx.message.channel, madlibs_channels)
 
-    @commands.command(pass_context=True, aliases=['cball', 'crimsobot'], brief='Ask crimsoBOT what will be.')
+    @commands.command(aliases=['cball', 'crimsobot'], brief='Ask crimsoBOT what will be.')
     async def crimsoball(self, ctx, *question):
         # exception handling
         if len(question) == 0:
@@ -145,13 +145,9 @@ class Games:
         thumb = 'https://i.imgur.com/6dzqq78.png'  # 8-ball
         embed = c.crimbed(title, quest + '\n\n' + answer, thumb)
 
-        await self.bot.send_message(ctx.message.channel, embed=embed)
+        await ctx.send(embed=embed)
 
-    @commands.command(
-        pass_context=True,
-        aliases=['guess', 'guessemoji'],
-        brief='Guess the correct emoji from 2 to 20 choices!'
-    )
+    @commands.command(aliases=['guess', 'guessemoji'], brief='Guess the correct emoji from 2 to 20 choices!')
     @commands.cooldown(2, 10, commands.BucketType.user)
     async def guessmoji(self, ctx, n):
         """
@@ -168,7 +164,7 @@ class Games:
 
             # ok so if we got this far, n is an integer...
             n = int(n)
-            if n == 1 and ctx.message.author.id != '310618614497804289':  # crimso can play guess 1
+            if n == 1 and ctx.message.author.id != 310618614497804289:  # crimso can play guess 1
                 raise ValueError
 
             # check if user can afford to play!
@@ -177,7 +173,7 @@ class Games:
             if n == 'cost' or n == 'costs':
                 costs = crimsogames.guesslist()
                 content = '<:crimsoCOIN:588558997238579202> **GUESSMOJI costs and payouts:**```{}```'.format(costs)
-                await self.bot.send_message(ctx.message.channel, content)
+                await ctx.send(content)
 
                 return
             else:
@@ -192,7 +188,7 @@ class Games:
         winning_emoji = random.choice(choices)
 
         # check if running in channel
-        chk = c.checkin('guessemoji', ctx.message.server, ctx.message.channel, guess_channels)
+        chk = c.checkin('guessemoji', ctx.message.guild, ctx.message.channel, guess_channels)
         if chk is False:
             raise commands.errors.CommandInvokeError(chk)
 
@@ -207,46 +203,46 @@ class Games:
 
         embed = c.crimbed(title, description + 'The choices are...', thumb)
         embed.set_footer(text=footer)
-        msg = await self.bot.send_message(ctx.message.channel, embed=embed)
-        await asyncio.sleep(1.36)
+        msg = await ctx.send(embed=embed)
+        await asyncio.sleep(1)
 
         # add reactions to msg
         for emoji in choices:
             try:
-                await self.bot.add_reaction(msg, emoji)
                 await asyncio.sleep(0.36)  # smoother rollout of reactions
+                await msg.add_reaction(emoji)
             except Exception:
-                c.checkout('guessemoji', ctx.message.server, ctx.message.channel, guess_channels)
+                c.checkout('guessemoji', ctx.message.guild, ctx.message.channel, guess_channels)
                 await self.bot.say('**Someone added emojis!** Wait for me to add them, then choose. `Game crashed.`')
 
                 return
 
         # start timer
         embed.description = description + 'You have **eight** seconds. Go!'
-        await self.bot.edit_message(msg, embed=embed)
+        await msg.edit(embed=embed)
         await asyncio.sleep(5)
 
         embed.description = description + '**Three seconds left!**'
-        await self.bot.edit_message(msg, embed=embed)
+        await msg.edit(embed=embed)
         await asyncio.sleep(3)
 
         # remove channel from list; allow gameplay again instantly
-        c.checkout('guessemoji', ctx.message.server, ctx.message.channel, guess_channels)
+        c.checkout('guessemoji', ctx.message.guild, ctx.message.channel, guess_channels)
 
         # think emoji; processing...
         embed.description = '...<a:guessmoji_think:595388191411011615>'
-        await self.bot.edit_message(msg, embed=embed)
+        await msg.edit(embed=embed)
 
         # initialize winner (will be empty if no one wins)
         # and loser list (may end up as a list of lists, or empty if no one loses)
         winners = []
         losers = []
 
-        # grab message to see who reacted to what
-        cache_msg = discord.utils.get(self.bot.messages, id=msg.id)
+        # see who reacted to what
+        cache_msg = discord.utils.get(self.bot.cached_messages, id=msg.id)
         for reaction in cache_msg.reactions:
             # remove the banned and poor
-            players = await self.bot.get_reaction_users(reaction)
+            players = await reaction.users().flatten()
 
             # only bother with this shit if someone besides the bot reacted
             if len(players) > 1:
@@ -255,13 +251,14 @@ class Games:
                     cannot_play = c.is_banned(player.id) or crimsogames.check_balance(player.id) < cost
 
                     if not is_bot and cannot_play:
-                        await self.bot.remove_reaction(cache_msg, reaction.emoji, player)
+                        await cache_msg.remove_reaction(reaction.emoji, player)
+                        players.remove(player)
 
                 # if winner, get winners; if not, get losers
                 if reaction.emoji == winning_emoji:
-                    winners = await self.bot.get_reaction_users(reaction)
+                    winners = players
                 else:
-                    losers += await self.bot.get_reaction_users(reaction)
+                    losers += players
 
         if len(losers) != 0:
             # kick out crimsoBOT
@@ -274,7 +271,7 @@ class Games:
 
         if len(winners) != 0:
             # kick out crimsoBOT
-            winners = [user for user in winners if user.id != self.bot.user.id]
+            winners = [user for user in winners if user.id != self.bot.user.id and user not in losers]
 
             # stats + debit & award crimsoCOIN to winners
             for user in winners:
@@ -295,9 +292,9 @@ class Games:
             embed.description = '...No one guessed it! The answer was {}'.format(winning_emoji)
 
         # edit msg with result of game
-        await self.bot.edit_message(msg, embed=embed)
+        await msg.edit(embed=embed)
 
-    @commands.command(pass_context=True, brief='Make the best story based on the emojis!')
+    @commands.command(brief='Make the best story based on the emojis!')
     async def emojistory(self, ctx):
         """
         A string of emojis will appear.
@@ -308,7 +305,7 @@ class Games:
         """
 
         # check if running in channel
-        chk = c.checkin('emojistory', ctx.message.server, ctx.message.channel, emojistory_channels)
+        chk = c.checkin('emojistory', ctx.message.guild, ctx.message.channel, emojistory_channels)
         if chk is False:
             raise commands.errors.CommandInvokeError('Channel in list')
 
@@ -332,10 +329,10 @@ class Games:
         ]
         thumb = random.choice(thumbs)
         embed = c.crimbed("Let's play **EMOJI STORY!**", intro + emojis, thumb)
-        await self.bot.send_message(ctx.message.channel, embed=embed)
+        await ctx.send(embed=embed)
 
         # define check for prefix, channel, and if author has already submitted
-        def check(msg):
+        def story_check(msg):
             banned = c.is_banned(msg.author.id)
             has_prefix = msg.content.startswith('$')
             just_right = 5 < len(msg.content) < 250
@@ -348,11 +345,11 @@ class Games:
         authors = []
         end = time.time() + timer
         while time.time() < end:
-            story = await self.bot.wait_for_message(timeout=1, check=check)
+            story = await self.bot.wait_for('message', check=story_check, timeout=1)
             if story is not None:
                 stories.append(story)
                 authors.append(story.author)
-                await self.bot.delete_message(story)
+                await story.delete()
 
         # strip $ and whitespace from beginning of stories
         for story in stories:
@@ -374,15 +371,15 @@ class Games:
 
         # second embed: stories
         embed = c.crimbed(title, descr, thumb)
-        await self.bot.send_message(ctx.message.channel, embed=embed)
+        await ctx.send(embed=embed)
 
         # if not voting, end the thing
         if voting is False:
-            c.checkout('emojistory', ctx.message.server, ctx.message.channel, emojistory_channels)
+            c.checkout('emojistory', ctx.message.guild, ctx.message.channel, emojistory_channels)
             return
 
         # define check for prefix, channel, and if author has already submitted
-        def check2(msg):
+        def vote_check(msg):
             try:
                 banned = c.is_banned(msg.author.id)
                 in_channel = msg.channel == ctx.message.channel
@@ -397,11 +394,11 @@ class Games:
         voters = []
         end_voting = time.time() + 45
         while time.time() < end_voting:
-            vote = await self.bot.wait_for_message(timeout=1, check=check2)
+            vote = await self.bot.wait_for('message', check=vote_check, timeout=1)
             if vote is not None:
                 votes.append(vote.content)
                 voters.append(vote.author)
-                await self.bot.delete_message(vote)
+                await vote.delete()
 
         # vote handler
         if len(votes) == 0:
@@ -425,10 +422,10 @@ class Games:
         if footer is True:
             embed.set_footer(text='{} gets 10 crimsoCOIN!'.format(winner.author))
 
-        await self.bot.send_message(ctx.message.channel, embed=embed)
-        c.checkout('emojistory', ctx.message.server, ctx.message.channel, emojistory_channels)
+        await ctx.send(embed=embed)
+        c.checkout('emojistory', ctx.message.guild, ctx.message.channel, emojistory_channels)
 
-    @commands.command(pass_context=True, aliases=['bal'])
+    @commands.command(aliases=['bal'])
     async def balance(self, ctx, *user_mention):
         """Check your or someone else's crimsoCOIN balance."""
 
@@ -458,9 +455,9 @@ class Games:
         thumb = 'https://i.imgur.com/rS2ec5d.png'
         embed = c.crimbed(title, descr, thumb)
 
-        await self.bot.send_message(ctx.message.channel, embed=embed)
+        await ctx.send(embed=embed)
 
-    @commands.command(pass_context=True, aliases=['luck'])
+    @commands.command(aliases=['luck'])
     async def luckindex(self, ctx, *user_mention):
         """Check your or someone else's luck at Guessmoji!"""
 
@@ -480,9 +477,9 @@ class Games:
         embed = c.crimbed(title, descr, thumb)
         embed.set_footer(text='100 is expected · >100 means better luck · <100 means worse luck')
 
-        await self.bot.send_message(ctx.message.channel, embed=embed)
+        await ctx.send(embed=embed)
 
-    @commands.command(pass_context=True)
+    @commands.command()
     @commands.cooldown(2, 1 * 60 * 60, commands.BucketType.user)
     async def give(self, ctx, user_mention, amount):
         """Give a user up to 1/10 of your crimsoCOIN."""
@@ -501,7 +498,7 @@ class Games:
             title = '\u200B\n{}, you cannot give more than 1/4 of your balance!'.format(ctx.message.author)
             descr = 'Check your `>balance`.'
             embed = c.crimbed(title, descr, thumb)
-            await self.bot.send_message(ctx.message.channel, embed=embed)
+            await ctx.send(embed=embed)
             return
         else:
             pass
@@ -534,13 +531,13 @@ class Games:
         descr = random.choice(encourage)
         embed = c.crimbed(title, descr, thumb)
 
-        await self.bot.send_message(ctx.message.channel, embed=embed)
+        await ctx.send(embed=embed)
 
-    @commands.command(pass_context=True, hidden=True)
+    @commands.command(hidden=True)
     async def cgive(self, ctx, user_mention, amount):
         """Manual adjustment of crimsoCOIN values."""
 
-        if ctx.message.author.id == '310618614497804289':
+        if ctx.message.author.id == 310618614497804289:
             # change to float
             amount = float(amount)
 
@@ -558,9 +555,9 @@ class Games:
             thumb = 'https://i.imgur.com/rS2ec5d.png'
             embed = c.crimbed(title, descr, thumb)
 
-            await self.bot.send_message(ctx.message.channel, embed=embed)
+            await ctx.send(embed=embed)
 
-    @commands.command(pass_context=True, aliases=['leaders', 'lb'])
+    @commands.command(aliases=['leaders', 'lb'])
     async def leaderboard(self, ctx, *args):
         """crimsoCOIN leaderboard! >lb [coin*/luck/plays] [page#]"""
 
@@ -606,16 +603,16 @@ class Games:
                     valstring = '{lk:.3f} ({u.guess_plays:.0f} plays)'.format(lk=luck, u=user)
                     extra = ' · Minimum 50 plays (will increase with time)'
 
-                user.obj = await self.bot.get_user_info(user.ID)
+                user.obj = await self.bot.fetch_user(user.ID)
                 user.place = users.index(user) + 1 + place_shift
                 embed.add_field(name='{u.place}. **{u.obj.name}#{u.obj.discriminator}**'.format(u=user),
                                 value=valstring,
                                 inline=False)
 
         embed.set_footer(text='Page {}{}'.format(page, extra))
-        await self.bot.send_message(ctx.message.channel, embed=embed)
+        await ctx.send(embed=embed)
 
-    @commands.command(pass_context=True, hidden=True)
+    @commands.command(hidden=True)
     async def daily(self, ctx, lucky_number=0):
         """Get a daily award! Pick a number 1-100 for a chance to win bigger!"""
 
@@ -633,7 +630,7 @@ class Games:
         result_string = crimsogames.daily(ctx.message.author.id, lucky_number)
         embed = c.crimbed(None, result_string, None)
 
-        await self.bot.say(embed=embed)
+        await ctx.send(embed=embed)
 
 
 def setup(bot):

@@ -1,21 +1,19 @@
+import discord
 from discord.ext import commands
 
 import crimsobot.utils.tarot as tarot
 
 
-class Mystery:
+class Mystery(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(pass_context=True, hidden=True)
+    @commands.command(hidden=True)
     async def tarot(self, ctx, spread='ppf'):
         """Tarot readings by crimsoBOT."""
 
         fp, descriptions = tarot.reading(spread)
-        await self.bot.send_file(ctx.message.channel,
-                                 fp,
-                                 filename='reading.png',
-                                 content='\n'.join(descriptions))
+        await ctx.send('\n'.join(descriptions), file=discord.File(fp, 'reading.png'))
 
 
 def setup(bot):
