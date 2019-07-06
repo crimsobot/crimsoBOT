@@ -191,17 +191,6 @@ async def on_guild_join(guild):
         await user.send('Added to {guild}'.format(guild=guild))
 
 
-async def reboot(msg):
-    c.botlog(msg)
-    await bot.close()
-    os.execl('C:/Windows/System32/cmd.exe', '/k', '"D:/Python36/python.exe "' + PROJECT_DIR + '/bot.py"')
-
-
-@bot.command(hidden=True)
-async def cboot_(ctx):
-    if ctx.message.author.id == 310618614497804289:
-        await reboot('Rebooting...')
-
 # load cogs (modules)
 if __name__ == '__main__':
     # create task for loop change_status
