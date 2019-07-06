@@ -1,6 +1,4 @@
-import os
 import random
-import discord
 from collections import Counter
 from datetime import datetime
 
@@ -10,98 +8,129 @@ import crimsobot.utils.tools as c
 def emojistring():
     """ input: none
        output: string"""
+
     emojis = []
     for line in open(c.clib_path_join('text', 'emojilist.txt'), encoding='utf-8', errors='ignore'):
-        line = line.replace('\n','')
+        line = line.replace('\n', '')
         emojis.append(line)
+
     emojis = ''.join(emojis)
-    emoji_string = random.sample(emojis, random.randint(3,5))
+    emoji_string = random.sample(emojis, random.randint(3, 5))
+
     return ' '.join(emoji_string)
+
 
 def tally(ballots):
     """ input: list
        output: tuple (string, int)"""
+
     c = Counter(sorted(ballots))
     winner = c.most_common(1)[0]
+
     return winner
+
 
 def winner_list(winners):
     """ input: list of strings (or discord user objects!)
        output: string"""
+
     if len(winners) > 1:
         winners_ = ', '.join(winners[:-1])
-        winners_ = winners_ + ' & ' + winners[-1] # winner, winner & winner
+        winners_ = winners_ + ' & ' + winners[-1]  # winner, winner & winner
     else:
         winners_ = winners[0]
+
     return winners_
 
-def getStory():
-    story = open(c.clib_path_join('games', 'madlibs.txt'),
-                encoding='utf-8', errors='ignore').readlines()
+
+def get_story():
+    story = open(
+        c.clib_path_join('games', 'madlibs.txt'),
+        encoding='utf-8',
+        errors='ignore'
+    ).readlines()
+
     story = [line[:-1] for line in story]
-    story = [line.replace('\\n','\n') for line in story]
+    story = [line.replace('\\n', '\n') for line in story]
+
     return random.choice(story)
 
-def getKeys(formatString):
-    """formatString is a format string with embedded dictionary keys.
+
+def get_keys(format_string):
+    """format_string is a format string with embedded dictionary keys.
     Return a set containing all the keys from the format string."""
-    keyList = list()
+
+    keys = []
     end = 0
-    repetitions = formatString.count('{')
-    for i in range(repetitions):
-        start = formatString.find('{', end) + 1 # pass the '{'
-        end = formatString.find('}', start)
-        key = formatString[start : end]
-        keyList.append(key) # may add duplicates
+    repetitions = format_string.count('{')
+    for _ in range(repetitions):
+        start = format_string.find('{', end) + 1  # pass the '{'
+        end = format_string.find('}', start)
+        key = format_string[start: end]
+        keys.append(key)  # may add duplicates
 
     # find indices of marked tags (to be used more than once)
-    ind = [i for i, s in enumerate(keyList) if '#' in s]
+    ind = [i for i, s in enumerate(keys) if '#' in s]
+
     # isolate the marked tags and keep one instance each
     mults = []
     for ele in ind:
-        mults.append(keyList[ele])
+        mults.append(keys[ele])
     mults = list(set(mults))
+
     # delete all marked tags from original list
-    for ele in sorted(ind, reverse = True):
-        del keyList[ele]
+    for ele in sorted(ind, reverse=True):
+        del keys[ele]
+
     # ...and add back one instance each
-    keyList = keyList + mults
+    keys = keys + mults
 
-    return keyList
+    return keys
 
-def win(userID, amount):
+
+def win(user_id, amount):
     """ input: discord user ID, float
        output: none"""
+
     # make sure amount is numeric
     try:
         if not isinstance(amount, float):
             raise ValueError
     except ValueError:
         amount = float(amount)
-    # get user    
-    user = c.fetch(userID)
+
+    # get user
+    user = c.fetch(user_id)
+
     # add coin; if no coin attribute, add it
     try:
         user.coin += amount
     except AttributeError:
         user.coin = amount
+
     # force round
     user.coin = round(user.coin, 2)
     c.close(user)
 
-def daily(userID, lucky_number):
+
+def daily(user_id, lucky_number):
     """ input: discord user ID (string)
        output: string"""
+
     # fetch user
-    user = c.fetch(userID)
+    user = c.fetch(user_id)
+
     # get current time
     now = datetime.utcnow()
+
     # arbitrary "last date collected" and reset time (midnight UTC)
-    reset = datetime(1969, 7, 20, 0, 0, 0) #ymd required but will not be used
+    reset = datetime(1969, 7, 20, 0, 0, 0)  # ymd required but will not be used
+
     try:
         last = user.daily
     except AttributeError:
         last = reset
+
     # check if dates are same
     if last.strftime('%Y-%m-%d') == now.strftime('%Y-%m-%d'):
         hours = (reset - now).seconds / 3600
@@ -114,81 +143,101 @@ def daily(userID, lucky_number):
             jackpot = '**JACKPOT!** '
         else:
             daily_award = 10
-            jackpot = 'The winning number this time was **{}**, but no worries: '.format(winning_number) if lucky_number != 0 else ''
+            jackpot = 'The winning number this time was **{}**, but no worries: '.format(
+                winning_number) if lucky_number != 0 else ''
+
         # update daily then close (save)
         user.daily = now
         c.close(user)
+
         # update their balance now (will repoen and reclose user)
-        win(userID, daily_award)
+        win(user_id, daily_award)
         award_string = '{}You have been awarded your daily **\u20A2{:.2f}**!'.format(jackpot, daily_award)
+
     return award_string
 
-def checkBalance(userID):
+
+def check_balance(user_id):
     """ input: discord user ID
-       output: float"""    
+       output: float"""
+
     try:
-        user = c.fetch(userID)
+        user = c.fetch(user_id)
         # force round and close
         return round(user.coin, 2)
-    except:
+    except AttributeError:
         return 0
-    
+
+
 def guess_economy(n):
     """ input: integer
        output: float, float"""
+
     # winnings for each n=0,...,20
     winnings = [0, 7, 2, 4, 7, 11, 15, 20, 25, 30, 36, 42, 49, 56, 64, 72, 80, 95, 120, 150, 200]
+
     # variables for cost function
-    const = 0.0095 # dampener multiplier
-    sweet = 8 # sweet spot for guess
-    favor = 1.3 # favor to player (against house) at sweet spot
+    const = 0.0095  # dampener multiplier
+    sweet = 8  # sweet spot for guess
+    favor = 1.3  # favor to player (against house) at sweet spot
+
     # conditionals
     if n > 2:
-        cost = winnings[n]/n - (-const*(n-sweet)**2 + favor)
+        cost = winnings[n] / n - (-const * (n - sweet) ** 2 + favor)
     else:
         cost = 0.00
+
     return winnings[n], cost
 
-def guess_luck(userID, n, win):
-    user = c.fetch(userID)
+
+def guess_luck(user_id, n, win):
+    user = c.fetch(user_id)
+
     try:
         user.guess_plays += 1
     except AttributeError:
         user.guess_plays = 1
+
     try:
-        user.guess_expected += 1/n
+        user.guess_expected += 1 / n
     except AttributeError:
-        user.guess_expected = 1/n
+        user.guess_expected = 1 / n
+
     try:
         user.guess_wins += win
     except AttributeError:
         user.guess_wins = win
+
     user.guess_luck = user.guess_wins / user.guess_expected
     c.close(user)
 
-def guess_luck_balance(userID):
+
+def guess_luck_balance(user_id):
     try:
-        user = c.fetch(userID)
+        user = c.fetch(user_id)
         return user.guess_luck, user.guess_plays
     except AttributeError:
         return 0, 0
 
+
 def leaders(place1, place2, trait='coin'):
     """ input: int, int
        output: sorted list of CrimsoBOTUser objects"""
-    cb_user_object_list = [] # list of CrimsoBOTUser objects
-    filelist = [f for f in os.listdir(c.clib_path_join('users'))]
-    for f in filelist:
-        cb_user_object_list.append(c.fetch(f[:-7]))
+
+    cb_user_object_list = []  # list of CrimsoBOTUser objects
+    for user_id in c.get_stored_user_ids():
+        cb_user_object_list.append(c.fetch(user_id))
+
     # remove attributeless
     for user in cb_user_object_list[:]:
         try:
             if trait == 'coin':
                 user.coin
             elif trait == 'luck' or 'plays':
-                user.guess_wins # either trait, they'll have this attribute
+                user.guess_wins  # either trait, they'll have this attribute
         except AttributeError:
             cb_user_object_list.remove(user)
+
     # sort list of objects by coin
     if trait == 'coin':
         cb_user_object_list = [user for user in cb_user_object_list if user.coin > 0]
@@ -199,23 +248,28 @@ def leaders(place1, place2, trait='coin'):
     elif trait == 'plays':
         cb_user_object_list = [user for user in cb_user_object_list if user.guess_plays != 0]
         cb_user_object_list.sort(key=lambda x: x.guess_plays, reverse=True)
-    return cb_user_object_list[place1-1:place2]
+
+    return cb_user_object_list[place1 - 1:place2]
+
 
 def guesslist():
     """ input: none
        output: string"""
+
     output = [' n  ·   cost   ·   payout',
               '·························']
-    for i in range(2,21):
-        spc='\u2002' if i < 10 else ''
+    for i in range(2, 21):
+        spc = '\u2002' if i < 10 else ''
         w, c = guess_economy(i)
         output.append('{}{:>d}  ·  \u20A2{:>5.2f}  ·  \u20A2{:>6.2f}'.format(spc, i, c, w))
+
     output = '\n'.join(output)
     return output
 
 # def slot_helper(bets):
 #     """ input: integer
 #        output: string"""
+#
 #     machine = [':arrow_lower_right:│:blank:│:blank:│:blank:│:five:\n' +
 #                ':arrow_two:│11│12│13│:two:\n' +
 #                ':arrow_right:│21│22│23│:one:\n' +
