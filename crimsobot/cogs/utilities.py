@@ -19,7 +19,7 @@ class Utilities(commands.Cog):
         time_in = ctx.message.created_at
         time_out = msg.created_at
         ping = (time_out - time_in).microseconds / 1000
-        await msg.edit('<:ping:569954524932997122>...{:d}ms'.format(int(ping)))
+        await msg.edit(content='<:ping:569954524932997122>...{:d}ms'.format(int(ping)))
 
     @commands.command()
     async def color(self, ctx, hex_value):
