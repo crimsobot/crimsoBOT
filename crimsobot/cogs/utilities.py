@@ -1,8 +1,9 @@
 import discord
 from discord.ext import commands
-from .clib import crimsotools as c
-from .clib import imagetools as imagetools
-from .clib import astronomy as astronomy
+
+import crimsobot.utils.tools as c
+import crimsobot.utils.image as imagetools
+import crimsobot.utils.astronomy as astronomy
 
 
 class Utilities:

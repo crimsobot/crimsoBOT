@@ -1,7 +1,8 @@
 import re
 from datetime import datetime
 
-from . import astronomy, crimsotools as c
+import crimsobot.utils.astronomy as astronomy
+import crimsobot.utils.tools as c
 
 
 def block(input):

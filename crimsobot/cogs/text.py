@@ -1,9 +1,10 @@
 import discord
 from discord.ext import commands
 import asyncio
-from .clib import crimsotools as c
-from .clib import texttools as texttools
-from .clib import imagetools as imagetools
+
+import crimsobot.utils.tools as c
+import crimsobot.utils.text as texttools
+import crimsobot.utils.image as imagetools
 
 # lists for games in progress
 eface_channels = []

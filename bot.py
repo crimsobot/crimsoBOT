@@ -8,15 +8,15 @@ import math
 import os
 
 from config import TOKEN
-import modules.clib.crimsotools as c
-import modules.clib.markovtools as m
+import crimsobot.utils.tools as c
+import crimsobot.utils.markov as m
 
 PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 bot = commands.Bot(command_prefix = '>')
 
 # names of cogs to load
-extensions = ['Admin', 'Chat', 'Games', 'Image', 'Mystery', 'Text', 'Utilities']
+extensions = ['admin', 'chat', 'games', 'image', 'mystery', 'text', 'utilities']
 
 @bot.event
 async def on_ready():
@@ -201,7 +201,7 @@ async def cboot_(ctx):
 if __name__ == '__main__':
     for extension in extensions:
         try:
-            bot.load_extension('modules.{}'.format(extension))
+            bot.load_extension('crimsobot.cogs.{}'.format(extension))
         except Exception as error:
             c.botlog('{} cannot be loaded. [{}]'.format(extension, error))
 

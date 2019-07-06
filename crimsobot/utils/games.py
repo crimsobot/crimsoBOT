@@ -3,7 +3,8 @@ import random
 import discord
 from collections import Counter
 from datetime import datetime
-from . import crimsotools as c
+
+import crimsobot.utils.tools as c
 
 
 def emojistring():

@@ -3,8 +3,9 @@ import discord
 from discord.ext import commands
 import random
 from datetime import datetime
-from .clib import crimsotools as c
-from .clib import markovtools as m
+
+import crimsobot.utils.tools as c
+import crimsobot.utils.markov as m
 
 class Chat:
     def __init__(self,bot):

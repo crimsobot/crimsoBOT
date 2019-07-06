@@ -1,8 +1,9 @@
 import discord
 from discord.ext import commands
 import asyncio
-from .clib import crimsotools as c
-from .clib import imagetools as imagetools
+
+import crimsobot.utils.tools as c
+import crimsobot.utils.image as imagetools
 
 # lists for games in progress
 emoji_channels = []

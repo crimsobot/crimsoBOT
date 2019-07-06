@@ -4,8 +4,9 @@ from discord.ext import commands
 import asyncio
 import time
 import random
-from .clib import crimsotools as c
-from .clib import crimsogames as crimsogames
+
+import crimsobot.utils.tools as c
+import crimsobot.utils.games as crimsogames
 
 # lists for games in progress
 madlibs_channels = []

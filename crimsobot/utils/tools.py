@@ -123,6 +123,6 @@ def who_is_banned():
 
 
 def clib_path_join(*paths):
-    clib_path = os.path.dirname(os.path.abspath(__file__))
+    utils_path = os.path.dirname(os.path.abspath(__file__))
 
-    return os.path.join(clib_path, *paths)
+    return os.path.join(utils_path, '..', 'data', *paths)

@@ -2,7 +2,7 @@ import io
 import random
 from PIL import Image
 
-from . import crimsotools as c
+import crimsobot.utils.tools as c
 
 
 def draw_background(size):

@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
-from .clib import crimsotools as c
+
+import crimsobot.utils.tools as c
 
 
 class Admin:

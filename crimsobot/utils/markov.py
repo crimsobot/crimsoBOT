@@ -3,7 +3,7 @@ import random as r
 import nltk
 import re
 
-from . import crimsotools as c
+import crimsobot.utils.tools as c
 
 
 class POSifiedText(markovify.Text):

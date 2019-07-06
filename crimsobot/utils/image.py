@@ -16,7 +16,7 @@ import numpy as np
 import matplotlib.pylab as plt
 from scipy.signal import convolve2d
 
-from . import crimsotools as c
+import crimsobot.utils.tools as c
 
 
 def remove_U(word):
