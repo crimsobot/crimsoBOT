@@ -16,8 +16,8 @@ class Utilities(commands.Cog):
         """Need ping? 10s cooldown after use."""
 
         msg = await ctx.send('<:ping:569954524932997122>...')
-        time_in = ctx.message.timestamp
-        time_out = msg.timestamp
+        time_in = ctx.message.created_at
+        time_out = msg.created_at
         ping = (time_out - time_in).microseconds / 1000
         await msg.edit('<:ping:569954524932997122>...{:d}ms'.format(int(ping)))
 

@@ -138,7 +138,7 @@ class Chat(commands.Cog):
     #     # grab message contents (which are strings):
     #     async for message in channel.history(limit=10000):
     #         if message.author.id == 310618614497804289:
-    #             if message.timestamp > then:
+    #             if message.created_at > then:
     #                 m.learner(message.content)
     #
     #     await ctx.send('`Task complete.`')
