@@ -111,8 +111,8 @@ banned_users = []
 
 @bot.event
 async def on_message(message):
-    # if c.is_banned(message.author.id):
-    #     return
+    if c.is_banned(message.author.id):
+        return
     # DM logger
     dm = str(message.channel).startswith('Direct M')
     if dm == True and message.author.id != bot.user.id and message.content.startswith('>') == False: # crimsoBOT
@@ -189,7 +189,6 @@ async def on_server_join(server):
 def reboot(msg):
     c.botlog(msg)
     bot.close()
-    print(PROJECT_DIR)
     os.execl("C:/Windows/System32/cmd.exe", "/k",'"D:/Python36/python.exe "'+PROJECT_DIR+'/bot.py"')
 
 @bot.command(pass_context=True, hidden=True)

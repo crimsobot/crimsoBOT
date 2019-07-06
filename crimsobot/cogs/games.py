@@ -146,7 +146,7 @@ class Games:
             else:
                 raise commands.errors.CommandInvokeError(ValueError)
         # the candidates
-        choices = ['🛐','😍','😋','🐍','💩','🌈','🤢','🍆','🐧','🥚','🍌','👺','👀','😔','🍇','🦀','🚨','🍞','🐸','🍄']
+        choices = ['🛐','😍','😋','🐍','💩','🌈','🌖','🍆','🐧','🥚','🍌','👺','🧀','😔','🦐','🦀','🔥','🍞','🐸','🍄']
         choices = random.sample(choices, n)
         winning_emoji = random.choice(choices)
         # check if running in channel

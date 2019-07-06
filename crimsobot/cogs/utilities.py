@@ -104,9 +104,10 @@ class Utilities:
     async def iss(self, ctx, *location):
         location = ' '.join(location).upper()
         lat, lon, passes, url = astronomy.ISS(location, 'ha')
-        # string = '\n'.join(event for event in passes)
-        string = passes
-        await self.bot.say('Visible ISS passes (local time) for {} ({}°, {}°):\n'.format(location, lat, lon) + '```{}```'.format(string)+'Source: {}'.format(url))
+        string_list = c.crimsplit(passes, '\n', limit=1600)
+        for i in range(len(string_list)):
+            header_string = 'Visible ISS passes (local time) for {} ({}°, {}°):\n'.format(location, lat, lon) + 'Source: <{}>\n'.format(url)
+            await self.bot.say((header_string if i == 0 else '') + '```{}```'.format(string_list[i]))
 
     @commands.command(pass_context=True)
     @commands.cooldown(3, 10, commands.BucketType.channel)

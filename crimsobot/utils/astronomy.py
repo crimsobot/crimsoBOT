@@ -145,8 +145,11 @@ def ISS(location, source='ha'):
         # this part contains the table if there is one
         try:
             dataframe = convert_columns(dataframe_list[4], lat, lon)
-            # a few final formatting considerations
-            pass_list = dataframe.to_string().replace('Â',' ').replace(' °', '° ').replace('Date','    ',1).replace('Pass type','         ', 1)
+            if dataframe.empty:
+                raise Exception
+            else:
+                # a few final formatting considerations
+                pass_list = dataframe.to_string().replace('Â',' ').replace(' °', '° ').replace('Date','    ',1).replace('Pass type','         ', 1)
         except:
             pass_list = 'No passes for the next ten days!'
 
