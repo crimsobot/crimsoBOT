@@ -407,7 +407,7 @@ def make_mosaic(colors):
 
     for file in os.listdir(img_path):
         if file.endswith('.jpg'):
-            img_list.append(Image.open(img_path + file))
+            img_list.append(Image.open(os.path.join(img_path, file)))
 
     # creates a new empty image, RGB mode
     mosaic = Image.new('RGB', (int(columns * width), int(rows * height)))
