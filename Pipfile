@@ -26,7 +26,7 @@ pyshorteners = "~=0.6"
 requests = "~=2.21"
 scipy = "~=1.2"
 timezonefinder = "~=4.0"
-Pillow = "~=5.4"
+Pillow = "~=6.1"
 "discord.py" = "~=0.16"
 
 [requires]
