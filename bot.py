@@ -137,7 +137,7 @@ async def on_message(message):
     is_dm = isinstance(message.channel, discord.DMChannel)
     if is_dm and message.author.id != bot.user.id and not message.content.startswith('>'):  # crimsoBOT
         try:
-            link = message.attachments[0]['url']
+            link = message.attachments[0].url
         except Exception:
             link = ''
 

@@ -82,7 +82,7 @@ def fetch_image(ctx, arg):
     except Exception:
         if arg is None:
             # look for message attachment
-            link = ctx.message.attachments[0]['url']
+            link = ctx.message.attachments[0].url
             response = requests.get(link)
             img = Image.open(BytesIO(response.content))
         elif len(ctx.message.mentions) > 0:

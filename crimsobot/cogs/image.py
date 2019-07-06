@@ -255,7 +255,7 @@ class Image(commands.Cog):
 
         if image is None:
             try:
-                ctx.message.attachments[0]['url']
+                ctx.message.attachments[0].url
             except IndexError:
                 raise commands.MissingRequiredArgument('no')
 
