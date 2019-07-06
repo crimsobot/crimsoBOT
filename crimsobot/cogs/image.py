@@ -39,7 +39,7 @@ class Image:
 
         await self.bot.send_message(ctx.message.author, 'Please wait...')
 
-        imagetools.make_emoji_image_v2(ctx, image)
+        imagetools.make_emoji_image(ctx, image)
         c.checkin('eimg', ctx.message.server, ctx.message.author, emoji_channels)
         await asyncio.sleep(10)
 
