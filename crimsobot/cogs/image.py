@@ -143,7 +143,7 @@ class Image:
             user = await self.bot.get_user_info(userid)
 
             # read in lines of emojis
-            line_list = open(c.clib_path_join('img', 'emojiface.txt'),
+            line_list = open(c.clib_path_join('text', 'emojiface.txt'),
                              encoding='utf8',
                              errors='ignore').readlines()
 
@@ -166,7 +166,7 @@ class Image:
         c.checkin('eface', ctx.message.server, ctx.message.author, emoji_channels)
 
         # read in lines of emojis
-        line_list = open(c.clib_path_join('img', 'emojiface.txt'), encoding='utf8', errors='ignore').readlines()
+        line_list = open(c.clib_path_join('text', 'emojiface.txt'), encoding='utf8', errors='ignore').readlines()
 
         # strip newlines
         line_list = [line.replace('\n', '') for line in line_list]
