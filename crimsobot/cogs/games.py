@@ -204,13 +204,13 @@ class Games(commands.Cog):
         embed = c.crimbed(title, description + 'The choices are...', thumb)
         embed.set_footer(text=footer)
         msg = await ctx.send(embed=embed)
-        await asyncio.sleep(1)
+        await asyncio.sleep(1.36)
 
         # add reactions to msg
         for emoji in choices:
             try:
-                await asyncio.sleep(0.36)  # smoother rollout of reactions
                 await msg.add_reaction(emoji)
+                await asyncio.sleep(0.36)  # smoother rollout of reactions
             except Exception:
                 c.checkout('guessemoji', ctx.message.guild, ctx.message.channel, guess_channels)
                 await self.bot.say('**Someone added emojis!** Wait for me to add them, then choose. `Game crashed.`')
