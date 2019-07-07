@@ -8,6 +8,7 @@ from discord.ext import commands
 
 import crimsobot.utils.games as crimsogames
 import crimsobot.utils.tools as c
+from config import ADMIN_USER_IDS
 
 # lists for games in progress
 madlibs_channels = []
@@ -164,7 +165,7 @@ class Games(commands.Cog):
 
             # ok so if we got this far, n is an integer...
             n = int(n)
-            if n == 1 and ctx.message.author.id != 310618614497804289:  # crimso can play guess 1
+            if n == 1 and ctx.message.author.id not in ADMIN_USER_IDS:  # admins can play guess 1
                 raise ValueError
 
             # check if user can afford to play!
@@ -537,25 +538,27 @@ class Games(commands.Cog):
     async def cgive(self, ctx, user_mention, amount):
         """Manual adjustment of crimsoCOIN values."""
 
-        if ctx.message.author.id == 310618614497804289:
-            # change to float
-            amount = float(amount)
+        if ctx.message.author.id not in ADMIN_USER_IDS:
+            return
 
-            # get user that is mentioned
-            if len(ctx.message.mentions) == 1:
-                # get mentioned user's avatar
-                for user in ctx.message.mentions:
-                    recipient = user
+        # change to float
+        amount = float(amount)
 
-            crimsogames.win(recipient.id, amount)  # debit
-            title = "\u200B\n{} has adjusted {}'s balance by {neg}\u20A2**{:.2f}**.".format(
-                ctx.message.author, recipient, abs(amount), neg='-' if amount < 0 else ''
-            )
-            descr = 'Life is inherently unfair.' if amount < 0 else 'Rejoice in your good fortune!'
-            thumb = 'https://i.imgur.com/rS2ec5d.png'
-            embed = c.crimbed(title, descr, thumb)
+        # get user that is mentioned
+        if len(ctx.message.mentions) == 1:
+            # get mentioned user's avatar
+            for user in ctx.message.mentions:
+                recipient = user
 
-            await ctx.send(embed=embed)
+        crimsogames.win(recipient.id, amount)  # debit
+        title = "\u200B\n{} has adjusted {}'s balance by {neg}\u20A2**{:.2f}**.".format(
+            ctx.message.author, recipient, abs(amount), neg='-' if amount < 0 else ''
+        )
+        descr = 'Life is inherently unfair.' if amount < 0 else 'Rejoice in your good fortune!'
+        thumb = 'https://i.imgur.com/rS2ec5d.png'
+        embed = c.crimbed(title, descr, thumb)
+
+        await ctx.send(embed=embed)
 
     @commands.command(aliases=['leaders', 'lb'])
     async def leaderboard(self, ctx, *args):

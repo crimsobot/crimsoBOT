@@ -6,6 +6,7 @@ from discord.ext import commands
 
 import crimsobot.utils.image as imagetools
 import crimsobot.utils.tools as c
+from config import ADMIN_USER_IDS
 
 log = logging.getLogger(__name__)
 
@@ -142,7 +143,7 @@ class Image(commands.Cog):
     async def eface_pm(self, ctx, userid, *, arg):
         """crimsoBOT avatar as emojis!"""
 
-        if ctx.message.author.id != 310618614497804289:
+        if ctx.message.author.id not in ADMIN_USER_IDS:
             return
 
         # get user object
@@ -206,7 +207,7 @@ class Image(commands.Cog):
 
     @commands.command(hidden=True)
     async def inspect(self, ctx, user_id=None):
-        if ctx.message.author.id != 310618614497804289:
+        if ctx.message.author.id not in ADMIN_USER_IDS:
             return
 
         # read in lines of emojis

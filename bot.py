@@ -7,7 +7,8 @@ from discord.ext import commands
 
 import crimsobot.utils.markov as m
 import crimsobot.utils.tools as c
-from config import LOG_LEVEL, TOKEN
+from config import ADMIN_USER_IDS, BANNED_GUILD_IDS, DM_LOG_CHANNEL_ID, LEARNER_CHANNEL_IDS, LEARNER_USER_IDS, \
+    LOG_LEVEL, REMINDER_CHANNEL_IDS, TOKEN
 
 
 logging.basicConfig(
@@ -99,12 +100,6 @@ async def reminder():
     reminder_list = [line[:-1] for line in reminder_list]
     reminder_list = [line.replace('\\n', '\n') for line in reminder_list]
 
-    channel_list = [
-        bot.get_channel(280298381807714304),  # ooer
-        # bot.get_channel(552650673418797069), # crimso
-        # bot.get_channel(445699717842731011), # BCP
-    ]
-
     # send in current channel on startup, and then...
     while not bot.is_closed:
         # calc time to next msg
@@ -112,7 +107,8 @@ async def reminder():
         await asyncio.sleep(time_until)
 
         # then send to each channel in list
-        for channel in channel_list:
+        for channel_id in REMINDER_CHANNEL_IDS:
+            channel = bot.get_channel(channel_id)
             msg = await channel.send(random.choice(reminder_list))
 
             # delete after 10s if no reaction
@@ -120,19 +116,6 @@ async def reminder():
             cache_msg = discord.utils.get(bot.cached_messages, id=msg.id)
             if not cache_msg.reactions:
                 await msg.delete()
-
-
-# channels to learn what crimso says
-channel_list = [
-    552650673418797069,  # crimsoBOT/general
-    554799675912355861,  # crimsoBOT/botspam
-    280298381807714304,  # ooer/general
-    281918354133090305,  # ooer/serious
-    420809381735825418,  # ooer/botto
-    325969983441993729,  # ooer/botspam
-]
-
-banned_users = []
 
 
 @bot.event
@@ -148,7 +131,7 @@ async def on_message(message):
         except Exception:
             link = ''
 
-        dms_channel = bot.get_channel(588708864363462656)
+        dms_channel = bot.get_channel(DM_LOG_CHANNEL_ID)
         await dms_channel.send(
             '`{} ({}):`\n{} {}'.format(message.channel, message.channel.id, message.content, link)
         )
@@ -157,9 +140,8 @@ async def on_message(message):
     await bot.process_commands(message)
 
     # learn from crimso
-    if message.author.id == 310618614497804289:
-        if message.channel.id in channel_list:
-            m.learner(message.content)
+    if message.author.id in LEARNER_USER_IDS and message.channel.id in LEARNER_CHANNEL_IDS:
+        m.learner(message.content)
 
     # respond to ping
     if bot.user in message.mentions:
@@ -170,18 +152,11 @@ async def on_message(message):
         await message.channel.send(m.crimso())
 
 
-banned_guild_ids = [
-    551596695138467853,
-    553727143629160453,
-    481246881310179339,
-]
-
-
 @bot.event
 async def on_guild_join(guild):
     """Notify me when added to guild"""
 
-    if guild.id in banned_guild_ids:
+    if guild.id in BANNED_GUILD_IDS:
         await guild.leave()
         log.warning('Banned guild %s attempted to add crimsoBOT.', guild.id)
         return
@@ -191,11 +166,12 @@ async def on_guild_join(guild):
     embed = c.get_guild_info_embed(guild)
 
     # ...and send
-    user = await bot.get_user(310618614497804289)  # is crimso
-    try:
-        await user.send('Added to {guild}'.format(guild=guild), embed=embed)
-    except Exception:
-        await user.send('Added to {guild}'.format(guild=guild))
+    for user_id in ADMIN_USER_IDS:
+        user = await bot.get_user(user_id)
+        try:
+            await user.send('Added to {guild}'.format(guild=guild), embed=embed)
+        except Exception:
+            await user.send('Added to {guild}'.format(guild=guild))
 
 
 # load cogs (modules)

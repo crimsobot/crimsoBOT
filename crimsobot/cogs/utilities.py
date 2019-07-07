@@ -6,6 +6,7 @@ from discord.ext import commands
 import crimsobot.utils.astronomy as astronomy
 import crimsobot.utils.image as imagetools
 import crimsobot.utils.tools as c
+from config import ADMIN_USER_IDS
 
 log = logging.getLogger(__name__)
 
@@ -92,18 +93,20 @@ class Utilities(commands.Cog):
 
     @commands.command(hidden=True)
     async def csay(self, ctx, dest, tts, *, msg):
-        if ctx.message.author.id == 310618614497804289:
-            if dest[0] == 'c':
-                recip = self.bot.get_channel(dest[1:])
-            elif dest[0] == 'd':
-                recip = await self.bot.fetch_user(dest[1:])
+        if ctx.message.author.id not in ADMIN_USER_IDS:
+            return
 
-            if tts == '1':
-                tts = True
-            else:
-                tts = False
+        if dest[0] == 'c':
+            recip = self.bot.get_channel(dest[1:])
+        elif dest[0] == 'd':
+            recip = await self.bot.fetch_user(dest[1:])
 
-            await recip.send(msg, tts=tts)
+        if tts == '1':
+            tts = True
+        else:
+            tts = False
+
+        await recip.send(msg, tts=tts)
 
     @commands.command()
     async def bigmoji(self, ctx, emoji):

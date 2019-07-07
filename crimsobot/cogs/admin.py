@@ -3,6 +3,7 @@ import logging
 from discord.ext import commands
 
 import crimsobot.utils.tools as c
+from config import ADMIN_USER_IDS
 
 log = logging.getLogger(__name__)
 
@@ -15,14 +16,14 @@ class Admin(commands.Cog):
     async def ban(self, ctx, user_mention):
         """Ban user from using crimsoBOT."""
 
-        if ctx.message.author.id != 310618614497804289:
+        if ctx.message.author.id not in ADMIN_USER_IDS:
             return
 
         if len(ctx.message.mentions) == 1:
             for user in ctx.message.mentions:
                 discord_user_object = user
 
-        if discord_user_object.id == 310618614497804289:
+        if discord_user_object.id in ADMIN_USER_IDS:
             return
 
         c.ban(discord_user_object.id)
@@ -41,7 +42,7 @@ class Admin(commands.Cog):
     async def unban(self, ctx, user_mention):
         """Unban user from using crimsoBOT."""
 
-        if ctx.message.author.id != 310618614497804289:
+        if ctx.message.author.id not in ADMIN_USER_IDS:
             return
 
         if len(ctx.message.mentions) == 1:
@@ -131,10 +132,12 @@ class Admin(commands.Cog):
     async def save_from(self, ctx, server_id):
         """Pull crimsoBOT from a server."""
 
-        if ctx.message.author.id == 310618614497804289:
-            guild = self.bot.get_guild(server_id)
-            await guild.leave()
-            log.info('crimsoBOT REMOVED from %s [%s]', guild, guild.id)
+        if ctx.message.author.id not in ADMIN_USER_IDS:
+            return
+
+        guild = self.bot.get_guild(server_id)
+        await guild.leave()
+        log.info('crimsoBOT REMOVED from %s [%s]', guild, guild.id)
 
 
 def setup(bot):

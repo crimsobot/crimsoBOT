@@ -5,6 +5,7 @@ from discord.ext import commands
 
 import crimsobot.utils.markov as m
 import crimsobot.utils.tools as c
+from config import ADMIN_USER_IDS, SCRAPER_USER_IDS
 
 
 class Chat(commands.Cog):
@@ -30,46 +31,48 @@ class Chat(commands.Cog):
     async def scrape(self, ctx, place='here', join='space', n=10000):
         """Scrape messages from channel. >scrape [here/dm/channel_id] [space/newline]."""
 
-        if ctx.message.author.id in (310618614497804289, 179313752464818178):
-            file = c.clib_path_join('text', 'scrape.txt')
-            if os.path.exists(file):
-                os.remove(file)
+        if ctx.message.author.id not in ADMIN_USER_IDS | SCRAPER_USER_IDS:
+            return
 
-            channel = ctx.message.channel
-            await ctx.message.delete()
+        file = c.clib_path_join('text', 'scrape.txt')
+        if os.path.exists(file):
+            os.remove(file)
 
-            # grab message contents (which are strings):
-            async for msg in channel.history(limit=n):
-                if not msg.pinned:
-                    m.scraper(msg.content)
+        channel = ctx.message.channel
+        await ctx.message.delete()
 
-            text = []
-            for line in reversed(list(open(file, encoding='utf8', errors='ignore'))):
-                text.append(line.rstrip())
+        # grab message contents (which are strings):
+        async for msg in channel.history(limit=n):
+            if not msg.pinned:
+                m.scraper(msg.content)
 
-            # haiku only
-            for i in range(len(text)):
-                if (i + 1) % 3 == 0:
-                    text[i] = text[i] + '\n\u200A'
-            if join == 'space':
-                joiner = ' '
-            elif join == 'newline':
-                joiner = '\n'
-            text = joiner.join(text)
+        text = []
+        for line in reversed(list(open(file, encoding='utf8', errors='ignore'))):
+            text.append(line.rstrip())
 
-            msgs = c.crimsplit(text, '\u200A', 1950)
-            try:
-                if place == 'dm':
-                    dest = ctx.message.author
-                elif place == 'here':
-                    dest = ctx.message.channel
-                else:
-                    dest = self.bot.get_channel(place)
-            except AttributeError:
-                raise commands.errors.CommandInvokeError('wrong place!')
+        # haiku only
+        for i in range(len(text)):
+            if (i + 1) % 3 == 0:
+                text[i] = text[i] + '\n\u200A'
+        if join == 'space':
+            joiner = ' '
+        elif join == 'newline':
+            joiner = '\n'
+        text = joiner.join(text)
 
-            for msg in msgs:
-                await dest.send(msg)
+        msgs = c.crimsplit(text, '\u200A', 1950)
+        try:
+            if place == 'dm':
+                dest = ctx.message.author
+            elif place == 'here':
+                dest = ctx.message.channel
+            else:
+                dest = self.bot.get_channel(place)
+        except AttributeError:
+            raise commands.errors.CommandInvokeError('wrong place!')
+
+        for msg in msgs:
+            await dest.send(msg)
 
     @commands.command()
     async def poem(self, ctx):
@@ -137,9 +140,8 @@ class Chat(commands.Cog):
     #
     #     # grab message contents (which are strings):
     #     async for message in channel.history(limit=10000):
-    #         if message.author.id == 310618614497804289:
-    #             if message.created_at > then:
-    #                 m.learner(message.content)
+    #         if message.author.id in ADMIN_USER_IDS and message.created_at > then:
+    #             m.learner(message.content)
     #
     #     await ctx.send('`Task complete.`')
 
