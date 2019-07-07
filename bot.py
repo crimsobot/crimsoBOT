@@ -9,6 +9,7 @@ import crimsobot.utils.markov as m
 import crimsobot.utils.tools as c
 from config import ADMIN_USER_IDS, BANNED_GUILD_IDS, DM_LOG_CHANNEL_ID, LEARNER_CHANNEL_IDS, LEARNER_USER_IDS, \
     LOG_LEVEL, REMINDER_CHANNEL_IDS, TOKEN
+from crimsobot.utils import checks
 
 
 logging.basicConfig(
@@ -33,34 +34,40 @@ async def on_resumed():
 
 
 @bot.event
-async def on_command_error(ctx, error):
+async def on_command_error(ctx: commands.Context, error):
     """
     Displays error messages to user for cooldown and CommandNotFound,
     and suppresses verbose error text for both in the console.
     """
 
-    if isinstance(error, commands.errors.CommandOnCooldown):
-        log.error('Cooldown: %s // %s: %s', ctx.message.author, ctx.message.content, error)
+    if isinstance(error, commands.CommandOnCooldown):
+        log.error('Cooldown: %s // %s: %s', ctx.author, ctx.message.content, error)
 
         msg = await ctx.send('**eat glass.** %.0fs cooldown.' % error.retry_after)
         await asyncio.sleep(7)
         await msg.delete()
-    elif isinstance(error, commands.errors.CommandInvokeError):
+    elif isinstance(error, commands.CommandInvokeError):
         try:
-            log.exception('Invoke: %s // %s: %s', ctx.message.author, ctx.message.content, error)
+            log.exception('Invoke: %s // %s: %s', ctx.author, ctx.message.content, error)
 
             msg = await ctx.send(':poop: `E R R O R` :poop:')
             await asyncio.sleep(7)
             await msg.delete()
         except discord.errors.Forbidden:
-            log.error('Forbidden: %s // %s: %s', ctx.message.guild, ctx.message.channel.id, error)
-    elif isinstance(error, commands.errors.MissingRequiredArgument):
-        log.error('Argument: %s // %s: %s', ctx.message.author, ctx.message.content, error)
+            log.error('Forbidden: %s // %s: %s', ctx.guild, ctx.channel.id, error)
+    elif isinstance(error, commands.MissingRequiredArgument):
+        log.error('Argument: %s // %s: %s', ctx.author, ctx.message.content, error)
 
         msg = await ctx.send('*this command requires more arguments. try `>help [cmd]`*')
         await asyncio.sleep(7)
         await msg.delete()
-    elif isinstance(error, commands.errors.CommandNotFound):
+    elif isinstance(error, checks.NotAdmin):
+        log.error('NotAdmin: %s // %s: %s', ctx.author, ctx.message.content, error)
+
+        msg = await ctx.send(':rotating_light: not crimso! :rotating_light:')
+        await asyncio.sleep(7)
+        await msg.delete()
+    elif isinstance(error, commands.CommandNotFound):
         log.error(
             'NotFound/Forbidden: %s/%s // %s: %s',
             ctx.message.guild.id, ctx.message.channel, ctx.message.content, error
