@@ -102,11 +102,8 @@ def win(user_id, amount):
     # get user
     user = c.fetch(user_id)
 
-    # add coin; if no coin attribute, add it
-    try:
-        user.coin += amount
-    except AttributeError:
-        user.coin = amount
+    # add coin
+    user.coin += amount
 
     # force round
     user.coin = round(user.coin, 2)
@@ -126,10 +123,7 @@ def daily(user_id, lucky_number):
     # arbitrary "last date collected" and reset time (midnight UTC)
     reset = datetime(1969, 7, 20, 0, 0, 0)  # ymd required but will not be used
 
-    try:
-        last = user.daily
-    except AttributeError:
-        last = reset
+    last = user.daily
 
     # check if dates are same
     if last.strftime('%Y-%m-%d') == now.strftime('%Y-%m-%d'):
@@ -161,12 +155,9 @@ def check_balance(user_id):
     """ input: discord user ID
        output: float"""
 
-    try:
-        user = c.fetch(user_id)
-        # force round and close
-        return round(user.coin, 2)
-    except AttributeError:
-        return 0
+    user = c.fetch(user_id)
+    # force round and close
+    return round(user.coin, 2)
 
 
 def guess_economy(n):
@@ -193,31 +184,18 @@ def guess_economy(n):
 def guess_luck(user_id, n, win):
     user = c.fetch(user_id)
 
-    try:
-        user.guess_plays += 1
-    except AttributeError:
-        user.guess_plays = 1
-
-    try:
-        user.guess_expected += 1 / n
-    except AttributeError:
-        user.guess_expected = 1 / n
-
-    try:
-        user.guess_wins += win
-    except AttributeError:
-        user.guess_wins = win
-
+    user.guess_plays += 1
+    user.guess_expected += 1 / n
+    user.guess_wins += win
     user.guess_luck = user.guess_wins / user.guess_expected
+
     c.close(user)
 
 
 def guess_luck_balance(user_id):
-    try:
-        user = c.fetch(user_id)
-        return user.guess_luck, user.guess_plays
-    except AttributeError:
-        return 0, 0
+    user = c.fetch(user_id)
+
+    return user.guess_luck, user.guess_plays
 
 
 def leaders(place1, place2, trait='coin'):
@@ -227,16 +205,6 @@ def leaders(place1, place2, trait='coin'):
     cb_user_object_list = []  # list of CrimsoBOTUser objects
     for user_id in c.get_stored_user_ids():
         cb_user_object_list.append(c.fetch(user_id))
-
-    # remove attributeless
-    for user in cb_user_object_list[:]:
-        try:
-            if trait == 'coin':
-                user.coin
-            elif trait == 'luck' or 'plays':
-                user.guess_wins  # either trait, they'll have this attribute
-        except AttributeError:
-            cb_user_object_list.remove(user)
 
     # sort list of objects by coin
     if trait == 'coin':

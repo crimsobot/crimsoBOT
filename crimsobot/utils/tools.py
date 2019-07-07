@@ -169,10 +169,7 @@ def unban(discord_user_id):
 
 def is_banned(discord_user_id):
     cb_user_object = fetch(discord_user_id)
-    try:
-        return cb_user_object.banned
-    except AttributeError:
-        return False
+    return cb_user_object.banned
 
 
 def who_is_banned():
@@ -184,12 +181,7 @@ def who_is_banned():
     for user_id in get_stored_user_ids():
         cb_user_object_list.append(fetch(user_id))
 
-    banned_users = []
-    for cb_user in cb_user_object_list:
-        if hasattr(cb_user, 'banned') and cb_user.banned:
-            banned_users.append(cb_user)
-
-    return banned_users
+    return [u for u in cb_user_object_list if u.banned]
 
 
 def get_stored_user_ids():
