@@ -52,6 +52,29 @@ class CrimsoBOTUser(object):
         self._ensure_attrs(state)
         self.__dict__.update(state)
 
+    @staticmethod
+    def get(user_id: int) -> 'CrimsoBOTUser':
+        filename = clib_path_join('users', str(user_id) + '.pickle')
+
+        # Unserialize from user file
+        try:
+            with open(filename, 'rb') as f:
+                user = pickle.load(f)
+
+        # User file doesn't exist, create it.
+        except FileNotFoundError:
+            user = CrimsoBOTUser(user_id)
+            user.ID = user_id
+
+        return user
+
+    def save(self):
+        filename = clib_path_join('users', str(self.ID) + '.pickle')
+
+        # Serialize to user file
+        with open(filename, 'wb') as f:
+            pickle.dump(self, f)
+
 
 def fetch(user_id):
     """ input: discord user ID
@@ -156,19 +179,19 @@ def crimsplit(long_string, break_char, limit=2000):
 
 
 def ban(discord_user_id):
-    cb_user_object = fetch(discord_user_id)
+    cb_user_object = CrimsoBOTUser.get(discord_user_id)
     cb_user_object.banned = True
-    close(cb_user_object)
+    cb_user_object.save()
 
 
 def unban(discord_user_id):
-    cb_user_object = fetch(discord_user_id)
+    cb_user_object = CrimsoBOTUser.get(discord_user_id)
     cb_user_object.banned = False
-    close(cb_user_object)
+    cb_user_object.save()
 
 
 def is_banned(discord_user_id):
-    cb_user_object = fetch(discord_user_id)
+    cb_user_object = CrimsoBOTUser.get(discord_user_id)
     return cb_user_object.banned
 
 
