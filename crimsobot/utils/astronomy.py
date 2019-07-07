@@ -62,7 +62,6 @@ def time_convert(dateframe_col, timeframe_col, lat, lon, modify_date=False):
         # create new datestring and timestring, pop back in
         datestring = '%02d %s' % (time_loc.day, swap_month(time_loc.month))
         timestring = '%02d:%02d:%02d' % (time_loc.hour, time_loc.minute, time_loc.second)
-        # print('{} {}'.format(datestring, timestring))
 
         if modify_date is True:
             dateframe_col[ii] = datestring

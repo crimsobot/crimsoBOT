@@ -1,6 +1,10 @@
+import logging
+
 from discord.ext import commands
 
 import crimsobot.utils.tools as c
+
+log = logging.getLogger(__name__)
 
 
 class Admin(commands.Cog):
@@ -78,7 +82,7 @@ class Admin(commands.Cog):
         """crimsoBOT info and invites."""
 
         title = 'crimsoBOT info'
-        descr = "crimsoBOT is a poorly-coded, homebrew bot.\n"
+        descr = 'crimsoBOT is a poorly-coded, homebrew bot.\n'
         thumb = 'https://i.imgur.com/9UTNIGi.png'
         auth_url = 'https://discordapp.com/api/oauth2/authorize?client_id={}&permissions={}&scope=bot'.format(
             self.bot.user.id,
@@ -121,7 +125,7 @@ class Admin(commands.Cog):
         try:
             await ctx.send(embed=embed)
         except Exception:
-            print('Too long still!')
+            log.info("Guild info still too long, can't send...")
 
     @commands.command(pass_context=True, hidden=True)
     async def save_from(self, ctx, server_id):
@@ -130,18 +134,7 @@ class Admin(commands.Cog):
         if ctx.message.author.id == 310618614497804289:
             guild = self.bot.get_guild(server_id)
             await guild.leave()
-            c.botlog('crimsoBOT REMOVED from {guild} [{guild.id}]'.format(guild=guild))
-
-    @commands.command(pass_context=True, hidden=True)
-    async def logs(self, ctx, n):
-        if ctx.message.author.id == 310618614497804289:
-            with open(c.clib_path_join('text', 'botlog.txt'), 'r', encoding='utf8', errors='ignore') as f:
-                msg = f.readlines()[-int(n):]
-                msg = ''.join(msg)
-
-            log_msgs = c.crimsplit(msg, '\n', 1900)
-            for msg in log_msgs:
-                await ctx.message.author.send('```' + msg + '```')
+            log.info('crimsoBOT REMOVED from %s [%s]', guild, guild.id)
 
 
 def setup(bot):

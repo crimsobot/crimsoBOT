@@ -1,10 +1,13 @@
 import asyncio
+import logging
 
 import discord
 from discord.ext import commands
 
 import crimsobot.utils.image as imagetools
 import crimsobot.utils.tools as c
+
+log = logging.getLogger(__name__)
 
 # lists for games in progress
 emoji_channels = []
@@ -127,13 +130,13 @@ class Image(commands.Cog):
         line_list = [line.replace('\n', '') for line in line_list]
 
         # send line-by-line as DM
-        c.botlog('{} is using gimme_last...'.format(ctx.message.author))
+        log.info('%s is using gimme_last...', ctx.message.author)
 
         for line in line_list:
             await ctx.message.author.send(line)
             await asyncio.sleep(1)
 
-        c.botlog("{}'s gimme_last is done!".format(ctx.message.author))
+        log.info("%s's gimme_last is done!", ctx.message.author)
 
     @commands.command(hidden=True)
     async def eface_pm(self, ctx, userid, *, arg):
@@ -191,7 +194,7 @@ class Image(commands.Cog):
         except ValueError:
             raise commands.CommandInvokeError('not 1-3 hits')
 
-        print('----IN PROGRESS---- | acidify running on {}/{}...'.format(ctx.message.guild, ctx.message.channel))
+        log.info('acidify running on %s/%s...', ctx.message.guild, ctx.message.channel)
 
         filename = imagetools.acid(ctx, int(number_of_hits), image)
 
@@ -199,7 +202,7 @@ class Image(commands.Cog):
         ess = '' if int(number_of_hits) == 1 else 's'
         await ctx.send('**{} hit{}:**'.format(number_of_hits, ess), file=discord.File(filename))
 
-        c.botlog('acidify COMPLETE on {}/{}!'.format(ctx.message.guild, ctx.message.channel))
+        log.info('acidify COMPLETE on %s/%s!', ctx.message.guild, ctx.message.channel)
 
     @commands.command(hidden=True)
     async def inspect(self, ctx, user_id=None):
@@ -220,13 +223,13 @@ class Image(commands.Cog):
         else:
             user = ctx.message.author
 
-        c.botlog('{} is using inspect...'.format(user))
+        log.info('%s is using inspect...', user)
 
         for line in line_list:
             await user.send(line)
             await asyncio.sleep(1)
 
-        c.botlog("{}'s inspection is done!".format(user))
+        log.info("%s's inspection is done!", user)
 
     @commands.command()
     async def needping(self, ctx, image=None):

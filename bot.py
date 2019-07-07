@@ -1,5 +1,5 @@
 import asyncio
-import os
+import logging
 import random
 
 import discord
@@ -7,22 +7,28 @@ from discord.ext import commands
 
 import crimsobot.utils.markov as m
 import crimsobot.utils.tools as c
-from config import TOKEN
+from config import LOG_LEVEL, TOKEN
 
-PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
+
+logging.basicConfig(
+    format='[%(asctime)s] %(levelname)8s: %(message)s\t(%(name)s)',
+    datefmt='%Y-%m-%d %H:%M:%S',
+    level=LOG_LEVEL
+)
+log = logging.getLogger(__name__)
+
 
 bot = commands.Bot(command_prefix='>')
 
 
 @bot.event
 async def on_ready():
-    print('\n')
-    c.botlog('crimsoBOT is online')
+    log.info('crimsoBOT is online')
 
 
 @bot.event
 async def on_resumed():
-    c.botlog('crimsoBOT RECONNECT')
+    log.warning('crimsoBOT RECONNECT')
 
 
 @bot.event
@@ -33,30 +39,31 @@ async def on_command_error(ctx, error):
     """
 
     if isinstance(error, commands.errors.CommandOnCooldown):
-        c.botlog('Cooldown: %s // %s: %s' % (ctx.message.author, ctx.message.content, error))
+        log.error('Cooldown: %s // %s: %s', ctx.message.author, ctx.message.content, error)
 
         msg = await ctx.send('**eat glass.** %.0fs cooldown.' % error.retry_after)
         await asyncio.sleep(7)
         await msg.delete()
     elif isinstance(error, commands.errors.CommandInvokeError):
         try:
-            c.botlog('Invoke: %s // %s: %s' % (ctx.message.author, ctx.message.content, error))
+            log.exception('Invoke: %s // %s: %s', ctx.message.author, ctx.message.content, error)
 
             msg = await ctx.send(':poop: `E R R O R` :poop:')
             await asyncio.sleep(7)
             await msg.delete()
         except discord.errors.Forbidden:
-            c.botlog('Forbidden: %s // %s: %s' % (ctx.message.guild, ctx.message.channel.id, error))
+            log.error('Forbidden: %s // %s: %s', ctx.message.guild, ctx.message.channel.id, error)
     elif isinstance(error, commands.errors.MissingRequiredArgument):
-        c.botlog('Argument: %s // %s: %s' % (ctx.message.author, ctx.message.content, error))
+        log.error('Argument: %s // %s: %s', ctx.message.author, ctx.message.content, error)
 
         msg = await ctx.send('*this command requires more arguments. try `>help [cmd]`*')
         await asyncio.sleep(7)
         await msg.delete()
     elif isinstance(error, commands.errors.CommandNotFound):
-        c.botlog('NotFound/Forbidden: %s/%s // %s: %s' % (
+        log.error(
+            'NotFound/Forbidden: %s/%s // %s: %s',
             ctx.message.guild.id, ctx.message.channel, ctx.message.content, error
-        ))
+        )
     else:
         raise error
 
@@ -176,10 +183,10 @@ async def on_guild_join(guild):
 
     if guild.id in banned_guild_ids:
         await guild.leave()
-        c.botlog('Banned guild {} attempted to add crimsoBOT.'.format(guild.id))
+        log.warning('Banned guild %s attempted to add crimsoBOT.', guild.id)
         return
 
-    c.botlog("Joined {guild.owner}'s {guild} [{guild.id}]".format(guild=guild))
+    log.info("Joined %s's %s [%s]", guild.owner, guild, guild.id)
 
     embed = c.get_guild_info_embed(guild)
 
@@ -205,6 +212,6 @@ if __name__ == '__main__':
         try:
             bot.load_extension('crimsobot.cogs.{}'.format(extension))
         except Exception as error:
-            c.botlog('{} cannot be loaded. [{}]'.format(extension, error))
+            log.error('%s cannot be loaded: %s', extension, error)
 
     bot.run(TOKEN)

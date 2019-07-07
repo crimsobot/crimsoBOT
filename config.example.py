@@ -1,3 +1,6 @@
+# Minimum log level to show
+LOG_LEVEL = 'INFO'
+
 # Discord bot token
 TOKEN = None
 

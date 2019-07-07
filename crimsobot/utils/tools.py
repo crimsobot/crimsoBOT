@@ -1,9 +1,11 @@
-import datetime
+import logging
 import os
 import pickle
 import sys
 
 from discord import ChannelType, Embed
+
+log = logging.getLogger(__name__)
 
 sys.modules['crimsotools'] = sys.modules[__name__]
 
@@ -56,20 +58,6 @@ def close(user):
             pickle.dump(user, f)
 
 
-def botlog(event_string):
-    """Log a string with timestamp to console and a text file."""
-
-    stamp = '{n.year:04d}-{n.month:02d}-{n.day:02d} {n.hour:02d}:{n.minute:02d}:{n.second:02d} | {ev}'.format(
-        n=datetime.datetime.now(),
-        ev=event_string
-    )
-
-    print(stamp)
-
-    with open(clib_path_join('text', 'botlog.txt'), 'a', encoding='utf-8', errors='ignore') as f:
-        f.write(stamp + '\n')
-
-
 def checkin(cmd, guild, channel, running):
     """Is game already running in channel/DM?"""
 
@@ -83,7 +71,7 @@ def checkin(cmd, guild, channel, running):
         else:
             guild_name = '*'
 
-        print('----IN PROGRESS---- | {} running on {}/{} ({})...'.format(cmd, guild_name, channel, channel.id))
+        log.info('%s running on %s/%s (%s)...', cmd, guild_name, channel, channel.id)
 
 
 def checkout(cmd, guild, channel, running):
@@ -96,7 +84,7 @@ def checkout(cmd, guild, channel, running):
     else:
         guild_name = '*'
 
-    botlog(cmd + ' COMPLETE on {}/{}!'.format(guild_name, channel))
+    log.info('%s COMPLETE on %s/%s!', cmd, guild_name, channel)
 
 
 def crimbed(title, description, thumbnail=None, color=0x5AC037):

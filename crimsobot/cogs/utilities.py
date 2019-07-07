@@ -1,9 +1,13 @@
+import logging
+
 import discord
 from discord.ext import commands
 
 import crimsobot.utils.astronomy as astronomy
 import crimsobot.utils.image as imagetools
 import crimsobot.utils.tools as c
+
+log = logging.getLogger(__name__)
 
 
 class Utilities(commands.Cog):
@@ -45,7 +49,7 @@ class Utilities(commands.Cog):
         • Images with transparency will sometimes produce a less-than-stellar palette.
         """
 
-        print('----IN PROGRESS---- | palette running on {}/{}...'.format(ctx.message.guild, ctx.message.channel))
+        log.info('palette running on %s/%s...', ctx.message.guild, ctx.message.channel)
 
         try:
             if not 1 <= int(number_of_colors) <= 10:
@@ -69,7 +73,7 @@ class Utilities(commands.Cog):
             )
         )
 
-        c.botlog('palette COMPLETE on {}/{}!'.format(ctx.message.guild, ctx.message.channel))
+        log.info('palette COMPLETE on %s/%s!', ctx.message.guild, ctx.message.channel)
 
     @commands.command(hidden=True)
     async def dearcrimso(self, ctx, *, arg):
@@ -84,7 +88,7 @@ class Utilities(commands.Cog):
 
         user = str(ctx.message.author)
         userid = str(ctx.message.author.id)
-        c.botlog(guild + '/' + channel + '\n            ' + user + '(' + userid + '): ' + arg)
+        log.info('Inbox: %s/%s\n            %s (%s): %s', guild, channel, user, userid, arg)
 
     @commands.command(hidden=True)
     async def csay(self, ctx, dest, tts, *, msg):
