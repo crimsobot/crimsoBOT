@@ -214,7 +214,7 @@ class Games(commands.Cog):
                 await asyncio.sleep(0.36)  # smoother rollout of reactions
             except Exception:
                 c.checkout('guessemoji', ctx.message.guild, ctx.message.channel, guess_channels)
-                await self.bot.say('**Someone added emojis!** Wait for me to add them, then choose. `Game crashed.`')
+                await ctx.send('**Someone added emojis!** Wait for me to add them, then choose. `Game crashed.`')
 
                 return
 

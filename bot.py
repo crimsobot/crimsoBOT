@@ -85,7 +85,8 @@ async def change_status():
     current_status = 'crimsoBOT is watching...'
     while not bot.is_closed:
         current_status = reorder(current_status)
-        await bot.change_presence(activity=discord.Game(name=current_status))
+        # game= instead of activity= goes against documentation but everyone says it works, so...
+        await bot.change_presence(game=discord.Game(name=current_status))
         await asyncio.sleep(7)
 
 
