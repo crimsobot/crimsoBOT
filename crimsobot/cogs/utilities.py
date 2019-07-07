@@ -108,7 +108,7 @@ class Utilities(commands.Cog):
         path = imagetools.bigmoji(emoji)
 
         try:
-            await ctx.send(path)
+            await ctx.send(file=discord.File(path, path))
         except Exception:
             await self.bot.say('*Not a valid emoji.*')
 
