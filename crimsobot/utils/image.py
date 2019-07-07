@@ -124,7 +124,7 @@ def make_color_img(hex_str):
 
 def boop(the_booper, the_booped):
     # font selection
-    f = ImageFont.truetype(c.clib_path_join('img', 'Roboto-Blackitalic.ttf'), 36)
+    f = ImageFont.truetype(c.clib_path_join('img', 'Roboto-BlackItalic.ttf'), 36)
 
     # add line breaks if needed to inputs
     def add_line_breaks(text):
