@@ -1,3 +1,4 @@
+import datetime
 import logging
 import os
 import pickle
@@ -11,7 +12,45 @@ sys.modules['crimsotools'] = sys.modules[__name__]
 
 
 class CrimsoBOTUser(object):
-    pass
+    def __init__(self, user_id):
+        self.ID = user_id       # Discord snowflake
+        self.banned = False     # Whether user is banned from using the bot
+        self.coin = 0.0         # User's account balance
+
+        self.daily = datetime.datetime(1969, 7, 20, 0, 0, 0)  # Last usage of >daily
+
+        self.guess_plays = 0        # Number of plays of guessemoji
+        self.guess_expected = 0.0   # Total of expected chances of winning
+        self.guess_wins = 0         # Total number of wins
+        self.guess_luck = 0.0       # Guessemoji luck index
+
+    # Tech debt: ensure attributes previously not present in __init__ are now present
+    # Avoids having to handle AttributeError everywhere
+    @staticmethod
+    def _ensure_attrs(state):
+        # Fix legacy discord.py string IDs
+        if isinstance(state['ID'], str):
+            state['ID'] = int(state['ID'])
+
+        state['banned'] = state.get('banned', False)
+        state['coin'] = state.get('coin', 0.0)
+        state['daily'] = state.get('daily', datetime.datetime(1969, 7, 20, 0, 0, 0))
+        state['guess_plays'] = state.get('guess_plays', 0)
+        state['guess_expected'] = state.get('guess_expected', 0.0)
+        state['guess_wins'] = state.get('guess_wins', 0)
+        state['guess_luck'] = state.get('guess_luck', 0.0)
+
+    # pickle.dump
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        self._ensure_attrs(state)
+
+        return state
+
+    # pickle.load
+    def __setstate__(self, state):
+        self._ensure_attrs(state)
+        self.__dict__.update(state)
 
 
 def fetch(user_id):
@@ -27,16 +66,13 @@ def fetch(user_id):
 
     # User file doesn't exist, create it.
     except FileNotFoundError:
-        user = CrimsoBOTUser()
+        user = CrimsoBOTUser(user_id)
         user.ID = user_id
 
     # Try again...
     except OSError:
         with open(filename, 'rb') as f:
             user = pickle.load(f)
-
-    # Migrate from old string IDs
-    user.ID = int(user.ID)
 
     return user
 
