@@ -1,9 +1,12 @@
 import logging
 
+import discord
 from discord.ext import commands
 
 import crimsobot.utils.tools as c
 from config import ADMIN_USER_IDS
+from crimsobot.utils import checks
+from crimsobot.utils.tools import CrimsoBOTUser
 
 log = logging.getLogger(__name__)
 
@@ -13,24 +16,21 @@ class Admin(commands.Cog):
         self.bot = bot
 
     @commands.command(hidden=True)
-    async def ban(self, ctx, user_mention):
+    @checks.is_admin()
+    async def ban(self, ctx, discord_user: discord.User):
         """Ban user from using crimsoBOT."""
 
-        if ctx.message.author.id not in ADMIN_USER_IDS:
+        if discord_user.id in ADMIN_USER_IDS:
             return
 
-        if len(ctx.message.mentions) == 1:
-            for user in ctx.message.mentions:
-                discord_user_object = user
+        cb_user = CrimsoBOTUser.get(discord_user.id)
+        cb_user.banned = True
+        cb_user.save()
 
-        if discord_user_object.id in ADMIN_USER_IDS:
-            return
-
-        c.ban(discord_user_object.id)
         embed = c.crimbed(
             None,
             '**{u.name}#{u.discriminator}** has been banned from using crimsoBOT.'.format(
-                u=discord_user_object
+                u=discord_user
             ),
             None
         )
@@ -39,22 +39,18 @@ class Admin(commands.Cog):
         await msg.add_reaction('👺')
 
     @commands.command(hidden=True)
-    async def unban(self, ctx, user_mention):
+    @checks.is_admin()
+    async def unban(self, ctx, discord_user: discord.User):
         """Unban user from using crimsoBOT."""
 
-        if ctx.message.author.id not in ADMIN_USER_IDS:
-            return
-
-        if len(ctx.message.mentions) == 1:
-            for user in ctx.message.mentions:
-                discord_user_object = user
-
-        c.unban(discord_user_object.id)
+        cb_user = CrimsoBOTUser.get(discord_user.id)
+        cb_user.banned = False
+        cb_user.save()
 
         embed = c.crimbed(
             None,
             '**{u.name}#{u.discriminator}** has been unbanned from using crimsoBOT.'.format(
-                u=discord_user_object
+                u=discord_user
             ),
             None
         )
@@ -129,11 +125,9 @@ class Admin(commands.Cog):
             log.info("Guild info still too long, can't send...")
 
     @commands.command(pass_context=True, hidden=True)
+    @checks.is_admin()
     async def save_from(self, ctx, server_id):
         """Pull crimsoBOT from a server."""
-
-        if ctx.message.author.id not in ADMIN_USER_IDS:
-            return
 
         guild = self.bot.get_guild(server_id)
         await guild.leave()
