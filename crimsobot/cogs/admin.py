@@ -78,7 +78,7 @@ class Admin(commands.Cog):
         """crimsoBOT info and invites."""
 
         title = 'crimsoBOT info'
-        descr = "crimsoBOT is a poorly-coded, homebrew bot that's hosted (at the moment) on crimso's laptop.\n"
+        descr = "crimsoBOT is a poorly-coded, homebrew bot.\n"
         thumb = 'https://i.imgur.com/9UTNIGi.png'
         auth_url = 'https://discordapp.com/api/oauth2/authorize?client_id={}&permissions={}&scope=bot'.format(
             self.bot.user.id,
