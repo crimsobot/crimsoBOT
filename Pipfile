@@ -30,4 +30,4 @@ Pillow = "~=6.1"
 "discord.py" = "~=1.2"
 
 [requires]
-python_version = "3.6"
+python_version = ">=3.5.3"
