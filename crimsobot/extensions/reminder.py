@@ -1,5 +1,6 @@
 import asyncio
 import random
+from typing import List
 
 import aiofiles
 import discord
@@ -39,7 +40,7 @@ class Reminder:
                     await msg.delete()
 
     @staticmethod
-    async def _get_reminders():
+    async def _get_reminders() -> List[str]:
         file = clib_path_join('text', 'reminders.txt')
 
         # open reminder text file, strip newlines at end
@@ -52,5 +53,5 @@ class Reminder:
         return reminders
 
 
-def setup(bot):
+def setup(bot: CrimsoBOT):
     Reminder(bot)
