@@ -150,7 +150,7 @@ class Games(commands.Cog):
 
     @commands.command(aliases=['guess', 'guessemoji'], brief='Guess the correct emoji from 2 to 20 choices!')
     @commands.cooldown(2, 10, commands.BucketType.user)
-    async def guessmoji(self, ctx, n):
+    async def guessmoji(self, ctx: commands.Context, n: int):
         """
         The bot will present 2 to 20 choices, depending on your selection.
         Choose only one; guessing more than once will disqualify you!
@@ -158,14 +158,13 @@ class Games(commands.Cog):
         Check your >balance! Get game costs and payouts by typing >guesscosts.
         """
 
-        # exception handling
-        if not 1 <= int(n) <= 20:  # invalid amount of emojis
-            raise ValueError
+        # invalid amount of emojis
+        if not 1 <= n <= 20:
+            raise commands.BadArgument('Number of emojis is out of bounds.')
 
-        # ok so if we got this far, n is an integer...
-        n = int(n)
-        if n == 1 and ctx.message.author.id not in ADMIN_USER_IDS:  # admins can play guess 1
-            raise ValueError
+        # admins can play guess 1
+        if n == 1 and ctx.message.author.id not in ADMIN_USER_IDS:
+            raise commands.BadArgument('Number of emojis is out of bounds.')
 
         # check if user can afford to play!
         winning_amount, cost = crimsogames.guess_economy(n)
