@@ -96,7 +96,7 @@ def fetch_image(ctx, arg):
         else:
             # if not one of the above cases, maybe it's an emoji?
             try:
-                img = Image.open(bigmoji(arg))
+                img, _ = Image.open(bigmoji(arg))
             except IOError:
                 response = requests.get(bigmoji(arg))
                 img = Image.open(BytesIO(response.content))
