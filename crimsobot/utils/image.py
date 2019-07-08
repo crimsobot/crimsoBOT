@@ -39,6 +39,7 @@ def bigmoji(emoji):
             path = 'https://cdn.discordapp.com/emojis/' + emoji_id + '.png'
         else:
             path = 'https://cdn.discordapp.com/emojis/' + emoji_id + '.gif'
+        emoji_type = 'url'
 
     # standard emojis
     else:
@@ -59,6 +60,7 @@ def bigmoji(emoji):
                 filename = '3' + filename
 
         path = c.clib_path_join('emoji', '') + filename + '.png'
+        emoji_type = 'file'
     # test if real path
     # try:
     #     open(path, 'rb')
@@ -70,7 +72,7 @@ def bigmoji(emoji):
     # except:
     #     return False
 
-    return path
+    return path, emoji_type
 
 
 def fetch_image(ctx, arg):

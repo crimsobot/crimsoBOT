@@ -112,12 +112,15 @@ class Utilities(commands.Cog):
     async def bigmoji(self, ctx, emoji):
         """Get larger version of either a default or custom emoji!"""
 
-        path = imagetools.bigmoji(emoji)
+        path, emoji_type = imagetools.bigmoji(emoji)
 
         try:
-            await ctx.send(file=discord.File(path, path))
+            if emoji_type == 'file':
+                await ctx.send(file=discord.File(path, path))
+            elif emoji_type == 'url':
+                await ctx.send(path)
         except Exception:
-            await self.bot.say('*Not a valid emoji.*')
+            await ctx.send('*Not a valid emoji.*')
 
     @commands.command(brief='Get info on when to see the ISS from the location you search!')
     @commands.cooldown(1, 30, commands.BucketType.user)
