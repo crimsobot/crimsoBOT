@@ -155,30 +155,20 @@ class Games(commands.Cog):
         The bot will present 2 to 20 choices, depending on your selection.
         Choose only one; guessing more than once will disqualify you!
         Playing >guess 2 or >guess 3 is free. Larger Guessmoji games will cost you.
-        Check your >balance! Get game costs and payouts by typing >guess costs.
+        Check your >balance! Get game costs and payouts by typing >guesscosts.
         """
 
         # exception handling
-        try:
-            if not 1 <= int(n) <= 20:  # invalid amount of emojis
-                raise ValueError
+        if not 1 <= int(n) <= 20:  # invalid amount of emojis
+            raise ValueError
 
-            # ok so if we got this far, n is an integer...
-            n = int(n)
-            if n == 1 and ctx.message.author.id not in ADMIN_USER_IDS:  # admins can play guess 1
-                raise ValueError
+        # ok so if we got this far, n is an integer...
+        n = int(n)
+        if n == 1 and ctx.message.author.id not in ADMIN_USER_IDS:  # admins can play guess 1
+            raise ValueError
 
-            # check if user can afford to play!
-            winning_amount, cost = crimsogames.guess_economy(n)
-        except ValueError:
-            if n == 'cost' or n == 'costs':
-                costs = crimsogames.guesslist()
-                content = '<:crimsoCOIN:588558997238579202> **GUESSMOJI costs and payouts:**```{}```'.format(costs)
-                await ctx.send(content)
-
-                return
-            else:
-                raise commands.errors.CommandInvokeError(ValueError)
+        # check if user can afford to play!
+        winning_amount, cost = crimsogames.guess_economy(n)
 
         # the candidates
         choices = [
@@ -294,6 +284,15 @@ class Games(commands.Cog):
 
         # edit msg with result of game
         await msg.edit(embed=embed)
+
+    @commands.command(aliases=['guesscost'])
+    async def guesscosts(self, ctx: commands.Context):
+        """Get game costs and payouts for >guess!"""
+
+        costs = crimsogames.guesslist()
+        content = '<:crimsoCOIN:588558997238579202> **GUESSMOJI costs and payouts:**```{}```'.format(costs)
+
+        await ctx.send(content)
 
     @commands.command(brief='Make the best story based on the emojis!')
     async def emojistory(self, ctx):
