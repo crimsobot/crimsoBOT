@@ -59,9 +59,15 @@ class CrimsoBOT(commands.Bot):
             except discord.errors.Forbidden:
                 self.log.error('Forbidden: %s // %s: %s', ctx.guild, ctx.channel.id, error)
         elif isinstance(error, commands.MissingRequiredArgument):
-            self.log.error('Argument: %s // %s: %s', ctx.author, ctx.message.content, error)
+            self.log.error('MissingArgument: %s // %s: %s', ctx.author, ctx.message.content, error)
 
             msg = await ctx.send('*this command requires more arguments. try `>help [cmd]`*')
+            await asyncio.sleep(7)
+            await msg.delete()
+        elif isinstance(error, commands.BadArgument):
+            self.log.error('BadArgument: %s // %s: %s', ctx.author, ctx.message.content, error)
+
+            msg = await ctx.send("*that's not a valid argument value! try `>help [cmd]`*")
             await asyncio.sleep(7)
             await msg.delete()
         elif isinstance(error, checks.NotAdmin):
