@@ -309,10 +309,10 @@ class Games(commands.Cog):
             raise commands.errors.CommandInvokeError('Channel in list')
 
         # first embed: introduction
-        timer = 75  # seconds
+        timer = 63  # seconds
         intro = """
         Invent a short story to go with the following set of emojis.
-        Begin your story with a `$`
+        Begin your story with a dollar sign **$**.
         You have {} seconds!
         """.format(timer)
 
@@ -344,7 +344,11 @@ class Games(commands.Cog):
         authors = []
         end = time.time() + timer
         while time.time() < end:
-            story = await self.bot.wait_for('message', check=story_check, timeout=1)
+            try:
+                story = await self.bot.wait_for('message', check=story_check, timeout=0.5)
+            except asyncio.TimeoutError:
+                continue
+
             if story is not None:
                 stories.append(story)
                 authors.append(story.author)
@@ -393,7 +397,11 @@ class Games(commands.Cog):
         voters = []
         end_voting = time.time() + 45
         while time.time() < end_voting:
-            vote = await self.bot.wait_for('message', check=vote_check, timeout=1)
+            try:
+                vote = await self.bot.wait_for('message', check=vote_check, timeout=0.5)
+            except asyncio.TimeoutError:
+                continue
+
             if vote is not None:
                 votes.append(vote.content)
                 voters.append(vote.author)

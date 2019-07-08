@@ -10,7 +10,7 @@ def emojistring():
        output: string"""
 
     emojis = []
-    for line in open(c.clib_path_join('text', 'emojilist.txt'), encoding='utf-8', errors='ignore'):
+    for line in open(c.clib_path_join('games', 'emojilist.txt'), encoding='utf-8', errors='ignore'):
         line = line.replace('\n', '')
         emojis.append(line)
 

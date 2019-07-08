@@ -92,21 +92,21 @@ class Utilities(commands.Cog):
         log.info('Inbox: %s/%s\n            %s (%s): %s', guild, channel, user, userid, arg)
 
     @commands.command(hidden=True)
-    async def csay(self, ctx, dest, tts, *, msg):
+    async def csay(self, ctx, dest, tts, *msg):
         if ctx.message.author.id not in ADMIN_USER_IDS:
             return
 
         if dest[0] == 'c':
-            recip = self.bot.get_channel(dest[1:])
+            recip = self.bot.get_channel(int(dest[1:]))
         elif dest[0] == 'd':
-            recip = await self.bot.fetch_user(dest[1:])
+            recip = await self.bot.fetch_user(int(dest[1:]))
 
         if tts == '1':
             tts = True
         else:
             tts = False
 
-        await recip.send(msg, tts=tts)
+        await recip.send(' '.join(msg), tts=tts)
 
     @commands.command()
     async def bigmoji(self, ctx, emoji):
