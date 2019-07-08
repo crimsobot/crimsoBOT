@@ -42,20 +42,14 @@ class Text(commands.Cog):
         """Get the time at location (required) in emojis!"""
 
         # input parser
-        emoji_specified = True
-        try:
-            open(imagetools.bigmoji(emoji))
-        except FileNotFoundError:
-            emoji_specified = False
-        except OSError:  # not a path; a URL!
-            if emoji.startswith('<'):
-                pass
-
-        if not emoji_specified:
+        # if an emoji was not specified by user, bigmoji() returns (False, False)
+        emoji_check, _ = imagetools.bigmoji(emoji)
+        if emoji_check is False:
+            # if no emoji specified, then input "emoji" is actually first word of location
             location = [emoji, ' '.join(location)]
-            emoji = '<:xok:551174281367650356>'
+            emoji = '<:xok:563825728102334465>' # default to xok emoji in crimsoBOT server
 
-        location = ' '.join(location)
+        location = ' '.join(location) # location from tuple to string
 
         # then check for these not-actually-emojis
         not_real_emojis = ['©', '®', '™']
@@ -64,14 +58,7 @@ class Text(commands.Cog):
                 await ctx.send("*Not a real emoji. (It's complicated.)*")
                 return
 
-        # check emoji now that input is parsed just to make sure an emoji was valid (still necessary?)
-        if not (emoji.startswith('<:') or emoji.startswith('<a:')):
-            try:
-                open(imagetools.bigmoji(emoji), 'rb')
-            except Exception:
-                await ctx.send('*Not a valid emoji.*')
-                return
-
+        # send to helper function
         try:
             emoji_time_string = texttools.emojitime(emoji, location)
         except AttributeError:

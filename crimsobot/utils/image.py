@@ -59,18 +59,15 @@ def bigmoji(emoji):
             else:  # numbers zero-nine
                 filename = '3' + filename
 
-        path = c.clib_path_join('emoji', '') + filename + '.png'
-        emoji_type = 'file'
-    # test if real path
-    # try:
-    #     open(path, 'rb')
-    # except OSError:
-    #     try:
-    #         response = requests.get(path)
-    #     except:
-    #         return False
-    # except:
-    #     return False
+        # test if real file
+        try:
+            path = c.clib_path_join('emoji', '') + filename + '.png'
+            emoji_type = 'file'
+            f = open(path, 'rb')
+            f.close()
+        except OSError:
+            path = False
+            emoji_type = False
 
     return path, emoji_type
 
