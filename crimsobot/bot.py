@@ -37,7 +37,7 @@ class CrimsoBOT(commands.Bot):
     async def on_resumed(self):
         self.log.warning('crimsoBOT RECONNECT')
 
-    async def on_command_error(self, ctx: commands.Context, error):
+    async def on_command_error(self, ctx: commands.Context, error: Exception):
         """
         Displays error messages to user for cooldown and CommandNotFound,
         and suppresses verbose error text for both in the console.
@@ -78,7 +78,7 @@ class CrimsoBOT(commands.Bot):
         else:
             raise error
 
-    async def on_message(self, message):
+    async def on_message(self, message: discord.Message):
         if c.is_banned(message.author.id):
             return
 
@@ -87,7 +87,7 @@ class CrimsoBOT(commands.Bot):
         if is_dm and message.author.id != self.user.id and not message.content.startswith('>'):  # crimsoBOT
             try:
                 link = message.attachments[0].url
-            except Exception:
+            except IndexError:
                 link = ''
 
             dms_channel = self.get_channel(DM_LOG_CHANNEL_ID)
@@ -110,7 +110,7 @@ class CrimsoBOT(commands.Bot):
         if random.random() < 0.001 and not is_dm:
             await message.channel.send(m.crimso())
 
-    async def on_guild_join(self, guild):
+    async def on_guild_join(self, guild: discord.Guild):
         """Notify me when added to guild"""
 
         if guild.id in BANNED_GUILD_IDS:
