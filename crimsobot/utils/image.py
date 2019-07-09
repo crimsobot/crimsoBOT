@@ -1,6 +1,7 @@
 import os
 from io import BytesIO
 
+import json
 import matplotlib.pylab as plt
 import numpy as np
 import requests
@@ -279,6 +280,11 @@ rgb = []
 palettedata = [i for sub in rgb for i in sub]  # list of tuples to list
 
 
+# this is the list of colors and the emojis to which they correspond
+with open(c.clib_path_join('img', 'colors.json'), 'r') as file:
+    color_dict = json.loads(file.read())
+
+
 def lookup_emoji(hex_in):
     """search (bc quantizing palette not working)"""
 
@@ -287,10 +293,9 @@ def lookup_emoji(hex_in):
     nearest = convert_color(nearest, sRGBColor)
     nearest = nearest.get_rgb_hex()
 
-    with open(c.clib_path_join('img', 'colors.txt'), 'r') as file:
-        for line in file:
-            if nearest[1:] in line:
-                return line[7:-1]
+    for key, value in color_dict.items():
+        if nearest == key:
+            return value
 
 
 def make_emoji_image(ctx, user_input):
