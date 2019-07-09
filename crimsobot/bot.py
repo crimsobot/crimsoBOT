@@ -50,9 +50,9 @@ class CrimsoBOT(commands.Bot):
             await asyncio.sleep(7)
             await msg.delete()
         elif isinstance(error, commands.CommandInvokeError):
-            try:
-                self.log.exception('Invoke: %s // %s: %s', ctx.author, ctx.message.content, error)
+            self.log.error('Invoke: %s // %s: %s', ctx.author, ctx.message.content, error, exc_info=error)
 
+            try:
                 msg = await ctx.send(':poop: `E R R O R` :poop:')
                 await asyncio.sleep(7)
                 await msg.delete()
@@ -82,7 +82,7 @@ class CrimsoBOT(commands.Bot):
                 ctx.message.guild.id, ctx.message.channel, ctx.message.content, error
             )
         else:
-            raise error
+            self.log.error('Uncaught exception', exc_info=error)
 
     async def on_message(self, message: discord.Message):
         if c.is_banned(message.author.id):
