@@ -1,5 +1,6 @@
 # Ignore directories
 __pycache__/
+.mypy_cache/
 
 # Ignore files
 *.py[cod]

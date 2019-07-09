@@ -12,6 +12,7 @@ flake8-import-order = "*"
 flake8-bugbear = "*"
 flake8-builtins = "*"
 flake8-quotes = "*"
+mypy = "*"
 
 [packages]
 colormath = "~=3.0"
