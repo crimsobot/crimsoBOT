@@ -13,6 +13,7 @@ flake8-bugbear = "*"
 flake8-builtins = "*"
 flake8-quotes = "*"
 mypy = "*"
+pre-commit = "*"
 
 [packages]
 colormath = "~=3.0"
