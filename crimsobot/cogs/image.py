@@ -44,22 +44,13 @@ class Image(commands.Cog):
 
         await ctx.message.author.send('Please wait...')
 
-        imagetools.make_emoji_image(ctx, image)
+        line_list = imagetools.make_emoji_image(ctx, image)
         c.checkin('eimg', ctx.message.guild, ctx.message.author, emoji_channels)
-        await asyncio.sleep(10)
-
-        # read in lines of emojis
-        line_list = open(c.clib_path_join('img', 'emoji.txt'),
-                         encoding='utf8',
-                         errors='ignore').readlines()
-
-        # strip newlines
-        line_list = [line.replace('\n', '') for line in line_list]
 
         # send line-by-line as DM
         for line in line_list:
             await ctx.message.author.send(line)
-            await asyncio.sleep(1)
+            await asyncio.sleep(0.72)
 
         c.checkout('eimg', ctx.message.guild, ctx.message.author, emoji_channels)
 
@@ -75,22 +66,13 @@ class Image(commands.Cog):
 
         await ctx.message.author.send('Please wait...')
 
-        imagetools.make_emoji_image_v2(ctx, image)
+        line_list = imagetools.make_emoji_image_v2(ctx, image)
         c.checkin('eimg2', ctx.message.guild, ctx.message.author, emoji_channels)
-        await asyncio.sleep(10)
-
-        # read in lines of emojis
-        line_list = open(c.clib_path_join('img', 'emoji.txt'),
-                         encoding='utf8',
-                         errors='ignore').readlines()
-
-        # strip newlines
-        line_list = [line.replace('\n', '') for line in line_list]
 
         # send line-by-line as DM
         for line in line_list:
             await ctx.message.author.send(line)
-            await asyncio.sleep(1)
+            await asyncio.sleep(0.72)
 
         c.checkout('eimg2', ctx.message.guild, ctx.message.author, emoji_channels)
 

@@ -320,16 +320,11 @@ def make_emoji_image(ctx, user_input):
         return False
     img = img.resize((36, int(36 * ratio)), resample=Image.BICUBIC)
 
-    # newimage is then quantized to palette
-    newimage = quantizetopalette(img, palimage, dither=False)
+    # quantize to palette
+    rgb_im = quantizetopalette(img, palimage, dither=False).convert('RGB', dither=None)
 
-    # find color of each pixel, turn into emoji in string
-    rgb_im = newimage.convert('RGB', dither=None)
-    newimage.save(c.clib_path_join('img', 'eimg.png'))
-
-    f = open(c.clib_path_join('img', 'emoji.txt'), 'w', encoding='utf-8',
-             errors='ignore')
-
+    # for each row of pixels, find corresponding emoji, and string together
+    string_list = []
     x, y = img.size
     for yy in range(0, y):
         msg_string = ''
@@ -339,9 +334,9 @@ def make_emoji_image(ctx, user_input):
             emoji = lookup_emoji(color)
             msg_string = msg_string + emoji
 
-        f.write(msg_string + '\n')
+        string_list.append(msg_string)
 
-    f.close()
+    return string_list
 
 
 def make_emoji_image_v2(ctx, user_input):
@@ -368,12 +363,10 @@ def make_emoji_image_v2(ctx, user_input):
     if ratio > 3:
         return False
     img = img.resize((36, int(36 * ratio)), resample=Image.BICUBIC)
-    img.save(c.clib_path_join('img', 'eimg2.png'))
     img = img.convert('RGB', dither=None)
 
-    f = open(c.clib_path_join('img', 'emoji.txt'), 'w', encoding='utf-8',
-             errors='ignore')
-
+    # for each row of pixels, find corresponding emoji, and string together
+    string_list = []
     x, y = img.size
     for yy in range(0, y):
         msg_string = ''
@@ -383,9 +376,9 @@ def make_emoji_image_v2(ctx, user_input):
             emoji = lookup_emoji(color)
             msg_string = msg_string + emoji
 
-        f.write(msg_string + '\n')
+        string_list.append(msg_string)
 
-    f.close()
+    return string_list
 
 
 def make_mosaic(colors):
