@@ -238,9 +238,9 @@ def pingbadge(ctx, user_input, pos):
     img.save(c.clib_path_join('img', 'pingbadge.png'))
 
 
-# so begins EMOJI IMAGE
+# the following scripts and functions help make_emoji_image()
 def hex_to_srgb(base):
-    # hex_in to tuple
+    # string (formatted '000000') to tuple
     r_ = '0x' + base[0:2]
     g_ = '0x' + base[2:4]
     b_ = '0x' + base[4:6]
@@ -254,15 +254,6 @@ def hex_to_srgb(base):
     return color
 
 
-# color lists
-color_list = []
-with open(c.clib_path_join('img', 'colors.txt'), 'r') as file:
-    [color_list.append(line[0:6]) for line in file]
-
-srgb_color_list = []
-[srgb_color_list.append(hex_to_srgb(color)) for color in color_list]
-
-
 def quantizetopalette(silf, palette, dither=False):
     """Convert an RGB or L mode image to use a given P image's palette."""
 
@@ -273,16 +264,19 @@ def quantizetopalette(silf, palette, dither=False):
     return silf._new(im)
 
 
-# these are needed to make the PIL palette list [r1, g1, b1, ..., rn, gn, bn]
-rgb = []
-[rgb.append(hex_to_rgb(color)) for color in color_list]
-
-palettedata = [i for sub in rgb for i in sub]  # list of tuples to list
-
-
 # this is the list of colors and the emojis to which they correspond
 with open(c.clib_path_join('img', 'colors.json'), 'r') as file:
     color_dict = json.loads(file.read())
+
+
+# these are needed to make the PIL palette list [r1, g1, b1, ..., rn, gn, bn]
+rgb = []
+[rgb.append(hex_to_rgb(key[1:])) for key in color_dict]
+palettedata = [i for sub in rgb for i in sub]
+
+
+srgb_color_list = []
+[srgb_color_list.append(hex_to_srgb(key[1:])) for key in color_dict]
 
 
 def lookup_emoji(hex_in):
@@ -322,6 +316,7 @@ def make_emoji_image(ctx, user_input):
 
     # quantize to palette
     rgb_im = quantizetopalette(img, palimage, dither=False).convert('RGB', dither=None)
+    print(rgb_im.getcolors())
 
     # for each row of pixels, find corresponding emoji, and string together
     string_list = []
@@ -341,10 +336,6 @@ def make_emoji_image(ctx, user_input):
 
 def make_emoji_image_v2(ctx, user_input):
     """Make image from emojis!"""
-
-    # create palette image
-    palimage = Image.new('P', (16, 16))
-    palimage.putpalette(palettedata)
 
     # get image from url
     img = fetch_image(ctx, user_input)
