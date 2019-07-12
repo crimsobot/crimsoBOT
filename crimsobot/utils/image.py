@@ -377,18 +377,12 @@ def make_emoji_image_v3(ctx, user_input):
 
     # get image
     input_image = fetch_image(ctx, user_input)
-    input_iamge = input_image.convert('RGBA')
+    input_iamge = input_image.convert('RGB')
 
     # Nyquist sampling apply here? just to be safe
     n = len(color_dict) * 2
-    input_image.load()  # required for png.split()
-
-    # ensure black background if input image has transparency
-    background = Image.new('RGB', input_image.size, (0, 0, 0))
-    background.paste(input_image, mask=input_image.split()[3])  # 3 is the alpha channel
-    
     # quantize while still large (because i am paranoid about alising)
-    input_image = background.quantize(colors=n, method=1, kmeans=n)
+    input_image = input_image.quantize(colors=n, method=1, kmeans=n)
 
     # check that image is not too tall, then resize
     width, height = input_image.size
