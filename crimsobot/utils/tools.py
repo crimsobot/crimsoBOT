@@ -59,7 +59,7 @@ class CrimsoBOTUser(object):
         # Unserialize from user file
         try:
             with open(filename, 'rb') as f:
-                user = pickle.load(f)
+                user = pickle.load(f)  # type: CrimsoBOTUser
 
         # User file doesn't exist, create it.
         except FileNotFoundError:
