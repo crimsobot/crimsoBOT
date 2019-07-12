@@ -4,15 +4,16 @@ import random
 from discord.ext import commands
 
 from config import ADMIN_USER_IDS, SCRAPER_USER_IDS
+from crimsobot.bot import CrimsoBOT
 from crimsobot.utils import markov as m, tools as c
 
 
 class Chat(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: CrimsoBOT) -> None:
         self.bot = bot
 
     @commands.command()
-    async def scatterbrain(self, ctx):
+    async def scatterbrain(self, ctx: commands.Context) -> None:
         """Short-term memory mania."""
 
         channel = ctx.message.channel
@@ -27,7 +28,7 @@ class Chat(commands.Cog):
         await ctx.send(output)
 
     @commands.command(hidden=True)
-    async def scrape(self, ctx, place='here', join='space', n=10000):
+    async def scrape(self, ctx: commands.Context, place: str = 'here', join: str = 'space', n: int = 10000) -> None:
         """Scrape messages from channel. >scrape [here/dm/channel_id] [space/newline]."""
 
         if ctx.message.author.id not in ADMIN_USER_IDS | SCRAPER_USER_IDS:
@@ -53,6 +54,7 @@ class Chat(commands.Cog):
         for i in range(len(text)):
             if (i + 1) % 3 == 0:
                 text[i] = text[i] + '\n\u200A'
+
         if join == 'space':
             joiner = ' '
         elif join == 'newline':
@@ -60,9 +62,7 @@ class Chat(commands.Cog):
         else:
             raise commands.BadArgument('Join type is invalid.')
 
-        text = joiner.join(text)
-
-        msgs = c.crimsplit(text, '\u200A', 1950)
+        msgs = c.crimsplit(joiner.join(text), '\u200A', 1950)
         try:
             if place == 'dm':
                 dest = ctx.message.author
@@ -77,7 +77,7 @@ class Chat(commands.Cog):
             await dest.send(msg)
 
     @commands.command()
-    async def poem(self, ctx):
+    async def poem(self, ctx: commands.Context) -> None:
         """Spits out a poem."""
 
         fake_author = [
@@ -105,14 +105,14 @@ class Chat(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def wisdom(self, ctx):
+    async def wisdom(self, ctx: commands.Context) -> None:
         """Crimsonic wisdom."""
 
         embed = c.crimbed('**CRIMSONIC WISDOM**', m.wisdom(), None)
         await ctx.send(embed=embed)
 
     @commands.command(aliases=['monty'])
-    async def montyward(self, ctx):
+    async def montyward(self, ctx: commands.Context) -> None:
         """Monty mindfuck!"""
 
         footer_text = [
@@ -148,5 +148,5 @@ class Chat(commands.Cog):
     #     await ctx.send('`Task complete.`')
 
 
-def setup(bot):
+def setup(bot: CrimsoBOT) -> None:
     bot.add_cog(Chat(bot))

@@ -2,26 +2,27 @@ import asyncio
 import random
 import re
 import time
-from typing import Optional
+from typing import List, Optional
 
 import discord
 from discord.ext import commands
 
 from config import ADMIN_USER_IDS
+from crimsobot.bot import CrimsoBOT
 from crimsobot.utils import checks, games as crimsogames, tools as c
 
 # lists for games in progress
-madlibs_channels = []
-guess_channels = []
-emojistory_channels = []
+madlibs_channels = []  # type: List[int]
+guess_channels = []  # type: List[int]
+emojistory_channels = []  # type: List[int]
 
 
 class Games(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: CrimsoBOT):
         self.bot = bot
 
     @commands.command(aliases=['madlib'], brief='Multiplayer mad libs! Play solo in DMs.')
-    async def madlibs(self, ctx):
+    async def madlibs(self, ctx: commands.Context) -> None:
         """
         Fill in the blanks to make an unexpected story out of a famous copypasta or a snippet of popular literature.
         The bot will take your answer if it starts with the proper prefix.
@@ -64,7 +65,7 @@ class Games(commands.Cog):
             await ctx.send(embed=embed)
 
             # check message for author, channel, content
-            def check(msg):
+            def check(msg: discord.Message) -> bool:
                 banned = c.is_banned(msg.author.id)
                 has_prefix = msg.content.startswith(p)
                 in_channel = msg.channel == ctx.message.channel
@@ -102,7 +103,7 @@ class Games(commands.Cog):
         c.checkout('madlibs', ctx.message.guild, ctx.message.channel, madlibs_channels)
 
     @commands.command(aliases=['cball', 'crimsobot'], brief='Ask crimsoBOT what will be.')
-    async def crimsoball(self, ctx, *, question):
+    async def crimsoball(self, ctx: commands.Context, *, question: str) -> None:
         # list of answers (which I need to store somewhere besides in the function)
         answer_list = [
             '{} haha ping'.format(ctx.message.author.mention),
@@ -139,7 +140,7 @@ class Games(commands.Cog):
 
     @commands.command(aliases=['guess', 'guessemoji'], brief='Guess the correct emoji from 2 to 20 choices!')
     @commands.cooldown(2, 10, commands.BucketType.user)
-    async def guessmoji(self, ctx: commands.Context, n: int):
+    async def guessmoji(self, ctx: commands.Context, n: int) -> None:
         """
         The bot will present 2 to 20 choices, depending on your selection.
         Choose only one; guessing more than once will disqualify you!
@@ -214,8 +215,8 @@ class Games(commands.Cog):
 
         # initialize winner (will be empty if no one wins)
         # and loser list (may end up as a list of lists, or empty if no one loses)
-        winners = []
-        losers = []
+        winners = []  # type: List[discord.User]
+        losers = []  # type: List[discord.User]
 
         # see who reacted to what
         cache_msg = discord.utils.get(self.bot.cached_messages, id=msg.id)
@@ -258,14 +259,14 @@ class Games(commands.Cog):
                 crimsogames.guess_luck(user.id, n, True)
 
             # convert user objects to mentions
-            winners = [user.mention for user in winners]
+            winner_mentions = [user.mention for user in winners]  # List[str]
 
             # send to helper function for formatting...
-            winners = crimsogames.winner_list(winners)
+            winners_text = crimsogames.winner_list(winner_mentions)
 
             # ...and change embed description
             embed.description = '...{} guessed it for \u20A2{:.2f}!\nThe answer was {}'.format(
-                winners, winning_amount, winning_emoji
+                winners_text, winning_amount, winning_emoji
             )
         else:
             embed.description = '...No one guessed it! The answer was {}'.format(winning_emoji)
@@ -274,7 +275,7 @@ class Games(commands.Cog):
         await msg.edit(embed=embed)
 
     @commands.command(aliases=['guesscost'])
-    async def guesscosts(self, ctx: commands.Context):
+    async def guesscosts(self, ctx: commands.Context) -> None:
         """Get game costs and payouts for >guess!"""
 
         costs = crimsogames.guesslist()
@@ -283,7 +284,7 @@ class Games(commands.Cog):
         await ctx.send(content)
 
     @commands.command(brief='Make the best story based on the emojis!')
-    async def emojistory(self, ctx):
+    async def emojistory(self, ctx: commands.Context) -> None:
         """
         A string of emojis will appear.
         Enter a short story (<250 characters) that corresponds to the emojis, and then vote on the best story!
@@ -320,7 +321,7 @@ class Games(commands.Cog):
         await ctx.send(embed=embed)
 
         # define check for prefix, channel, and if author has already submitted
-        def story_check(msg):
+        def story_check(msg: discord.Message) -> bool:
             banned = c.is_banned(msg.author.id)
             has_prefix = msg.content.startswith('$')
             just_right = 5 < len(msg.content) < 250
@@ -371,7 +372,7 @@ class Games(commands.Cog):
             return
 
         # define check for prefix, channel, and if author has already submitted
-        def vote_check(msg):
+        def vote_check(msg: discord.Message) -> bool:
             try:
                 banned = c.is_banned(msg.author.id)
                 in_channel = msg.channel == ctx.message.channel
@@ -403,15 +404,15 @@ class Games(commands.Cog):
             descr = "I'm disappointed."
         else:
             # send to vote counter to get winner
-            ind_plus_1, votes = crimsogames.tally(votes)
+            ind_plus_1, total_votes = crimsogames.tally(votes)
             winner = stories[int(ind_plus_1) - 1]
             crimsogames.win(winner.author.id, 10)
-            ess = 's' if votes > 1 else ''
+            ess = 's' if total_votes > 1 else ''
 
             # then the embed info
             title = '**EMOJI STORY WINNER!**'
             descr = 'The winner is **{x.author}** with {y} vote{s} for their story:\n\n{e}\n\n{x.content}'.format(
-                x=winner, y=votes, s=ess, e=emojis)
+                x=winner, y=total_votes, s=ess, e=emojis)
 
         # third embed: results!
         embed = c.crimbed(title, descr, thumb)
@@ -422,7 +423,7 @@ class Games(commands.Cog):
         c.checkout('emojistory', ctx.message.guild, ctx.message.channel, emojistory_channels)
 
     @commands.command(aliases=['bal'])
-    async def balance(self, ctx, whose: Optional[discord.Member] = None):
+    async def balance(self, ctx: commands.Context, whose: Optional[discord.Member] = None) -> None:
         """Check your or someone else's crimsoCOIN balance."""
 
         if not whose:
@@ -449,7 +450,7 @@ class Games(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command(aliases=['luck'])
-    async def luckindex(self, ctx, whose: Optional[discord.Member] = None):
+    async def luckindex(self, ctx, whose: Optional[discord.Member] = None) -> None:
         """Check your or someone else's luck at Guessmoji!"""
 
         if not whose:
@@ -467,14 +468,14 @@ class Games(commands.Cog):
 
     @commands.command()
     @commands.cooldown(2, 1 * 60 * 60, commands.BucketType.user)
-    async def give(self, ctx, recipient: discord.Member, amount):
+    async def give(self, ctx: commands.Context, recipient: discord.Member, amount: float) -> None:
         """Give a user up to 1/10 of your crimsoCOIN."""
 
         # thumbnail
         thumb = 'https://i.imgur.com/rS2ec5d.png'
 
-        # firstly, change amount to float, rounded
-        amount = round(float(amount), 2)
+        # firstly, round amount
+        amount = round(amount, 2)
 
         # no negative values
         if amount <= 0:
@@ -515,7 +516,7 @@ class Games(commands.Cog):
 
     @commands.command(hidden=True)
     @checks.is_admin()
-    async def cgive(self, ctx, recipient: discord.Member, amount):
+    async def cgive(self, ctx: commands.Context, recipient: discord.Member, amount: float) -> None:
         """Manual adjustment of crimsoCOIN values."""
 
         # change to float
@@ -532,16 +533,16 @@ class Games(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command(aliases=['leaders', 'lb'])
-    async def leaderboard(self, ctx, *args):
+    async def leaderboard(self, ctx: commands.Context, *, args: str) -> None:
         """crimsoCOIN leaderboard! >lb [coin*/luck/plays] [page#]"""
 
         # input parser
-        args = ' '.join(args)
-
-        try:
-            page = int(re.search(r'\d+', args).group())
-        except Exception:
+        match = re.search(r'\d+', args)
+        if match:
+            page = int(match.group())
+        else:
             page = 1
+
         if 'luck' in args:
             stat = 'luck'
         elif 'plays' in args:
@@ -586,11 +587,11 @@ class Games(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command(hidden=True)
-    async def daily(self, ctx, lucky_number: int = 0):
+    async def daily(self, ctx: commands.Context, lucky_number: int = 0) -> None:
         """Get a daily award! Pick a number 1-100 for a chance to win bigger!"""
 
         # exception handling
-        if not 0 <= int(lucky_number) <= 100:
+        if not 0 <= lucky_number <= 100:
             raise commands.BadArgument('Lucky number is out of bounds.')
 
         # pass to helper and spit out result in an embed
@@ -600,5 +601,5 @@ class Games(commands.Cog):
         await ctx.send(embed=embed)
 
 
-def setup(bot):
+def setup(bot: CrimsoBOT) -> None:
     bot.add_cog(Games(bot))

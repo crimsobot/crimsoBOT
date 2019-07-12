@@ -1,14 +1,15 @@
 from discord.ext import commands
 
+from crimsobot.bot import CrimsoBOT
 from crimsobot.utils import image as imagetools, text as texttools, tools as c
 
 
 class Text(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: CrimsoBOT):
         self.bot = bot
 
     @commands.command()
-    async def e(self, ctx, *, message):
+    async def e(self, ctx: commands.Context, *, message: str) -> None:
         """Convert message to emojis. Character limit ~450."""
 
         message = texttools.block(message)
@@ -21,21 +22,21 @@ class Text(commands.Cog):
             await ctx.send(line)
 
     @commands.command()
-    async def small(self, ctx, *, text):
+    async def small(self, ctx: commands.Context, *, text: str) -> None:
         """Make text small!"""
 
         output = texttools.superscript(text)
         await ctx.send('{}: {}'.format(ctx.message.author.mention, output))
 
     @commands.command()
-    async def flip(self, ctx, *, text):
+    async def flip(self, ctx: commands.Context, *, text: str) -> None:
         """Make text upside down!"""
 
         output = texttools.upsidedown(text)
         await ctx.send('{}: {}'.format(ctx.message.author.mention, output))
 
     @commands.command(aliases=['xokclock', 'xoktime', 'emojitime'])
-    async def emojiclock(self, ctx, emoji, *args):
+    async def emojiclock(self, ctx: commands.Context, *args: str) -> None:
         """Get the time at location (required) in emojis!"""
 
         # input parser
@@ -66,11 +67,11 @@ class Text(commands.Cog):
             return
 
         # split long string
-        emoji_time_string = c.crimsplit(emoji_time_string, '\u2005', limit=1899)
-        emoji_time_string[-1] = emoji_time_string[-1] + ' \u200B                      \u200B'
-        for line in emoji_time_string:
+        lines = c.crimsplit(emoji_time_string, '\u2005', limit=1899)
+        lines[-1] = lines[-1] + ' \u200B                      \u200B'
+        for line in lines:
             await ctx.send(line)
 
 
-def setup(bot):
+def setup(bot: CrimsoBOT) -> None:
     bot.add_cog(Text(bot))

@@ -11,11 +11,11 @@ from crimsobot.utils.tools import clib_path_join
 
 
 class Reminder:
-    def __init__(self, bot: CrimsoBOT):
+    def __init__(self, bot: CrimsoBOT) -> None:
         self.bot = bot
         self.bot.loop.create_task(self.send_reminder())
 
-    async def send_reminder(self):
+    async def send_reminder(self) -> None:
         """"Sends a disappearing random reminder in default channel."""
 
         await self.bot.wait_until_ready()
@@ -45,7 +45,7 @@ class Reminder:
 
         # open reminder text file, strip newlines at end
         async with aiofiles.open(file, encoding='utf-8', errors='ignore') as f:
-            reminders = await f.readlines()
+            reminders = await f.readlines()  # type: List[str]
 
         reminders = [line[:-1] for line in reminders]
         reminders = [line.replace('\\n', '\n') for line in reminders]
@@ -53,5 +53,5 @@ class Reminder:
         return reminders
 
 
-def setup(bot: CrimsoBOT):
+def setup(bot: CrimsoBOT) -> None:
     Reminder(bot)

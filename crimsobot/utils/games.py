@@ -1,15 +1,13 @@
 import random
 from collections import Counter
 from datetime import datetime
+from typing import List, Tuple
 
 from crimsobot.utils import tools as c
 from crimsobot.utils.tools import CrimsoBOTUser
 
 
-def emojistring():
-    """ input: none
-       output: string"""
-
+def emojistring() -> str:
     emojis = []
     for line in open(c.clib_path_join('games', 'emojilist.txt'), encoding='utf-8', errors='ignore'):
         line = line.replace('\n', '')
@@ -20,20 +18,14 @@ def emojistring():
     return ' '.join(emoji_string)
 
 
-def tally(ballots):
-    """ input: list
-       output: tuple (string, int)"""
-
+def tally(ballots: List[str]) -> Tuple[str, int]:
     counter = Counter(sorted(ballots))
     winner = counter.most_common(1)[0]
 
     return winner
 
 
-def winner_list(winners):
-    """ input: list of strings (or discord user objects!)
-       output: string"""
-
+def winner_list(winners: List[str]) -> str:
     if len(winners) > 1:
         winners_ = ', '.join(winners[:-1])
         winners_ = winners_ + ' & ' + winners[-1]  # winner, winner & winner
@@ -43,7 +35,7 @@ def winner_list(winners):
     return winners_
 
 
-def get_story():
+def get_story() -> str:
     story = open(
         c.clib_path_join('games', 'madlibs.txt'),
         encoding='utf-8',
@@ -56,7 +48,7 @@ def get_story():
     return random.choice(story)
 
 
-def get_keys(format_string):
+def get_keys(format_string: str) -> List[str]:
     """format_string is a format string with embedded dictionary keys.
     Return a set containing all the keys from the format string."""
 
@@ -88,10 +80,7 @@ def get_keys(format_string):
     return keys
 
 
-def win(user_id, amount):
-    """ input: discord user ID (int), float
-       output: none"""
-
+def win(user_id: int, amount: float) -> None:
     # make sure amount is numeric
     try:
         if not isinstance(amount, float):
@@ -110,10 +99,7 @@ def win(user_id, amount):
     user.save()
 
 
-def daily(user_id, lucky_number):
-    """ input: discord user ID (int), int
-       output: string"""
-
+def daily(user_id: int, lucky_number: int) -> str:
     # fetch user
     user = CrimsoBOTUser.get(user_id)
 
@@ -140,7 +126,7 @@ def daily(user_id, lucky_number):
             jackpot = 'The winning number this time was **{}**, but no worries: '.format(
                 winning_number) if lucky_number != 0 else ''
 
-        # update daily then close (save)
+        # update daily then save
         user.daily = now
         user.save()
 
@@ -151,7 +137,7 @@ def daily(user_id, lucky_number):
     return award_string
 
 
-def check_balance(user_id):
+def check_balance(user_id: int) -> float:
     """ input: discord user ID
        output: float"""
 
@@ -160,7 +146,7 @@ def check_balance(user_id):
     return round(user.coin, 2)
 
 
-def guess_economy(n):
+def guess_economy(n: int) -> Tuple[float, float]:
     """ input: integer
        output: float, float"""
 
@@ -181,7 +167,7 @@ def guess_economy(n):
     return winnings[n], cost
 
 
-def guess_luck(user_id, n, win):
+def guess_luck(user_id: int, n: int, win: bool) -> None:
     user = CrimsoBOTUser.get(user_id)
 
     user.guess_plays += 1
@@ -192,16 +178,13 @@ def guess_luck(user_id, n, win):
     user.save()
 
 
-def guess_luck_balance(user_id):
+def guess_luck_balance(user_id: int) -> Tuple[float, int]:
     user = CrimsoBOTUser.get(user_id)
 
     return user.guess_luck, user.guess_plays
 
 
-def leaders(place1, place2, trait='coin'):
-    """ input: int, int
-       output: sorted list of CrimsoBOTUser objects"""
-
+def leaders(place1: int, place2: int, trait: str = 'coin') -> List[c.CrimsoBOTUser]:
     cb_user_object_list = []  # list of CrimsoBOTUser objects
     for user_id in c.get_stored_user_ids():
         cb_user_object_list.append(CrimsoBOTUser.get(user_id))
@@ -220,10 +203,7 @@ def leaders(place1, place2, trait='coin'):
     return cb_user_object_list[place1 - 1:place2]
 
 
-def guesslist():
-    """ input: none
-       output: string"""
-
+def guesslist() -> str:
     output = [' n  ·   cost   ·   payout',
               '·························']
     for i in range(2, 21):
@@ -231,13 +211,9 @@ def guesslist():
         w, c = guess_economy(i)
         output.append('{}{:>d}  ·  \u20A2{:>5.2f}  ·  \u20A2{:>6.2f}'.format(spc, i, c, w))
 
-    output = '\n'.join(output)
-    return output
+    return '\n'.join(output)
 
-# def slot_helper(bets):
-#     """ input: integer
-#        output: string"""
-#
+# def slot_helper(bets: int) -> str:
 #     machine = [':arrow_lower_right:│:blank:│:blank:│:blank:│:five:\n' +
 #                ':arrow_two:│11│12│13│:two:\n' +
 #                ':arrow_right:│21│22│23│:one:\n' +

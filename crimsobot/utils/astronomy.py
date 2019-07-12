@@ -1,10 +1,12 @@
 import ast
 from datetime import datetime
+from typing import List, Optional, Tuple
 
 import pandas as pd
 import requests
 from dateutil import tz
 from geopy.geocoders import Nominatim
+from geopy.location import Location
 from pyshorteners import Shortener
 from timezonefinder import TimezoneFinder
 
@@ -15,10 +17,7 @@ pd.set_option('mode.chained_assignment', None)
 
 
 # these suite of function convert heavens-above data from UTC to local time
-def swap_tz(time_utc, lat, lon):
-    """ input: datetime UTC, latitude (DD, float), longitude (DD, float)
-       output: datetime local"""
-
+def swap_tz(time_utc: datetime, lat: float, lon: float) -> datetime:
     from_zone = tz.gettz('UTC')
     tf = TimezoneFinder()
     to_zone = tz.gettz(tf.timezone_at(lng=lon, lat=lat))
@@ -28,7 +27,9 @@ def swap_tz(time_utc, lat, lon):
     return time_local
 
 
-def time_convert(dateframe_col, timeframe_col, lat, lon, modify_date=False):
+def time_convert(dateframe_col: List[str], timeframe_col: List[str],
+                 lat: float, lon: float,
+                 modify_date: bool = False) -> Tuple[List[str], List[str]]:
     for ii in range(len(dateframe_col)):
         # get the values
         date_cell = dateframe_col[ii]
@@ -51,7 +52,7 @@ def time_convert(dateframe_col, timeframe_col, lat, lon, modify_date=False):
     return dateframe_col, timeframe_col
 
 
-def convert_columns(df, lat, lon):
+def convert_columns(df: pd.DataFrame, lat: float, lon: float) -> pd.DataFrame:
     date = df[('Date', 'Date')]
     start = df[('Start', 'Time')]
     high = df[('Highest point', 'Time')]
@@ -72,10 +73,7 @@ def convert_columns(df, lat, lon):
 
 
 # this is needed for coverting n2yo times
-def localtime(unix_time, lat, lon):
-    """ input: unix time UTC (s), latitude (DD, float), longitude (DD, float)
-       output: string"""
-
+def localtime(unix_time: int, lat: float, lon: float) -> str:
     time_utc = datetime.utcfromtimestamp(unix_time)
     t = swap_tz(time_utc, lat, lon)
     time_string = '%04d-%02d-%02d | %02d:%02d:%02d' % (t.year, t.month, t.day, t.hour, t.minute, t.second)
@@ -83,7 +81,7 @@ def localtime(unix_time, lat, lon):
     return time_string
 
 
-def where_are_you(location):
+def where_are_you(location: str) -> Optional[Location]:
     """ input: string (location search)
        output: Nominatim object"""
 
@@ -91,10 +89,7 @@ def where_are_you(location):
     return geolocator.geocode(location)
 
 
-def get_iss_loc(query, source='ha'):
-    """ input: location to search, string (optional)
-       output: float, float, string, string"""
-
+def get_iss_loc(query: str, source: str = 'ha') -> Tuple[float, float, str, str]:
     location = where_are_you(query)
 
     if not location:
@@ -149,7 +144,7 @@ def get_iss_loc(query, source='ha'):
             pass_list = ['No passes in the next 10 days!']
 
         # list of strings to string
-        pass_list = '\n'.join(pass_list)
+        passes = '\n'.join(pass_list)
 
     if source == 'ha':
         # heavens-above code(gives results in UTC; not easy to parse out either)
@@ -164,21 +159,18 @@ def get_iss_loc(query, source='ha'):
                 raise Exception
             else:
                 # a few final formatting considerations
-                pass_list = dataframe.to_string()\
+                passes = dataframe.to_string()\
                     .replace('Â', ' ')\
                     .replace(' °', '° ')\
                     .replace('Date', '    ', 1)\
                     .replace('Pass type', '         ', 1)
         except Exception:
-            pass_list = 'No passes for the next ten days!'
+            passes = 'No passes for the next ten days!'
 
-    return lat, lon, pass_list, url
+    return lat, lon, passes, url
 
 
-def whereis(query):
-    """ input: string
-       output: string (url)"""
-
+def whereis(query: str) -> Optional[str]:
     # Nomanatim geocoder
     location = where_are_you(query)
 
@@ -186,8 +178,8 @@ def whereis(query):
     if not location:
         return None
 
-    lat = round(location.latitude, 4)
-    lon = round(location.longitude, 4)
+    lat = round(location.latitude, 6)
+    lon = round(location.longitude, 6)
 
     # get bounding box from raw dict
     bounding = location.raw['boundingbox']
@@ -215,5 +207,6 @@ def whereis(query):
     # return url
     # bit.ly shortner
     shortener = Shortener('Bitly', bitly_token=BITLY_TOKEN)
+    short_url = shortener.short(url)  # type: str
 
-    return shortener.short(url)
+    return short_url

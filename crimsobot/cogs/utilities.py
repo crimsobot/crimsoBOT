@@ -1,20 +1,22 @@
 import logging
+from typing import Optional
 
 import discord
 from discord.ext import commands
 
+from crimsobot.bot import CrimsoBOT
 from crimsobot.utils import astronomy, checks, image as imagetools, tools as c
 
 log = logging.getLogger(__name__)
 
 
 class Utilities(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: CrimsoBOT):
         self.bot = bot
 
     @commands.command()
     @commands.cooldown(1, 10, commands.BucketType.guild)
-    async def ping(self, ctx):
+    async def ping(self, ctx: commands.Context) -> None:
         """Need ping? 10s cooldown after use."""
 
         msg = await ctx.send('<:ping:569954524932997122>...')
@@ -24,12 +26,12 @@ class Utilities(commands.Cog):
         await msg.edit(content='<:ping:569954524932997122>...{:d}ms'.format(int(ping)))
 
     @commands.command()
-    async def color(self, ctx, hex_value):
+    async def color(self, ctx: commands.Context, hex_value: discord.Colour) -> None:
         """Get color sample from hex value."""
 
         imagetools.make_color_img(str(hex_value))
         await ctx.send(
-            '**' + hex_value + '**',
+            '**' + str(hex_value) + '**',
             file=discord.File(
                 c.clib_path_join('img', 'color.jpg'),
                 'color.jpg'
@@ -38,7 +40,7 @@ class Utilities(commands.Cog):
 
     @commands.command()
     @commands.cooldown(2, 8, commands.BucketType.guild)
-    async def palette(self, ctx, number_of_colors: int, link=None):
+    async def palette(self, ctx: commands.Context, number_of_colors: int, link: Optional[str] = None) -> None:
         """
         Get an image's main colors! Specify # of colors (1-10).
         • Must follow >palette with an integer between 1 and 10 then either an attached image or a link to an image.
@@ -71,7 +73,7 @@ class Utilities(commands.Cog):
         log.info('palette COMPLETE on %s/%s!', ctx.message.guild, ctx.message.channel)
 
     @commands.command(hidden=True)
-    async def dearcrimso(self, ctx, *, message):
+    async def dearcrimso(self, ctx: commands.Context, *, message: str) -> None:
         """Leave a message in crimso's inbox. Spam = ban"""
 
         if ctx.message.guild is not None:
@@ -87,21 +89,16 @@ class Utilities(commands.Cog):
 
     @commands.command(hidden=True)
     @checks.is_admin()
-    async def csay(self, ctx, dest, tts, *, message):
+    async def csay(self, ctx: commands.Context, dest: str, tts: bool, *, message: str) -> None:
         if dest[0] == 'c':
             recip = self.bot.get_channel(int(dest[1:]))
         elif dest[0] == 'd':
             recip = await self.bot.fetch_user(int(dest[1:]))
 
-        if tts == '1':
-            tts = True
-        else:
-            tts = False
-
         await recip.send(message, tts=tts)
 
     @commands.command()
-    async def bigmoji(self, ctx, emoji):
+    async def bigmoji(self, ctx: commands.Context, emoji: str) -> None:
         """Get larger version of either a default or custom emoji!"""
 
         path, emoji_type = imagetools.bigmoji(emoji)
@@ -116,7 +113,7 @@ class Utilities(commands.Cog):
 
     @commands.command(brief='Get info on when to see the ISS from the location you search!')
     @commands.cooldown(1, 30, commands.BucketType.user)
-    async def iss(self, ctx, *, location):
+    async def iss(self, ctx: commands.Context, *, location: str) -> None:
         """
         Find out when the International Space Station will be visible to the naked eye from the location you search!
         Search any location (city, postal code, address, etc).
@@ -146,7 +143,7 @@ class Utilities(commands.Cog):
 
     @commands.command(aliases=['map'])
     @commands.cooldown(3, 10, commands.BucketType.channel)
-    async def location(self, ctx, *, location):
+    async def location(self, ctx: commands.Context, *, location: str) -> None:
         """Get a map of a location."""
 
         location = location.upper()
@@ -160,5 +157,5 @@ class Utilities(commands.Cog):
             await ctx.send('*Location not found.*')
 
 
-def setup(bot):
+def setup(bot: CrimsoBOT) -> None:
     bot.add_cog(Utilities(bot))

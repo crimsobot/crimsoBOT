@@ -5,7 +5,7 @@ from crimsobot.utils.astronomy import swap_tz, where_are_you
 from crimsobot.utils.tools import clib_path_join
 
 
-def block(message):
+def block(message: str) -> str:
     block = ':regional_indicator_'
     numbs = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine']
 
@@ -48,7 +48,7 @@ def block(message):
     return output
 
 
-def superscript(text):
+def superscript(text: str) -> str:
     text = text.replace('a', 'ᵃ')
     text = text.replace('b', 'ᵇ')
     text = text.replace('c', 'ᶜ')
@@ -121,7 +121,7 @@ def superscript(text):
     return text
 
 
-def swap(text, char1, char2):
+def swap(text: str, char1: str, char2: str) -> str:
     text = text.replace(char1, '$$$$$')
     text = text.replace(char2, char1)
     text = text.replace('$$$$$', char2)
@@ -129,7 +129,7 @@ def swap(text, char1, char2):
     return text
 
 
-def upsidedown(text):
+def upsidedown(text: str) -> str:
     text = swap(text, 'a', 'ɐ')
     text = swap(text, 'b', 'q')
     text = swap(text, 'c', 'ɔ')
@@ -213,7 +213,7 @@ def upsidedown(text):
     return text
 
 
-def emojitime(emoji, location):
+def emojitime(emoji: str, location: str) -> str:
     # add space if regional indicator
     keep_space = False
 
@@ -229,6 +229,9 @@ def emojitime(emoji, location):
 
     # get the time where they are
     loc = where_are_you(location)
+    if not loc:
+        return '`Invalid location!`'
+
     now = swap_tz(datetime.utcnow(), loc.latitude, loc.longitude)
     hh = str(format(now.hour, '02d'))
     mm = str(format(now.minute, '02d'))
@@ -256,10 +259,7 @@ def emojitime(emoji, location):
     # reshape list of strings
     emoji_digits_reshape = ['\u200B\n']
     for i in range(0, 5):
-        line = []
-        for digit in emoji_digits:
-            line.append(digit[i])
-        line = '   '.join(line)
+        line = '   '.join([d[i] for d in emoji_digits])
         emoji_digits_reshape.append(line)
 
     return '\u2005\n'.join(emoji_digits_reshape)

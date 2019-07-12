@@ -1,5 +1,6 @@
 import random as r
 import re
+from typing import List
 
 import markovify
 import nltk
@@ -8,19 +9,19 @@ from crimsobot.utils import tools as c
 
 
 class POSifiedText(markovify.Text):
-    def word_split(self, sentence):
+    def word_split(self, sentence: str) -> List[str]:
         words = re.split(self.word_split_pattern, sentence)
         words = ['::'.join(tag) for tag in nltk.pos_tag(words)]
 
         return words
 
-    def word_join(self, words):
+    def word_join(self, words: List[str]) -> str:
         sentence = ' '.join(word.split('::')[0] for word in words)
 
         return sentence
 
 
-def clean_text(text):
+def clean_text(text: str) -> str:
     """Clean text for Markov corpus."""
 
     text = text.upper()
@@ -35,25 +36,17 @@ def clean_text(text):
     return text
 
 
-def learner(msg):
-    """ input: list
-       output: none"""
-
-    # pickle.dump('\n'.join(list), open(c.clib_path_join('text', 'crimso.p'), 'ab'))
+def learner(msg: str) -> None:
     with open(c.clib_path_join('text', 'crimso.txt'), 'a', encoding='utf8', errors='ignore') as f:
         f.write('%s\n' % msg)
 
 
-def scraper(msg):
-    """ input: list
-       output: none"""
-
-    # pickle.dump('\n'.join(list), open(c.clib_path_join('text', 'crimso.p'), 'ab'))
+def scraper(msg: str) -> None:
     with open(c.clib_path_join('text', 'scrape.txt'), 'a', encoding='utf8', errors='ignore') as f:
         f.write('%s\n' % msg)
 
 
-def scatter(msg_list):
+def scatter(msg_list: List[str]) -> str:
     """Write text file from list of strings."""
 
     with open(c.clib_path_join('text', 'scatterbrain.txt'), 'w', encoding='utf8', errors='ignore') as f:
@@ -95,7 +88,7 @@ def scatter(msg_list):
     return out
 
 
-def poem(number_lines):
+def poem(number_lines: int) -> str:
     """Write a poem."""
 
     g = open(c.clib_path_join('text', 'all.txt'), encoding='utf8', errors='ignore')
@@ -114,18 +107,17 @@ def poem(number_lines):
     other_model = markovify.Text(text2, state_size=poem_factor)
     model = markovify.combine([crimso_model, other_model], [1, 2])
 
-    output_poem = []
-    for _ in range(int(number_lines)):
+    output_poem = []  # type: List[str]
+    for _ in range(number_lines):
         outline = None
         while outline is None:
             outline = model.make_short_sentence(80)
         output_poem.append(outline)
 
-    output_poem = '\n'.join(output_poem)
-    return output_poem
+    return '\n'.join(output_poem)
 
 
-def wisdom():
+def wisdom() -> str:
     """Wisdom."""
 
     f = open(c.clib_path_join('text', 'wisdom.txt'), encoding='utf8', errors='ignore')
@@ -142,7 +134,7 @@ def wisdom():
     return output
 
 
-def rovin():
+def rovin() -> str:
     """Wisdom."""
 
     f = open(c.clib_path_join('text', 'rovin.txt'), encoding='utf8', errors='ignore')
@@ -152,15 +144,14 @@ def rovin():
     factor = 3
     model = markovify.Text(text, state_size=factor)
 
-    output = []
+    output = []  # type: List[str]
     while len(output) < 5:
         output.append(model.make_short_sentence(300))
-    output = ' '.join(output)
 
-    return output
+    return ' '.join(output)
 
 
-def crimso():
+def crimso() -> str:
     f = open(c.clib_path_join('text', 'crimso.txt'), encoding='utf8', errors='ignore')
     text = f.read()
     f.close()

@@ -1,9 +1,11 @@
 import logging
+from typing import Optional
 
 import discord
 from discord.ext import commands
 
 from config import ADMIN_USER_IDS
+from crimsobot.bot import CrimsoBOT
 from crimsobot.utils import checks, tools as c
 from crimsobot.utils.tools import CrimsoBOTUser
 
@@ -11,12 +13,12 @@ log = logging.getLogger(__name__)
 
 
 class Admin(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: CrimsoBOT) -> None:
         self.bot = bot
 
     @commands.command(hidden=True)
     @checks.is_admin()
-    async def ban(self, ctx, discord_user: discord.User):
+    async def ban(self, ctx: commands.Context, discord_user: discord.User) -> None:
         """Ban user from using crimsoBOT."""
 
         if discord_user.id in ADMIN_USER_IDS:
@@ -39,7 +41,7 @@ class Admin(commands.Cog):
 
     @commands.command(hidden=True)
     @checks.is_admin()
-    async def unban(self, ctx, discord_user: discord.User):
+    async def unban(self, ctx: commands.Context, discord_user: discord.User) -> None:
         """Unban user from using crimsoBOT."""
 
         cb_user = CrimsoBOTUser.get(discord_user.id)
@@ -58,7 +60,7 @@ class Admin(commands.Cog):
         await msg.add_reaction('🛐')
 
     @commands.command(hidden=True)
-    async def banlist(self, ctx):
+    async def banlist(self, ctx: commands.Context) -> None:
         """List of banned users."""
 
         cb_user_object_list = c.who_is_banned()
@@ -76,7 +78,7 @@ class Admin(commands.Cog):
             await ctx.send('```{}```'.format(msg))
 
     @commands.command()
-    async def info(self, ctx):
+    async def info(self, ctx: commands.Context) -> None:
         """crimsoBOT info and invites."""
 
         title = 'crimsoBOT info'
@@ -99,7 +101,7 @@ class Admin(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def servers(self, ctx):
+    async def servers(self, ctx: commands.Context) -> None:
         """List crimsoBOT's servers."""
 
         guilds = self.bot.guilds
@@ -109,7 +111,7 @@ class Admin(commands.Cog):
         )
 
     @commands.command()
-    async def serverinfo(self, ctx, server_id=None):
+    async def serverinfo(self, ctx: commands.Context, server_id: Optional[int] = None) -> None:
         """Member count, owner, channel names, roles, and emojis."""
 
         if server_id is None:
@@ -127,7 +129,7 @@ class Admin(commands.Cog):
 
     @commands.command(hidden=True)
     @checks.is_admin()
-    async def save_from(self, ctx, server_id):
+    async def save_from(self, ctx: commands.Context, server_id: int) -> None:
         """Pull crimsoBOT from a server."""
 
         guild = self.bot.get_guild(server_id)
@@ -144,5 +146,5 @@ class Admin(commands.Cog):
         log.info('All extensions have been reloaded.')
 
 
-def setup(bot):
+def setup(bot: CrimsoBOT) -> None:
     bot.add_cog(Admin(bot))

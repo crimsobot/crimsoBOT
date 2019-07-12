@@ -3,16 +3,19 @@ import logging
 import os
 import pickle
 import sys
+from typing import Dict, Iterable, List, Optional, Union
 
-from discord import ChannelType, Embed
+from discord import ChannelType, DMChannel, Embed, GroupChannel, Guild, Member, TextChannel, User
 
 log = logging.getLogger(__name__)
 
 sys.modules['crimsotools'] = sys.modules[__name__]
 
+Messageables = Union[DMChannel, GroupChannel, Member, TextChannel, User]
+
 
 class CrimsoBOTUser(object):
-    def __init__(self, user_id):
+    def __init__(self, user_id: int) -> None:
         self.ID = user_id       # Discord snowflake
         self.banned = False     # Whether user is banned from using the bot
         self.coin = 0.0         # User's account balance
@@ -27,7 +30,7 @@ class CrimsoBOTUser(object):
     # Tech debt: ensure attributes previously not present in __init__ are now present
     # Avoids having to handle AttributeError everywhere
     @staticmethod
-    def _ensure_attrs(state):
+    def _ensure_attrs(state: Dict) -> None:
         # Fix legacy discord.py string IDs
         if isinstance(state['ID'], str):
             state['ID'] = int(state['ID'])
@@ -41,14 +44,14 @@ class CrimsoBOTUser(object):
         state['guess_luck'] = state.get('guess_luck', 0.0)
 
     # pickle.dump
-    def __getstate__(self):
+    def __getstate__(self) -> Dict:
         state = self.__dict__.copy()
         self._ensure_attrs(state)
 
         return state
 
     # pickle.load
-    def __setstate__(self, state):
+    def __setstate__(self, state: Dict) -> None:
         self._ensure_attrs(state)
         self.__dict__.update(state)
 
@@ -68,7 +71,7 @@ class CrimsoBOTUser(object):
 
         return user
 
-    def save(self):
+    def save(self) -> None:
         filename = clib_path_join('users', str(self.ID) + '.pickle')
 
         # Serialize to user file
@@ -76,7 +79,7 @@ class CrimsoBOTUser(object):
             pickle.dump(self, f)
 
 
-def checkin(cmd, guild, channel, running):
+def checkin(cmd: str, guild: Guild, channel: Messageables, running: List[int]) -> bool:
     """Is game already running in channel/DM?"""
 
     if channel.id in running:
@@ -91,8 +94,10 @@ def checkin(cmd, guild, channel, running):
 
     log.info('%s running on %s/%s (%s)...', cmd, guild_name, channel, channel.id)
 
+    return True
 
-def checkout(cmd, guild, channel, running):
+
+def checkout(cmd: str, guild: Guild, channel: Messageables, running: List[int]) -> None:
     """Is game already running in channel/DM?"""
 
     running.remove(channel.id)
@@ -105,7 +110,8 @@ def checkout(cmd, guild, channel, running):
     log.info('%s COMPLETE on %s/%s!', cmd, guild_name, channel)
 
 
-def crimbed(title, description, thumbnail=None, color=0x5AC037):
+def crimbed(title: Optional[str], description: Optional[str], thumbnail: Optional[str] = None,
+            color: Optional[int] = 0x5AC037) -> Embed:
     embed = Embed(title=title, description=description, color=color)
     if thumbnail is not None:
         embed.set_thumbnail(url=thumbnail)
@@ -113,7 +119,7 @@ def crimbed(title, description, thumbnail=None, color=0x5AC037):
     return embed
 
 
-def crimsplit(long_string, break_char, limit=2000):
+def crimsplit(long_string: str, break_char: str, limit: int = 2000) -> List[str]:
     """Break a string."""
 
     list_of_strings = []
@@ -137,15 +143,12 @@ def crimsplit(long_string, break_char, limit=2000):
     return list_of_strings
 
 
-def is_banned(discord_user_id):
+def is_banned(discord_user_id: int) -> bool:
     cb_user_object = CrimsoBOTUser.get(discord_user_id)
     return cb_user_object.banned
 
 
-def who_is_banned():
-    """ input: none
-       output: sorted list of CrimsoBOTUser objects"""
-
+def who_is_banned() -> List[CrimsoBOTUser]:
     cb_user_object_list = []
 
     for user_id in get_stored_user_ids():
@@ -154,21 +157,21 @@ def who_is_banned():
     return [u for u in cb_user_object_list if u.banned]
 
 
-def get_stored_user_ids():
+def get_stored_user_ids() -> Iterable[int]:
     """Get a list of users the bot has stored data for"""
 
     for f in os.listdir(clib_path_join('users')):
         if not f.startswith('.'):
-            yield f[:-7]
+            yield int(f[:-7])
 
 
-def clib_path_join(*paths):
+def clib_path_join(*paths: str) -> str:
     utils_path = os.path.dirname(os.path.abspath(__file__))
 
     return os.path.join(utils_path, '..', 'data', *paths)
 
 
-def get_guild_info_embed(guild):
+def get_guild_info_embed(guild: Guild) -> Embed:
     # initialize embed
     embed = Embed(
         title=guild.name,

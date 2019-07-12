@@ -1,5 +1,6 @@
 import io
 import random
+from typing import List, Optional, Tuple
 
 from PIL import Image
 
@@ -7,24 +8,15 @@ from crimsobot.data.tarot import DECK
 from crimsobot.utils.tools import clib_path_join
 
 
-def draw_background(size):
-    """ input: tuple
-       output: PIL image object"""
-
+def draw_background(size: Tuple[int, int]) -> Image.Image:
     return Image.new('RGBA', size, (0, 0, 0, 0))
 
 
-def get_cards(n):
-    """ input: integer
-       output: dicts"""
-
+def get_cards(n: int) -> List[dict]:
     return random.sample(DECK, n)
 
 
-def paste_card(bg_image, card_path, pos_xy, reverse):
-    """ input: PIL img object x 2, tuple
-       output: none"""
-
+def paste_card(bg_image: Image.Image, card_path: str, pos_xy: Tuple[int, int], reverse: bool) -> None:
     card_image = Image.open(card_path)
     if reverse:
         card_image = card_image.rotate(180)
@@ -32,12 +24,12 @@ def paste_card(bg_image, card_path, pos_xy, reverse):
     bg_image.paste(card_image, pos_xy)
 
 
-def reading(spread):
-    """ input: string
-       output: list"""
-
+def reading(spread: str) -> Tuple[Optional[io.BytesIO], List[str]]:
     w, h = (200, 326)  # card size
     space = 20  # space between cards
+
+    fp = None
+    interpret = []  # type: List[str]
 
     if spread is None or 'ppf':
         # three cards dealt horizontally
@@ -49,7 +41,7 @@ def reading(spread):
             (w + 2 * space, space),
             (2 * w + 3 * space, space)
         ]
-        interpret = ['**PAST · PRESENT · FUTURE**']
+        interpret.append('**PAST · PRESENT · FUTURE**')
 
         for ii in range(len(cards)):
             card = clib_path_join('tarot', 'deck', cards[ii]['image'])
@@ -64,12 +56,5 @@ def reading(spread):
         fp = io.BytesIO()
         bg.save(fp, 'PNG')
         fp.seek(0)
-    elif spread == 'celtic':
-        interpret = ''
-        fp = None
-        pass
-    else:
-        interpret = ''
-        fp = None
 
     return fp, interpret

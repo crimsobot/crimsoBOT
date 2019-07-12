@@ -10,7 +10,7 @@ from crimsobot.utils import checks, markov as m, tools as c
 
 
 class CrimsoBOT(commands.Bot):
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs) -> None:
         command_prefix = '>'
 
         super().__init__(command_prefix, **kwargs)
@@ -22,7 +22,7 @@ class CrimsoBOT(commands.Bot):
             'crimsobot.cogs.mystery', 'crimsobot.cogs.text', 'crimsobot.cogs.utilities'
         ]
 
-    def load_extensions(self):
+    def load_extensions(self) -> None:
         for name in self._extensions_to_load:
             try:
                 self.load_extension(name)
@@ -36,13 +36,13 @@ class CrimsoBOT(commands.Bot):
             except Exception as error:
                 self.log.error('%s cannot be reloaded: %s', name, error)
 
-    async def on_ready(self):
+    async def on_ready(self) -> None:
         self.log.info('crimsoBOT is online')
 
-    async def on_resumed(self):
+    async def on_resumed(self) -> None:
         self.log.warning('crimsoBOT RECONNECT')
 
-    async def on_command_error(self, ctx: commands.Context, error: Exception):
+    async def on_command_error(self, ctx: commands.Context, error: Exception) -> None:
         """
         Displays error messages to user for cooldown and CommandNotFound,
         and suppresses verbose error text for both in the console.
@@ -89,7 +89,7 @@ class CrimsoBOT(commands.Bot):
         else:
             self.log.error('Uncaught exception', exc_info=error)
 
-    async def on_message(self, message: discord.Message):
+    async def on_message(self, message: discord.Message) -> None:
         if c.is_banned(message.author.id):
             return
 
@@ -121,7 +121,7 @@ class CrimsoBOT(commands.Bot):
         if random.random() < 0.001 and not is_dm:
             await message.channel.send(m.crimso())
 
-    async def on_guild_join(self, guild: discord.Guild):
+    async def on_guild_join(self, guild: discord.Guild) -> None:
         """Notify me when added to guild"""
 
         if guild.id in BANNED_GUILD_IDS:

@@ -1,6 +1,7 @@
 import json
 import os
 from io import BytesIO
+from typing import List, Optional, Tuple
 
 import matplotlib.pylab as plt
 import numpy as np
@@ -13,12 +14,13 @@ from PIL import ImageOps
 from colormath.color_conversions import convert_color
 from colormath.color_diff import delta_e_cie2000
 from colormath.color_objects import LabColor, sRGBColor
+from discord.ext.commands import Context
 from scipy.signal import convolve2d
 
 from crimsobot.utils import tools as c
 
 
-def remove_unicode_prefix(word):
+def remove_unicode_prefix(word: str) -> str:
     word_with_prefix = word.encode('unicode-escape').decode('utf-8', 'strict')
 
     if r'\U' in word_with_prefix:
@@ -31,7 +33,7 @@ def remove_unicode_prefix(word):
     return word
 
 
-def bigmoji(emoji):
+def bigmoji(emoji: str) -> Tuple[Optional[str], Optional[str]]:
     # custom emojis <[a]:emoji_name:emoji_id>
     if emoji.startswith('<:') or emoji.startswith('<a:'):
         ind = emoji.find(':', 3)
@@ -67,18 +69,20 @@ def bigmoji(emoji):
             f = open(path, 'rb')
             f.close()
         except OSError:
-            path = False
-            emoji_type = False
+            return None, None
 
     return path, emoji_type
 
 
-def fetch_image(ctx, arg):
+def fetch_image(ctx: Context, arg: Optional[str]) -> Image.Image:
     """Determine type of input, return image file."""
 
+    img = None
+
     try:
-        response = requests.get(arg)
-        img = Image.open(BytesIO(response.content))
+        if arg:
+            response = requests.get(arg)
+            img = Image.open(BytesIO(response.content))
     except Exception:
         if arg is None:
             # look for message attachment
@@ -98,13 +102,17 @@ def fetch_image(ctx, arg):
                 img = Image.open(big_emoji)
             except IOError:
                 big_emoji, _ = bigmoji(arg)
-                response = requests.get(big_emoji)
-                img = Image.open(BytesIO(response.content))
+                if big_emoji:
+                    response = requests.get(big_emoji)
+                    img = Image.open(BytesIO(response.content))
+
+    if not img:
+        img = Image.new('RGB', (0, 0), (0, 0, 0))
 
     return img
 
 
-def hex_to_rgb(color):
+def hex_to_rgb(color: str) -> Tuple[int, int, int]:
     r = int(color[0:2], 16)
     g = int(color[2:4], 16)
     b = int(color[4:6], 16)
@@ -112,7 +120,7 @@ def hex_to_rgb(color):
     return r, g, b
 
 
-def make_color_img(hex_str):
+def make_color_img(hex_str: str) -> None:
     """Generate image given a hex value."""
 
     if hex_str.startswith('#'):
@@ -124,12 +132,12 @@ def make_color_img(hex_str):
     img.save(c.clib_path_join('img', 'color.jpg'))
 
 
-def boop(the_booper, the_booped):
+def boop(the_booper: str, the_booped: str) -> None:
     # font selection
     f = ImageFont.truetype(c.clib_path_join('img', 'Roboto-BlackItalic.ttf'), 36)
 
     # add line breaks if needed to inputs
-    def add_line_breaks(text):
+    def add_line_breaks(text: str) -> str:
         """Add newlines (natural if possible) to string."""
 
         ind = 16
@@ -144,6 +152,8 @@ def boop(the_booper, the_booped):
             if index[ii] >= ind:
                 text = text[:index[ii - 1] + 1] + '\n' + text[index[ii - 1] + 1:]
                 return text
+
+        return text
 
     the_booper = add_line_breaks(the_booper)
     the_booped = add_line_breaks(the_booped)
@@ -164,7 +174,7 @@ def boop(the_booper, the_booped):
     img.save(c.clib_path_join('img', 'booped.jpg'))
 
 
-def fishe(ctx, user_input):
+def fishe(ctx: Context, user_input: Optional[str]) -> None:
     img = fetch_image(ctx, user_input)
     img = img.convert('RGBA')
     img = img.resize((71, 105), resample=Image.BICUBIC)
@@ -174,7 +184,7 @@ def fishe(ctx, user_input):
     base.save(c.clib_path_join('img', 'needping.png'))
 
 
-def xok(ctx, user_input):
+def xok(ctx: Context, user_input: Optional[str]) -> str:
     img = fetch_image(ctx, user_input)
     img = img.convert('RGBA')
 
@@ -192,7 +202,7 @@ def xok(ctx, user_input):
     return filename
 
 
-def ban_overlay(ctx, user_input):
+def ban_overlay(ctx: Context, user_input: Optional[str]) -> None:
     img = fetch_image(ctx, user_input)
     img = img.convert('RGBA')
 
@@ -209,7 +219,8 @@ def ban_overlay(ctx, user_input):
     img.save(c.clib_path_join('img', 'needban.png'))
 
 
-def pingbadge(ctx, user_input, pos):
+# TODO: change pos to int
+def pingbadge(ctx: Context, user_input: Optional[str], pos: str) -> bool:
     img = fetch_image(ctx, user_input)
     img = img.convert('RGBA')
 
@@ -237,9 +248,11 @@ def pingbadge(ctx, user_input, pos):
     img.paste(badge, corner, badge)
     img.save(c.clib_path_join('img', 'pingbadge.png'))
 
+    return True
+
 
 # the following scripts and functions help make_emoji_image()
-def hex_to_srgb(base):
+def hex_to_srgb(base: str) -> LabColor:
     r, g, b = hex_to_rgb(base)
 
     color_rgb = sRGBColor(r, g, b)
@@ -248,7 +261,7 @@ def hex_to_srgb(base):
     return color
 
 
-def quantizetopalette(silf, palette):
+def quantizetopalette(silf: Image, palette: Image) -> Image.Image:
     """Convert an RGB or L mode image to use a given P image's palette."""
 
     silf.load()
@@ -280,7 +293,7 @@ palimage = Image.new('P', (1, 1))
 palimage.putpalette(palettedata)
 
 
-def lookup_emoji(hex_in):
+def lookup_emoji(hex_in: str) -> str:
     """search (bc quantizing palette not working)"""
 
     color_in = hex_to_srgb(hex_in)
@@ -288,12 +301,14 @@ def lookup_emoji(hex_in):
     nearest = convert_color(nearest, sRGBColor)
     nearest = nearest.get_rgb_hex()
 
-    for key, value in color_dict.items():
+    for key, value in color_dict.items():  # type: str, str
         if nearest == key:
             return value
 
+    return ''
 
-def make_emoji_image(ctx, user_input):
+
+def make_emoji_image(ctx: Context, user_input: Optional[str]) -> List[str]:
     """Kept as reference; no longer in use."""
 
     # get image from url
@@ -308,7 +323,7 @@ def make_emoji_image(ctx, user_input):
     width, height = img.size
     ratio = height / width
     if ratio > 3:
-        return False
+        return []
     img = img.resize((36, int(36 * ratio)), resample=Image.BICUBIC)
 
     # quantize to palette
@@ -330,7 +345,7 @@ def make_emoji_image(ctx, user_input):
     return string_list
 
 
-def make_emoji_image_v2(ctx, user_input):
+def make_emoji_image_v2(ctx: Context, user_input: Optional[str]) -> List[str]:
     """Kept as reference; no longer in use."""
 
     # get image from url
@@ -348,7 +363,7 @@ def make_emoji_image_v2(ctx, user_input):
     width, height = img.size
     ratio = height / width
     if ratio > 3:
-        return False
+        return []
     img = img.resize((36, int(36 * ratio)), resample=Image.BICUBIC)
     img = img.convert('RGB', dither=None)
 
@@ -368,7 +383,7 @@ def make_emoji_image_v2(ctx, user_input):
     return string_list
 
 
-def make_emoji_image_v3(ctx, user_input):
+def make_emoji_image_v3(ctx: Context, user_input: Optional[str]) -> List[str]:
     """Make image from emojis!"""
 
     # get image
@@ -430,7 +445,7 @@ def make_emoji_image_v3(ctx, user_input):
     return string_list
 
 
-def make_mosaic(colors):
+def make_mosaic(colors: List[int]) -> None:
     """Make a mosaic!"""
     # first, some stuff
     img_path = c.clib_path_join('img', 'mosaicTiles')
@@ -469,7 +484,7 @@ def make_mosaic(colors):
     mosaic.save(c.clib_path_join('img', 'mosaic.png'))
 
 
-def get_image_palette(ctx, n, user_input):
+def get_image_palette(ctx: Context, n: int, user_input: Optional[str]) -> str:
     """Get colors of image palette!"""
 
     # get image from url
@@ -506,7 +521,7 @@ def get_image_palette(ctx, n, user_input):
     return ' '.join(hex_colors)
 
 
-def acid(ctx, window, user_input):
+def acid(ctx: Context, window: int, user_input: Optional[str]) -> str:
     img = fetch_image(ctx, user_input)
 
     width, height = img.size
