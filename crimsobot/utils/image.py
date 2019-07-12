@@ -1,7 +1,7 @@
+import json
 import os
 from io import BytesIO
 
-import json
 import matplotlib.pylab as plt
 import numpy as np
 import requests
@@ -15,7 +15,7 @@ from colormath.color_diff import delta_e_cie2000
 from colormath.color_objects import LabColor, sRGBColor
 from scipy.signal import convolve2d
 
-import crimsobot.utils.tools as c
+from crimsobot.utils import tools as c
 
 
 def remove_unicode_prefix(word):

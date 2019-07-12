@@ -2,7 +2,7 @@ import random
 from collections import Counter
 from datetime import datetime
 
-import crimsobot.utils.tools as c
+from crimsobot.utils import tools as c
 from crimsobot.utils.tools import CrimsoBOTUser
 
 

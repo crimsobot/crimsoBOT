@@ -6,9 +6,8 @@ import time
 import discord
 from discord.ext import commands
 
-import crimsobot.utils.games as crimsogames
-import crimsobot.utils.tools as c
 from config import ADMIN_USER_IDS
+from crimsobot.utils import games as crimsogames, tools as c
 
 # lists for games in progress
 madlibs_channels = []

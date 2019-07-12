@@ -5,10 +5,8 @@ import random
 import discord
 from discord.ext import commands
 
-import crimsobot.utils.markov as m
-import crimsobot.utils.tools as c
 from config import ADMIN_USER_IDS, BANNED_GUILD_IDS, DM_LOG_CHANNEL_ID, LEARNER_CHANNEL_IDS, LEARNER_USER_IDS
-from crimsobot.utils import checks
+from crimsobot.utils import checks, markov as m, tools as c
 
 
 class CrimsoBOT(commands.Bot):

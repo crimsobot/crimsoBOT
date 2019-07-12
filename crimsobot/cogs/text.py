@@ -1,8 +1,6 @@
 from discord.ext import commands
 
-import crimsobot.utils.image as imagetools
-import crimsobot.utils.text as texttools
-import crimsobot.utils.tools as c
+from crimsobot.utils import image as imagetools, text as texttools, tools as c
 
 
 class Text(commands.Cog):
@@ -47,9 +45,9 @@ class Text(commands.Cog):
         if emoji_check is False:
             # if no emoji specified, then input "emoji" is actually first word of location
             location = [emoji, ' '.join(location)]
-            emoji = '<:xok:563825728102334465>' # default to xok emoji in crimsoBOT server
+            emoji = '<:xok:563825728102334465>'  # default to xok emoji in crimsoBOT server
 
-        location = ' '.join(location) # location from tuple to string
+        location = ' '.join(location)  # location from tuple to string
 
         # then check for these not-actually-emojis
         not_real_emojis = ['©', '®', '™']

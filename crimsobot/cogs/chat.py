@@ -3,9 +3,8 @@ import random
 
 from discord.ext import commands
 
-import crimsobot.utils.markov as m
-import crimsobot.utils.tools as c
 from config import ADMIN_USER_IDS, SCRAPER_USER_IDS
+from crimsobot.utils import markov as m, tools as c
 
 
 class Chat(commands.Cog):

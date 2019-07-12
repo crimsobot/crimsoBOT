@@ -3,9 +3,8 @@ import logging
 import discord
 from discord.ext import commands
 
-import crimsobot.utils.tools as c
 from config import ADMIN_USER_IDS
-from crimsobot.utils import checks
+from crimsobot.utils import checks, tools as c
 from crimsobot.utils.tools import CrimsoBOTUser
 
 log = logging.getLogger(__name__)

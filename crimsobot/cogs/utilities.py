@@ -3,10 +3,8 @@ import logging
 import discord
 from discord.ext import commands
 
-import crimsobot.utils.astronomy as astronomy
-import crimsobot.utils.image as imagetools
-import crimsobot.utils.tools as c
 from config import ADMIN_USER_IDS
+from crimsobot.utils import astronomy, image as imagetools, tools as c
 
 log = logging.getLogger(__name__)
 

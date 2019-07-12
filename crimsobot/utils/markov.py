@@ -4,7 +4,7 @@ import re
 import markovify
 import nltk
 
-import crimsobot.utils.tools as c
+from crimsobot.utils import tools as c
 
 
 class POSifiedText(markovify.Text):

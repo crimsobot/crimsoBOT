@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 
-import crimsobot.utils.tarot as tarot
+from crimsobot.utils import tarot
 
 
 class Mystery(commands.Cog):
