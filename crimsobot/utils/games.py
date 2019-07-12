@@ -3,6 +3,7 @@ from collections import Counter
 from datetime import datetime
 
 import crimsobot.utils.tools as c
+from crimsobot.utils.tools import CrimsoBOTUser
 
 
 def emojistring():
@@ -100,14 +101,14 @@ def win(user_id, amount):
         amount = float(amount)
 
     # get user
-    user = c.fetch(user_id)
+    user = CrimsoBOTUser.get(user_id)
 
     # add coin
     user.coin += amount
 
     # force round
     user.coin = round(user.coin, 2)
-    c.close(user)
+    user.save()
 
 
 def daily(user_id, lucky_number):
@@ -115,7 +116,7 @@ def daily(user_id, lucky_number):
        output: string"""
 
     # fetch user
-    user = c.fetch(user_id)
+    user = CrimsoBOTUser.get(user_id)
 
     # get current time
     now = datetime.utcnow()
@@ -142,7 +143,7 @@ def daily(user_id, lucky_number):
 
         # update daily then close (save)
         user.daily = now
-        c.close(user)
+        user.save()
 
         # update their balance now (will repoen and reclose user)
         win(user_id, daily_award)
@@ -155,7 +156,7 @@ def check_balance(user_id):
     """ input: discord user ID
        output: float"""
 
-    user = c.fetch(user_id)
+    user = CrimsoBOTUser.get(user_id)
     # force round and close
     return round(user.coin, 2)
 
@@ -182,18 +183,18 @@ def guess_economy(n):
 
 
 def guess_luck(user_id, n, win):
-    user = c.fetch(user_id)
+    user = CrimsoBOTUser.get(user_id)
 
     user.guess_plays += 1
     user.guess_expected += 1 / n
     user.guess_wins += win
     user.guess_luck = user.guess_wins / user.guess_expected
 
-    c.close(user)
+    user.save()
 
 
 def guess_luck_balance(user_id):
-    user = c.fetch(user_id)
+    user = CrimsoBOTUser.get(user_id)
 
     return user.guess_luck, user.guess_plays
 
@@ -204,7 +205,7 @@ def leaders(place1, place2, trait='coin'):
 
     cb_user_object_list = []  # list of CrimsoBOTUser objects
     for user_id in c.get_stored_user_ids():
-        cb_user_object_list.append(c.fetch(user_id))
+        cb_user_object_list.append(CrimsoBOTUser.get(user_id))
 
     # sort list of objects by coin
     if trait == 'coin':

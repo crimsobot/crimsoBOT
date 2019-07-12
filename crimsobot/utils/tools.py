@@ -76,47 +76,6 @@ class CrimsoBOTUser(object):
             pickle.dump(self, f)
 
 
-def fetch(user_id):
-    """ input: discord user ID
-       output: CrimsoBOTUser object"""
-
-    filename = clib_path_join('users', str(user_id) + '.pickle')
-
-    # Unserialize from user file
-    try:
-        with open(filename, 'rb') as f:
-            user = pickle.load(f)
-
-    # User file doesn't exist, create it.
-    except FileNotFoundError:
-        user = CrimsoBOTUser(user_id)
-        user.ID = user_id
-
-    # Try again...
-    except OSError:
-        with open(filename, 'rb') as f:
-            user = pickle.load(f)
-
-    return user
-
-
-def close(user):
-    """ input: crimsoBOT user object
-       output: none"""
-
-    filename = clib_path_join('users', str(user.ID) + '.pickle')
-
-    # Serialize to user file
-    try:
-        with open(filename, 'wb') as f:
-            pickle.dump(user, f)
-
-    # Try again...
-    except OSError:
-        with open(filename, 'wb') as f:
-            pickle.dump(user, f)
-
-
 def checkin(cmd, guild, channel, running):
     """Is game already running in channel/DM?"""
 
@@ -202,7 +161,7 @@ def who_is_banned():
     cb_user_object_list = []
 
     for user_id in get_stored_user_ids():
-        cb_user_object_list.append(fetch(user_id))
+        cb_user_object_list.append(CrimsoBOTUser.get(user_id))
 
     return [u for u in cb_user_object_list if u.banned]
 
