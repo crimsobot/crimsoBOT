@@ -137,18 +137,6 @@ def crimsplit(long_string, break_char, limit=2000):
     return list_of_strings
 
 
-def ban(discord_user_id):
-    cb_user_object = CrimsoBOTUser.get(discord_user_id)
-    cb_user_object.banned = True
-    cb_user_object.save()
-
-
-def unban(discord_user_id):
-    cb_user_object = CrimsoBOTUser.get(discord_user_id)
-    cb_user_object.banned = False
-    cb_user_object.save()
-
-
 def is_banned(discord_user_id):
     cb_user_object = CrimsoBOTUser.get(discord_user_id)
     return cb_user_object.banned
