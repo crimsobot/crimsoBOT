@@ -68,7 +68,9 @@ class Admin(commands.Cog):
             discord_user_object = await self.bot.fetch_user(user.ID)
             banned_users.append('· {u.name}#{u.discriminator}'.format(u=discord_user_object))
 
-        # number_of_banned_users = len(banned_users)
+        if not banned_users:
+            banned_users.append('No users are banned... yet')
+
         msg_string = '\n'.join(banned_users)
         msg_list = c.crimsplit(msg_string, '\n', limit=1990)
         for msg in msg_list:
