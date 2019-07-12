@@ -131,8 +131,9 @@ class Admin(commands.Cog):
         """Pull crimsoBOT from a server."""
 
         guild = self.bot.get_guild(server_id)
-        await guild.leave()
-        log.info('crimsoBOT REMOVED from %s [%s]', guild, guild.id)
+        if guild:
+            await guild.leave()
+            log.info('crimsoBOT REMOVED from %s [%s]', guild, guild.id)
 
     @commands.command(hidden=True)
     @checks.is_admin()
