@@ -270,7 +270,7 @@ for hex_color in color_dict:
     hex_digits = hex_color[1:]
 
     rgb.append(hex_to_rgb(hex_digits))
-    srgb_color_list.append(hex_to_srgb(hex_color))
+    srgb_color_list.append(hex_to_srgb(hex_digits))
 
 # flatten list of tuples into list
 palettedata = [i for sub in rgb for i in sub]
@@ -295,7 +295,7 @@ def lookup_emoji(hex_in):
 
 def make_emoji_image(ctx, user_input):
     """Kept as reference; no longer in use."""
-    
+
     # get image from url
     img = fetch_image(ctx, user_input)
     img = img.convert('RGB')
@@ -373,7 +373,7 @@ def make_emoji_image_v3(ctx, user_input):
 
     # get image
     input_image = fetch_image(ctx, user_input)
-    input_iamge = input_image.convert('RGB')
+    input_image = input_image.convert('RGB')
 
     # Nyquist sampling apply here? just to be safe
     n = len(color_dict) * 2
@@ -390,29 +390,29 @@ def make_emoji_image_v3(ctx, user_input):
 
     # first: quantize to palette (has to be RGB mode for that)
     input_image = input_image.convert('RGB', dither=0)
-    input_image_P = input_image.quantize(palette=palimage, dither=0)
+    input_image_p = input_image.quantize(palette=palimage, dither=0)
 
     # create dict to match palette number with actual color (for later step)
     # keys = palette integers; values = RGB tuples
-    color_list = input_image_P.getcolors()
-    color_list_P = sorted(color_list, key=lambda tup: tup[0], reverse=True)
+    color_list = input_image_p.getcolors()
+    color_list_p = sorted(color_list, key=lambda tup: tup[0], reverse=True)
     color_keys = []
-    for color in color_list_P:
+    for color in color_list_p:
         color_keys.append(color[1])
 
     # now for the value tuples
-    input_image_RGB = input_image_P.convert('RGB')
-    color_list = input_image_RGB.getcolors()
-    color_list_RGB = sorted(color_list, key=lambda tup: tup[0], reverse=True)
+    input_image_rgb = input_image_p.convert('RGB')
+    color_list = input_image_rgb.getcolors()
+    color_list_rgb = sorted(color_list, key=lambda tup: tup[0], reverse=True)
     color_values = []
-    for color in color_list_RGB:
+    for color in color_list_rgb:
         color_values.append(color[1])
 
     # and finally, the dict
     image_dict = dict(zip(color_keys, color_values))
 
     # numpy image is array of the "palette keys" as strings
-    numpy_image = np.array(input_image_P, dtype=str)
+    numpy_image = np.array(input_image_p, dtype=str)
 
     # lookup emoji once per color, then replace in image array
     for key, value in image_dict.items():
@@ -426,7 +426,7 @@ def make_emoji_image_v3(ctx, user_input):
     string_list = []
     for row in numpy_image:
         string_list.append(''.join(row))
-    
+
     return string_list
 
 
