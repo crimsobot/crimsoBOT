@@ -450,7 +450,7 @@ class Games(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command(aliases=['luck'])
-    async def luckindex(self, ctx, whose: Optional[discord.Member] = None) -> None:
+    async def luckindex(self, ctx: commands.Context, whose: Optional[discord.Member] = None) -> None:
         """Check your or someone else's luck at Guessmoji!"""
 
         if not whose:

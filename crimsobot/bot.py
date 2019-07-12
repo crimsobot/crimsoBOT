@@ -1,6 +1,7 @@
 import asyncio
 import logging
 import random
+from typing import Dict
 
 import discord
 from discord.ext import commands
@@ -10,7 +11,7 @@ from crimsobot.utils import checks, markov as m, tools as c
 
 
 class CrimsoBOT(commands.Bot):
-    def __init__(self, **kwargs) -> None:
+    def __init__(self, **kwargs: Dict) -> None:
         command_prefix = '>'
 
         super().__init__(command_prefix, **kwargs)
