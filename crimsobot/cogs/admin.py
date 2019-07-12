@@ -75,7 +75,7 @@ class Admin(commands.Cog):
         for msg in msg_list:
             await ctx.send('```{}```'.format(msg))
 
-    @commands.command(pass_context=True)
+    @commands.command()
     async def info(self, ctx):
         """crimsoBOT info and invites."""
 
@@ -98,17 +98,17 @@ class Admin(commands.Cog):
 
         await ctx.send(embed=embed)
 
-    @commands.command(pass_context=True)
+    @commands.command()
     async def servers(self, ctx):
         """List crimsoBOT's servers."""
 
-        guilds = list(self.bot.guilds)
+        guilds = self.bot.guilds
         await ctx.send(
             '**Connected on {} servers:**\n'.format(len(guilds)) +
             '\n'.join('`[{g.id}]` | {g.name}'.format(g=guild) for guild in guilds)
         )
 
-    @commands.command(pass_context=True)
+    @commands.command()
     async def serverinfo(self, ctx, server_id=None):
         """Member count, owner, channel names, roles, and emojis."""
 
@@ -122,10 +122,10 @@ class Admin(commands.Cog):
         # ...and send
         try:
             await ctx.send(embed=embed)
-        except Exception:
+        except discord.HTTPException:
             log.info("Guild info still too long, can't send...")
 
-    @commands.command(pass_context=True, hidden=True)
+    @commands.command(hidden=True)
     @checks.is_admin()
     async def save_from(self, ctx, server_id):
         """Pull crimsoBOT from a server."""

@@ -81,15 +81,15 @@ def checkin(cmd, guild, channel, running):
 
     if channel.id in running:
         return False
+
+    running.append(channel.id)
+
+    if guild:
+        guild_name = guild.name
     else:
-        running.append(channel.id)
+        guild_name = '*'
 
-        if guild:
-            guild_name = guild.name
-        else:
-            guild_name = '*'
-
-        log.info('%s running on %s/%s (%s)...', cmd, guild_name, channel, channel.id)
+    log.info('%s running on %s/%s (%s)...', cmd, guild_name, channel, channel.id)
 
 
 def checkout(cmd, guild, channel, running):

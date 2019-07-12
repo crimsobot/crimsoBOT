@@ -57,6 +57,9 @@ class Chat(commands.Cog):
             joiner = ' '
         elif join == 'newline':
             joiner = '\n'
+        else:
+            raise commands.BadArgument('Join type is invalid.')
+
         text = joiner.join(text)
 
         msgs = c.crimsplit(text, '\u200A', 1950)
@@ -68,7 +71,7 @@ class Chat(commands.Cog):
             else:
                 dest = self.bot.get_channel(place)
         except AttributeError:
-            raise commands.errors.CommandInvokeError('wrong place!')
+            raise commands.BadArgument('Destination is invalid.')
 
         for msg in msgs:
             await dest.send(msg)
@@ -78,17 +81,17 @@ class Chat(commands.Cog):
         """Spits out a poem."""
 
         fake_author = [
-            ['Crimso Allen Poe', 1827, 1848],
-            ['Maya Crimsolou', 1969, 2013],
-            ['Crimbert Frost', 1894, 1959],
-            ['Crumi', 1225, 1260],
-            ['William Crimsworth', 1793, 1843],
-            ['t.s. crimsiot', 1910, 1958],
-            ['Crimily Dickinson', 1858, 1886],
-            ['William Crimso Williams', 1910, 1962],
-            ['Crymsia Plath', 1960, 1963],
-            ['Crimtrude Stein', 1909, 1933],
-            ['Allen Crimsberg', 1950, 1997]
+            ('Crimso Allen Poe', 1827, 1848),
+            ('Maya Crimsolou', 1969, 2013),
+            ('Crimbert Frost', 1894, 1959),
+            ('Crumi', 1225, 1260),
+            ('William Crimsworth', 1793, 1843),
+            ('t.s. crimsiot', 1910, 1958),
+            ('Crimily Dickinson', 1858, 1886),
+            ('William Crimso Williams', 1910, 1962),
+            ('Crymsia Plath', 1960, 1963),
+            ('Crimtrude Stein', 1909, 1933),
+            ('Allen Crimsberg', 1950, 1997),
         ]
 
         descr = m.poem(int(random.gauss(5, 1)))

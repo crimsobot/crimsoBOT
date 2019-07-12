@@ -15,7 +15,6 @@ def emojistring():
         line = line.replace('\n', '')
         emojis.append(line)
 
-    emojis = ''.join(emojis)
     emoji_string = random.sample(emojis, random.randint(3, 5))
 
     return ' '.join(emoji_string)
@@ -25,8 +24,8 @@ def tally(ballots):
     """ input: list
        output: tuple (string, int)"""
 
-    c = Counter(sorted(ballots))
-    winner = c.most_common(1)[0]
+    counter = Counter(sorted(ballots))
+    winner = counter.most_common(1)[0]
 
     return winner
 
@@ -67,7 +66,7 @@ def get_keys(format_string):
     for _ in range(repetitions):
         start = format_string.find('{', end) + 1  # pass the '{'
         end = format_string.find('}', start)
-        key = format_string[start: end]
+        key = format_string[start:end]
         keys.append(key)  # may add duplicates
 
     # find indices of marked tags (to be used more than once)

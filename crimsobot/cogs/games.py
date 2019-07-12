@@ -2,12 +2,13 @@ import asyncio
 import random
 import re
 import time
+from typing import Optional
 
 import discord
 from discord.ext import commands
 
 from config import ADMIN_USER_IDS
-from crimsobot.utils import games as crimsogames, tools as c
+from crimsobot.utils import checks, games as crimsogames, tools as c
 
 # lists for games in progress
 madlibs_channels = []
@@ -101,13 +102,7 @@ class Games(commands.Cog):
         c.checkout('madlibs', ctx.message.guild, ctx.message.channel, madlibs_channels)
 
     @commands.command(aliases=['cball', 'crimsobot'], brief='Ask crimsoBOT what will be.')
-    async def crimsoball(self, ctx, *question):
-        # exception handling
-        if len(question) == 0:
-            return commands.MissingRequiredArgument(question)
-        else:
-            pass
-
+    async def crimsoball(self, ctx, *, question):
         # list of answers (which I need to store somewhere besides in the function)
         answer_list = [
             '{} haha ping'.format(ctx.message.author.mention),
@@ -133,14 +128,9 @@ class Games(commands.Cog):
             'eat glass!'
         ]
 
-        # parse out question into string
-        question_ = ''
-        for word in question:
-            question_ += word + ' '
-
         # embed for answer
         title = '**OH MIGHTY CRIMSOBALL...**'
-        quest = '{} asks:\n{}'.format(ctx.message.author, question_)
+        quest = '{} asks:\n{}'.format(ctx.message.author, question)
         answer = '**crimsoBOT says**: {}'.format(random.choice(answer_list))
         thumb = 'https://i.imgur.com/6dzqq78.png'  # 8-ball
         embed = c.crimbed(title, quest + '\n\n' + answer, thumb)
@@ -408,6 +398,7 @@ class Games(commands.Cog):
 
         # vote handler
         if len(votes) == 0:
+            winner = None
             title = '**NO VOTES CAST!**'
             descr = "I'm disappointed."
         else:
@@ -421,26 +412,20 @@ class Games(commands.Cog):
             title = '**EMOJI STORY WINNER!**'
             descr = 'The winner is **{x.author}** with {y} vote{s} for their story:\n\n{e}\n\n{x.content}'.format(
                 x=winner, y=votes, s=ess, e=emojis)
-            footer = True
 
         # third embed: results!
         embed = c.crimbed(title, descr, thumb)
-        if footer is True:
+        if winner:
             embed.set_footer(text='{} gets 10 crimsoCOIN!'.format(winner.author))
 
         await ctx.send(embed=embed)
         c.checkout('emojistory', ctx.message.guild, ctx.message.channel, emojistory_channels)
 
     @commands.command(aliases=['bal'])
-    async def balance(self, ctx, *user_mention):
+    async def balance(self, ctx, whose: Optional[discord.Member] = None):
         """Check your or someone else's crimsoCOIN balance."""
 
-        # check for mention, else do self
-        if len(ctx.message.mentions) == 1:
-            # get mentioned user's avatar
-            for user in ctx.message.mentions:
-                whose = user
-        else:
+        if not whose:
             whose = ctx.message.author
 
         encourage = [
@@ -464,15 +449,10 @@ class Games(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command(aliases=['luck'])
-    async def luckindex(self, ctx, *user_mention):
+    async def luckindex(self, ctx, whose: Optional[discord.Member] = None):
         """Check your or someone else's luck at Guessmoji!"""
 
-        # check for mention, else do self
-        if len(ctx.message.mentions) == 1:
-            # get mentioned user's avatar
-            for user in ctx.message.mentions:
-                whose = user
-        else:
+        if not whose:
             whose = ctx.message.author
 
         luck, plays = crimsogames.guess_luck_balance(whose.id)
@@ -487,7 +467,7 @@ class Games(commands.Cog):
 
     @commands.command()
     @commands.cooldown(2, 1 * 60 * 60, commands.BucketType.user)
-    async def give(self, ctx, user_mention, amount):
+    async def give(self, ctx, recipient: discord.Member, amount):
         """Give a user up to 1/10 of your crimsoCOIN."""
 
         # thumbnail
@@ -498,7 +478,7 @@ class Games(commands.Cog):
 
         # no negative values
         if amount <= 0:
-            raise commands.CommandInvokeError('Amount less than 0.')
+            raise commands.BadArgument('Amount less than 0.')
         # not if exceeds balance
         elif amount > crimsogames.check_balance(ctx.message.author.id) * 0.25:
             title = '\u200B\n{}, you cannot give more than 1/4 of your balance!'.format(ctx.message.author)
@@ -508,12 +488,6 @@ class Games(commands.Cog):
             return
         else:
             pass
-
-        # get user that is mentioned
-        if len(ctx.message.mentions) == 1:
-            # get mentioned user's avatar
-            for user in ctx.message.mentions:
-                recipient = user
 
         if c.is_banned(recipient.id):
             return
@@ -540,20 +514,12 @@ class Games(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command(hidden=True)
-    async def cgive(self, ctx, user_mention, amount):
+    @checks.is_admin()
+    async def cgive(self, ctx, recipient: discord.Member, amount):
         """Manual adjustment of crimsoCOIN values."""
-
-        if ctx.message.author.id not in ADMIN_USER_IDS:
-            return
 
         # change to float
         amount = float(amount)
-
-        # get user that is mentioned
-        if len(ctx.message.mentions) == 1:
-            # get mentioned user's avatar
-            for user in ctx.message.mentions:
-                recipient = user
 
         crimsogames.win(recipient.id, amount)  # debit
         title = "\u200B\n{} has adjusted {}'s balance by {neg}\u20A2**{:.2f}**.".format(
@@ -583,7 +549,6 @@ class Games(commands.Cog):
         else:
             stat = 'coin'
 
-        page = int(page)
         # get places from page number
         place_shift = 10 * (page - 1)
         # sorted list of CrimsoBOTUser objects
@@ -611,9 +576,9 @@ class Games(commands.Cog):
                     valstring = '{lk:.3f} ({u.guess_plays:.0f} plays)'.format(lk=luck, u=user)
                     extra = ' · Minimum 50 plays (will increase with time)'
 
-                user.obj = await self.bot.fetch_user(user.ID)
-                user.place = users.index(user) + 1 + place_shift
-                embed.add_field(name='{u.place}. **{u.obj.name}#{u.obj.discriminator}**'.format(u=user),
+                discord_user = await self.bot.fetch_user(user.ID)
+                place = users.index(user) + 1 + place_shift
+                embed.add_field(name='{p}. **{u.name}#{u.discriminator}**'.format(p=place, u=discord_user),
                                 value=valstring,
                                 inline=False)
 
@@ -621,18 +586,12 @@ class Games(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command(hidden=True)
-    async def daily(self, ctx, lucky_number=0):
+    async def daily(self, ctx, lucky_number: int = 0):
         """Get a daily award! Pick a number 1-100 for a chance to win bigger!"""
 
         # exception handling
-        try:
-            if not 0 <= int(lucky_number) <= 100:
-                raise ValueError
-
-            # ok so if we got this far, we can safely convert this to int
-            lucky_number = int(lucky_number)
-        except ValueError:
-            raise commands.errors.CommandInvokeError(ValueError)
+        if not 0 <= int(lucky_number) <= 100:
+            raise commands.BadArgument('Lucky number is out of bounds.')
 
         # pass to helper and spit out result in an embed
         result_string = crimsogames.daily(ctx.message.author.id, lucky_number)

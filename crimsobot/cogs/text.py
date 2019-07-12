@@ -8,46 +8,48 @@ class Text(commands.Cog):
         self.bot = bot
 
     @commands.command()
-    async def e(self, ctx, *args):
+    async def e(self, ctx, *, message):
         """Convert message to emojis. Character limit ~450."""
 
-        string_in = ' '.join(args)
-        output = texttools.block(string_in)
-        output = c.crimsplit(output, ' ', limit=1900)
+        message = texttools.block(message)
+        lines = c.crimsplit(message, ' ', limit=1900)
 
-        if len(output) <= 5:
-            for message in output:
-                await ctx.send(message)
-        else:
-            return commands.CommandInvokeError('>e: too long')
+        if len(lines) > 5:
+            raise commands.CommandInvokeError('Too many lines.')
+
+        for line in lines:
+            await ctx.send(line)
 
     @commands.command()
-    async def small(self, ctx, *, arg):
+    async def small(self, ctx, *, text):
         """Make text small!"""
 
-        output = texttools.superscript(arg)
+        output = texttools.superscript(text)
         await ctx.send('{}: {}'.format(ctx.message.author.mention, output))
 
     @commands.command()
-    async def flip(self, ctx, *, arg):
+    async def flip(self, ctx, *, text):
         """Make text upside down!"""
 
-        output = texttools.upsidedown(arg)
+        output = texttools.upsidedown(text)
         await ctx.send('{}: {}'.format(ctx.message.author.mention, output))
 
     @commands.command(aliases=['xokclock', 'xoktime', 'emojitime'])
-    async def emojiclock(self, ctx, emoji, *location):
+    async def emojiclock(self, ctx, emoji, *args):
         """Get the time at location (required) in emojis!"""
 
         # input parser
+        emoji = args[0]
+        location_args = args[1:]
+
         # if an emoji was not specified by user, bigmoji() returns (False, False)
         emoji_check, _ = imagetools.bigmoji(emoji)
-        if emoji_check is False:
+        if not emoji_check:
             # if no emoji specified, then input "emoji" is actually first word of location
-            location = [emoji, ' '.join(location)]
             emoji = '<:xok:563825728102334465>'  # default to xok emoji in crimsoBOT server
+            location_args = args
 
-        location = ' '.join(location)  # location from tuple to string
+        location = ' '.join(location_args)  # location from tuple to string
 
         # then check for these not-actually-emojis
         not_real_emojis = ['©', '®', '™']

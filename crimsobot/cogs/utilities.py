@@ -3,8 +3,7 @@ import logging
 import discord
 from discord.ext import commands
 
-from config import ADMIN_USER_IDS
-from crimsobot.utils import astronomy, image as imagetools, tools as c
+from crimsobot.utils import astronomy, checks, image as imagetools, tools as c
 
 log = logging.getLogger(__name__)
 
@@ -39,7 +38,7 @@ class Utilities(commands.Cog):
 
     @commands.command()
     @commands.cooldown(2, 8, commands.BucketType.guild)
-    async def palette(self, ctx, number_of_colors, link=None):
+    async def palette(self, ctx, number_of_colors: int, link=None):
         """
         Get an image's main colors! Specify # of colors (1-10).
         • Must follow >palette with an integer between 1 and 10 then either an attached image or a link to an image.
@@ -50,13 +49,10 @@ class Utilities(commands.Cog):
 
         log.info('palette running on %s/%s...', ctx.message.guild, ctx.message.channel)
 
-        try:
-            if not 1 <= int(number_of_colors) <= 10:
-                raise ValueError
-        except ValueError:
-            return commands.CommandInvokeError(False)
+        if not 1 <= number_of_colors <= 10:
+            raise commands.BadArgument('Number of colors is out of bounds.')
 
-        hex_color = imagetools.get_image_palette(ctx, int(number_of_colors), link)
+        hex_color = imagetools.get_image_palette(ctx, number_of_colors, link)
         await ctx.send(
             '**Resampled image:**',
             file=discord.File(
@@ -75,7 +71,7 @@ class Utilities(commands.Cog):
         log.info('palette COMPLETE on %s/%s!', ctx.message.guild, ctx.message.channel)
 
     @commands.command(hidden=True)
-    async def dearcrimso(self, ctx, *, arg):
+    async def dearcrimso(self, ctx, *, message):
         """Leave a message in crimso's inbox. Spam = ban"""
 
         if ctx.message.guild is not None:
@@ -87,13 +83,11 @@ class Utilities(commands.Cog):
 
         user = str(ctx.message.author)
         userid = str(ctx.message.author.id)
-        log.info('Inbox: %s/%s\n            %s (%s): %s', guild, channel, user, userid, arg)
+        log.info('Inbox: %s/%s\n            %s (%s): %s', guild, channel, user, userid, message)
 
     @commands.command(hidden=True)
-    async def csay(self, ctx, dest, tts, *msg):
-        if ctx.message.author.id not in ADMIN_USER_IDS:
-            return
-
+    @checks.is_admin()
+    async def csay(self, ctx, dest, tts, *, message):
         if dest[0] == 'c':
             recip = self.bot.get_channel(int(dest[1:]))
         elif dest[0] == 'd':
@@ -104,7 +98,7 @@ class Utilities(commands.Cog):
         else:
             tts = False
 
-        await recip.send(' '.join(msg), tts=tts)
+        await recip.send(message, tts=tts)
 
     @commands.command()
     async def bigmoji(self, ctx, emoji):
@@ -122,7 +116,7 @@ class Utilities(commands.Cog):
 
     @commands.command(brief='Get info on when to see the ISS from the location you search!')
     @commands.cooldown(1, 30, commands.BucketType.user)
-    async def iss(self, ctx, *location):
+    async def iss(self, ctx, *, location):
         """
         Find out when the International Space Station will be visible to the naked eye from the location you search!
         Search any location (city, postal code, address, etc).
@@ -142,7 +136,7 @@ class Utilities(commands.Cog):
         (Note: This command works in DM if you want to keep your location private.)
         """
 
-        location = ' '.join(location).upper()
+        location = location.upper()
         lat, lon, passes, url = astronomy.get_iss_loc(location, 'ha')
         string_list = c.crimsplit(passes, '\n', limit=1600)
         for i in range(len(string_list)):
@@ -152,13 +146,13 @@ class Utilities(commands.Cog):
 
     @commands.command(aliases=['map'])
     @commands.cooldown(3, 10, commands.BucketType.channel)
-    async def location(self, ctx, *location):
+    async def location(self, ctx, *, location):
         """Get a map of a location."""
 
-        location = ' '.join(location).upper()
+        location = location.upper()
         map_url = astronomy.whereis(location)
 
-        if map_url is not False:
+        if map_url:
             embed = c.crimbed('Map of {}\n{}'.format(location, map_url), None, None)
             embed.set_image(url=map_url)
             await ctx.send(embed=embed)

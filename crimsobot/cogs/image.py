@@ -1,11 +1,11 @@
 import asyncio
 import logging
+from typing import Optional
 
 import discord
 from discord.ext import commands
 
-from config import ADMIN_USER_IDS
-from crimsobot.utils import image as imagetools, tools as c
+from crimsobot.utils import checks, image as imagetools, tools as c
 
 log = logging.getLogger(__name__)
 
@@ -18,17 +18,9 @@ class Image(commands.Cog):
         self.bot = bot
 
     @commands.command(brief='Boop the snoot! Must mention someone to boop.')
-    async def boop(self, ctx, mention):
-        booper = str(ctx.message.author.nick)
-        if booper == 'None':
-            booper = str(ctx.message.author.name)
-        if mention.startswith('<@'):
-            mention = str(ctx.message.mentions[0].nick)
-            if mention == 'None':
-                mention = str(ctx.message.mentions[0].name)
-
-            imagetools.boop(booper, mention)
-            await ctx.send(file=discord.File(c.clib_path_join('img', 'booped.jpg'), 'boop.jpg'))
+    async def boop(self, ctx, mention: discord.Member):
+        imagetools.boop(ctx.author.display_name, mention.display_name)
+        await ctx.send(file=discord.File(c.clib_path_join('img', 'booped.jpg'), 'boop.jpg'))
 
     @commands.command(aliases=['emojimage', 'eimg2'])
     @commands.cooldown(1, 72, commands.BucketType.user)
@@ -74,14 +66,9 @@ class Image(commands.Cog):
         c.checkout('bless', ctx.message.guild, ctx.message.author, emoji_channels)
 
     @commands.command(hidden=True)
-    async def eface_pm(self, ctx, userid, *, arg):
+    @checks.is_admin()
+    async def eface_pm(self, ctx, user: discord.User, *, message):
         """crimsoBOT avatar as emojis!"""
-
-        if ctx.message.author.id not in ADMIN_USER_IDS:
-            return
-
-        # get user object
-        user = await self.bot.fetch_user(userid)
 
         # read in lines of emojis
         line_list = open(c.clib_path_join('text', 'emojiface.txt'),
@@ -97,7 +84,7 @@ class Image(commands.Cog):
             await user.send(line)
             await asyncio.sleep(1)
 
-        await user.send(arg)
+        await user.send(message)
 
     @commands.command(hidden=True)
     @commands.cooldown(1, 8 * 60 * 60, commands.BucketType.user)
@@ -119,31 +106,26 @@ class Image(commands.Cog):
 
     @commands.command()
     @commands.cooldown(2, 10, commands.BucketType.guild)
-    async def acidify(self, ctx, number_of_hits, image=None):
+    async def acidify(self, ctx, number_of_hits: int, image=None):
         """1-3 hits only. Can use image link, attachment, mention, or emoji."""
 
         # exception handling
-        try:
-            if not 1 <= int(number_of_hits) <= 3:
-                raise ValueError
-        except ValueError:
-            raise commands.CommandInvokeError('not 1-3 hits')
+        if not 1 <= number_of_hits <= 3:
+            raise commands.BadArgument('Number of hits is out of bounds.')
 
         log.info('acidify running on %s/%s...', ctx.message.guild, ctx.message.channel)
 
         filename = imagetools.acid(ctx, int(number_of_hits), image)
 
         # pluralize 'hit' if need be
-        ess = '' if int(number_of_hits) == 1 else 's'
+        ess = '' if number_of_hits == 1 else 's'
         await ctx.send('**{} hit{}:**'.format(number_of_hits, ess), file=discord.File(filename))
 
         log.info('acidify COMPLETE on %s/%s!', ctx.message.guild, ctx.message.channel)
 
     @commands.command(hidden=True)
-    async def inspect(self, ctx, user_id=None):
-        if ctx.message.author.id not in ADMIN_USER_IDS:
-            return
-
+    @checks.is_admin()
+    async def inspect(self, ctx, user: Optional[discord.User] = None):
         # read in lines of emojis
         line_list = open(c.clib_path_join('games', 'emojilist.txt'),
                          encoding='utf8',
@@ -153,9 +135,7 @@ class Image(commands.Cog):
         line_list = [line.replace('\n', '') for line in line_list]
 
         # send line-by-line as DM
-        if user_id is not None:
-            user = await self.bot.fetch_user(user_id)
-        else:
+        if not user:
             user = ctx.message.author
 
         log.info('%s is using inspect...', user)
