@@ -28,40 +28,21 @@ def swap_tz(time_utc, lat, lon):
     return time_local
 
 
-def swap_month(month_value):
-    month_name = {
-        'Jan': 1, 'Feb': 2, 'Mar': 3, 'Apr': 4, 'May': 5, 'Jun': 6,
-        'Jul': 7, 'Aug': 8, 'Sep': 9, 'Oct': 10, 'Nov': 11, 'Dec': 12
-    }
-
-    for key, value in month_name.items():
-        if month_value == key:
-            return value
-        elif month_value == value:
-            return key
-        else:
-            continue
-
-
 def time_convert(dateframe_col, timeframe_col, lat, lon, modify_date=False):
-    year = datetime.now().year
     for ii in range(len(dateframe_col)):
         # get the values
-        day = dateframe_col[ii][0:2]
-        month = dateframe_col[ii][3:6]
-        hh = timeframe_col[ii][0:2]
-        mm = timeframe_col[ii][3:5]
-        ss = timeframe_col[ii][6:8]
+        date_cell = dateframe_col[ii]
+        time_cell = timeframe_col[ii]
 
         # create datetime object
-        time = datetime(year, swap_month(month), int(day), int(hh), int(mm), int(ss))
+        time = datetime.strptime(date_cell + time_cell, '%d %b%H:%M:%S')
 
         # convert to local time
         time_loc = swap_tz(time, lat, lon)
 
         # create new datestring and timestring, pop back in
-        datestring = '%02d %s' % (time_loc.day, swap_month(time_loc.month))
-        timestring = '%02d:%02d:%02d' % (time_loc.hour, time_loc.minute, time_loc.second)
+        datestring = time_loc.strftime('%d %b')
+        timestring = time_loc.strftime('%H:%M:%S')
 
         if modify_date is True:
             dateframe_col[ii] = datestring
@@ -110,17 +91,17 @@ def where_are_you(location):
     return geolocator.geocode(location)
 
 
-def get_iss_loc(location, source='ha'):
+def get_iss_loc(query, source='ha'):
     """ input: location to search, string (optional)
        output: float, float, string, string"""
 
-    location = where_are_you(location)
+    location = where_are_you(query)
 
-    try:
-        lat = round(location.latitude, 4)
-        lon = round(location.longitude, 4)
-    except AttributeError:
-        return '-', '-', 'Location not found!', ''
+    if not location:
+        return 0.0, 0.0, 'Location not found!', ''
+
+    lat = round(location.latitude, 4)
+    lon = round(location.longitude, 4)
 
     if source == 'n2yo':
         # code for n2yo (magnitude seems to be underesimated)
@@ -194,19 +175,19 @@ def get_iss_loc(location, source='ha'):
     return lat, lon, pass_list, url
 
 
-def whereis(*arg):
+def whereis(query):
     """ input: string
-       output: bool"""
+       output: string (url)"""
 
     # Nomanatim geocoder
-    location = where_are_you(arg)
+    location = where_are_you(query)
 
-    # return False if no location found
-    try:
-        lat = round(location.latitude, 6)
-        lon = round(location.longitude, 6)
-    except Exception:
-        return False
+    # return None if no location found
+    if not location:
+        return None
+
+    lat = round(location.latitude, 4)
+    lon = round(location.longitude, 4)
 
     # get bounding box from raw dict
     bounding = location.raw['boundingbox']
