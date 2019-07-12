@@ -31,6 +31,13 @@ class CrimsoBOT(commands.Bot):
             except Exception as error:
                 self.log.error('%s cannot be loaded: %s', name, error)
 
+    def reload_extensions(self) -> None:
+        for name in self._extensions_to_load:
+            try:
+                self.reload_extension(name)
+            except Exception as error:
+                self.log.error('%s cannot be reloaded: %s', name, error)
+
     async def on_ready(self):
         self.log.info('crimsoBOT is online')
 

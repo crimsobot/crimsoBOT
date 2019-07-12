@@ -135,6 +135,14 @@ class Admin(commands.Cog):
         await guild.leave()
         log.info('crimsoBOT REMOVED from %s [%s]', guild, guild.id)
 
+    @commands.command(hidden=True)
+    @checks.is_admin()
+    async def reload(self, ctx: commands.Context) -> None:
+        """Reload all extensions. Intended for local development."""
+
+        self.bot.reload_extensions()
+        log.info('All extensions have been reloaded.')
+
 
 def setup(bot):
     bot.add_cog(Admin(bot))
