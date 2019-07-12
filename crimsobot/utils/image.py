@@ -240,15 +240,9 @@ def pingbadge(ctx, user_input, pos):
 
 # the following scripts and functions help make_emoji_image()
 def hex_to_srgb(base):
-    # string (formatted '000000') to tuple
-    r_ = '0x' + base[0:2]
-    g_ = '0x' + base[2:4]
-    b_ = '0x' + base[4:6]
-    r_ = int(r_, 16) / 255
-    g_ = int(g_, 16) / 255
-    b_ = int(b_, 16) / 255
+    r, g, b = hex_to_rgb(base)
 
-    color_rgb = sRGBColor(r_, g_, b_)
+    color_rgb = sRGBColor(r, g, b)
     color = convert_color(color_rgb, LabColor)
 
     return color
@@ -271,17 +265,19 @@ with open(c.clib_path_join('img', 'colors_emojis.json'), 'r', encoding='utf-8') 
 
 # these are needed to make the PIL palette list [r1, g1, b1, ..., rn, gn, bn]
 rgb = []
-[rgb.append(hex_to_rgb(key[1:])) for key in color_dict]
+srgb_color_list = []
+for hex_color in color_dict:
+    hex_digits = hex_color[1:]
+
+    rgb.append(hex_to_rgb(hex_digits))
+    srgb_color_list.append(hex_to_srgb(hex_color))
+
 # flatten list of tuples into list
 palettedata = [i for sub in rgb for i in sub]
 
 # create palette image
 palimage = Image.new('P', (1, 1))
 palimage.putpalette(palettedata)
-
-
-srgb_color_list = []
-[srgb_color_list.append(hex_to_srgb(key[1:])) for key in color_dict]
 
 
 def lookup_emoji(hex_in):
