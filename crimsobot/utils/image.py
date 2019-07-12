@@ -254,7 +254,7 @@ def hex_to_srgb(base):
     return color
 
 
-def quantizetopalette(silf, palette, dither=False):
+def quantizetopalette(silf, palette):
     """Convert an RGB or L mode image to use a given P image's palette."""
 
     silf.load()
@@ -265,14 +265,19 @@ def quantizetopalette(silf, palette, dither=False):
 
 
 # this is the list of colors and the emojis to which they correspond
-with open(c.clib_path_join('img', 'colors.json'), 'r') as file:
+with open(c.clib_path_join('img', 'colors_emojis.json'), 'r', encoding='utf-8') as file:
     color_dict = json.loads(file.read())
 
 
 # these are needed to make the PIL palette list [r1, g1, b1, ..., rn, gn, bn]
 rgb = []
 [rgb.append(hex_to_rgb(key[1:])) for key in color_dict]
+# flatten list of tuples into list
 palettedata = [i for sub in rgb for i in sub]
+
+# create palette image
+palimage = Image.new('P', (1, 1))
+palimage.putpalette(palettedata)
 
 
 srgb_color_list = []
@@ -293,12 +298,8 @@ def lookup_emoji(hex_in):
 
 
 def make_emoji_image(ctx, user_input):
-    """Make image from emojis!"""
-
-    # create palette image
-    palimage = Image.new('P', (16, 16))
-    palimage.putpalette(palettedata)
-
+    """Kept as reference; no longer in use."""
+    
     # get image from url
     img = fetch_image(ctx, user_input)
     img = img.convert('RGB')
@@ -315,8 +316,7 @@ def make_emoji_image(ctx, user_input):
     img = img.resize((36, int(36 * ratio)), resample=Image.BICUBIC)
 
     # quantize to palette
-    rgb_im = quantizetopalette(img, palimage, dither=False).convert('RGB', dither=None)
-    print(rgb_im.getcolors())
+    rgb_im = quantizetopalette(img, palimage).convert('RGB', dither=0)
 
     # for each row of pixels, find corresponding emoji, and string together
     string_list = []
@@ -335,7 +335,7 @@ def make_emoji_image(ctx, user_input):
 
 
 def make_emoji_image_v2(ctx, user_input):
-    """Make image from emojis!"""
+    """Kept as reference; no longer in use."""
 
     # get image from url
     img = fetch_image(ctx, user_input)
@@ -369,6 +369,74 @@ def make_emoji_image_v2(ctx, user_input):
 
         string_list.append(msg_string)
 
+    return string_list
+
+
+def make_emoji_image_v3(ctx, user_input):
+    """Make image from emojis!"""
+
+    # get image
+    input_image = fetch_image(ctx, user_input)
+    input_iamge = input_image.convert('RGBA')
+
+    # Nyquist sampling apply here? just to be safe
+    n = len(color_dict) * 2
+    input_image.load()  # required for png.split()
+
+    # ensure black background if input image has transparency
+    background = Image.new('RGB', input_image.size, (0, 0, 0))
+    background.paste(input_image, mask=input_image.split()[3])  # 3 is the alpha channel
+    
+    # quantize while still large (because i am paranoid about alising)
+    input_image = background.quantize(colors=n, method=1, kmeans=n)
+
+    # check that image is not too tall, then resize
+    width, height = input_image.size
+    ratio = height / width
+    if ratio > 3:
+        # return a list of string(s) to remain consistent
+        return ['Image is too long!']
+    input_image = input_image.resize((36, int(36 * ratio)), resample=Image.BICUBIC)
+
+    # first: quantize to palette (has to be RGB mode for that)
+    input_image = input_image.convert('RGB', dither=0)
+    input_image_P = input_image.quantize(palette=palimage, dither=0)
+
+    # create dict to match palette number with actual color (for later step)
+    # keys = palette integers; values = RGB tuples
+    color_list = input_image_P.getcolors()
+    color_list_P = sorted(color_list, key=lambda tup: tup[0], reverse=True)
+    color_keys = []
+    for color in color_list_P:
+        color_keys.append(color[1])
+
+    # now for the value tuples
+    input_image_RGB = input_image_P.convert('RGB')
+    color_list = input_image_RGB.getcolors()
+    color_list_RGB = sorted(color_list, key=lambda tup: tup[0], reverse=True)
+    color_values = []
+    for color in color_list_RGB:
+        color_values.append(color[1])
+
+    # and finally, the dict
+    image_dict = dict(zip(color_keys, color_values))
+
+    # numpy image is array of the "palette keys" as strings
+    numpy_image = np.array(input_image_P, dtype=str)
+
+    # lookup emoji once per color, then replace in image array
+    for key, value in image_dict.items():
+        # convert key to hex format (string) for lookup_emoji()
+        hex_color = '%02x%02x%02x' % value
+        emoji = lookup_emoji(hex_color)
+        # replace all instances in the numpy image
+        numpy_image[numpy_image == str(key)] = [emoji]
+
+    # numpy_image now needs to be "stringed" out, row by row
+    string_list = []
+    for row in numpy_image:
+        string_list.append(''.join(row))
+    
     return string_list
 
 

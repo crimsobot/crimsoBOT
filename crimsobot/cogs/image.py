@@ -31,20 +31,17 @@ class Image(commands.Cog):
             imagetools.boop(booper, mention)
             await ctx.send(file=discord.File(c.clib_path_join('img', 'booped.jpg'), 'boop.jpg'))
 
-    @commands.command()
+    @commands.command(aliases=['emojimage', 'eimg2'])
     @commands.cooldown(1, 120, commands.BucketType.user)
     async def eimg(self, ctx, image=None):
         """
-        Convert image to emojis!
+        Convert image to emojis with a bit more detail!
         WARNING: Best on desktop. You will get a LOT of PMs. SVGs are no.
         Works best with images with good contrast and larger features.
         A one-pixel-wide line is likely not going to show up in the final product.
-        Try >eimg2 if you want to preserve more detail.
         """
 
-        await ctx.message.author.send('Please wait...')
-
-        line_list = imagetools.make_emoji_image(ctx, image)
+        line_list = imagetools.make_emoji_image_v3(ctx, image)
         c.checkin('eimg', ctx.message.guild, ctx.message.author, emoji_channels)
 
         # send line-by-line as DM
@@ -53,28 +50,6 @@ class Image(commands.Cog):
             await asyncio.sleep(0.72)
 
         c.checkout('eimg', ctx.message.guild, ctx.message.author, emoji_channels)
-
-    @commands.command()
-    @commands.cooldown(1, 120, commands.BucketType.user)
-    async def eimg2(self, ctx, image=None):
-        """
-        Convert image to emojis with a bit more detail!
-        WARNING: Best on desktop. You will get a LOT of PMs. SVGs are no.
-        Works best with images with good contrast and larger features.
-        A one-pixel-wide line is likely not going to show up in the final product.
-        """
-
-        await ctx.message.author.send('Please wait...')
-
-        line_list = imagetools.make_emoji_image_v2(ctx, image)
-        c.checkin('eimg2', ctx.message.guild, ctx.message.author, emoji_channels)
-
-        # send line-by-line as DM
-        for line in line_list:
-            await ctx.message.author.send(line)
-            await asyncio.sleep(0.72)
-
-        c.checkout('eimg2', ctx.message.guild, ctx.message.author, emoji_channels)
 
     @commands.command(hidden=True)
     @commands.cooldown(1, 4 * 60 * 60, commands.BucketType.user)
@@ -98,28 +73,6 @@ class Image(commands.Cog):
             await asyncio.sleep(1)
 
         c.checkout('bless', ctx.message.guild, ctx.message.author, emoji_channels)
-
-    @commands.command(hidden=True)
-    @commands.cooldown(1, 60, commands.BucketType.user)
-    async def gimme_last(self, ctx):
-        await ctx.message.author.send('Last eimg:')
-
-        # read in lines of emojis
-        line_list = open(c.clib_path_join('img', 'emoji.txt'),
-                         encoding='utf8',
-                         errors='ignore').readlines()
-
-        # strip newlines
-        line_list = [line.replace('\n', '') for line in line_list]
-
-        # send line-by-line as DM
-        log.info('%s is using gimme_last...', ctx.message.author)
-
-        for line in line_list:
-            await ctx.message.author.send(line)
-            await asyncio.sleep(1)
-
-        log.info("%s's gimme_last is done!", ctx.message.author)
 
     @commands.command(hidden=True)
     async def eface_pm(self, ctx, userid, *, arg):
