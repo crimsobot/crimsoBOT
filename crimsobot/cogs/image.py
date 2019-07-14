@@ -195,9 +195,9 @@ class Image(commands.Cog):
         # define default position, listen for user to specify different one
         msg = await self.bot.wait_for('message', check=check, timeout=15)
         if msg is None:
-            position = '4'
+            position = 4
         else:
-            position = msg.content
+            position = int(msg.content)
 
         # send to pingbadge
         await imagetools.pingbadge(ctx, image, position)

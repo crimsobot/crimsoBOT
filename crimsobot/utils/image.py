@@ -226,8 +226,7 @@ async def ban_overlay(ctx: Context, user_input: Optional[str]) -> None:
     img.save(c.clib_path_join('img', 'needban.png'))
 
 
-# TODO: change pos to int
-async def pingbadge(ctx: Context, user_input: Optional[str], pos: str) -> bool:
+async def pingbadge(ctx: Context, user_input: Optional[str], position: int) -> bool:
     img = await fetch_image(ctx, user_input)
     img = img.convert('RGBA')
 
@@ -241,13 +240,13 @@ async def pingbadge(ctx: Context, user_input: Optional[str], pos: str) -> bool:
     badge = Image.open(c.clib_path_join('img', 'roundping.png'))
     badge = badge.resize((size, size), resample=Image.BICUBIC)
 
-    if pos == '1':
+    if position == 1:
         corner = (0, 0)
-    elif pos == '2':
+    elif position == 2:
         corner = (width - size, 0)
-    elif pos == '3':
+    elif position == 3:
         corner = (0, height - size)
-    elif pos == '4':
+    elif position == 4:
         corner = (width - size, height - size)
     else:
         return False
