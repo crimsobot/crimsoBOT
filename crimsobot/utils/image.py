@@ -3,9 +3,10 @@ import os
 from io import BytesIO
 from typing import List, Optional, Tuple
 
+import aiofiles
+import aiohttp
 import matplotlib.pylab as plt
 import numpy as np
-import requests
 from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
@@ -63,7 +64,7 @@ def bigmoji(emoji: str) -> Tuple[Optional[str], Optional[str]]:
 
         # test if real file
         try:
-            path = c.clib_path_join('emoji', '') + filename + '.png'
+            path = c.clib_path_join('emoji', filename + '.png')
             emoji_type = 'file'
             f = open(path, 'rb')
             f.close()
@@ -73,40 +74,47 @@ def bigmoji(emoji: str) -> Tuple[Optional[str], Optional[str]]:
     return path, emoji_type
 
 
-def fetch_image(ctx: Context, arg: Optional[str]) -> Image.Image:
+async def fetch_image(ctx: Context, arg: Optional[str]) -> Image.Image:
     """Determine type of input, return image file."""
+
+    session = aiohttp.ClientSession()
+
+    async def open_img_from_url(url: str) -> Image.Image:
+        async with session.get(url, allow_redirects=False) as response:
+            img_bytes = await response.read()
+
+        return Image.open(BytesIO(img_bytes))
 
     img = None
 
-    try:
-        if arg:
-            response = requests.get(arg)
-            img = Image.open(BytesIO(response.content))
-    except Exception:
-        if arg is None:
-            # look for message attachment
-            link = ctx.message.attachments[0].url
-            response = requests.get(link)
-            img = Image.open(BytesIO(response.content))
-        elif len(ctx.message.mentions) > 0:
-            # get mentioned user's avatar
-            for user in ctx.message.mentions:
-                link = user.avatar_url
-            response = requests.get(link)
-            img = Image.open(BytesIO(response.content))
-        else:
-            # if not one of the above cases, maybe it's an emoji?
-            try:
-                big_emoji, _ = bigmoji(arg)
-                img = Image.open(big_emoji)
-            except IOError:
-                big_emoji, _ = bigmoji(arg)
-                if big_emoji:
-                    response = requests.get(big_emoji)
-                    img = Image.open(BytesIO(response.content))
+    if ctx.message.attachments:
+        # get an attachment
+        link = ctx.message.attachments[0].url
+        img = await open_img_from_url(link)
+    elif ctx.message.mentions:
+        # get mentioned user's avatar
+        link = str(ctx.message.mentions[0].avatar_url)
+        img = await open_img_from_url(link)
+    elif arg:
+        try:
+            if arg:
+                img = await open_img_from_url(arg)
+        except Exception:
+            # if not an image url, it's probably an emoji
+            big_emoji, emoji_type = bigmoji(arg)
+            if big_emoji is None:
+                pass
+            elif emoji_type == 'file':
+                async with aiofiles.open(big_emoji, 'rb') as f:
+                    img_bytes = await f.read()
+                img = Image.open(BytesIO(img_bytes))
+            elif emoji_type == 'url':
+                img = await open_img_from_url(big_emoji)
 
     if not img:
         img = Image.new('RGB', (0, 0), (0, 0, 0))
+
+    await session.close()
 
     return img
 
@@ -173,8 +181,8 @@ def boop(the_booper: str, the_booped: str) -> None:
     img.save(c.clib_path_join('img', 'booped.jpg'))
 
 
-def fishe(ctx: Context, user_input: Optional[str]) -> None:
-    img = fetch_image(ctx, user_input)
+async def fishe(ctx: Context, user_input: Optional[str]) -> None:
+    img = await fetch_image(ctx, user_input)
     img = img.convert('RGBA')
     img = img.resize((71, 105), resample=Image.BICUBIC)
 
@@ -183,8 +191,8 @@ def fishe(ctx: Context, user_input: Optional[str]) -> None:
     base.save(c.clib_path_join('img', 'needping.png'))
 
 
-def xok(ctx: Context, user_input: Optional[str]) -> str:
-    img = fetch_image(ctx, user_input)
+async def xok(ctx: Context, user_input: Optional[str]) -> str:
+    img = await fetch_image(ctx, user_input)
     img = img.convert('RGBA')
 
     width, height = img.size
@@ -201,8 +209,8 @@ def xok(ctx: Context, user_input: Optional[str]) -> str:
     return filename
 
 
-def ban_overlay(ctx: Context, user_input: Optional[str]) -> None:
-    img = fetch_image(ctx, user_input)
+async def ban_overlay(ctx: Context, user_input: Optional[str]) -> None:
+    img = await fetch_image(ctx, user_input)
     img = img.convert('RGBA')
 
     width, height = img.size
@@ -219,8 +227,8 @@ def ban_overlay(ctx: Context, user_input: Optional[str]) -> None:
 
 
 # TODO: change pos to int
-def pingbadge(ctx: Context, user_input: Optional[str], pos: str) -> bool:
-    img = fetch_image(ctx, user_input)
+async def pingbadge(ctx: Context, user_input: Optional[str], pos: str) -> bool:
+    img = await fetch_image(ctx, user_input)
     img = img.convert('RGBA')
 
     width, height = img.size
@@ -307,11 +315,11 @@ def lookup_emoji(hex_in: str) -> str:
     return ''
 
 
-def make_emoji_image(ctx: Context, user_input: Optional[str]) -> List[str]:
+async def make_emoji_image(ctx: Context, user_input: Optional[str]) -> List[str]:
     """Make image from emojis!"""
 
     # get image
-    input_image = fetch_image(ctx, user_input)
+    input_image = await fetch_image(ctx, user_input)
     input_image = input_image.convert('RGB')
 
     # Nyquist sampling apply here? just to be safe
@@ -408,11 +416,11 @@ def make_mosaic(colors: List[int]) -> None:
     mosaic.save(c.clib_path_join('img', 'mosaic.png'))
 
 
-def get_image_palette(ctx: Context, n: int, user_input: Optional[str]) -> str:
+async def get_image_palette(ctx: Context, n: int, user_input: Optional[str]) -> str:
     """Get colors of image palette!"""
 
     # get image from url
-    img = fetch_image(ctx, user_input)
+    img = await fetch_image(ctx, user_input)
     img = img.convert('RGBA')
 
     width, height = img.size
@@ -445,8 +453,8 @@ def get_image_palette(ctx: Context, n: int, user_input: Optional[str]) -> str:
     return ' '.join(hex_colors)
 
 
-def acid(ctx: Context, window: int, user_input: Optional[str]) -> str:
-    img = fetch_image(ctx, user_input)
+async def acid(ctx: Context, window: int, user_input: Optional[str]) -> str:
+    img = await fetch_image(ctx, user_input)
 
     width, height = img.size
     if max(width, height) > 500:

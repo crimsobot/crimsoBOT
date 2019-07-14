@@ -54,7 +54,7 @@ class Utilities(commands.Cog):
         if not 1 <= number_of_colors <= 10:
             raise commands.BadArgument('Number of colors is out of bounds.')
 
-        hex_color = imagetools.get_image_palette(ctx, number_of_colors, link)
+        hex_color = await imagetools.get_image_palette(ctx, number_of_colors, link)
         await ctx.send(
             '**Resampled image:**',
             file=discord.File(
@@ -134,7 +134,7 @@ class Utilities(commands.Cog):
         """
 
         location = location.upper()
-        lat, lon, passes, url = astronomy.get_iss_loc(location, 'ha')
+        lat, lon, passes, url = await astronomy.get_iss_loc(location, 'ha')
         string_list = c.crimsplit(passes, '\n', limit=1600)
         for i in range(len(string_list)):
             header_string = 'Visible ISS passes (local time) for {} ({}°, {}°):\n'.format(location, lat, lon)

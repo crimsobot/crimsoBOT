@@ -33,7 +33,7 @@ class Image(commands.Cog):
         A one-pixel-wide line is likely not going to show up in the final product.
         """
 
-        line_list = imagetools.make_emoji_image(ctx, image)
+        line_list = await imagetools.make_emoji_image(ctx, image)
         c.checkin('eimg', ctx.message.guild, ctx.message.author, emoji_channels)
 
         # send line-by-line as DM
@@ -116,7 +116,7 @@ class Image(commands.Cog):
 
         log.info('acidify running on %s/%s...', ctx.message.guild, ctx.message.channel)
 
-        filename = imagetools.acid(ctx, number_of_hits, image)
+        filename = await imagetools.acid(ctx, number_of_hits, image)
 
         # pluralize 'hit' if need be
         ess = '' if number_of_hits == 1 else 's'
@@ -151,21 +151,21 @@ class Image(commands.Cog):
     async def needping(self, ctx: commands.Context, image: Optional[str] = None) -> None:
         """SOMEONE needs PING. User mention, attachment, link, or emoji."""
 
-        imagetools.fishe(ctx, image)
+        await imagetools.fishe(ctx, image)
         await ctx.send(file=discord.File(c.clib_path_join('img', 'needping.png'), 'needping.png'))
 
     @commands.command()
     async def needban(self, ctx: commands.Context, image: Optional[str] = None) -> None:
         """SOMEONE needs BAN. User mention, attachment, link, or emoji."""
 
-        imagetools.ban_overlay(ctx, image)
+        await imagetools.ban_overlay(ctx, image)
         await ctx.send(file=discord.File(c.clib_path_join('img', 'needban.png'), 'needban.png'))
 
     @commands.command()
     async def xokked(self, ctx: commands.Context, image: Optional[str] = None) -> None:
         """Get xokked! User mention, attachment, link, or emoji."""
 
-        filename = imagetools.xok(ctx, image)
+        filename = await imagetools.xok(ctx, image)
         await ctx.send(file=discord.File(filename, 'xokked.png'))
 
     @commands.command(aliases=['pingbadge'])
@@ -200,7 +200,7 @@ class Image(commands.Cog):
             position = msg.content
 
         # send to pingbadge
-        imagetools.pingbadge(ctx, image, position)
+        await imagetools.pingbadge(ctx, image, position)
 
         # delete prompt and vote, send image
         if msg is not None:

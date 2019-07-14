@@ -1,9 +1,8 @@
-import ast
 from datetime import datetime
 from typing import List, Optional, Tuple
 
+import aiohttp
 import pandas as pd
-import requests
 from dateutil import tz
 from geopy.geocoders import Nominatim
 from geopy.location import Location
@@ -89,7 +88,7 @@ def where_are_you(location: str) -> Optional[Location]:
     return geolocator.geocode(location)
 
 
-def get_iss_loc(query: str, source: str = 'ha') -> Tuple[float, float, str, str]:
+async def get_iss_loc(query: str, source: str = 'ha') -> Tuple[float, float, str, str]:
     location = where_are_you(query)
 
     if not location:
@@ -102,8 +101,10 @@ def get_iss_loc(query: str, source: str = 'ha') -> Tuple[float, float, str, str]
         # code for n2yo (magnitude seems to be underesimated)
         api = N2YO_API_KEY  # n2yo api, append to URL
         url = 'http://www.n2yo.com/rest/v1/satellite/visualpasses/25544/{}/{}/0/10/180/&apiKey={}'.format(lat, lon, api)
-        response = requests.get(url)
-        pass_info = ast.literal_eval(response.content.decode('utf-8'))
+
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url) as response:
+                pass_info = await response.json()
 
         pass_str = (
             '{s} rises in {startAzCompass} · '
@@ -149,7 +150,11 @@ def get_iss_loc(query: str, source: str = 'ha') -> Tuple[float, float, str, str]
     if source == 'ha':
         # heavens-above code(gives results in UTC; not easy to parse out either)
         url = 'https://www.heavens-above.com/PassSummary.aspx?satid=25544&lat={}&lng={}'.format(lat, lon)
-        html = requests.get(url).content
+
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url) as response:
+                html = await response.text()
+
         dataframe_list = pd.read_html(html)
 
         # this part contains the table if there is one
