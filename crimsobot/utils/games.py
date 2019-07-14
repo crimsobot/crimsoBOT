@@ -1,10 +1,15 @@
 import random
 from collections import Counter
 from datetime import datetime
-from typing import List, Tuple
+from typing import List, Tuple, Union
 
+import discord
+
+from crimsobot.models.currency_account import CurrencyAccount
+from crimsobot.models.guess_statistic import GuessStatistic
 from crimsobot.utils import tools as c
-from crimsobot.utils.tools import CrimsoBOTUser
+
+DiscordUser = Union[discord.User, discord.Member]
 
 
 def emojistring() -> str:
@@ -80,28 +85,15 @@ def get_keys(format_string: str) -> List[str]:
     return keys
 
 
-def win(user_id: int, amount: float) -> None:
-    # make sure amount is numeric
-    try:
-        if not isinstance(amount, float):
-            raise ValueError
-    except ValueError:
-        amount = float(amount)
-
-    # get user
-    user = CrimsoBOTUser.get(user_id)
-
-    # add coin
-    user.coin += amount
-
-    # force round
-    user.coin = round(user.coin, 2)
-    user.save()
+async def win(discord_user: DiscordUser, amount: float) -> None:
+    account = await CurrencyAccount.get_by_discord_user(discord_user)  # type: CurrencyAccount
+    account.add_to_balance(amount)
+    await account.save()
 
 
-def daily(user_id: int, lucky_number: int) -> str:
-    # fetch user
-    user = CrimsoBOTUser.get(user_id)
+async def daily(discord_user: DiscordUser, lucky_number: int) -> str:
+    # fetch account
+    account = await CurrencyAccount.get_by_discord_user(discord_user)  # type: CurrencyAccount
 
     # get current time
     now = datetime.utcnow()
@@ -109,10 +101,10 @@ def daily(user_id: int, lucky_number: int) -> str:
     # arbitrary "last date collected" and reset time (midnight UTC)
     reset = datetime(1969, 7, 20, 0, 0, 0)  # ymd required but will not be used
 
-    last = user.daily
+    last = account.ran_daily_at
 
     # check if dates are same
-    if last.strftime('%Y-%m-%d') == now.strftime('%Y-%m-%d'):
+    if last and last.strftime('%Y-%m-%d') == now.strftime('%Y-%m-%d'):
         hours = (reset - now).seconds / 3600
         minutes = (hours - int(hours)) * 60
         award_string = 'Daily award resets at midnight UTC, {}h{}m from now.'.format(int(hours), int(minutes + 1))
@@ -127,23 +119,20 @@ def daily(user_id: int, lucky_number: int) -> str:
                 winning_number) if lucky_number != 0 else ''
 
         # update daily then save
-        user.daily = now
-        user.save()
+        account.ran_daily_at = now
+        await account.save()
 
         # update their balance now (will repoen and reclose user)
-        win(user_id, daily_award)
+        await win(discord_user, daily_award)
         award_string = '{}You have been awarded your daily **\u20A2{:.2f}**!'.format(jackpot, daily_award)
 
     return award_string
 
 
-def check_balance(user_id: int) -> float:
-    """ input: discord user ID
-       output: float"""
+async def check_balance(discord_user: DiscordUser) -> float:
+    account = await CurrencyAccount.get_by_discord_user(discord_user)  # type: CurrencyAccount
 
-    user = CrimsoBOTUser.get(user_id)
-    # force round and close
-    return round(user.coin, 2)
+    return account.get_balance()
 
 
 def guess_economy(n: int) -> Tuple[float, float]:
@@ -167,21 +156,21 @@ def guess_economy(n: int) -> Tuple[float, float]:
     return winnings[n], cost
 
 
-def guess_luck(user_id: int, n: int, win: bool) -> None:
-    user = CrimsoBOTUser.get(user_id)
+async def guess_luck(discord_user: DiscordUser, n: int, won: bool) -> None:
+    stats = await GuessStatistic.get_by_discord_user(discord_user)  # type: GuessStatistic
 
-    user.guess_plays += 1
-    user.guess_expected += 1 / n
-    user.guess_wins += win
-    user.guess_luck = user.guess_wins / user.guess_expected
+    stats.plays += 1
+    stats.add_to_expected_wins(n)
+    if won:
+        stats.wins += 1
 
-    user.save()
+    await stats.save()
 
 
-def guess_luck_balance(user_id: int) -> Tuple[float, int]:
-    user = CrimsoBOTUser.get(user_id)
+async def guess_luck_balance(discord_user: DiscordUser) -> Tuple[float, int]:
+    stats = await GuessStatistic.get_by_discord_user(discord_user)  # type: GuessStatistic
 
-    return user.guess_luck, user.guess_plays
+    return stats.luck_index, stats.plays
 
 
 def guesslist() -> str:

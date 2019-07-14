@@ -1,13 +1,14 @@
 import asyncio
 import logging
 import random
-from typing import Any
+from typing import Any, List, Union
 
 import discord
 from discord.ext import commands
 
 from config import ADMIN_USER_IDS, BANNED_GUILD_IDS, DM_LOG_CHANNEL_ID, LEARNER_CHANNEL_IDS, LEARNER_USER_IDS
 from crimsobot import db
+from crimsobot.models.ban import Ban
 from crimsobot.utils import checks, markov as m, tools as c
 
 
@@ -16,6 +17,8 @@ class CrimsoBOT(commands.Bot):
         command_prefix = '>'
 
         super().__init__(command_prefix, **kwargs)
+
+        self.banned_user_ids = []  # type: List[int]
 
         self.log = logging.getLogger(__name__)
         self._extensions_to_load = [
@@ -40,11 +43,21 @@ class CrimsoBOT(commands.Bot):
 
     async def start(self, *args: Any, **kwargs: Any) -> None:
         await db.connect()
+
+        banned_user_ids = await Ban.filter(active=True).values_list(
+            'target__discord_user_id',
+            flat=True
+        )  # type: List[int]
+        self.banned_user_ids = banned_user_ids
+
         await super().start(*args, **kwargs)
 
     async def close(self) -> None:
         await super().close()
         await db.close()
+
+    def is_banned(self, discord_user: Union[discord.User, discord.Member]) -> bool:
+        return discord_user.id in self.banned_user_ids
 
     async def on_ready(self) -> None:
         self.log.info('crimsoBOT is online')
@@ -100,7 +113,7 @@ class CrimsoBOT(commands.Bot):
             self.log.error('Uncaught exception', exc_info=error)
 
     async def on_message(self, message: discord.Message) -> None:
-        if c.is_banned(message.author.id):
+        if self.is_banned(message.author):
             return
 
         # DM self.logger

@@ -4,7 +4,9 @@ from typing import List, Tuple
 from discord import Embed
 from discord.ext import commands
 
-from crimsobot.utils.tools import CrimsoBOTUser, crimbed, get_stored_user_ids
+from crimsobot.models.currency_account import CurrencyAccount
+from crimsobot.models.guess_statistic import GuessStatistic
+from crimsobot.utils.tools import crimbed
 
 PLACES_PER_PAGE = 10
 
@@ -18,51 +20,53 @@ class Leaderboard:
         self._embed = crimbed(None, None, 'https://i.imgur.com/rS2ec5d.png')
         self._embed_footer_extra = ''  # type: str
 
-    def get_coin_leaders(self) -> None:
+    async def get_coin_leaders(self) -> None:
         self._set_embed_title('coin')
 
-        users = self._get_users()
-        users.sort(key=lambda u: u.coin, reverse=True)
+        accounts = await CurrencyAccount \
+            .filter(balance__gt=0) \
+            .order_by('-balance') \
+            .prefetch_related('user')  # type: List[CurrencyAccount]
 
-        for user in users:
+        for account in accounts:
             leader = Leader(
-                user_id=user.ID,
-                value='\u20A2{u.coin:.2f}'.format(u=user)
+                user_id=account.user.discord_user_id,
+                value='\u20A2{:.2f}'.format(account.get_balance())
             )
+            self._leaders.append(leader)
 
-            if user.coin > 0:
-                self._leaders.append(leader)
-
-    def get_luck_leaders(self) -> None:
+    async def get_luck_leaders(self) -> None:
         self._set_embed_title('luck')
         self._embed_footer_extra = ' · Minimum 50 plays (will increase with time)'
 
-        users = self._get_users()
-        users.sort(key=lambda u: u.guess_luck, reverse=True)
+        stats = await GuessStatistic \
+            .filter(plays__gte=50) \
+            .prefetch_related('user')  # type: List[GuessStatistic]
 
-        for user in users:
+        # luck_index is a computed property (not actually stored in the DB), so we have to sort here instead
+        stats.sort(key=lambda s: s.luck_index, reverse=True)
+
+        for stat in stats:
             leader = Leader(
-                user_id=user.ID,
-                value='{:.3f} ({} plays)'.format(user.guess_luck * 100, user.guess_plays)
+                user_id=stat.user.discord_user_id,
+                value='{:.3f} ({} plays)'.format(stat.luck_index * 100, stat.plays)
             )
+            self._leaders.append(leader)
 
-            if user.guess_plays >= 50:
-                self._leaders.append(leader)
-
-    def get_plays_leaders(self) -> None:
+    async def get_plays_leaders(self) -> None:
         self._set_embed_title('plays')
 
-        users = self._get_users()
-        users.sort(key=lambda u: u.guess_plays, reverse=True)
+        stats = await GuessStatistic \
+            .filter(plays__gt=0) \
+            .order_by('-plays') \
+            .prefetch_related('user')  # type: List[GuessStatistic]
 
-        for user in users:
+        for stat in stats:
             leader = Leader(
-                user_id=user.ID,
-                value=str(user.guess_plays)
+                user_id=stat.user.discord_user_id,
+                value=str(stat.plays)
             )
-
-            if user.guess_plays > 0:
-                self._leaders.append(leader)
+            self._leaders.append(leader)
 
     async def get_embed(self, ctx: commands.Context, page: int) -> Embed:
         start, end = self._get_places(page)
@@ -85,13 +89,6 @@ class Leaderboard:
         self._embed.set_footer(text='Page {}{}'.format(page, self._embed_footer_extra))
 
         return self._embed
-
-    def _get_users(self) -> List[CrimsoBOTUser]:
-        users = []
-        for user_id in get_stored_user_ids():
-            users.append(CrimsoBOTUser.get(user_id))
-
-        return users
 
     def _get_places(self, page: int) -> Tuple[int, int]:
         place_shift = (page - 1) * PLACES_PER_PAGE

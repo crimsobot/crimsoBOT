@@ -1,82 +1,12 @@
-import datetime
 import logging
 import os
-import pickle
-import sys
-from typing import Dict, Iterable, List, Optional, Union
+from typing import List, Optional, Union
 
 from discord import ChannelType, DMChannel, Embed, GroupChannel, Guild, Member, TextChannel, User
 
 log = logging.getLogger(__name__)
 
-sys.modules['crimsotools'] = sys.modules[__name__]
-
 Messageables = Union[DMChannel, GroupChannel, Member, TextChannel, User]
-
-
-class CrimsoBOTUser(object):
-    def __init__(self, user_id: int) -> None:
-        self.ID = user_id       # Discord snowflake
-        self.banned = False     # Whether user is banned from using the bot
-        self.coin = 0.0         # User's account balance
-
-        self.daily = datetime.datetime(1969, 7, 20, 0, 0, 0)  # Last usage of >daily
-
-        self.guess_plays = 0        # Number of plays of guessemoji
-        self.guess_expected = 0.0   # Total of expected chances of winning
-        self.guess_wins = 0         # Total number of wins
-        self.guess_luck = 0.0       # Guessemoji luck index
-
-    # Tech debt: ensure attributes previously not present in __init__ are now present
-    # Avoids having to handle AttributeError everywhere
-    @staticmethod
-    def _ensure_attrs(state: Dict) -> None:
-        # Fix legacy discord.py string IDs
-        if isinstance(state['ID'], str):
-            state['ID'] = int(state['ID'])
-
-        state['banned'] = state.get('banned', False)
-        state['coin'] = state.get('coin', 0.0)
-        state['daily'] = state.get('daily', datetime.datetime(1969, 7, 20, 0, 0, 0))
-        state['guess_plays'] = state.get('guess_plays', 0)
-        state['guess_expected'] = state.get('guess_expected', 0.0)
-        state['guess_wins'] = state.get('guess_wins', 0)
-        state['guess_luck'] = state.get('guess_luck', 0.0)
-
-    # pickle.dump
-    def __getstate__(self) -> Dict:
-        state = self.__dict__.copy()
-        self._ensure_attrs(state)
-
-        return state
-
-    # pickle.load
-    def __setstate__(self, state: Dict) -> None:
-        self._ensure_attrs(state)
-        self.__dict__.update(state)
-
-    @staticmethod
-    def get(user_id: int) -> 'CrimsoBOTUser':
-        filename = clib_path_join('users', str(user_id) + '.pickle')
-
-        # Unserialize from user file
-        try:
-            with open(filename, 'rb') as f:
-                user = pickle.load(f)  # type: CrimsoBOTUser
-
-        # User file doesn't exist, create it.
-        except FileNotFoundError:
-            user = CrimsoBOTUser(user_id)
-            user.ID = user_id
-
-        return user
-
-    def save(self) -> None:
-        filename = clib_path_join('users', str(self.ID) + '.pickle')
-
-        # Serialize to user file
-        with open(filename, 'wb') as f:
-            pickle.dump(self, f)
 
 
 def checkin(cmd: str, guild: Guild, channel: Messageables, running: List[int]) -> bool:
@@ -141,28 +71,6 @@ def crimsplit(long_string: str, break_char: str, limit: int = 2000) -> List[str]
     list_of_strings.append(long_string)
 
     return list_of_strings
-
-
-def is_banned(discord_user_id: int) -> bool:
-    cb_user_object = CrimsoBOTUser.get(discord_user_id)
-    return cb_user_object.banned
-
-
-def who_is_banned() -> List[CrimsoBOTUser]:
-    cb_user_object_list = []
-
-    for user_id in get_stored_user_ids():
-        cb_user_object_list.append(CrimsoBOTUser.get(user_id))
-
-    return [u for u in cb_user_object_list if u.banned]
-
-
-def get_stored_user_ids() -> Iterable[int]:
-    """Get a list of users the bot has stored data for"""
-
-    for f in os.listdir(clib_path_join('users')):
-        if not f.startswith('.'):
-            yield int(f[:-7])
 
 
 def clib_path_join(*paths: str) -> str:

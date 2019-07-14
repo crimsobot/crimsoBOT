@@ -66,7 +66,7 @@ class Games(commands.Cog):
 
             # check message for author, channel, content
             def check(msg: discord.Message) -> bool:
-                banned = c.is_banned(msg.author.id)
+                banned = self.bot.is_banned(msg.author)
                 has_prefix = msg.content.startswith(p)
                 in_channel = msg.channel == ctx.message.channel
 
@@ -228,7 +228,7 @@ class Games(commands.Cog):
             if len(players) > 1:
                 for player in players:
                     is_bot = player.id == self.bot.user.id
-                    cannot_play = c.is_banned(player.id) or crimsogames.check_balance(player.id) < cost
+                    cannot_play = self.bot.is_banned(player) or await crimsogames.check_balance(player) < cost
 
                     if not is_bot and cannot_play:
                         await cache_msg.remove_reaction(reaction.emoji, player)
@@ -246,8 +246,8 @@ class Games(commands.Cog):
 
             # stats + debit the losers
             for user in losers:
-                crimsogames.win(user.id, -cost)
-                crimsogames.guess_luck(user.id, n, False)
+                await crimsogames.win(user, -cost)
+                await crimsogames.guess_luck(user, n, False)
 
         if len(winners) != 0:
             # kick out crimsoBOT
@@ -255,8 +255,8 @@ class Games(commands.Cog):
 
             # stats + debit & award crimsoCOIN to winners
             for user in winners:
-                crimsogames.win(user.id, winning_amount - cost)
-                crimsogames.guess_luck(user.id, n, True)
+                await crimsogames.win(user, winning_amount - cost)
+                await crimsogames.guess_luck(user, n, True)
 
             # convert user objects to mentions
             winner_mentions = [user.mention for user in winners]  # List[str]
@@ -322,7 +322,7 @@ class Games(commands.Cog):
 
         # define check for prefix, channel, and if author has already submitted
         def story_check(msg: discord.Message) -> bool:
-            banned = c.is_banned(msg.author.id)
+            banned = self.bot.is_banned(msg.author)
             has_prefix = msg.content.startswith('$')
             just_right = 5 < len(msg.content) < 250
             in_channel = msg.channel == ctx.message.channel
@@ -374,7 +374,7 @@ class Games(commands.Cog):
         # define check for prefix, channel, and if author has already submitted
         def vote_check(msg: discord.Message) -> bool:
             try:
-                banned = c.is_banned(msg.author.id)
+                banned = self.bot.is_banned(msg.author)
                 in_channel = msg.channel == ctx.message.channel
                 valid_choice = 0 < int(msg.content) <= len(stories)
                 has_voted = msg.author in voters
@@ -406,7 +406,7 @@ class Games(commands.Cog):
             # send to vote counter to get winner
             ind_plus_1, total_votes = crimsogames.tally(votes)
             winner = stories[int(ind_plus_1) - 1]
-            crimsogames.win(winner.author.id, 10)
+            await crimsogames.win(winner.author, 10)
             ess = 's' if total_votes > 1 else ''
 
             # then the embed info
@@ -440,7 +440,7 @@ class Games(commands.Cog):
             "It's worth nothing!"
         ]
 
-        bal = crimsogames.check_balance(whose.id)
+        bal = await crimsogames.check_balance(whose)
 
         title = '\u200B\n{} has **\u20A2{:.2f}**.'.format(whose, bal)
         descr = random.choice(encourage) if bal > 0 else '=['
@@ -456,7 +456,7 @@ class Games(commands.Cog):
         if not whose:
             whose = ctx.message.author
 
-        luck, plays = crimsogames.guess_luck_balance(whose.id)
+        luck, plays = await crimsogames.guess_luck_balance(whose)
 
         title = '\u200B\n{} has a **{:.3f}** luck index on {} plays.'.format(whose, 100 * luck, plays)
         descr = '*Luck tracking as of 01 July 2019.*'
@@ -481,7 +481,7 @@ class Games(commands.Cog):
         if amount <= 0:
             raise commands.BadArgument('Amount less than 0.')
         # not if exceeds balance
-        elif amount > crimsogames.check_balance(ctx.message.author.id) * 0.25:
+        elif amount > await crimsogames.check_balance(ctx.message.author) * 0.25:
             title = '\u200B\n{}, you cannot give more than 1/4 of your balance!'.format(ctx.message.author)
             descr = 'Check your `>balance`.'
             embed = c.crimbed(title, descr, thumb)
@@ -490,12 +490,12 @@ class Games(commands.Cog):
         else:
             pass
 
-        if c.is_banned(recipient.id):
+        if self.bot.is_banned(recipient):
             return
 
         # transaction
-        crimsogames.win(ctx.message.author.id, -amount)  # credit
-        crimsogames.win(recipient.id, amount)  # debit
+        await crimsogames.win(ctx.message.author, -amount)  # credit
+        await crimsogames.win(recipient, amount)  # debit
 
         # message (embed)
         encourage = [
@@ -522,7 +522,7 @@ class Games(commands.Cog):
         # change to float
         amount = float(amount)
 
-        crimsogames.win(recipient.id, amount)  # debit
+        await crimsogames.win(recipient, amount)  # debit
         title = "\u200B\n{} has adjusted {}'s balance by {neg}\u20A2**{:.2f}**.".format(
             ctx.message.author, recipient, abs(amount), neg='-' if amount < 0 else ''
         )
@@ -544,7 +544,7 @@ class Games(commands.Cog):
         """crimsoCOIN leaderboard: COIN!"""
 
         lb = Leaderboard()
-        lb.get_coin_leaders()
+        await lb.get_coin_leaders()
         embed = await lb.get_embed(ctx, page)
 
         await ctx.send(embed=embed)
@@ -554,7 +554,7 @@ class Games(commands.Cog):
         """crimsoCOIN leaderboard: LUCK!"""
 
         lb = Leaderboard()
-        lb.get_luck_leaders()
+        await lb.get_luck_leaders()
         embed = await lb.get_embed(ctx, page)
 
         await ctx.send(embed=embed)
@@ -564,7 +564,7 @@ class Games(commands.Cog):
         """crimsoCOIN leaderboard: PLAYS!"""
 
         lb = Leaderboard()
-        lb.get_plays_leaders()
+        await lb.get_plays_leaders()
         embed = await lb.get_embed(ctx, page)
 
         await ctx.send(embed=embed)
@@ -578,7 +578,7 @@ class Games(commands.Cog):
             raise commands.BadArgument('Lucky number is out of bounds.')
 
         # pass to helper and spit out result in an embed
-        result_string = crimsogames.daily(ctx.message.author.id, lucky_number)
+        result_string = await crimsogames.daily(ctx.message.author, lucky_number)
         embed = c.crimbed(None, result_string, None)
 
         await ctx.send(embed=embed)

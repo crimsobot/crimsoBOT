@@ -1,3 +1,4 @@
+import datetime
 import logging
 from typing import Optional
 
@@ -6,8 +7,9 @@ from discord.ext import commands
 
 from config import ADMIN_USER_IDS
 from crimsobot.bot import CrimsoBOT
+from crimsobot.models.ban import Ban
+from crimsobot.models.user import User
 from crimsobot.utils import checks, tools as c
-from crimsobot.utils.tools import CrimsoBOTUser
 
 log = logging.getLogger(__name__)
 
@@ -24,9 +26,15 @@ class Admin(commands.Cog):
         if discord_user.id in ADMIN_USER_IDS:
             return
 
-        cb_user = CrimsoBOTUser.get(discord_user.id)
-        cb_user.banned = True
-        cb_user.save()
+        target = await User.get_by_discord_user(discord_user)  # type: User
+        issuer = await User.get_by_discord_user(ctx.author)  # type: User
+        await Ban.create(
+            target=target,
+            issuer=issuer,
+            reason='Banned by admin'
+        )
+
+        self.bot.banned_user_ids.append(discord_user.id)
 
         embed = c.crimbed(
             None,
@@ -44,9 +52,17 @@ class Admin(commands.Cog):
     async def unban(self, ctx: commands.Context, discord_user: discord.User) -> None:
         """Unban user from using crimsoBOT."""
 
-        cb_user = CrimsoBOTUser.get(discord_user.id)
-        cb_user.banned = False
-        cb_user.save()
+        target = await User.get_by_discord_user(discord_user)  # type: User
+        remover = await User.get_by_discord_user(ctx.author)  # type: User
+
+        ban = await Ban.filter(target=target, active=True).first()  # type: Ban
+        if ban:
+            ban.active = False
+            ban.remover = remover
+            ban.removed_at = datetime.datetime.utcnow()
+            await ban.save()
+
+        self.bot.banned_user_ids.remove(discord_user.id)
 
         embed = c.crimbed(
             None,
@@ -63,11 +79,10 @@ class Admin(commands.Cog):
     async def banlist(self, ctx: commands.Context) -> None:
         """List of banned users."""
 
-        cb_user_object_list = c.who_is_banned()
         banned_users = []
-        for user in cb_user_object_list:
-            discord_user_object = await self.bot.fetch_user(user.ID)
-            banned_users.append('· {u.name}#{u.discriminator}'.format(u=discord_user_object))
+        for user_id in self.bot.banned_user_ids:
+            discord_user = await self.bot.fetch_user(user_id)
+            banned_users.append('· {u.name}#{u.discriminator}'.format(u=discord_user))
 
         if not banned_users:
             banned_users.append('No users are banned... yet')
