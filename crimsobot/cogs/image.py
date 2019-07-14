@@ -33,7 +33,7 @@ class Image(commands.Cog):
         A one-pixel-wide line is likely not going to show up in the final product.
         """
 
-        line_list = imagetools.make_emoji_image_v3(ctx, image)
+        line_list = imagetools.make_emoji_image(ctx, image)
         c.checkin('eimg', ctx.message.guild, ctx.message.author, emoji_channels)
 
         # send line-by-line as DM

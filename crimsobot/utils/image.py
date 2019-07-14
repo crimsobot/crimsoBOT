@@ -8,7 +8,6 @@ import numpy as np
 import requests
 from PIL import Image
 from PIL import ImageDraw
-from PIL import ImageEnhance
 from PIL import ImageFont
 from PIL import ImageOps
 from colormath.color_conversions import convert_color
@@ -309,81 +308,6 @@ def lookup_emoji(hex_in: str) -> str:
 
 
 def make_emoji_image(ctx: Context, user_input: Optional[str]) -> List[str]:
-    """Kept as reference; no longer in use."""
-
-    # get image from url
-    img = fetch_image(ctx, user_input)
-    img = img.convert('RGB')
-    converter = ImageEnhance.Color(img)
-    img = converter.enhance(1.4)
-    converter = ImageEnhance.Contrast(img)
-    img = converter.enhance(1.2)
-
-    # resize to be 36 emojis wide
-    width, height = img.size
-    ratio = height / width
-    if ratio > 3:
-        return []
-    img = img.resize((36, int(36 * ratio)), resample=Image.BICUBIC)
-
-    # quantize to palette
-    rgb_im = quantizetopalette(img, palimage).convert('RGB', dither=0)
-
-    # for each row of pixels, find corresponding emoji, and string together
-    string_list = []
-    x, y = img.size
-    for yy in range(0, y):
-        msg_string = ''
-        for xx in range(0, x):
-            color = rgb_im.getpixel((xx, yy))
-            color = '%02x%02x%02x' % color
-            emoji = lookup_emoji(color)
-            msg_string = msg_string + emoji
-
-        string_list.append(msg_string)
-
-    return string_list
-
-
-def make_emoji_image_v2(ctx: Context, user_input: Optional[str]) -> List[str]:
-    """Kept as reference; no longer in use."""
-
-    # get image from url
-    img = fetch_image(ctx, user_input)
-    img = img.convert('RGBA')
-
-    # Nyquist sampling apply here?
-    n = 26 * 2
-    img.load()  # required for png.split()
-
-    background = Image.new('RGB', img.size, (0, 0, 0))
-    background.paste(img, mask=img.split()[3])  # 3 is the alpha channel
-    img = background.quantize(colors=n, method=1, kmeans=n)
-
-    width, height = img.size
-    ratio = height / width
-    if ratio > 3:
-        return []
-    img = img.resize((36, int(36 * ratio)), resample=Image.BICUBIC)
-    img = img.convert('RGB', dither=None)
-
-    # for each row of pixels, find corresponding emoji, and string together
-    string_list = []
-    x, y = img.size
-    for yy in range(0, y):
-        msg_string = ''
-        for xx in range(0, x):
-            color = img.getpixel((xx, yy))
-            color = '%02x%02x%02x' % color
-            emoji = lookup_emoji(color)
-            msg_string = msg_string + emoji
-
-        string_list.append(msg_string)
-
-    return string_list
-
-
-def make_emoji_image_v3(ctx: Context, user_input: Optional[str]) -> List[str]:
     """Make image from emojis!"""
 
     # get image
