@@ -14,8 +14,8 @@ class GuessStatistic(Model):
     plays = fields.IntField(default=0)
     wins = fields.IntField(default=0)
 
-    expected_wins_numerator = fields.IntField(default=0)
-    expected_wins_denominator = fields.IntField(default=1)
+    expected_wins_numerator = fields.BigIntField(default=0)
+    expected_wins_denominator = fields.BigIntField(default=1)
 
     created_at = fields.DatetimeField(null=True, auto_now_add=True)
     modified_at = fields.DatetimeField(null=True, auto_now=True)
