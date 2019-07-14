@@ -18,7 +18,7 @@ def emojistring() -> str:
         line = line.replace('\n', '')
         emojis.append(line)
 
-    emoji_string = random.sample(emojis, random.randint(3, 5))
+    emoji_string = random.sample(''.join(emojis), random.randint(3, 5))
 
     return ' '.join(emoji_string)
 
