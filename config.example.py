@@ -1,6 +1,9 @@
 # Minimum log level to show
 LOG_LEVEL = 'INFO'
 
+# Database URL
+DATABASE_URL = 'sqlite:///tmp/crimsobot.sqlite3'
+
 # Discord bot token
 TOKEN = None
 

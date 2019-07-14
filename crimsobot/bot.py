@@ -1,17 +1,18 @@
 import asyncio
 import logging
 import random
-from typing import Dict
+from typing import Any
 
 import discord
 from discord.ext import commands
 
 from config import ADMIN_USER_IDS, BANNED_GUILD_IDS, DM_LOG_CHANNEL_ID, LEARNER_CHANNEL_IDS, LEARNER_USER_IDS
+from crimsobot import db
 from crimsobot.utils import checks, markov as m, tools as c
 
 
 class CrimsoBOT(commands.Bot):
-    def __init__(self, **kwargs: Dict) -> None:
+    def __init__(self, **kwargs: Any) -> None:
         command_prefix = '>'
 
         super().__init__(command_prefix, **kwargs)
@@ -36,6 +37,14 @@ class CrimsoBOT(commands.Bot):
                 self.reload_extension(name)
             except Exception as error:
                 self.log.error('%s cannot be reloaded: %s', name, error)
+
+    async def start(self, *args: Any, **kwargs: Any) -> None:
+        await db.connect()
+        await super().start(*args, **kwargs)
+
+    async def close(self) -> None:
+        await super().close()
+        await db.close()
 
     async def on_ready(self) -> None:
         self.log.info('crimsoBOT is online')
