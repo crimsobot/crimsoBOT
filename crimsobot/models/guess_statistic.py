@@ -3,6 +3,9 @@ from fractions import Fraction
 from tortoise import fields
 from tortoise.models import Model
 
+from crimsobot.models import DiscordUser
+from crimsobot.models.user import User
+
 
 class GuessStatistic(Model):
     uuid = fields.UUIDField(pk=True)
@@ -36,6 +39,13 @@ class GuessStatistic(Model):
             return 0.0
 
         return float(self.wins / self.expected_wins)
+
+    @classmethod
+    async def get_by_discord_user(cls, discord_user: DiscordUser) -> 'GuessStatistic':
+        user = await User.get_by_discord_user(discord_user)
+        stat, _ = await GuessStatistic.get_or_create(user=user)  # type: GuessStatistic, bool
+
+        return stat
 
     class Meta:
         table = 'guess_statistics'

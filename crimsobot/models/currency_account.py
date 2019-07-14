@@ -1,6 +1,9 @@
 from tortoise import fields
 from tortoise.models import Model
 
+from crimsobot.models import DiscordUser
+from crimsobot.models.user import User
+
 
 class CurrencyAccount(Model):
     uuid = fields.UUIDField(pk=True)
@@ -21,6 +24,13 @@ class CurrencyAccount(Model):
         bal = self.balance  # type: int
         bal += int(amount * 100)
         self.balance = bal
+
+    @classmethod
+    async def get_by_discord_user(cls, discord_user: DiscordUser) -> 'CurrencyAccount':
+        user = await User.get_by_discord_user(discord_user)
+        account, _ = await CurrencyAccount.get_or_create(user=user)  # type: CurrencyAccount, bool
+
+        return account
 
     class Meta:
         table = 'currency_accounts'
