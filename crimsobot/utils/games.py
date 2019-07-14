@@ -184,25 +184,6 @@ def guess_luck_balance(user_id: int) -> Tuple[float, int]:
     return user.guess_luck, user.guess_plays
 
 
-def leaders(place1: int, place2: int, trait: str = 'coin') -> List[c.CrimsoBOTUser]:
-    cb_user_object_list = []  # list of CrimsoBOTUser objects
-    for user_id in c.get_stored_user_ids():
-        cb_user_object_list.append(CrimsoBOTUser.get(user_id))
-
-    # sort list of objects by coin
-    if trait == 'coin':
-        cb_user_object_list = [user for user in cb_user_object_list if user.coin > 0]
-        cb_user_object_list.sort(key=lambda x: x.coin, reverse=True)
-    elif trait == 'luck':
-        cb_user_object_list = [user for user in cb_user_object_list if user.guess_plays > 49]
-        cb_user_object_list.sort(key=lambda x: x.guess_luck, reverse=True)
-    elif trait == 'plays':
-        cb_user_object_list = [user for user in cb_user_object_list if user.guess_plays != 0]
-        cb_user_object_list.sort(key=lambda x: x.guess_plays, reverse=True)
-
-    return cb_user_object_list[place1 - 1:place2]
-
-
 def guesslist() -> str:
     output = [' n  ·   cost   ·   payout',
               '·························']

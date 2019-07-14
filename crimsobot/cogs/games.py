@@ -1,6 +1,5 @@
 import asyncio
 import random
-import re
 import time
 from typing import List, Optional
 
@@ -10,6 +9,7 @@ from discord.ext import commands
 from config import ADMIN_USER_IDS
 from crimsobot.bot import CrimsoBOT
 from crimsobot.utils import checks, games as crimsogames, tools as c
+from crimsobot.utils.leaderboard import Leaderboard
 
 # lists for games in progress
 madlibs_channels = []  # type: List[int]
@@ -532,58 +532,41 @@ class Games(commands.Cog):
 
         await ctx.send(embed=embed)
 
-    @commands.command(aliases=['leaders', 'lb'])
-    async def leaderboard(self, ctx: commands.Context, *, args: str) -> None:
-        """crimsoCOIN leaderboard! >lb [coin*/luck/plays] [page#]"""
+    @commands.group(aliases=['leaders', 'lb'], invoke_without_command=True)
+    async def leaderboard(self, ctx: commands.Context) -> None:
+        """crimsoCOIN leaderboard!"""
 
-        # input parser
-        match = re.search(r'\d+', args)
-        if match:
-            page = int(match.group())
-        else:
-            page = 1
+        # Fallback to coin leaderboard if no command is provided, retains prior functionality
+        await self.leaderboard_coin.invoke(ctx)
 
-        if 'luck' in args:
-            stat = 'luck'
-        elif 'plays' in args:
-            stat = 'plays'
-        else:
-            stat = 'coin'
+    @leaderboard.command(name='coin')
+    async def leaderboard_coin(self, ctx: commands.Context, page: int = 1) -> None:
+        """crimsoCOIN leaderboard: COIN!"""
 
-        # get places from page number
-        place_shift = 10 * (page - 1)
-        # sorted list of CrimsoBOTUser objects
-        users = crimsogames.leaders(1 + place_shift, 10 + place_shift, trait=stat)
+        lb = Leaderboard()
+        lb.get_coin_leaders()
+        embed = await lb.get_embed(ctx, page)
 
-        # add attributes in place: discord user object, place
-        title = '<:crimsoCOIN_symbol:588492640559824896> crimsoCOIN leaderboard: **{}**'.format(stat.upper())
-        thumb = 'https://i.imgur.com/rS2ec5d.png'
-        embed = c.crimbed(title, None, thumb)
-        if not users:
-            embed.add_field(name="You've gone too far!",
-                            value="There aren't that many players yet!",
-                            inline=False)
-            extra = ' does not exist.'
-        else:
-            for user in users:
-                if stat == 'coin':
-                    valstring = '\u20A2{u.coin:.2f}'.format(u=user)
-                    extra = ''
-                elif stat == 'plays':
-                    valstring = '{u.guess_plays:.0f}'.format(u=user)
-                    extra = ''
-                elif stat == 'luck':
-                    luck = 100 * user.guess_luck
-                    valstring = '{lk:.3f} ({u.guess_plays:.0f} plays)'.format(lk=luck, u=user)
-                    extra = ' · Minimum 50 plays (will increase with time)'
+        await ctx.send(embed=embed)
 
-                discord_user = await self.bot.fetch_user(user.ID)
-                place = users.index(user) + 1 + place_shift
-                embed.add_field(name='{p}. **{u.name}#{u.discriminator}**'.format(p=place, u=discord_user),
-                                value=valstring,
-                                inline=False)
+    @leaderboard.command(name='luck')
+    async def leaderboard_luck(self, ctx: commands.Context, page: int = 1) -> None:
+        """crimsoCOIN leaderboard: LUCK!"""
 
-        embed.set_footer(text='Page {}{}'.format(page, extra))
+        lb = Leaderboard()
+        lb.get_luck_leaders()
+        embed = await lb.get_embed(ctx, page)
+
+        await ctx.send(embed=embed)
+
+    @leaderboard.command(name='plays')
+    async def leaderboard_plays(self, ctx: commands.Context, page: int = 1) -> None:
+        """crimsoCOIN leaderboard: PLAYS!"""
+
+        lb = Leaderboard()
+        lb.get_plays_leaders()
+        embed = await lb.get_embed(ctx, page)
+
         await ctx.send(embed=embed)
 
     @commands.command(hidden=True)
