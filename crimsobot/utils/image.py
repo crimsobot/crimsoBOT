@@ -261,7 +261,7 @@ async def pingbadge(ctx: Context, user_input: Optional[str], position: int) -> b
 def hex_to_srgb(base: str) -> LabColor:
     r, g, b = hex_to_rgb(base)
 
-    color_rgb = sRGBColor(r, g, b)
+    color_rgb = sRGBColor(r, g, b, is_upscaled=True)
     color = convert_color(color_rgb, LabColor)
 
     return color
@@ -311,7 +311,7 @@ def lookup_emoji(hex_in: str) -> str:
         if nearest == key:
             return value
 
-    return ''
+    return 'F' # failure to find emoji
 
 
 async def make_emoji_image(ctx: Context, user_input: Optional[str]) -> List[str]:

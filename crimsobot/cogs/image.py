@@ -24,7 +24,7 @@ class Image(commands.Cog):
         await ctx.send(file=discord.File(c.clib_path_join('img', 'booped.jpg'), 'boop.jpg'))
 
     @commands.command(aliases=['emojimage', 'eimg2'])
-    @commands.cooldown(1, 72, commands.BucketType.user)
+    @commands.cooldown(1, 60, commands.BucketType.user)
     async def eimg(self, ctx: commands.Context, image: Optional[str] = None) -> None:
         """
         Convert image to emojis with a bit more detail!
