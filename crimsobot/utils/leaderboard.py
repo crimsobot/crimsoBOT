@@ -1,5 +1,5 @@
 import collections
-from typing import List, Tuple
+from typing import List
 
 from discord import Embed
 from discord.ext import commands
@@ -14,11 +14,14 @@ Leader = collections.namedtuple('Leader', ['user_id', 'value'])
 
 
 class Leaderboard:
-    def __init__(self) -> None:
+    def __init__(self, page: int) -> None:
         self._leaders = []  # type: List[Leader]
 
         self._embed = crimbed(None, None, 'https://i.imgur.com/rS2ec5d.png')
         self._embed_footer_extra = ''  # type: str
+
+        self.page = page
+        self._offset = (page - 1) * PLACES_PER_PAGE
 
     async def get_coin_leaders(self) -> None:
         self._set_embed_title('coin')
@@ -26,6 +29,8 @@ class Leaderboard:
         accounts = await CurrencyAccount \
             .filter(balance__gt=0) \
             .order_by('-balance') \
+            .limit(PLACES_PER_PAGE) \
+            .offset(self._offset) \
             .prefetch_related('user')  # type: List[CurrencyAccount]
 
         for account in accounts:
@@ -41,6 +46,8 @@ class Leaderboard:
 
         stats = await GuessStatistic \
             .filter(plays__gte=50) \
+            .limit(PLACES_PER_PAGE) \
+            .offset(self._offset) \
             .prefetch_related('user')  # type: List[GuessStatistic]
 
         # luck_index is a computed property (not actually stored in the DB), so we have to sort here instead
@@ -59,6 +66,8 @@ class Leaderboard:
         stats = await GuessStatistic \
             .filter(plays__gt=0) \
             .order_by('-plays') \
+            .limit(PLACES_PER_PAGE) \
+            .offset(self._offset) \
             .prefetch_related('user')  # type: List[GuessStatistic]
 
         for stat in stats:
@@ -68,9 +77,8 @@ class Leaderboard:
             )
             self._leaders.append(leader)
 
-    async def get_embed(self, ctx: commands.Context, page: int) -> Embed:
-        start, end = self._get_places(page)
-        leaders = self._leaders[start:end]
+    async def get_embed(self, ctx: commands.Context) -> Embed:
+        leaders = self._leaders
 
         # add attributes in place: discord user object, place
         if not leaders:
@@ -81,19 +89,14 @@ class Leaderboard:
         else:
             for place, leader in enumerate(leaders):
                 discord_user = await ctx.bot.fetch_user(leader.user_id)
-                place = start + place + 1
+                place = self._offset + place + 1
                 self._embed.add_field(name='{p}. **{u.name}#{u.discriminator}**'.format(p=place, u=discord_user),
                                       value=leader.value,
                                       inline=False)
 
-        self._embed.set_footer(text='Page {}{}'.format(page, self._embed_footer_extra))
+        self._embed.set_footer(text='Page {}{}'.format(self.page, self._embed_footer_extra))
 
         return self._embed
-
-    def _get_places(self, page: int) -> Tuple[int, int]:
-        place_shift = (page - 1) * PLACES_PER_PAGE
-
-        return place_shift, place_shift + PLACES_PER_PAGE
 
     def _set_embed_title(self, stat: str) -> None:
         stat = stat.upper()

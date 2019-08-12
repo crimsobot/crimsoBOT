@@ -543,9 +543,9 @@ class Games(commands.Cog):
     async def leaderboard_coin(self, ctx: commands.Context, page: int = 1) -> None:
         """crimsoCOIN leaderboard: COIN!"""
 
-        lb = Leaderboard()
+        lb = Leaderboard(page)
         await lb.get_coin_leaders()
-        embed = await lb.get_embed(ctx, page)
+        embed = await lb.get_embed(ctx)
 
         await ctx.send(embed=embed)
 
@@ -553,9 +553,9 @@ class Games(commands.Cog):
     async def leaderboard_luck(self, ctx: commands.Context, page: int = 1) -> None:
         """crimsoCOIN leaderboard: LUCK!"""
 
-        lb = Leaderboard()
+        lb = Leaderboard(page)
         await lb.get_luck_leaders()
-        embed = await lb.get_embed(ctx, page)
+        embed = await lb.get_embed(ctx)
 
         await ctx.send(embed=embed)
 
@@ -563,9 +563,9 @@ class Games(commands.Cog):
     async def leaderboard_plays(self, ctx: commands.Context, page: int = 1) -> None:
         """crimsoCOIN leaderboard: PLAYS!"""
 
-        lb = Leaderboard()
+        lb = Leaderboard(page)
         await lb.get_plays_leaders()
-        embed = await lb.get_embed(ctx, page)
+        embed = await lb.get_embed(ctx)
 
         await ctx.send(embed=embed)
 
