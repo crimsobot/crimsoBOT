@@ -46,12 +46,11 @@ class Leaderboard:
 
         stats = await GuessStatistic \
             .filter(plays__gte=50) \
-            .limit(PLACES_PER_PAGE) \
-            .offset(self._offset) \
             .prefetch_related('user')  # type: List[GuessStatistic]
 
         # luck_index is a computed property (not actually stored in the DB), so we have to sort here instead
         stats.sort(key=lambda s: s.luck_index, reverse=True)
+        stats = stats[self._offset:self._offset + PLACES_PER_PAGE]
 
         for stat in stats:
             leader = Leader(

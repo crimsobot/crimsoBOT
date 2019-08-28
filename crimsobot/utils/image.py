@@ -311,7 +311,7 @@ def lookup_emoji(hex_in: str) -> str:
         if nearest == key:
             return value
 
-    return 'F' # failure to find emoji
+    return 'F'  # failure to find emoji
 
 
 async def make_emoji_image(ctx: Context, user_input: Optional[str]) -> List[str]:
