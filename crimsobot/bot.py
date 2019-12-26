@@ -163,3 +163,7 @@ class CrimsoBOT(commands.Bot):
                 await user.send('Added to {guild}'.format(guild=guild), embed=embed)
             except Exception:
                 await user.send('Added to {guild}'.format(guild=guild))
+
+    def add_command(self, command):
+        command.cooldown_after_parsing = True
+        return super().add_command(command)                
