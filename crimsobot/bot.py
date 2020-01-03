@@ -74,36 +74,31 @@ class CrimsoBOT(commands.Bot):
         if isinstance(error, commands.CommandOnCooldown):
             self.log.error('Cooldown: %s // %s: %s', ctx.author, ctx.message.content, error)
 
-            msg = await ctx.send('**eat glass.** %.0fs cooldown.' % error.retry_after)
-            await asyncio.sleep(7)
-            await msg.delete()
+            await ctx.send('**eat glass.** %.0fs cooldown.' % error.retry_after, delete_after=7)
+
         elif isinstance(error, commands.CommandInvokeError):
             self.log.error('Invoke: %s // %s: %s', ctx.author, ctx.message.content, error, exc_info=error)
 
             try:
-                msg = await ctx.send(':poop: `E R R O R` :poop:')
-                await asyncio.sleep(7)
-                await msg.delete()
+                await ctx.send(':poop: `E R R O R` :poop:', delete_after=7)
+
             except discord.errors.Forbidden:
                 self.log.error('Forbidden: %s // %s: %s', ctx.guild, ctx.channel.id, error)
         elif isinstance(error, commands.MissingRequiredArgument):
             self.log.error('MissingArgument: %s // %s: %s', ctx.author, ctx.message.content, error)
 
-            msg = await ctx.send('*this command requires more arguments. try `>help [cmd]`*')
-            await asyncio.sleep(7)
-            await msg.delete()
+            await ctx.send('*this command requires more arguments. try `>help [cmd]`*', delete_after=7)
+
         elif isinstance(error, commands.BadArgument):
             self.log.error('BadArgument: %s // %s: %s', ctx.author, ctx.message.content, error)
 
-            msg = await ctx.send("*that's not a valid argument value! try `>help [cmd]`*")
-            await asyncio.sleep(7)
-            await msg.delete()
+            await ctx.send("*that's not a valid argument value! try `>help [cmd]`*", delete_after=7)
+
         elif isinstance(error, checks.NotAdmin):
             self.log.error('NotAdmin: %s // %s: %s', ctx.author, ctx.message.content, error)
 
-            msg = await ctx.send(':rotating_light: not crimso! :rotating_light:')
-            await asyncio.sleep(7)
-            await msg.delete()
+            await ctx.send(':rotating_light: not crimso! :rotating_light:', delete_after=7)
+
         elif isinstance(error, commands.CommandNotFound):
             self.log.error(
                 'NotFound/Forbidden: %s/%s // %s: %s',
