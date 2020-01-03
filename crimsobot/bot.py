@@ -80,7 +80,7 @@ class CrimsoBOT(commands.Bot):
             self.log.error('Invoke: %s // %s: %s', ctx.author, ctx.message.content, error, exc_info=error)
 
             try:
-                await ctx.send(':poop: `E R R O R` :poop:', delete_after = 7)
+                await ctx.send(':poop: `E R R O R` :poop:', delete_after=7)
 
             except discord.errors.Forbidden:
                 self.log.error('Forbidden: %s // %s: %s', ctx.guild, ctx.channel.id, error)
