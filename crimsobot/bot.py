@@ -74,7 +74,7 @@ class CrimsoBOT(commands.Bot):
         if isinstance(error, commands.CommandOnCooldown):
             self.log.error('Cooldown: %s // %s: %s', ctx.author, ctx.message.content, error)
 
-            await ctx.send('**eat glass.** %.0fs cooldown.' % error.retry_after, delete_after = 7)
+            await ctx.send('**eat glass.** %.0fs cooldown.' % error.retry_after, delete_after=7)
 
         elif isinstance(error, commands.CommandInvokeError):
             self.log.error('Invoke: %s // %s: %s', ctx.author, ctx.message.content, error, exc_info=error)
@@ -87,17 +87,17 @@ class CrimsoBOT(commands.Bot):
         elif isinstance(error, commands.MissingRequiredArgument):
             self.log.error('MissingArgument: %s // %s: %s', ctx.author, ctx.message.content, error)
 
-            await ctx.send('*this command requires more arguments. try `>help [cmd]`*', delete_after = 7)
+            await ctx.send('*this command requires more arguments. try `>help [cmd]`*', delete_after=7)
 
         elif isinstance(error, commands.BadArgument):
             self.log.error('BadArgument: %s // %s: %s', ctx.author, ctx.message.content, error)
 
-            await ctx.send("*that's not a valid argument value! try `>help [cmd]`*", delete_after = 7)
+            await ctx.send("*that's not a valid argument value! try `>help [cmd]`*", delete_after=7)
 
         elif isinstance(error, checks.NotAdmin):
             self.log.error('NotAdmin: %s // %s: %s', ctx.author, ctx.message.content, error)
 
-            await ctx.send(':rotating_light: not crimso! :rotating_light:', delete_after = 7)
+            await ctx.send(':rotating_light: not crimso! :rotating_light:', delete_after=7)
 
         elif isinstance(error, commands.CommandNotFound):
             self.log.error(
