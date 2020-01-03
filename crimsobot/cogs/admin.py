@@ -76,6 +76,7 @@ class Admin(commands.Cog):
         await msg.add_reaction('🛐')
 
     @commands.command(hidden=True)
+    @checks.is_admin()
     async def banlist(self, ctx: commands.Context) -> None:
         """List of banned users."""
 
@@ -116,6 +117,7 @@ class Admin(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
+    @checks.is_admin()
     async def servers(self, ctx: commands.Context) -> None:
         """List crimsoBOT's servers."""
 
@@ -126,6 +128,7 @@ class Admin(commands.Cog):
         )
 
     @commands.command()
+    @checks.is_admin()
     async def serverinfo(self, ctx: commands.Context, server_id: Optional[int] = None) -> None:
         """Member count, owner, channel names, roles, and emojis."""
 
