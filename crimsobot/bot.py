@@ -87,12 +87,12 @@ class CrimsoBOT(commands.Bot):
         elif isinstance(error, commands.MissingRequiredArgument):
             self.log.error('MissingArgument: %s // %s: %s', ctx.author, ctx.message.content, error)
 
-            await ctx.send('*this command requires more arguments. try `>help [cmd]`*', delete_after=7)
+            await ctx.send(f'*this command requires more arguments. try `>help {ctx.command.qualified_name}`*', delete_after=7)
 
         elif isinstance(error, commands.BadArgument):
             self.log.error('BadArgument: %s // %s: %s', ctx.author, ctx.message.content, error)
 
-            await ctx.send("*that's not a valid argument value! try `>help [cmd]`*", delete_after=7)
+            await ctx.send(f"*that's not a valid argument value! try `>help {ctx.command.qualified_name}`*", delete_after=7)
 
         elif isinstance(error, checks.NotAdmin):
             self.log.error('NotAdmin: %s // %s: %s', ctx.author, ctx.message.content, error)
