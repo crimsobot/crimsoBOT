@@ -16,12 +16,12 @@ class Chat(commands.Cog):
     async def scatterbrain(self, ctx: commands.Context) -> None:
         """Short-term memory mania."""
 
+        messages = []
+
         # grab message contents (which are strings):
-        messages = [
-            message.content
-            async for message in ctx.channel.history(limit=500) 
-            if message.author.id != self.bot.user.id
-        ]
+        async for message in ctx.channel.history(limit=500):
+            if message.author.id != self.bot.user.id:
+                messages.append(message.content)
 
         output = m.scatter(messages)
         await ctx.send(output)
@@ -124,7 +124,7 @@ class Chat(commands.Cog):
         ]
 
         title = 'An excerpt from **THE FIRST NECROMANCER (sort of)**, by Monty Ward'
-        descr = await m.async_wrap(self, m.rovin)
+        descr = await m.async_wrap(self.bot, m.rovin)
         embed = c.crimbed(title, descr, 'https://i.imgur.com/wOFf7PF.jpg')
         embed.set_footer(text=random.choice(footer_text) + ' Sleep tight.')
 

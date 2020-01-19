@@ -1,10 +1,10 @@
 import random as r
 import re
+import functools
 from typing import List
 
 import markovify
 import nltk
-import functools
 
 from crimsobot.utils import tools as c
 
