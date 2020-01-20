@@ -50,7 +50,7 @@ def reading(spread: str) -> Tuple[Optional[io.BytesIO], List[str]]:
             if not reverse:
                 string = cards[ii]['name'] + ': ' + cards[ii]['desc0']
             else:
-                string = cards[ii]['name'] + ' (reversed): ' + cards[ii]['desc0']
+                string = cards[ii]['name'] + ' (reversed): ' + cards[ii]['desc1']
             interpret.append(string)
 
         fp = io.BytesIO()

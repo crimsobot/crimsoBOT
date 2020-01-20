@@ -1,5 +1,6 @@
 import random as r
 import re
+import functools
 from typing import List
 
 import markovify
@@ -152,9 +153,10 @@ def rovin() -> str:
 
 
 def crimso() -> str:
-    f = open(c.clib_path_join('text', 'crimso.txt'), encoding='utf8', errors='ignore')
-    text = f.read()
-    f.close()
+    """Generates crimsonic text."""
+
+    with open(c.clib_path_join('text', 'crimso.txt'), encoding='utf8', errors='ignore') as f:
+        text = f.read()
 
     factor = 2
     model = markovify.NewlineText(text, state_size=factor, retain_original=False)
@@ -162,5 +164,13 @@ def crimso() -> str:
     output = None
     while output is None:
         output = model.make_sentence()
+
+    return output
+
+async def async_wrap(bot, func, *args, **kwargs):
+    """Wraps a sync function into an asynchronous executor. Useful everywhere but it's here just because."""
+
+    func = functools.partial(func, *args, **kwargs)
+    output = await bot.loop.run_in_executor(None, func)
 
     return output
