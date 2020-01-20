@@ -133,11 +133,13 @@ class CrimsoBOT(commands.Bot):
 
         # respond to ping
         if self.user in message.mentions:
-            await message.channel.send(m.crimso())
+            crimsonic = await m.async_wrap(self, m.crimso)
+            await message.channel.send(crimsonic)
 
         # random chat
         if random.random() < 0.001 and not is_dm:
-            await message.channel.send(m.crimso())
+            crimsonic = await m.async_wrap(self, m.crimso)
+            await message.channel.send(crimsonic)
 
     async def on_guild_join(self, guild: discord.Guild) -> None:
         """Notify me when added to guild"""

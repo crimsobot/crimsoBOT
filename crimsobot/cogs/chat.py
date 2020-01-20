@@ -16,11 +16,10 @@ class Chat(commands.Cog):
     async def scatterbrain(self, ctx: commands.Context) -> None:
         """Short-term memory mania."""
 
-        channel = ctx.message.channel
         messages = []
 
         # grab message contents (which are strings):
-        async for message in channel.history(limit=500):
+        async for message in ctx.channel.history(limit=500):
             if message.author.id != self.bot.user.id:
                 messages.append(message.content)
 
@@ -94,12 +93,11 @@ class Chat(commands.Cog):
             ('Allen Crimsberg', 1950, 1997),
         ]
 
-        descr = m.poem(int(random.gauss(5, 1)))
+        descr = await m.async_wrap(self, m.poem, int(random.gauss(5, 1)))
         embed = c.crimbed('**A poem.**', descr.lower(), None)
-        choice = random.randint(0, len(fake_author) - 1)
+        choice = random.choice(fake_author)
         embed.set_footer(text='{}, {}'.format(
-            fake_author[choice][0],
-            random.randint(fake_author[choice][1], fake_author[choice][2])
+            choice[0], random.randint(choice[1], choice[2])
         ))
 
         await ctx.send(embed=embed)
@@ -126,7 +124,7 @@ class Chat(commands.Cog):
         ]
 
         title = 'An excerpt from **THE FIRST NECROMANCER (sort of)**, by Monty Ward'
-        descr = m.rovin()
+        descr = await m.async_wrap(self.bot, m.rovin)
         embed = c.crimbed(title, descr, 'https://i.imgur.com/wOFf7PF.jpg')
         embed.set_footer(text=random.choice(footer_text) + ' Sleep tight.')
 
