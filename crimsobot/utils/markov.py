@@ -167,6 +167,7 @@ def crimso() -> str:
 
     return output
 
+
 async def async_wrap(bot, func, *args, **kwargs):
     """Wraps a sync function into an asynchronous executor. Useful everywhere but it's here just because."""
 

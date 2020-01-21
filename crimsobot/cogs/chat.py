@@ -93,7 +93,7 @@ class Chat(commands.Cog):
             ('Allen Crimsberg', 1950, 1997),
         ]
 
-        descr = await m.async_wrap(self, m.poem, int(random.gauss(5, 1)))
+        descr = await m.async_wrap(self.bot, m.poem, int(random.gauss(5, 1)))
         embed = c.crimbed('**A poem.**', descr.lower(), None)
         choice = random.choice(fake_author)
         embed.set_footer(text='{}, {}'.format(
