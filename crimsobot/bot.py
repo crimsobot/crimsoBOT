@@ -1,7 +1,6 @@
-import asyncio
 import logging
 import random
-from typing import Any, List, Union
+from typing import Any, List, Union, Mapping
 
 import discord
 from discord.ext import commands
@@ -9,12 +8,13 @@ from discord.ext import commands
 from config import ADMIN_USER_IDS, BANNED_GUILD_IDS, DM_LOG_CHANNEL_ID, LEARNER_CHANNEL_IDS, LEARNER_USER_IDS
 from crimsobot import db
 from crimsobot.models.ban import Ban
-from crimsobot.utils import checks, markov as m, tools as c
+from crimsobot.utils import markov as m, tools as c
 
 
 class CrimsoBOT(commands.Bot):
-    def __init__(self, **kwargs: Any) -> None:
+    def __init__(self, **kwargs: Mapping) -> None:
         command_prefix = '>'
+        kwargs["owner_ids"] = set(ADMIN_USER_IDS)
 
         super().__init__(command_prefix, **kwargs)
 
@@ -94,8 +94,8 @@ class CrimsoBOT(commands.Bot):
 
             await ctx.send(f"*that's not a valid argument value! try `>help {ctx.command.qualified_name}`*", delete_after=7)
 
-        elif isinstance(error, checks.NotAdmin):
-            self.log.error('NotAdmin: %s // %s: %s', ctx.author, ctx.message.content, error)
+        elif isinstance(error, commands.NotOwner):
+            self.log.error('NotOwner: %s // %s: %s', ctx.author, ctx.message.content, error)
 
             await ctx.send(':rotating_light: not crimso! :rotating_light:', delete_after=7)
 
@@ -163,4 +163,4 @@ class CrimsoBOT(commands.Bot):
 
     def add_command(self, command):
         command.cooldown_after_parsing = True
-        return super().add_command(command)                
+        return super().add_command(command)

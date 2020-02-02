@@ -5,7 +5,7 @@ import discord
 from discord.ext import commands
 
 from crimsobot.bot import CrimsoBOT
-from crimsobot.utils import astronomy, checks, image as imagetools, tools as c
+from crimsobot.utils import astronomy, image as imagetools, tools as c
 
 log = logging.getLogger(__name__)
 
@@ -88,7 +88,7 @@ class Utilities(commands.Cog):
         log.info('Inbox: %s/%s\n            %s (%s): %s', guild, channel, user, userid, message)
 
     @commands.command(hidden=True)
-    @checks.is_admin()
+    @commands.is_owner()
     async def csay(self, ctx: commands.Context, dest: str, tts: bool, *, message: str) -> None:
         if dest[0] == 'c':
             recip = self.bot.get_channel(int(dest[1:]))

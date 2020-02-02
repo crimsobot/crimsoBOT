@@ -8,7 +8,7 @@ from discord.ext import commands
 
 from config import ADMIN_USER_IDS
 from crimsobot.bot import CrimsoBOT
-from crimsobot.utils import checks, games as crimsogames, tools as c
+from crimsobot.utils import games as crimsogames, tools as c
 from crimsobot.utils.leaderboard import Leaderboard
 
 # lists for games in progress
@@ -515,7 +515,7 @@ class Games(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command(hidden=True)
-    @checks.is_admin()
+    @commands.is_owner()
     async def cgive(self, ctx: commands.Context, recipient: discord.Member, amount: float) -> None:
         """Manual adjustment of crimsoCOIN values."""
 

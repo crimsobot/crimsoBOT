@@ -9,7 +9,7 @@ from config import ADMIN_USER_IDS
 from crimsobot.bot import CrimsoBOT
 from crimsobot.models.ban import Ban
 from crimsobot.models.user import User
-from crimsobot.utils import checks, tools as c
+from crimsobot.utils import tools as c
 
 log = logging.getLogger(__name__)
 
@@ -19,7 +19,7 @@ class Admin(commands.Cog):
         self.bot = bot
 
     @commands.command(hidden=True)
-    @checks.is_admin()
+    @commands.is_owner()
     async def ban(self, ctx: commands.Context, discord_user: discord.User) -> None:
         """Ban user from using crimsoBOT."""
 
@@ -48,7 +48,7 @@ class Admin(commands.Cog):
         await msg.add_reaction('👺')
 
     @commands.command(hidden=True)
-    @checks.is_admin()
+    @commands.is_owner()
     async def unban(self, ctx: commands.Context, discord_user: discord.User) -> None:
         """Unban user from using crimsoBOT."""
 
@@ -76,7 +76,7 @@ class Admin(commands.Cog):
         await msg.add_reaction('🛐')
 
     @commands.command(hidden=True)
-    @checks.is_admin()
+    @commands.is_owner()
     async def banlist(self, ctx: commands.Context) -> None:
         """List of banned users."""
 
@@ -117,7 +117,7 @@ class Admin(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
-    @checks.is_admin()
+    @commands.is_owner()
     async def servers(self, ctx: commands.Context) -> None:
         """List crimsoBOT's servers."""
 
@@ -128,7 +128,7 @@ class Admin(commands.Cog):
         )
 
     @commands.command()
-    @checks.is_admin()
+    @commands.is_owner()
     async def serverinfo(self, ctx: commands.Context, server_id: Optional[int] = None) -> None:
         """Member count, owner, channel names, roles, and emojis."""
 
@@ -146,7 +146,7 @@ class Admin(commands.Cog):
             log.info("Guild info still too long, can't send...")
 
     @commands.command(hidden=True)
-    @checks.is_admin()
+    @commands.is_owner()
     async def save_from(self, ctx: commands.Context, server_id: int) -> None:
         """Pull crimsoBOT from a server."""
 
@@ -156,7 +156,7 @@ class Admin(commands.Cog):
             log.info('crimsoBOT REMOVED from %s [%s]', guild, guild.id)
 
     @commands.command(hidden=True)
-    @checks.is_admin()
+    @commands.is_owner()
     async def reload(self, ctx: commands.Context) -> None:
         """Reload all extensions. Intended for local development."""
 
