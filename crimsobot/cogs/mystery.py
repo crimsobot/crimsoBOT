@@ -14,14 +14,20 @@ class Mystery(commands.Cog):
     async def tarot(self, ctx: commands.Context, spread: str = 'ppf') -> None:
         """
         Do you seek wisdom and guidance?
-        Unveil the Mysteries of the past, the present, and the future with a quick tarot card reading.
-        Based on the classic Rider-Waite tarot deck, this three-card spread is read from left to right.
-        The first card deals with the past, the second with the present, and the third with the future.
-        The meaning of each card appears next to its name.
+        Unveil the Mysteries of the past, the present, and the future with a tarot reading.
+        A brief meaning of each card appears next to its name.
         Meditate deeply upon the words of wise crimsoBOT, and all shall become clear...
 
+        >tarot ppf
+        This three-card spread is read from left to right to explore your past, present, and future.
+
+        >tarot five
+        This spread delves deeper into the present, exploring your Reason for seeking guidance. 
+        The Future card speaks toward the outcome should you stay on your current path.
+        The Potential card looks toward the outcome should you change paths.
+
         You may choose to have a specific question in mind before you ask for your cards.
-        This may help you interpret the spread before you.
+        However, taking a reading without a question in mind may help coax from you the reason you seek the tarot's guidance.
 
         ABOUT THE DECK
 

@@ -31,30 +31,44 @@ def reading(spread: str) -> Tuple[Optional[io.BytesIO], List[str]]:
     fp = None
     interpret = []  # type: List[str]
 
-    if spread is None or 'ppf':
+    if spread == 'ppf':
         # three cards dealt horizontally
         bg_size = (3 * w + 4 * space, h + 2 * space)
         bg = draw_background(bg_size)
         cards = get_cards(3)
-        pos = [
+        position = [
             (space, space),
             (w + 2 * space, space),
             (2 * w + 3 * space, space)
         ]
-        interpret.append('**PAST · PRESENT · FUTURE**')
+        position_legend = ['PAST', 'PRESENT', 'FUTURE']
+    
+    if spread == 'five':
+        # five cards dealt in a cross
+        bg_size = (3 * w + 4 * space, 3 * h + 4 * space)
+        bg = draw_background(bg_size)
+        cards = get_cards(5)
+        position = [
+            (space, 2 * space + h),
+            (w + 2 * space, 2 * space + h),
+            (2 * w + 3 * space, 2 * space + h),
+            (w + 2 * space, 3 * space + 2 * h),
+            (w + 2 * space, space)
+        ]
+        position_legend = ['PAST', 'PRESENT', 'FUTURE', 'REASON', 'POTENTIAL']
 
-        for ii in range(len(cards)):
-            card = clib_path_join('tarot', 'deck', cards[ii]['image'])
-            reverse = True if random.random() < 0.1 else False
-            paste_card(bg, card, pos[ii], reverse)
-            if not reverse:
-                string = cards[ii]['name'] + ': ' + cards[ii]['desc0']
-            else:
-                string = cards[ii]['name'] + ' (reversed): ' + cards[ii]['desc1']
-            interpret.append(string)
+    for ii in range(len(cards)):
+        card = clib_path_join('tarot', 'deck', cards[ii]['image'])
+        reverse = True if random.random() < 0.1 else False
+        paste_card(bg, card, position[ii], reverse)
+        if not reverse:
+            card_description = cards[ii]['name'] + ': ' + cards[ii]['desc0']
+        else:
+            card_description = cards[ii]['name'] + ' (reversed): ' + cards[ii]['desc1']
+        interpret.append('**{} ·** {}'.format(position_legend[ii], card_description))
 
-        fp = io.BytesIO()
-        bg.save(fp, 'PNG')
-        fp.seek(0)
+    fp = io.BytesIO()
+    bg.save(fp, 'PNG')
+    fp.seek(0)
 
     return fp, interpret
