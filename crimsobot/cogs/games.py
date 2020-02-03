@@ -257,7 +257,7 @@ class Games(commands.Cog):
             winners = [user for user in winners if user.id != self.bot.user.id and user not in losers]
 
             # determine if this will be an unfortunate 
-            whammy = True if random.random() < 1.0036 else False
+            whammy = True if random.random() < 0.0036 else False
             
             whammy_string = ''
 
