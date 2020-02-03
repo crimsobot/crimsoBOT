@@ -146,6 +146,7 @@ class Games(commands.Cog):
         Choose only one; guessing more than once will disqualify you!
         Playing >guess 2 is free. Larger Guessmoji games will cost you.
         Check your >balance! Get game costs and payouts by typing >guesscosts.
+        Watch out for the WHAMMY!
         """
 
         # invalid amount of emojis
@@ -243,27 +244,24 @@ class Games(commands.Cog):
                 else:
                     losers += players
 
+        # determine if this will be an unfortunate occurance >:)
+        whammy = True if random.random() < 0.0036 else False
+
+        if whammy:
+            winning_amount = -36 # because funny ooer numner
+
         if len(losers) != 0:
             # kick out crimsoBOT
             losers = [user for user in losers if user.id != self.bot.user.id]
 
             # stats + debit the losers
             for user in losers:
-                await crimsogames.win(user, -cost)
+                await crimsogames.win(user, (winning_amount if whammy else 0) - cost)
                 await crimsogames.guess_luck(user, n, False)
 
         if len(winners) != 0:
-            # kick out crimsoBOT
+            # kick out crimsoBOT and losers
             winners = [user for user in winners if user.id != self.bot.user.id and user not in losers]
-
-            # determine if this will be an unfortunate 
-            whammy = True if random.random() < 0.0036 else False
-            
-            whammy_string = ''
-
-            if whammy:
-                winning_amount = -36 # because funny ooer numner
-                whammy_string = '**WHAMMY!** '
 
             # stats + debit & award crimsoCOIN to winners
             for user in winners:
@@ -277,11 +275,16 @@ class Games(commands.Cog):
             winners_text = crimsogames.winner_list(winner_mentions)
 
             # ...and change embed description
-            embed.description = '...{}{} guessed it for \u20A2{:.2f}!\nThe answer was {}'.format(
-                whammy_string, winners_text, winning_amount, winning_emoji
+            embed.description = '...{} guessed it for \u20A2{:.2f}!\nThe answer was {}'.format(
+                winners_text, winning_amount, winning_emoji
             )
         else:
             embed.description = '...No one guessed it! The answer was {}'.format(winning_emoji)
+
+        if whammy:
+            embed.description = '**WHAMMY!** Everyone loses -\u20A2{} plus the cost of the game!'.format(
+                winning_amount
+            )
 
         # edit msg with result of game
         await msg.edit(embed=embed)
