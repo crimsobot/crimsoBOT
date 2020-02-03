@@ -304,6 +304,7 @@ class Games(commands.Cog):
         A string of emojis will appear.
         Enter a short story (<250 characters) that corresponds to the emojis, and then vote on the best story!
         The story must begin with $ to be counted.
+        The winner gets a chunk of crimsoCOIN proportional the the number of votes cast for their story.
 
         This game requires the Manage Messages permission.
         """
@@ -411,6 +412,9 @@ class Games(commands.Cog):
                 votes.append(vote.content)
                 voters.append(vote.author)
                 await vote.delete()
+                embed = c.crimbed(None, '**{}** voted.'.format(vote.author), None)
+                user_has_voted_message = await ctx.send(embed=embed)
+                await user_has_voted_message.delete(delay=8)
 
         # vote handler
         if len(votes) == 0:
@@ -419,22 +423,24 @@ class Games(commands.Cog):
             descr = "I'm disappointed."
         else:
             # send to vote counter to get winner
-            ind_plus_1, total_votes = crimsogames.tally(votes)
+            ind_plus_1, votes_for_winner = crimsogames.tally(votes)
             winner = stories[int(ind_plus_1) - 1]
-            await crimsogames.win(winner.author, 10)
-            ess = 's' if total_votes > 1 else ''
+            winning_amount = votes_for_winner * 10
+            await crimsogames.win(winner.author, winning_amount)
+            ess = 's' if votes_for_winner > 1 else ''
 
             # then the embed info
             title = '**EMOJI STORY WINNER!**'
             descr = 'The winner is **{x.author}** with {y} vote{s} for their story:\n\n{e}\n\n{x.content}'.format(
-                x=winner, y=total_votes, s=ess, e=emojis)
+                x=winner, y=votes_for_winner, s=ess, e=emojis)
 
         # third embed: results!
         embed = c.crimbed(title, descr, thumb)
         if winner:
-            embed.set_footer(text='{} gets 10 crimsoCOIN!'.format(winner.author))
+            embed.set_footer(text='{} gets {} crimsoCOIN!'.format(winner.author, winning_amount))
 
         await ctx.send(embed=embed)
+
         c.checkout('emojistory', ctx.message.guild, ctx.message.channel, emojistory_channels)
 
     @commands.command(aliases=['bal'])
