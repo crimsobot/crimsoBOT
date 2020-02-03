@@ -144,7 +144,7 @@ class Games(commands.Cog):
         """
         The bot will present 2 to 20 choices, depending on your selection.
         Choose only one; guessing more than once will disqualify you!
-        Playing >guess 2 or >guess 3 is free. Larger Guessmoji games will cost you.
+        Playing >guess 2 is free. Larger Guessmoji games will cost you.
         Check your >balance! Get game costs and payouts by typing >guesscosts.
         """
 
@@ -175,13 +175,14 @@ class Games(commands.Cog):
         # initial message
         title = "Let's play **GUESSMOJI!**"
         description = """
-        I'm thinking of emoji. Can you guess it?
+        I'm thinking of an emoji. Can you guess it?
         *(Multiple guesses or playing when you can't afford it will disqualify you!)*
+        The choices are...
         """
         thumb = None  # https://i.imgur.com/zJtRYNJ.jpg
         footer = 'Choices: {:1d} · Cost: \u20A2{:.2f} · Payout: \u20A2{:.2f}'.format(n, cost, winning_amount)
 
-        embed = c.crimbed(title, description + 'The choices are...', thumb)
+        embed = c.crimbed(title, description, thumb)
         embed.set_footer(text=footer)
         msg = await ctx.send(embed=embed)
         await asyncio.sleep(1.36)
@@ -221,14 +222,16 @@ class Games(commands.Cog):
         # see who reacted to what
         cache_msg = discord.utils.get(self.bot.cached_messages, id=msg.id)
         for reaction in cache_msg.reactions:
-            # remove the banned and poor
+            # remove the banned and poor...
             players = await reaction.users().flatten()
 
-            # only bother with this shit if someone besides the bot reacted
+            # ...but only bother with this shit if someone besides the bot reacted
             if len(players) > 1:
                 for player in players:
                     is_bot = player.id == self.bot.user.id
-                    cannot_play = self.bot.is_banned(player) or await crimsogames.check_balance(player) < cost
+                    cannot_play = self.bot.is_banned(player) or \
+                        await crimsogames.check_balance(player) < (cost if cost != 0 else float('-inf')) 
+                        # ...this should let people with negative balance play >guess 2
 
                     if not is_bot and cannot_play:
                         await cache_msg.remove_reaction(reaction.emoji, player)
@@ -253,6 +256,15 @@ class Games(commands.Cog):
             # kick out crimsoBOT
             winners = [user for user in winners if user.id != self.bot.user.id and user not in losers]
 
+            # determine if this will be an unfortunate 
+            whammy = True if random.random() < 1.0036 else False
+            
+            whammy_string = ''
+
+            if whammy:
+                winning_amount = -36 # because funny ooer numner
+                whammy_string = '**WHAMMY!** '
+
             # stats + debit & award crimsoCOIN to winners
             for user in winners:
                 await crimsogames.win(user, winning_amount - cost)
@@ -265,8 +277,8 @@ class Games(commands.Cog):
             winners_text = crimsogames.winner_list(winner_mentions)
 
             # ...and change embed description
-            embed.description = '...{} guessed it for \u20A2{:.2f}!\nThe answer was {}'.format(
-                winners_text, winning_amount, winning_emoji
+            embed.description = '...{}{} guessed it for \u20A2{:.2f}!\nThe answer was {}'.format(
+                whammy_string, winners_text, winning_amount, winning_emoji
             )
         else:
             embed.description = '...No one guessed it! The answer was {}'.format(winning_emoji)
