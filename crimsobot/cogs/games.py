@@ -282,8 +282,8 @@ class Games(commands.Cog):
             embed.description = '...No one guessed it! The answer was {}'.format(winning_emoji)
 
         if whammy:
-            embed.description = '**WHAMMY!** Everyone loses -\u20A2{} plus the cost of the game!'.format(
-                winning_amount
+            embed.description = '**WHAMMY!** Everyone loses -\u20A2{:.2f} plus the cost of the game!'.format(
+                -winning_amount
             )
 
         # edit msg with result of game
