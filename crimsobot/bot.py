@@ -1,6 +1,6 @@
 import logging
 import random
-from typing import Any, List, Union, Mapping
+from typing import Any, List, Union
 
 import discord
 from discord.ext import commands
@@ -12,11 +12,10 @@ from crimsobot.utils import markov as m, tools as c
 
 
 class CrimsoBOT(commands.Bot):
-    def __init__(self, **kwargs: Mapping) -> None:
+    def __init__(self, **kwargs: Any) -> None:
         command_prefix = '>'
-        kwargs["owner_ids"] = set(ADMIN_USER_IDS)
-
-        super().__init__(command_prefix, **kwargs)
+        owner_ids = set(ADMIN_USER_IDS)
+        super().__init__(command_prefix, owner_ids=owner_ids, **kwargs)
 
         self.banned_user_ids = []  # type: List[int]
 
