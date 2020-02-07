@@ -15,7 +15,7 @@ from crimsobot.utils.leaderboard import Leaderboard
 madlibs_channels = []  # type: List[int]
 guess_channels = []  # type: List[int]
 emojistory_channels = []  # type: List[int]
-cringo_players = []
+cringo_channels = []
 
 class Games(commands.Cog):
     def __init__(self, bot: CrimsoBOT):
@@ -455,7 +455,7 @@ class Games(commands.Cog):
         """
 
         # check if running in channel
-        chk = c.checkin('cringo', ctx.message.guild, ctx.message.channel, cringo_players)
+        chk = c.checkin('cringo', ctx.message.guild, ctx.message.channel, cringo_channels)
         if chk is False:
             raise commands.errors.CommandInvokeError('Channel in list')
 
@@ -482,8 +482,7 @@ class Games(commands.Cog):
             asks_to_join = msg.content.startswith('$join')
             in_channel = msg.channel == ctx.message.channel
             already_joined = msg.author in users_already_joined
-            not_already_playing = c.checkin('cringo', ctx.message.guild, msg.author, cringo_players)
-            return not banned and asks_to_join and in_channel and not already_joined and not_already_playing
+            return not banned and asks_to_join and in_channel and not already_joined
 
         # initialize join-message listener
         users_already_joined = []
@@ -647,11 +646,8 @@ class Games(commands.Cog):
             thumbnail = 'https://i.imgur.com/gpRToBn.png'  # jester
         )
         await ctx.send(embed=embed)
-
-        for player in list_of_players:
-            c.checkout('cringo', ctx.message.guild, player.player, cringo_players)
         
-        c.checkout('cringo', ctx.message.guild, ctx.message.channel, cringo_players)
+        c.checkout('cringo', ctx.message.guild, ctx.message.channel, cringo_channels)
 
     @commands.command(aliases=['bal'])
     async def balance(self, ctx: commands.Context, whose: Optional[discord.Member] = None) -> None:
