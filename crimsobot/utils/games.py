@@ -355,7 +355,7 @@ def cringo_score(player: object, turn_number: int, multiplier: int) -> None:
     return None
 
 
-async def cringo_leaderboard(players: List[object], game_over: bool = False) -> List[str]:
+async def cringo_leaderboard(players: List[object], game_over: bool = False, point_nerf: int = 1) -> List[str]:
     "Unpack the player objects to get something that can be sorted and displayed."
 
     leaderboard = []
@@ -368,9 +368,9 @@ async def cringo_leaderboard(players: List[object], game_over: bool = False) -> 
     # award coin before string-ifying the thing
     if game_over:
         try:
-            await win(leaderboard[0][0], leaderboard[0][1] / 10)  # first place
-            await win(leaderboard[1][0], leaderboard[1][1] / 10)  # second place
-            await win(leaderboard[2][0], leaderboard[2][1] / 10)  # third place
+            await win(leaderboard[0][0], leaderboard[0][1] / point_nerf)  # first place
+            await win(leaderboard[1][0], leaderboard[1][1] / point_nerf)  # second place
+            await win(leaderboard[2][0], leaderboard[2][1] / point_nerf)  # third place
         except IndexError:
             pass
 

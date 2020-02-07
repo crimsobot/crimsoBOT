@@ -639,9 +639,10 @@ class Games(commands.Cog):
                 game_on = False
         
         # Final score!
+        nerf = 50 # (points / nerf = coin)
         embed = c.crimbed(
             title = "**CRINGO!** FINAL SCORE",
-            description = await crimsogames.cringo_leaderboard(list_of_players, True),
+            description = await crimsogames.cringo_leaderboard(list_of_players, True, nerf),
             footer = 'Your points/10 = your crimsoCOIN winnings!',
             thumbnail = 'https://i.imgur.com/gpRToBn.png'  # jester
         )
