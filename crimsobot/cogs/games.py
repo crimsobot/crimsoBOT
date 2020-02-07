@@ -15,7 +15,7 @@ from crimsobot.utils.leaderboard import Leaderboard
 madlibs_channels = []  # type: List[int]
 guess_channels = []  # type: List[int]
 emojistory_channels = []  # type: List[int]
-
+cringo_players = []
 
 class Games(commands.Cog):
     def __init__(self, bot: CrimsoBOT):
@@ -375,7 +375,8 @@ class Games(commands.Cog):
         else:
             title = '**VOTE NOW** for the best emoji story!'
             descr = '_ _\n' + emojis + '\n\n' + '\n'.join(
-                str(stories.index(story) + 1) + '. {story.content}'.format(story=story) for story in stories)
+                str(stories.index(story) + 1) + '. {story.content}'.format(story=story) for story in stories
+            )
             voting = True
 
         # second embed: stories
@@ -442,6 +443,197 @@ class Games(commands.Cog):
         await ctx.send(embed=embed)
 
         c.checkout('emojistory', ctx.message.guild, ctx.message.channel, emojistory_channels)
+
+    @commands.command(aliases=['bingo'], brief='A quirky take on bingo.')
+    # @commands.max_concurrency(1, commands.BucketType.channel)
+    async def cringo(self, ctx: commands.Context) -> None:
+        """
+        A peculiar blend of slots and bingo that is totally not a ripoff of a popular 1990s PC game.
+        Points are awarded for matches, completing lines, and getting a full house.
+        The earlier you get a match or a line, the more points you get!
+        The winners are awarded a handsome amount of crimsoCOIN.
+        """
+
+        # check if running in channel
+        chk = c.checkin('cringo', ctx.message.guild, ctx.message.channel, cringo_players)
+        if chk is False:
+            raise commands.errors.CommandInvokeError('Channel in list')
+
+        # generate game intro embed
+        join_timer = 45
+        embed = c.crimbed(
+            title = "Let's play **CRINGO!**",
+            description = """
+            Type `$join` to join this game. You have {} seconds!
+            Your CRINGO! card will be DMed to you.
+            The emojis will be called in this channel!
+            """.format(join_timer),
+            thumbnail = 'https://i.imgur.com/gpRToBn.png'  # jester
+        )
+        await ctx.send(embed=embed)
+
+        # solicit players to join the game
+        # define check
+        def join_cringo(msg: discord.Message) -> bool:
+            banned = self.bot.is_banned(msg.author)
+            asks_to_join = msg.content.startswith('$join')
+            print("ask_to_join = {}".format(asks_to_join))
+            in_channel = msg.channel == ctx.message.channel
+            print("in_channel = {}".format(in_channel))
+            already_joined = msg.author in users_already_joined
+            print("already_joined = {}".format(already_joined))
+            not_already_playing = c.checkin('cringo', ctx.message.guild, msg.author, cringo_players)
+            print("not_already_playing = {}".format(not_already_playing))
+            return not banned and asks_to_join and in_channel and not already_joined and not_already_playing
+
+        # initialize join-message listener
+        users_already_joined = []
+        end = time.time() + join_timer
+        while time.time() < end:
+            try:
+                join_request = await self.bot.wait_for('message', check=join_cringo, timeout=0.5)
+                print("The author was {}".format(join_request.author))
+            except asyncio.TimeoutError:
+                continue
+            
+            if join_request is not None:
+                # send instructions; if they can't receive DMs, they can't play
+                try:
+                    potential_player = join_request.author
+                    embed = c.crimbed(
+                        title = "Welcome to **CRINGO!**",
+                        description = """
+                            Match the emojis called in the channel to your card.
+                            If you see a match, type the column and row of the match!
+                            For example, type ".b4" or ". a1" in this DM. Spaces don't matter.
+                            Good luck!
+                            """,
+                        thumbnail = 'https://i.imgur.com/gpRToBn.png'  # jester
+                    )
+                    await potential_player.send(embed=embed)
+                    users_already_joined.append(join_request.author)
+                    embed = c.crimbed(
+                        None,
+                        '**{}** has joined the game!'.format(join_request.author),
+                        None
+                    )
+                    await ctx.send(embed=embed)
+                    await join_request.delete()
+                except discord.errors.Forbidden:
+                    embed = c.crimbed(
+                        title = None,
+                        description = 'Uh oh, **{} CANNOT** join the game!'.format(join_request.author),
+                        footer = "You have to be able to receive DMs from crimsoBOT to play!"
+                    )
+                    await ctx.send(embed=embed)
+                    c.checkout('cringo', ctx.message.guild, join_request.author, cringo_players)
+                    await join_request.delete()
+        
+        # if no one joins, end game
+        if len(users_already_joined) == 0:
+            embed = c.crimbed(title = None, description = 'No one joined! Game cancelled.')
+            await ctx.send(embed=embed)
+            return
+        
+        # here's a super-basic class that's not in the right place!
+        class Cringo:
+            def __init__(self, player, card, score, matches):
+                self.player = player
+                self.card = card
+                self.score = score
+                self.matches = matches
+        
+        # initialize player objects, send everyone their card
+        list_of_players  = []
+        for player in users_already_joined:
+            card = crimsogames.cringo_card(crimsogames.cringo_emoji(4))
+            player_object = Cringo(player, card, 0, set())
+            list_of_players.append(player_object)
+            await player.send(crimsogames.deliver_card(player_object.card))
+        
+        # initial game variables
+        turn_timer = 30
+        turn = 1
+        total_turns = 9
+        game_on = True
+        emojis_already_used = [] # should i columnize this?
+
+        # define check
+        def player_response(msg: discord.Message) -> bool:
+            begins_with_period = msg.content.startswith('.')
+            is_a_player = msg.author in users_already_joined
+            is_DM = isinstance(msg.channel, discord.DMChannel)
+            return begins_with_period and is_a_player and is_DM
+
+        while game_on:
+            # display initial leaderboard
+            embed = c.crimbed(
+                title = "**CRINGO!** scoreboard",
+                description = await crimsogames.cringo_leaderboard(list_of_players),
+                footer = "Turn #{} coming up!".format(turn)
+            )
+            await ctx.send(embed=embed)
+            await asyncio.sleep(7)
+
+            # choose emojis, send to channel
+            emojis_this_turn = crimsogames.cringo_emoji(1, emojis_already_used)
+            emojis_already_used.extend(emojis_this_turn[0])
+            multiplier = total_turns + 1 - turn
+
+            # send out the emojis for this turn
+            embed = c.crimbed(
+                title = "**CRINGO!** Turn #{}".format(turn),
+                description = ' '.join(emojis_this_turn[0]),
+                footer = "{}x multiplier · {} seconds!".format(multiplier, turn_timer)
+            )
+            await ctx.send(embed=embed)
+
+            # set up listener for players scoring their cards
+            turn_end = time.time() + turn_timer
+            while time.time() < turn_end:
+                try:
+                    response = await self.bot.wait_for('message', check=player_response, timeout=0.5)
+                except asyncio.TimeoutError:
+                    continue
+
+                if response is not None:
+                    # find player's card
+                    for player in list_of_players:
+                        if player.player == response.author:
+                            user_object = player
+                            break
+                    
+                    # determine if user's reponse is a match
+                    match = crimsogames.mark_card(user_object.card, response.content, emojis_this_turn)
+                    if match:
+                        # each match gives points
+                        user_object.score += 10 * multiplier
+                        await response.author.send(crimsogames.deliver_card(user_object.card))
+                    else:
+                        user_object.score -= 10
+                        await response.author.send("`Not a match! You lose 10 points.`")
+
+            # end of turn, time to score matches
+            for player in list_of_players:
+                crimsogames.cringo_score(player, turn, multiplier)
+
+            turn += 1
+            if turn > total_turns:
+                game_on = False
+        
+        # Final score!
+        embed = c.crimbed(
+            title = "**CRINGO!** FINAL SCORE",
+            description = await crimsogames.cringo_leaderboard(list_of_players, True),
+            footer = 'Your points/10 = your crimsoCOIN winnings!',
+            thumbnail = 'https://i.imgur.com/gpRToBn.png'  # jester
+        )
+        await ctx.send(embed=embed)
+
+        for player in list_of_players:
+            c.checkout('cringo', ctx.message.guild, player.player, cringo_players)
+        
+        c.checkout('cringo', ctx.message.guild, ctx.message.channel, cringo_players)
 
     @commands.command(aliases=['bal'])
     async def balance(self, ctx: commands.Context, whose: Optional[discord.Member] = None) -> None:

@@ -113,7 +113,7 @@ class CrimsoBOT(commands.Bot):
 
         # DM self.logger
         is_dm = isinstance(message.channel, discord.DMChannel)
-        if is_dm and message.author.id != self.user.id and not message.content.startswith('>'):  # crimsoBOT
+        if is_dm and message.author.id != self.user.id and not message.content.startswith('>') and not message.content.startswith('.'):
             try:
                 link = message.attachments[0].url
             except IndexError:
