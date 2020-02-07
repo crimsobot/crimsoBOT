@@ -472,18 +472,23 @@ class Games(commands.Cog):
         )
         await ctx.send(embed=embed)
 
+        def pchk(name:str, var) -> None:
+            print("{} = {}".format(name, var))
+
         # solicit players to join the game
         # define check
         def join_cringo(msg: discord.Message) -> bool:
             banned = self.bot.is_banned(msg.author)
             asks_to_join = msg.content.startswith('$join')
-            print("ask_to_join = {}".format(asks_to_join))
             in_channel = msg.channel == ctx.message.channel
-            print("in_channel = {}".format(in_channel))
             already_joined = msg.author in users_already_joined
-            print("already_joined = {}".format(already_joined))
             not_already_playing = c.checkin('cringo', ctx.message.guild, msg.author, cringo_players)
-            print("not_already_playing = {}".format(not_already_playing))
+            # PCHK, REMOVE
+            pchk("asks_to_join", asks_to_join)
+            pchk('in_channel', in_channel)
+            pchk('already_joined', already_joined)
+            pchk('not_already_playing', not_already_playing)
+
             return not banned and asks_to_join and in_channel and not already_joined and not_already_playing
 
         # initialize join-message listener
@@ -492,7 +497,9 @@ class Games(commands.Cog):
         while time.time() < end:
             try:
                 join_request = await self.bot.wait_for('message', check=join_cringo, timeout=0.5)
-                print("The author was {}".format(join_request.author))
+                # PCHK, REMOVE
+                pchk('join_request.author', join_request.author)
+
             except asyncio.TimeoutError:
                 continue
             
@@ -563,6 +570,11 @@ class Games(commands.Cog):
             begins_with_period = msg.content.startswith('.')
             is_a_player = msg.author in users_already_joined
             is_DM = isinstance(msg.channel, discord.DMChannel)
+            # PCHK, REMOVE
+            pchk('begins_with_period', begins_with_period)
+            pchk('is_a_player', is_a_player)
+            pchk('is_DM', is_DM)
+
             return begins_with_period and is_a_player and is_DM
 
         while game_on:
@@ -593,6 +605,9 @@ class Games(commands.Cog):
             while time.time() < turn_end:
                 try:
                     response = await self.bot.wait_for('message', check=player_response, timeout=0.5)
+                    # PCHK, REMOVE
+                    pchk('response.author', response.author)
+
                 except asyncio.TimeoutError:
                     continue
 
