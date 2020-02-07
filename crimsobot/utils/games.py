@@ -264,7 +264,12 @@ def mark_card(card: List[List[str]], position: str, emojis_to_check: List[List[s
     indices = position.strip()
     col_abcd = indices[-2].lower()  # corresponds to item
     row_1234 = indices[-1]          # corresponds to sublist
-    selected_emoji = card[sublist[row_1234]][item[col_abcd]]
+    
+    # in case message begins with a period but has invalid keys
+    try:
+        selected_emoji = card[sublist[row_1234]][item[col_abcd]]
+    except KeyError:
+        return False
 
     # check for match
     is_match = selected_emoji in emojis_to_check[0] and selected_emoji in (emoji for sublist in card for emoji in sublist)

@@ -466,7 +466,7 @@ class Games(commands.Cog):
             description = """
             Type `$join` to join this game. You have {} seconds!
             Your CRINGO! card will be DMed to you.
-            The emojis will be called in this channel!
+            The emojis will be called in your DM.
             """.format(join_timer),
             thumbnail = 'https://i.imgur.com/gpRToBn.png'  # jester
         )
@@ -483,12 +483,6 @@ class Games(commands.Cog):
             in_channel = msg.channel == ctx.message.channel
             already_joined = msg.author in users_already_joined
             not_already_playing = c.checkin('cringo', ctx.message.guild, msg.author, cringo_players)
-            # PCHK, REMOVE
-            pchk("asks_to_join", asks_to_join)
-            pchk('in_channel', in_channel)
-            pchk('already_joined', already_joined)
-            pchk('not_already_playing', not_already_playing)
-
             return not banned and asks_to_join and in_channel and not already_joined and not_already_playing
 
         # initialize join-message listener
@@ -496,7 +490,7 @@ class Games(commands.Cog):
         end = time.time() + join_timer
         while time.time() < end:
             try:
-                join_request = await self.bot.wait_for('message', check=join_cringo, timeout=0.5)
+                join_request = await self.bot.wait_for('message', check=join_cringo, timeout=10)
                 # PCHK, REMOVE
                 pchk('join_request.author', join_request.author)
 
@@ -510,10 +504,10 @@ class Games(commands.Cog):
                     embed = c.crimbed(
                         title = "Welcome to **CRINGO!**",
                         description = """
-                            Match the emojis called in the channel to your card.
+                            Match the emojis called to the emojis on your card.
                             If you see a match, type the column and row of the match!
-                            For example, type ".b4" or ". a1" in this DM. Spaces don't matter.
-                            Good luck!
+                            For example, type ".b4" or ". a1" here. Spaces don't matter.
+                            Check your score in between turns in the channel. Good luck!
                             """,
                         thumbnail = 'https://i.imgur.com/gpRToBn.png'  # jester
                     )
@@ -530,7 +524,10 @@ class Games(commands.Cog):
                     embed = c.crimbed(
                         title = None,
                         description = 'Uh oh, **{} CANNOT** join the game!'.format(join_request.author),
-                        footer = "You have to be able to receive DMs from crimsoBOT to play!"
+                        footer = """
+                            You can't call cringo from a DM!
+                            You have to be able to receive DMs from crimsoBOT to play!
+                            """
                     )
                     await ctx.send(embed=embed)
                     c.checkout('cringo', ctx.message.guild, join_request.author, cringo_players)
@@ -570,11 +567,6 @@ class Games(commands.Cog):
             begins_with_period = msg.content.startswith('.')
             is_a_player = msg.author in users_already_joined
             is_DM = isinstance(msg.channel, discord.DMChannel)
-            # PCHK, REMOVE
-            pchk('begins_with_period', begins_with_period)
-            pchk('is_a_player', is_a_player)
-            pchk('is_DM', is_DM)
-
             return begins_with_period and is_a_player and is_DM
 
         while game_on:
@@ -585,7 +577,8 @@ class Games(commands.Cog):
                 footer = "Turn #{} coming up!".format(turn)
             )
             await ctx.send(embed=embed)
-            await asyncio.sleep(7)
+
+            await asyncio.sleep(10)
 
             # choose emojis, send to channel
             emojis_this_turn = crimsogames.cringo_emoji(1, emojis_already_used)
@@ -598,13 +591,17 @@ class Games(commands.Cog):
                 description = ' '.join(emojis_this_turn[0]),
                 footer = "{}x multiplier · {} seconds!".format(multiplier, turn_timer)
             )
-            await ctx.send(embed=embed)
+            # await ctx.send(embed=embed)
+
+            for player in list_of_players:
+                await player.player.send(embed=embed)
 
             # set up listener for players scoring their cards
             turn_end = time.time() + turn_timer
             while time.time() < turn_end:
                 try:
-                    response = await self.bot.wait_for('message', check=player_response, timeout=0.5)
+                    pchk('response_timeout', True)
+                    response = await self.bot.wait_for('message', check=player_response, timeout=10)
                     # PCHK, REMOVE
                     pchk('response.author', response.author)
 
@@ -632,8 +629,14 @@ class Games(commands.Cog):
             for player in list_of_players:
                 crimsogames.cringo_score(player, turn, multiplier)
 
+            # time's up message to each user
+            for player in list_of_players:
+                await player.player.send("`Time's up!`")
+
             turn += 1
             if turn > total_turns:
+                for player in list_of_players:
+                    await player.player.send("`Good game!`")
                 game_on = False
         
         # Final score!
