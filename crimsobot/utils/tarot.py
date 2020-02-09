@@ -42,7 +42,7 @@ def reading(spread: str) -> Tuple[Optional[io.BytesIO], List[str]]:
             (2 * w + 3 * space, space)
         ]
         position_legend = ['PAST', 'PRESENT', 'FUTURE']
-    
+
     if spread == 'five':
         # five cards dealt in a cross
         bg_size = (3 * w + 4 * space, 3 * h + 4 * space)
