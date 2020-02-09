@@ -354,10 +354,12 @@ async def cringo_score(player: Cringo, turn_number: int, multiplier: int) -> Non
         if player.card[1][4] == player.card[2][4] == player.card[3][4] == player.card[4][4]:
             player.matches.add('D')
             player.score += 100 * multiplier
-
-    # full house bonus
-    if len(player.matches) == 10:
-        player.score += 1000 * multiplier
+    
+    # full house
+    if 'full' not in player.matches:
+        if len(player.matches) == 10:
+            player.matches.add('full')
+            player.score += 1000 * multiplier
 
     # feels like that could be more elegantly-written, no?
     # TODO: yes
