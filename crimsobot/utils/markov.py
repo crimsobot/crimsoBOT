@@ -1,6 +1,6 @@
+import functools
 import random as r
 import re
-import functools
 from typing import List
 
 import markovify

@@ -22,17 +22,18 @@ class Mystery(commands.Cog):
         This three-card spread is read from left to right to explore your past, present, and future.
 
         >tarot five
-        This spread delves deeper into the present, exploring your Reason for seeking guidance. 
+        This spread delves deeper into the present, exploring your Reason for seeking guidance.
         The Future card speaks toward the outcome should you stay on your current path.
         The Potential card looks toward the outcome should you change paths.
 
         You may choose to have a specific question in mind before you ask for your cards.
-        However, taking a reading without a question in mind may help coax from you the reason you seek the tarot's guidance.
+        However, taking a reading without a question in mind
+            may help coax from you the reason you seek the tarot's guidance.
 
         ABOUT THE DECK
 
         The Major Arcana:
-        Beginning with The Fool and ending with The World, these 22 cards represent major archetypes. 
+        Beginning with The Fool and ending with The World, these 22 cards represent major archetypes.
         They indicate great cosmic forces at work. Be especially attentive to what they have to say.
 
         The Minor Arcana of 56 cards is divided into four suits. These are:
@@ -44,14 +45,14 @@ class Mystery(commands.Cog):
         • The Pentacles: Ruled by the element of earth.
         The Pentacles deal with earthly matters--
         health, finances, the body, the domestic sphere, and one's sense of security.
-        
-        • The Cups: The Cups are ruled by the element of water. 
+
+        • The Cups: The Cups are ruled by the element of water.
         They preside over matters of the heart.
         Emotion, relationships, inutition, and mystery are all found within their depths.
-        
+
         • The Swords: The Swords are ruled by the element of air.
         Their main concern is the mind and the intellect.
-        They cut through delusion towards clarity with sometimes unforgiving sharpness. 
+        They cut through delusion towards clarity with sometimes unforgiving sharpness.
         """
 
         fp, descriptions = tarot.reading(spread)

@@ -185,16 +185,16 @@ def guesslist() -> str:
 
 
 async def cringo_emoji(number_of_rows: int, already_used: List[str] = None) -> List[List[str]]:
-    "Single row of emojis for game turn, four rows for game card"
+    """Single row of emojis for game turn, four rows for game card"""
 
     # list of lists of emojis
     game_emojis = [
-        ['😁','😂','😍','😋','🤑','🤔','😏','😔','🤮','😡'],
-        ['🐒','🐈','🐙','🦄','🦛','🐼','🐸','🦖','🐌','🐝'],
-        ['🍉','🍋','🍒','🥑','🍆','🍄','🥞','🥐','🧀','🍍'],
-        ['💞','💯','🎵','⛔','☢️','🛐','♻️','🅱️','💤','🔆'],
+        ['😁', '😂', '😍', '😋', '🤑', '🤔', '😏', '😔', '🤮', '😡'],
+        ['🐒', '🐈', '🐙', '🦄', '🦛', '🐼', '🐸', '🦖', '🐌', '🐝'],
+        ['🍉', '🍋', '🍒', '🥑', '🍆', '🍄', '🥞', '🥐', '🧀', '🍍'],
+        ['💞', '💯', '🎵', '⛔', '☢️', '🛐', '♻️', '🅱️', '💤', '🔆'],
     ]
-    
+
     # remove all emojis that have already been used
     if already_used is not None:
         # go through each list to eliminate already-used emojis
@@ -204,22 +204,22 @@ async def cringo_emoji(number_of_rows: int, already_used: List[str] = None) -> L
     # randomly select an emoji for each column x the number of rows requested
     selected_emojis = []
     number_of_columns = len(game_emojis)
-    
+
     for col in range(0, number_of_columns):
         # take one random sample from each column
         selected_emojis.append(random.sample(game_emojis[col], number_of_rows))
-    
+
     # reshape list of lists into the columns of the card/turn using zip
     selected_emojis = [list(x) for x in zip(*selected_emojis)]
-    
+
     return selected_emojis
 
 
 async def cringo_card(list_of_emojis: List[List[str]]) -> None:
-    "This makes the Cringo! card complete with headers. Lists are mutable so no return needed."
+    """This makes the Cringo! card complete with headers. Lists are mutable so no return needed."""
 
     top_row = ['🇦', '🇧', '🇨', '🇩']
-    side_column = ['<:lemonface:623315737796149257>','1️⃣','2️⃣','3️⃣','4️⃣']
+    side_column = ['<:lemonface:623315737796149257>', '1️⃣', '2️⃣', '3️⃣', '4️⃣']
 
     list_of_emojis.insert(0, top_row)
 
@@ -229,17 +229,17 @@ async def cringo_card(list_of_emojis: List[List[str]]) -> None:
         list_of_emojis[row].insert(0, side_column[row])
         emoji_string = '\u200A'.join(list_of_emojis[row])
         emojis_to_send.append(emoji_string)
-    
+
     return list_of_emojis
 
 
 async def deliver_card(list_of_lists: List[List[str]]) -> str:
-    "Let's make it pretty!"
+    """Let's make it pretty!"""
 
     final_string = []
     for sublist in list_of_lists:
         final_string.append('\u200A'.join(sublist))
-    
+
     # add blank emoji to first line to accommodate compact mode w/o resizing emojis
     return '<:blank:589560784485613570>\n'+'\n'.join(final_string)
 
@@ -265,7 +265,7 @@ async def mark_card(card: List[List[str]], position: str, emojis_to_check: [List
     indices = position.strip()
     col_abcd = indices[-2].lower()  # corresponds to item
     row_1234 = indices[-1]          # corresponds to sublist
-    
+
     # in case message begins with a period but has invalid keys
     try:
         selected_emoji = card[sublist[row_1234]][item[col_abcd]]
@@ -321,48 +321,49 @@ async def cringo_score(player: object, turn_number: int, multiplier: int) -> Non
 
     # then look for diagonals
     if 'D1' not in player.matches:
-        if player.card[1][1] == player.card[2][2] == player.card[3][3] == player.card [4][4]:
+        if player.card[1][1] == player.card[2][2] == player.card[3][3] == player.card[4][4]:
             player.matches.add('D1')
             player.score += 100 * multiplier
     if 'D2' not in player.matches:
-        if player.card[4][1] == player.card[3][2] == player.card[2][3] == player.card [1][4]:
+        if player.card[4][1] == player.card[3][2] == player.card[2][3] == player.card[1][4]:
             player.matches.add('D2')
             player.score += 100 * multiplier
 
     # then look for column matches
     if 'A' not in player.matches:
-        if player.card[1][1] == player.card[2][1] == player.card[3][1] == player.card [4][1]:
+        if player.card[1][1] == player.card[2][1] == player.card[3][1] == player.card[4][1]:
             player.matches.add('A')
             player.score += 100 * multiplier
     if 'B' not in player.matches:
-        if player.card[1][2] == player.card[2][2] == player.card[3][2] == player.card [4][2]:
+        if player.card[1][2] == player.card[2][2] == player.card[3][2] == player.card[4][2]:
             player.matches.add('B')
             player.score += 100 * multiplier
     if 'C' not in player.matches:
-        if player.card[1][3] == player.card[2][3] == player.card[3][3] == player.card [4][3]:
+        if player.card[1][3] == player.card[2][3] == player.card[3][3] == player.card[4][3]:
             player.matches.add('C')
             player.score += 100 * multiplier
     if 'D' not in player.matches:
-        if player.card[1][4] == player.card[2][4] == player.card[3][4] == player.card [4][4]:
+        if player.card[1][4] == player.card[2][4] == player.card[3][4] == player.card[4][4]:
             player.matches.add('D')
             player.score += 100 * multiplier
-    
+
     # full house bonus
     if len(player.matches) == 10:
         player.score += 1000 * multiplier
-    
+
     # feels like that could be more elegantly-written, no?
+    # TODO: yes
 
     return None
 
 
 async def cringo_leaderboard(players: List[object], game_over: bool = False, point_nerf: int = 1) -> List[str]:
-    "Unpack the player objects to get something that can be sorted and displayed."
+    """Unpack the player objects to get something that can be sorted and displayed."""
 
     leaderboard = []
     for player in players:
         leaderboard.append([player.player, player.score])
-    
+
     # sort in place
     leaderboard.sort(key=lambda inner_index: inner_index[1], reverse=True)
 
@@ -377,6 +378,6 @@ async def cringo_leaderboard(players: List[object], game_over: bool = False, poi
 
     leaderboard_list = []
     for line in leaderboard:
-        leaderboard_list.append("{} · **{}** points".format(line[0], line[1]))
+        leaderboard_list.append('{} · **{}** points'.format(line[0], line[1]))
 
     return '\n'.join(leaderboard_list)

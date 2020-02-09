@@ -1,4 +1,3 @@
-import asyncio
 import logging
 import random
 from typing import Any, List, Union
@@ -66,7 +65,7 @@ class CrimsoBOT(commands.Bot):
         self.log.warning('crimsoBOT RECONNECT')
 
     async def on_command_error(self, ctx: commands.Context, error: Exception) -> None:
-        "For known exceptions, displays error message to user and suppresses verbose traceback in console."
+        """For known exceptions, displays error message to user and suppresses verbose traceback in console."""
 
         if isinstance(error, commands.MaxConcurrencyReached):
             self.log.error('MaxConcurrency: {} // {}: {}'.format(ctx.author, ctx.message.content, error))
@@ -88,12 +87,18 @@ class CrimsoBOT(commands.Bot):
         elif isinstance(error, commands.MissingRequiredArgument):
             self.log.error('MissingArgument: %s // %s: %s', ctx.author, ctx.message.content, error)
 
-            await ctx.send(f'*this command requires more arguments. try `>help {ctx.command.qualified_name}`*', delete_after=7)
+            await ctx.send(
+                f'*this command requires more arguments. try `>help {ctx.command.qualified_name}`*',
+                delete_after=7
+            )
 
         elif isinstance(error, commands.BadArgument):
             self.log.error('BadArgument: %s // %s: %s', ctx.author, ctx.message.content, error)
 
-            await ctx.send(f"*that's not a valid argument value! try `>help {ctx.command.qualified_name}`*", delete_after=7)
+            await ctx.send(
+                f"*that's not a valid argument value! try `>help {ctx.command.qualified_name}`*",
+                delete_after=7
+            )
 
         elif isinstance(error, checks.NotAdmin):
             self.log.error('NotAdmin: %s // %s: %s', ctx.author, ctx.message.content, error)
@@ -114,7 +119,7 @@ class CrimsoBOT(commands.Bot):
 
         # DM self.logger
         is_dm = isinstance(message.channel, discord.DMChannel)
-        if is_dm and message.author.id != self.user.id and not message.content.startswith('>') and not message.content.startswith('.'):
+        if is_dm and message.author.id != self.user.id and not message.content.startswith(('>', '.')):
             try:
                 link = message.attachments[0].url
             except IndexError:
@@ -164,4 +169,4 @@ class CrimsoBOT(commands.Bot):
 
     def add_command(self, command):
         command.cooldown_after_parsing = True
-        return super().add_command(command)                
+        return super().add_command(command)
