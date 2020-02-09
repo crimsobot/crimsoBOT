@@ -3,6 +3,7 @@ import random
 from typing import List, Optional, Tuple
 
 from PIL import Image
+from discord.ext import commands
 
 from crimsobot.data.tarot import DECK
 from crimsobot.utils.tools import clib_path_join
@@ -28,7 +29,6 @@ def reading(spread: str) -> Tuple[Optional[io.BytesIO], List[str]]:
     w, h = (200, 326)  # card size
     space = 20  # space between cards
 
-    fp = None
     interpret = []  # type: List[str]
 
     if spread == 'ppf':
@@ -43,7 +43,7 @@ def reading(spread: str) -> Tuple[Optional[io.BytesIO], List[str]]:
         ]
         position_legend = ['PAST', 'PRESENT', 'FUTURE']
 
-    if spread == 'five':
+    elif spread == 'five':
         # five cards dealt in a cross
         bg_size = (3 * w + 4 * space, 3 * h + 4 * space)
         bg = draw_background(bg_size)
@@ -56,6 +56,9 @@ def reading(spread: str) -> Tuple[Optional[io.BytesIO], List[str]]:
             (w + 2 * space, space)
         ]
         position_legend = ['PAST', 'PRESENT', 'FUTURE', 'REASON', 'POTENTIAL']
+
+    else:
+        raise commands.BadArgument('Spread is invalid.')
 
     for ii in range(len(cards)):
         card = clib_path_join('tarot', 'deck', cards[ii]['image'])
