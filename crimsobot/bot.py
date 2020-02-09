@@ -167,6 +167,7 @@ class CrimsoBOT(commands.Bot):
             except Exception:
                 await user.send('Added to {guild}'.format(guild=guild))
 
-    def add_command(self, command):
+    def add_command(self, command: commands.Command) -> None:
         command.cooldown_after_parsing = True
-        return super().add_command(command)
+
+        super().add_command(command)

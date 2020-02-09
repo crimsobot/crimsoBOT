@@ -1,7 +1,7 @@
 import random
 from collections import Counter
 from datetime import datetime
-from typing import List, Tuple, Union
+from typing import List, Set, Tuple, Union
 
 import discord
 
@@ -10,6 +10,14 @@ from crimsobot.models.guess_statistic import GuessStatistic
 from crimsobot.utils import tools as c
 
 DiscordUser = Union[discord.User, discord.Member]
+
+
+class Cringo:
+    def __init__(self, player: discord.Member, card: List[List[str]], score: int, matches: Set[str]):
+        self.player = player
+        self.card = card
+        self.score = score
+        self.matches = matches
 
 
 def emojistring() -> str:
@@ -215,8 +223,8 @@ async def cringo_emoji(number_of_rows: int, already_used: List[str] = None) -> L
     return selected_emojis
 
 
-async def cringo_card(list_of_emojis: List[List[str]]) -> None:
-    """This makes the Cringo! card complete with headers. Lists are mutable so no return needed."""
+async def cringo_card(list_of_emojis: List[List[str]]) -> List[List[str]]:
+    """This makes the Cringo! card complete with headers."""
 
     top_row = ['🇦', '🇧', '🇨', '🇩']
     side_column = ['<:lemonface:623315737796149257>', '1️⃣', '2️⃣', '3️⃣', '4️⃣']
@@ -244,7 +252,7 @@ async def deliver_card(list_of_lists: List[List[str]]) -> str:
     return '<:blank:589560784485613570>\n'+'\n'.join(final_string)
 
 
-async def mark_card(card: List[List[str]], position: str, emojis_to_check: [List[str]]) -> bool:
+async def mark_card(card: List[List[str]], position: str, emojis_to_check: List[str]) -> bool:
     """
     "Marks" the card with a star if there's a match.
     The card is a list of lists, formatted as such:
@@ -281,7 +289,7 @@ async def mark_card(card: List[List[str]], position: str, emojis_to_check: [List
         return False
 
 
-async def cringo_score(player: object, turn_number: int, multiplier: int) -> None:
+async def cringo_score(player: Cringo, turn_number: int, multiplier: int) -> None:
     """
     Determine how many points to award based on match.
 
@@ -357,7 +365,7 @@ async def cringo_score(player: object, turn_number: int, multiplier: int) -> Non
     return None
 
 
-async def cringo_leaderboard(players: List[object], game_over: bool = False, point_nerf: int = 1) -> List[str]:
+async def cringo_leaderboard(players: List[Cringo], game_over: bool = False, point_nerf: int = 1) -> str:
     """Unpack the player objects to get something that can be sorted and displayed."""
 
     leaderboard = []

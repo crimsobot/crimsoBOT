@@ -497,19 +497,11 @@ class Games(commands.Cog):
             await ctx.send(embed=embed)
             return
 
-        # here's a super-basic class that's not in the right place!
-        class Cringo:
-            def __init__(self, player, card, score, matches):
-                self.player = player
-                self.card = card
-                self.score = score
-                self.matches = matches
-
         # initialize player objects, send everyone their card
         list_of_players = []
         for player in users_already_joined:
             card = await crimsogames.cringo_card(await crimsogames.cringo_emoji(4))
-            player_object = Cringo(player, card, 0, set())
+            player_object = crimsogames.Cringo(player, card, 0, set())
             list_of_players.append(player_object)
             await player.send(await crimsogames.deliver_card(player_object.card))
 
@@ -518,7 +510,7 @@ class Games(commands.Cog):
         turn = 1
         total_turns = 9
         game_on = True
-        emojis_already_used = []
+        emojis_already_used: List[str] = []
 
         # define check
         def player_response(msg: discord.Message) -> bool:
