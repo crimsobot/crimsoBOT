@@ -66,12 +66,13 @@ class CrimsoBOT(commands.Bot):
         self.log.warning('crimsoBOT RECONNECT')
 
     async def on_command_error(self, ctx: commands.Context, error: Exception) -> None:
-        """
-        Displays error messages to user for cooldown and CommandNotFound,
-        and suppresses verbose error text for both in the console.
-        """
+        "For known exceptions, displays error message to user and suppresses verbose traceback in console."
 
-        if isinstance(error, commands.CommandOnCooldown):
+        if isinstance(error, commands.MaxConcurrencyReached):
+            self.log.error('MaxConcurrency: {} // {}: {}'.format(ctx.author, ctx.message.content, error))
+            await ctx.send('`Already running in this channel!`', delete_after=7)
+
+        elif isinstance(error, commands.CommandOnCooldown):
             self.log.error('Cooldown: %s // %s: %s', ctx.author, ctx.message.content, error)
 
             await ctx.send('**eat glass.** %.0fs cooldown.' % error.retry_after, delete_after=7)

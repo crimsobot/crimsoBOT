@@ -34,7 +34,10 @@ class Image(commands.Cog):
         """
 
         line_list = await imagetools.make_emoji_image(ctx, image)
-        c.checkin('eimg', ctx.message.guild, ctx.message.author, emoji_channels)
+        chk = c.checkin('eimg', ctx.message.guild, ctx.message.author, emoji_channels)
+        if chk is False:
+            await ctx.send('`no!`')
+            return
 
         # send line-by-line as DM
         for line in line_list:
@@ -54,7 +57,10 @@ class Image(commands.Cog):
                          errors='ignore').readlines()
 
         # check-in
-        c.checkin('bless', ctx.message.guild, ctx.message.author, emoji_channels)
+        chk = c.checkin('bless', ctx.message.guild, ctx.message.author, emoji_channels)
+        if chk is False:
+            await ctx.send('`no!`')
+            return
 
         # strip newlines
         line_list = [line.replace('\n', '') for line in line_list]
@@ -92,7 +98,10 @@ class Image(commands.Cog):
     async def eface(self, ctx: commands.Context) -> None:
         """crimsoBOT avatar as emojis!"""
 
-        c.checkin('eface', ctx.message.guild, ctx.message.author, emoji_channels)
+        chk = c.checkin('eface', ctx.message.guild, ctx.message.author, emoji_channels)
+        if chk is False:
+            await ctx.send('`no!`')
+            return
 
         # read in lines of emojis
         line_list = open(c.clib_path_join('text', 'emojiface.txt'), encoding='utf8', errors='ignore').readlines()

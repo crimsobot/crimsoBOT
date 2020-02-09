@@ -184,7 +184,7 @@ def guesslist() -> str:
     return '\n'.join(output)
 
 
-def cringo_emoji(number_of_rows: int, already_used: List[str] = None) -> List[List[str]]:
+async def cringo_emoji(number_of_rows: int, already_used: List[str] = None) -> List[List[str]]:
     "Single row of emojis for game turn, four rows for game card"
 
     # list of lists of emojis
@@ -215,7 +215,7 @@ def cringo_emoji(number_of_rows: int, already_used: List[str] = None) -> List[Li
     return selected_emojis
 
 
-def cringo_card(list_of_emojis: List[List[str]]) -> None:
+async def cringo_card(list_of_emojis: List[List[str]]) -> None:
     "This makes the Cringo! card complete with headers. Lists are mutable so no return needed."
 
     top_row = ['🇦', '🇧', '🇨', '🇩']
@@ -233,17 +233,18 @@ def cringo_card(list_of_emojis: List[List[str]]) -> None:
     return list_of_emojis
 
 
-def deliver_card(list_of_lists: List[List[str]]) -> str:
+async def deliver_card(list_of_lists: List[List[str]]) -> str:
     "Let's make it pretty!"
 
     final_string = []
     for sublist in list_of_lists:
         final_string.append('\u200A'.join(sublist))
     
-    return '\n'.join(final_string)
+    # add blank emoji to first line to accommodate compact mode w/o resizing emojis
+    return '<:blank:589560784485613570>\n'+'\n'.join(final_string)
 
 
-def mark_card(card: List[List[str]], position: str, emojis_to_check: List[List[str]]) -> bool:
+async def mark_card(card: List[List[str]], position: str, emojis_to_check: [List[str]]) -> bool:
     """
     "Marks" the card with a star if there's a match.
     The card is a list of lists, formatted as such:
@@ -272,7 +273,7 @@ def mark_card(card: List[List[str]], position: str, emojis_to_check: List[List[s
         return False
 
     # check for match
-    is_match = selected_emoji in emojis_to_check[0] and selected_emoji in (emoji for sublist in card for emoji in sublist)
+    is_match = selected_emoji in emojis_to_check and selected_emoji in (emoji for sublist in card for emoji in sublist)
     if is_match:
         card[sublist[row_1234]][item[col_abcd]] = '⭐'
         return True
@@ -280,7 +281,7 @@ def mark_card(card: List[List[str]], position: str, emojis_to_check: List[List[s
         return False
 
 
-def cringo_score(player: object, turn_number: int, multiplier: int) -> None:
+async def cringo_score(player: object, turn_number: int, multiplier: int) -> None:
     """
     Determine how many points to award based on match.
 
