@@ -8,14 +8,14 @@ from discord.ext import commands
 from config import ADMIN_USER_IDS, BANNED_GUILD_IDS, DM_LOG_CHANNEL_ID, LEARNER_CHANNEL_IDS, LEARNER_USER_IDS
 from crimsobot import db
 from crimsobot.models.ban import Ban
-from crimsobot.utils import checks, markov as m, tools as c
+from crimsobot.utils import markov as m, tools as c
 
 
 class CrimsoBOT(commands.Bot):
     def __init__(self, **kwargs: Any) -> None:
         command_prefix = '>'
-
-        super().__init__(command_prefix, **kwargs)
+        owner_ids = set(ADMIN_USER_IDS)
+        super().__init__(command_prefix, owner_ids=owner_ids, **kwargs)
 
         self.banned_user_ids = []  # type: List[int]
 
@@ -100,8 +100,8 @@ class CrimsoBOT(commands.Bot):
                 delete_after=7
             )
 
-        elif isinstance(error, checks.NotAdmin):
-            self.log.error('NotAdmin: %s // %s: %s', ctx.author, ctx.message.content, error)
+        elif isinstance(error, commands.NotOwner):
+            self.log.error('NotOwner: %s // %s: %s', ctx.author, ctx.message.content, error)
 
             await ctx.send(':rotating_light: not crimso! :rotating_light:', delete_after=7)
 

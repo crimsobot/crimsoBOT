@@ -6,7 +6,7 @@ import discord
 from discord.ext import commands
 
 from crimsobot.bot import CrimsoBOT
-from crimsobot.utils import checks, image as imagetools, tools as c
+from crimsobot.utils import image as imagetools, tools as c
 
 log = logging.getLogger(__name__)
 
@@ -73,7 +73,7 @@ class Image(commands.Cog):
         c.checkout('bless', ctx.message.guild, ctx.message.author, emoji_channels)
 
     @commands.command(hidden=True)
-    @checks.is_admin()
+    @commands.is_owner()
     async def eface_pm(self, ctx: commands.Context, user: discord.User, *, message: str) -> None:
         """crimsoBOT avatar as emojis!"""
 
@@ -134,7 +134,7 @@ class Image(commands.Cog):
         log.info('acidify COMPLETE on %s/%s!', ctx.message.guild, ctx.message.channel)
 
     @commands.command(hidden=True)
-    @checks.is_admin()
+    @commands.is_owner()
     async def inspect(self, ctx: commands.Context, user: Optional[discord.User] = None) -> None:
         # read in lines of emojis
         line_list = open(c.clib_path_join('games', 'emojilist.txt'),
