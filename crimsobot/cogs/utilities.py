@@ -29,13 +29,10 @@ class Utilities(commands.Cog):
     async def color(self, ctx: commands.Context, hex_value: discord.Colour) -> None:
         """Get color sample from hex value."""
 
-        imagetools.make_color_img(str(hex_value))
+        fp = imagetools.make_color_img(str(hex_value))
         await ctx.send(
             '**' + str(hex_value) + '**',
-            file=discord.File(
-                c.clib_path_join('img', 'color.jpg'),
-                'color.jpg'
-            )
+            file=discord.File(fp, 'color.jpg')
         )
 
     @commands.command()
@@ -54,20 +51,14 @@ class Utilities(commands.Cog):
         if not 1 <= number_of_colors <= 10:
             raise commands.BadArgument('Number of colors is out of bounds.')
 
-        hex_color = await imagetools.get_image_palette(ctx, number_of_colors, link)
+        hex_color, mosaic, resample = await imagetools.get_image_palette(ctx, number_of_colors, link)
         await ctx.send(
             '**Resampled image:**',
-            file=discord.File(
-                c.clib_path_join('img', 'resample.png'),
-                'resample.png'
-            )
+            file=discord.File(resample, 'resample.png')
         )
         await ctx.send(
             '**' + hex_color.upper() + '**',
-            file=discord.File(
-                c.clib_path_join('img', 'mosaic.png'),
-                'mosaic.png'
-            )
+            file=discord.File(mosaic, 'mosaic.png')
         )
 
         log.info('palette COMPLETE on %s/%s!', ctx.message.guild, ctx.message.channel)

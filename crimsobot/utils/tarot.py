@@ -6,6 +6,7 @@ from PIL import Image
 from discord.ext import commands
 
 from crimsobot.data.tarot import DECK
+from crimsobot.utils.image import image_to_buffer
 from crimsobot.utils.tools import clib_path_join
 
 
@@ -70,8 +71,4 @@ def reading(spread: str) -> Tuple[Optional[io.BytesIO], List[str]]:
             card_description = cards[ii]['name'] + ' (reversed): ' + cards[ii]['desc1']
         interpret.append('**{} ·** {}'.format(position_legend[ii], card_description))
 
-    fp = io.BytesIO()
-    bg.save(fp, 'PNG')
-    fp.seek(0)
-
-    return fp, interpret
+    return image_to_buffer(bg, 'PNG'), interpret

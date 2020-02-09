@@ -20,8 +20,8 @@ class Image(commands.Cog):
 
     @commands.command(brief='Boop the snoot! Must mention someone to boop.')
     async def boop(self, ctx: commands.Context, mention: discord.Member) -> None:
-        imagetools.boop(ctx.author.display_name, mention.display_name)
-        await ctx.send(file=discord.File(c.clib_path_join('img', 'booped.jpg'), 'boop.jpg'))
+        fp = imagetools.boop(ctx.author.display_name, mention.display_name)
+        await ctx.send(file=discord.File(fp, 'boop.jpg'))
 
     @commands.command(aliases=['emojimage', 'eimg2'])
     @commands.cooldown(1, 60, commands.BucketType.user)
@@ -125,11 +125,11 @@ class Image(commands.Cog):
 
         log.info('acidify running on %s/%s...', ctx.message.guild, ctx.message.channel)
 
-        filename = await imagetools.acid(ctx, number_of_hits, image)
+        fp = await imagetools.acid(ctx, number_of_hits, image)
 
         # pluralize 'hit' if need be
         ess = '' if number_of_hits == 1 else 's'
-        await ctx.send('**{} hit{}:**'.format(number_of_hits, ess), file=discord.File(filename))
+        await ctx.send('**{} hit{}:**'.format(number_of_hits, ess), file=discord.File(fp, 'acid.png'))
 
         log.info('acidify COMPLETE on %s/%s!', ctx.message.guild, ctx.message.channel)
 
@@ -160,22 +160,22 @@ class Image(commands.Cog):
     async def needping(self, ctx: commands.Context, image: Optional[str] = None) -> None:
         """SOMEONE needs PING. User mention, attachment, link, or emoji."""
 
-        await imagetools.fishe(ctx, image)
-        await ctx.send(file=discord.File(c.clib_path_join('img', 'needping.png'), 'needping.png'))
+        fp = await imagetools.fishe(ctx, image)
+        await ctx.send(file=discord.File(fp, 'needping.png'))
 
     @commands.command()
     async def needban(self, ctx: commands.Context, image: Optional[str] = None) -> None:
         """SOMEONE needs BAN. User mention, attachment, link, or emoji."""
 
-        await imagetools.ban_overlay(ctx, image)
-        await ctx.send(file=discord.File(c.clib_path_join('img', 'needban.png'), 'needban.png'))
+        fp = await imagetools.ban_overlay(ctx, image)
+        await ctx.send(file=discord.File(fp, 'needban.png'))
 
     @commands.command()
     async def xokked(self, ctx: commands.Context, image: Optional[str] = None) -> None:
         """Get xokked! User mention, attachment, link, or emoji."""
 
-        filename = await imagetools.xok(ctx, image)
-        await ctx.send(file=discord.File(filename, 'xokked.png'))
+        fp = await imagetools.xok(ctx, image)
+        await ctx.send(file=discord.File(fp, 'xokked.png'))
 
     @commands.command(aliases=['pingbadge'])
     async def verpingt(self, ctx: commands.Context, image: Optional[str] = None) -> None:
@@ -209,13 +209,13 @@ class Image(commands.Cog):
             position = int(msg.content)
 
         # send to pingbadge
-        await imagetools.pingbadge(ctx, image, position)
+        fp = await imagetools.pingbadge(ctx, image, position)
 
         # delete prompt and vote, send image
         if msg is not None:
             await msg.delete()
         await prompt.delete()
-        await ctx.send(file=discord.File(c.clib_path_join('img', 'pingbadge.png'), 'verpingt.png'))
+        await ctx.send(file=discord.File(fp, 'verpingt.png'))
 
 
 def setup(bot: CrimsoBOT) -> None:

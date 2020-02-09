@@ -1,11 +1,10 @@
 import json
-import os
 from io import BytesIO
 from typing import List, Optional, Tuple
 
 import aiofiles
 import aiohttp
-import matplotlib.pylab as plt
+import matplotlib.image as plt
 import numpy as np
 from PIL import Image
 from PIL import ImageDraw
@@ -14,10 +13,18 @@ from PIL import ImageOps
 from colormath.color_conversions import convert_color
 from colormath.color_diff import delta_e_cie2000
 from colormath.color_objects import LabColor, sRGBColor
-from discord.ext.commands import Context
+from discord.ext.commands import BadArgument, Context
 from scipy.signal import convolve2d
 
 from crimsobot.utils import tools as c
+
+
+def image_to_buffer(im: Image.Image, fmt: str = 'PNG') -> BytesIO:
+    fp = BytesIO()
+    im.save(fp, fmt)
+    fp.seek(0)
+
+    return fp
 
 
 def remove_unicode_prefix(word: str) -> str:
@@ -127,7 +134,7 @@ def hex_to_rgb(color: str) -> Tuple[int, int, int]:
     return r, g, b
 
 
-def make_color_img(hex_str: str) -> None:
+def make_color_img(hex_str: str) -> BytesIO:
     """Generate image given a hex value."""
 
     if hex_str.startswith('#'):
@@ -136,10 +143,11 @@ def make_color_img(hex_str: str) -> None:
         color = hex_to_rgb(hex_str)
 
     img = Image.new('RGB', (300, 100), color)
-    img.save(c.clib_path_join('img', 'color.jpg'))
+
+    return image_to_buffer(img, 'JPEG')
 
 
-def boop(the_booper: str, the_booped: str) -> None:
+def boop(the_booper: str, the_booped: str) -> BytesIO:
     # font selection
     f = ImageFont.truetype(c.clib_path_join('img', 'Roboto-BlackItalic.ttf'), 36)
 
@@ -178,20 +186,22 @@ def boop(the_booper: str, the_booped: str) -> None:
     # draw on original image
     draw.text((10, 450), the_booper, font=f, fill=(255, 255, 255))
     img.paste(ImageOps.colorize(w, (0, 0, 0), (255, 255, 255)), (370, 0), w)
-    img.save(c.clib_path_join('img', 'booped.jpg'))
+
+    return image_to_buffer(img, 'JPEG')
 
 
-async def fishe(ctx: Context, user_input: Optional[str]) -> None:
+async def fishe(ctx: Context, user_input: Optional[str]) -> BytesIO:
     img = await fetch_image(ctx, user_input)
     img = img.convert('RGBA')
     img = img.resize((71, 105), resample=Image.BICUBIC)
 
     base = Image.open(c.clib_path_join('img', 'fishe_on_head.png'))
     base.paste(img, (7, 4))
-    base.save(c.clib_path_join('img', 'needping.png'))
+
+    return image_to_buffer(base, 'PNG')
 
 
-async def xok(ctx: Context, user_input: Optional[str]) -> str:
+async def xok(ctx: Context, user_input: Optional[str]) -> BytesIO:
     img = await fetch_image(ctx, user_input)
     img = img.convert('RGBA')
 
@@ -203,13 +213,10 @@ async def xok(ctx: Context, user_input: Optional[str]) -> str:
     base = Image.open(c.clib_path_join('img', 'xokked_base.png'))
     base.paste(img, (30, 118 - int(height / 2)))
 
-    filename = c.clib_path_join('img', 'get_xokked.png')
-    base.save(filename)
-
-    return filename
+    return image_to_buffer(base, 'PNG')
 
 
-async def ban_overlay(ctx: Context, user_input: Optional[str]) -> None:
+async def ban_overlay(ctx: Context, user_input: Optional[str]) -> BytesIO:
     img = await fetch_image(ctx, user_input)
     img = img.convert('RGBA')
 
@@ -223,10 +230,11 @@ async def ban_overlay(ctx: Context, user_input: Optional[str]) -> None:
     ban = ban.resize((width, height), resample=Image.BICUBIC)
 
     img.paste(ban, (0, 0), ban)
-    img.save(c.clib_path_join('img', 'needban.png'))
+
+    return image_to_buffer(img, 'PNG')
 
 
-async def pingbadge(ctx: Context, user_input: Optional[str], position: int) -> bool:
+async def pingbadge(ctx: Context, user_input: Optional[str], position: int) -> BytesIO:
     img = await fetch_image(ctx, user_input)
     img = img.convert('RGBA')
 
@@ -249,12 +257,11 @@ async def pingbadge(ctx: Context, user_input: Optional[str], position: int) -> b
     elif position == 4:
         corner = (width - size, height - size)
     else:
-        return False
+        raise BadArgument('Invalid position.')
 
     img.paste(badge, corner, badge)
-    img.save(c.clib_path_join('img', 'pingbadge.png'))
 
-    return True
+    return image_to_buffer(img, 'PNG')
 
 
 # the following scripts and functions help make_emoji_image()
@@ -376,32 +383,20 @@ async def make_emoji_image(ctx: Context, user_input: Optional[str]) -> List[str]
     return string_list
 
 
-def make_mosaic(colors: List[int]) -> None:
+def make_mosaic(colors: List[int]) -> BytesIO:
     """Make a mosaic!"""
     # first, some stuff
-    img_path = c.clib_path_join('img', 'mosaicTiles')
     width = 50
     height = 100
 
-    # delete tiles
-    for f in os.listdir(img_path):
-        if f != '.gitignore':
-            os.remove(os.path.join(img_path, f))
-
     # generate tile for each passed color
-    counter = 1
+    tiles = []
     for color in colors:
-        img = Image.new('RGB', (width, height), color)
-        img.save(os.path.join(img_path, str('%02i' % counter) + '.jpg'))
-        counter += 1
+        tile = Image.new('RGB', (width, height), color)
+        tiles.append(tile)
 
-    img_list = []
     rows = 1
     columns = len(colors)
-
-    for file in os.listdir(img_path):
-        if file.endswith('.jpg'):
-            img_list.append(Image.open(os.path.join(img_path, file)))
 
     # creates a new empty image, RGB mode
     mosaic = Image.new('RGB', (int(columns * width), int(rows * height)))
@@ -409,13 +404,13 @@ def make_mosaic(colors: List[int]) -> None:
     k = 0
     for j in range(0, rows * height, height):
         for i in range(0, columns * width, width):
-            mosaic.paste(img_list[k], (i, j))
+            mosaic.paste(tiles[k], (i, j))
             k = k + 1
 
-    mosaic.save(c.clib_path_join('img', 'mosaic.png'))
+    return image_to_buffer(mosaic, 'PNG')
 
 
-async def get_image_palette(ctx: Context, n: int, user_input: Optional[str]) -> str:
+async def get_image_palette(ctx: Context, n: int, user_input: Optional[str]) -> Tuple[str, BytesIO, BytesIO]:
     """Get colors of image palette!"""
 
     # get image from url
@@ -427,16 +422,13 @@ async def get_image_palette(ctx: Context, n: int, user_input: Optional[str]) -> 
         ratio = max(width, height) / 800
         img = img.resize((int(width / ratio), int(height / ratio)),
                          resample=Image.BICUBIC)
-    img.save(c.clib_path_join('img', 'before.png'))
 
     # change transparent BG to white, bc I don't know why
-    img.load()  # required for png.split()
-
     background = Image.new('RGB', img.size, (255, 255, 255))
     background.paste(img, mask=img.split()[3])  # 3 is the alpha channel
 
     img = background.quantize(colors=n, method=1, kmeans=n)
-    img.save(c.clib_path_join('img', 'resample.png'))
+    resample = image_to_buffer(img, 'PNG')
 
     img_colors = img.convert('RGB').getcolors()
     img_colors = sorted(img_colors, key=lambda tup: tup[0], reverse=True)
@@ -447,12 +439,12 @@ async def get_image_palette(ctx: Context, n: int, user_input: Optional[str]) -> 
         hex_colors.append('#%02x%02x%02x' % img_colors[ii][1])
 
     # call the mosaic maker!
-    make_mosaic(colors)
+    mosaic = make_mosaic(colors)
 
-    return ' '.join(hex_colors)
+    return ' '.join(hex_colors), mosaic, resample
 
 
-async def acid(ctx: Context, window: int, user_input: Optional[str]) -> str:
+async def acid(ctx: Context, window: int, user_input: Optional[str]) -> BytesIO:
     img = await fetch_image(ctx, user_input)
 
     width, height = img.size
@@ -464,10 +456,9 @@ async def acid(ctx: Context, window: int, user_input: Optional[str]) -> str:
     img2 = img.convert('RGBA')
     alpha = img2.split()[-1]
     img = img.convert('RGB')
-    img.save(c.clib_path_join('img', 'acid_before.jpg'))
 
     # open as raster
-    raster = plt.imread(c.clib_path_join('img', 'acid_before.jpg'))
+    raster = plt.pil_to_array(img)
 
     # create acidify kernel
     kernel = np.ones((window + 1, window + 1))
@@ -480,16 +471,12 @@ async def acid(ctx: Context, window: int, user_input: Optional[str]) -> str:
         acid_channel = convolve2d(raster[:, :, channel], kernel, mode='same', boundary='symm')
         acid_raster.append(acid_channel)
     acid_raster = np.stack(acid_raster, axis=2).astype('uint8')
-    plt.imsave(c.clib_path_join('img', 'acid.png'), acid_raster)
+    acid_raster_fp = BytesIO()
+    plt.imsave(acid_raster_fp, acid_raster)
+    acid_raster_fp.seek(0)
 
     # open as PIL image to apply alpha mask
-    img = Image.open(c.clib_path_join('img', 'acid.png'))
+    img = Image.open(acid_raster_fp)
     img.putalpha(alpha)
-    filename = c.clib_path_join('img', 'acid_.png')
-    img.save(filename)
 
-    return filename
-
-    # acid = Image.open(c.clib_path_join('img', 'acid.jpg'))
-    # acid = Image.blend(img,acid,0.618)
-    # acid.save(c.clib_path_join('img', 'acid.png'))
+    return image_to_buffer(img, 'PNG')
