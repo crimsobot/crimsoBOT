@@ -65,12 +65,13 @@ class CrimsoBOT(commands.Bot):
         self.log.warning('crimsoBOT RECONNECT')
 
     async def on_command_error(self, ctx: commands.Context, error: Exception) -> None:
-        """
-        Displays error messages to user for cooldown and CommandNotFound,
-        and suppresses verbose error text for both in the console.
-        """
+        """For known exceptions, displays error message to user and suppresses verbose traceback in console."""
 
-        if isinstance(error, commands.CommandOnCooldown):
+        if isinstance(error, commands.MaxConcurrencyReached):
+            self.log.error('MaxConcurrency: {} // {}: {}'.format(ctx.author, ctx.message.content, error))
+            await ctx.send('`Already running in this channel!`', delete_after=7)
+
+        elif isinstance(error, commands.CommandOnCooldown):
             self.log.error('Cooldown: %s // %s: %s', ctx.author, ctx.message.content, error)
 
             await ctx.send('**eat glass.** %.0fs cooldown.' % error.retry_after, delete_after=7)
@@ -86,12 +87,18 @@ class CrimsoBOT(commands.Bot):
         elif isinstance(error, commands.MissingRequiredArgument):
             self.log.error('MissingArgument: %s // %s: %s', ctx.author, ctx.message.content, error)
 
-            await ctx.send(f'*this command requires more arguments. try `>help {ctx.command.qualified_name}`*', delete_after=7)
+            await ctx.send(
+                f'*this command requires more arguments. try `>help {ctx.command.qualified_name}`*',
+                delete_after=7
+            )
 
         elif isinstance(error, commands.BadArgument):
             self.log.error('BadArgument: %s // %s: %s', ctx.author, ctx.message.content, error)
 
-            await ctx.send(f"*that's not a valid argument value! try `>help {ctx.command.qualified_name}`*", delete_after=7)
+            await ctx.send(
+                f"*that's not a valid argument value! try `>help {ctx.command.qualified_name}`*",
+                delete_after=7
+            )
 
         elif isinstance(error, commands.NotOwner):
             self.log.error('NotOwner: %s // %s: %s', ctx.author, ctx.message.content, error)
@@ -112,7 +119,7 @@ class CrimsoBOT(commands.Bot):
 
         # DM self.logger
         is_dm = isinstance(message.channel, discord.DMChannel)
-        if is_dm and message.author.id != self.user.id and not message.content.startswith('>'):  # crimsoBOT
+        if is_dm and message.author.id != self.user.id and not message.content.startswith(('>', '.')):
             try:
                 link = message.attachments[0].url
             except IndexError:
@@ -160,6 +167,7 @@ class CrimsoBOT(commands.Bot):
             except Exception:
                 await user.send('Added to {guild}'.format(guild=guild))
 
-    def add_command(self, command):
+    def add_command(self, command: commands.Command) -> None:
         command.cooldown_after_parsing = True
-        return super().add_command(command)
+
+        super().add_command(command)

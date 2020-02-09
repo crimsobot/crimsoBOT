@@ -41,10 +41,12 @@ def checkout(cmd: str, guild: Guild, channel: Messageables, running: List[int]) 
 
 
 def crimbed(title: Optional[str], description: Optional[str], thumbnail: Optional[str] = None,
-            color: Optional[int] = 0x5AC037) -> Embed:
+            color: Optional[int] = 0x5AC037, footer: Optional[str] = None) -> Embed:
     embed = Embed(title=title, description=description, color=color)
     if thumbnail is not None:
         embed.set_thumbnail(url=thumbnail)
+    if footer is not None:
+        embed.set_footer(text=footer)
 
     return embed
 

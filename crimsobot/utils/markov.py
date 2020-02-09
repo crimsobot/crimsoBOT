@@ -1,10 +1,11 @@
+import functools
 import random as r
 import re
-import functools
-from typing import List
+from typing import Any, Callable, List
 
 import markovify
 import nltk
+from discord.ext.commands import Bot
 
 from crimsobot.utils import tools as c
 
@@ -168,7 +169,7 @@ def crimso() -> str:
     return output
 
 
-async def async_wrap(bot, func, *args, **kwargs):
+async def async_wrap(bot: Bot, func: Callable, *args: Any, **kwargs: Any) -> Any:
     """Wraps a sync function into an asynchronous executor. Useful everywhere but it's here just because."""
 
     func = functools.partial(func, *args, **kwargs)
