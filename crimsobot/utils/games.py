@@ -5,6 +5,8 @@ from typing import List, Set, Tuple, Union
 
 import discord
 
+from discord import Embed
+
 from crimsobot.models.currency_account import CurrencyAccount
 from crimsobot.models.guess_statistic import GuessStatistic
 from crimsobot.utils import tools as c
@@ -192,15 +194,36 @@ def guesslist() -> str:
     return '\n'.join(output)
 
 
+async def cringo_instructions() -> Embed:
+    """Embed with Cringo! instructions to send to each user"""
+
+    embed = c.crimbed(
+        title='Welcome to **CRINGO!**',
+        description="""
+            Match the emojis called to the emojis on your card.
+            If you see a match, type the column and row of the match!
+            Type `.<letter><number>` or `. <letter><number>`.
+            You can put in multiple matches separated by a space!
+            For example: `.a1 b2 c4` or `. b4 c3`. Only use one period!
+            Missed a match on a previous turn? No problem! Put it in anyway.
+            You'll still get your points (but with a lower multiplier).
+            Check your score in between turns in the channel. Good luck!
+            """,
+        thumbnail='https://i.imgur.com/gpRToBn.png'  # jester
+    )
+
+    return embed
+
+
 async def cringo_emoji(number_of_rows: int, already_used: List[str] = None) -> List[List[str]]:
     """Single row of emojis for game turn, four rows for game card"""
 
     # list of lists of emojis
     game_emojis = [
-        ['😁', '😂', '😍', '😋', '🤑', '🤔', '😏', '😔', '🤮', '😡'],
-        ['🐒', '🐈', '🐙', '🦄', '🦛', '🐼', '🐸', '🦖', '🐌', '🐝'],
-        ['🍉', '🍋', '🍒', '🥑', '🍆', '🍄', '🥞', '🥐', '🧀', '🍍'],
-        ['💞', '💯', '🎵', '⛔', '☢️', '🛐', '♻️', '🅱️', '💤', '🔆'],
+        ['🤠', '😂', '😍', '😋', '🤑', '🤔', '😎', '😔', '🤢', '😡'],
+        ['🐴', '🐈', '🐙', '🐺', '🦛', '🐼', '🐸', '🐍', '🐌', '🐝'],
+        ['🍉', '🍋', '🍒', '🥑', '🍆', '🍄', '🥞', '🍕', '🧀', '🧄'],
+        ['💞', '💯', '🎵', '🚱', '💊', '🛐', '♻️', '🎈', '💤', '🔋'],
     ]
 
     # remove all emojis that have already been used
@@ -269,15 +292,18 @@ async def mark_card(card: List[List[str]], position: str, emojis_to_check: List[
     sublist = {'1': 1, '2': 2, '3': 3, '4': 4}
     item = {'a': 1, 'b': 2, 'c': 3, 'd': 4}
 
-    # format the string from user that contains position
-    indices = position.strip()
-    col_abcd = indices[-2].lower()  # corresponds to item
-    row_1234 = indices[-1]          # corresponds to sublist
+
 
     # in case message begins with a period but has invalid keys
     try:
+        # format the string from user that contains position
+        indices = position.strip()
+        col_abcd = indices[-2].lower()  # corresponds to item
+        row_1234 = indices[-1]          # corresponds to sublist
         selected_emoji = card[sublist[row_1234]][item[col_abcd]]
     except KeyError:
+        return False
+    except IndexError:
         return False
 
     # check for match
@@ -367,27 +393,18 @@ async def cringo_score(player: Cringo, turn_number: int, multiplier: int) -> Non
     return None
 
 
-async def cringo_leaderboard(players: List[Cringo], game_over: bool = False, point_nerf: int = 1) -> str:
+async def cringo_scoreboard(players: List[Cringo], game_over: bool = False, point_nerf: int = 1) -> str:
     """Unpack the player objects to get something that can be sorted and displayed."""
 
-    leaderboard = []
+    scoreboard = []
     for player in players:
-        leaderboard.append([player.player, player.score])
+        scoreboard.append([player.player, player.score])
 
     # sort in place
-    leaderboard.sort(key=lambda inner_index: inner_index[1], reverse=True)
+    scoreboard.sort(key=lambda inner_index: inner_index[1], reverse=True)
 
-    # award coin before string-ifying the thing
-    if game_over:
-        try:
-            await win(leaderboard[0][0], leaderboard[0][1] / point_nerf)  # first place
-            await win(leaderboard[1][0], leaderboard[1][1] / point_nerf)  # second place
-            await win(leaderboard[2][0], leaderboard[2][1] / point_nerf)  # third place
-        except IndexError:
-            pass
+    scoreboard_list = []
+    for line in scoreboard:
+        scoreboard_list.append('{} · **{}** points'.format(line[0], line[1]))
 
-    leaderboard_list = []
-    for line in leaderboard:
-        leaderboard_list.append('{} · **{}** points'.format(line[0], line[1]))
-
-    return '\n'.join(leaderboard_list)
+    return '\n'.join(scoreboard_list)
