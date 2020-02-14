@@ -513,7 +513,7 @@ class Games(commands.Cog):
         # initial game variables
         turn_timer = 25
         turn = 1
-        total_turns = 1
+        total_turns = 9
         emojis_already_used: List[str] = []
 
         # define check
