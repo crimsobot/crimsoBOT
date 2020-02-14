@@ -425,45 +425,50 @@ class Games(commands.Cog):
         """
         # generate game intro embed
         join_timer = 45
+        emoji = "<:crimsoCOIN:588558997238579202>"
         embed = c.crimbed(
             title="Let's play **CRINGO!**",
             description="""
-            Type `$join` to join this game. You have {} seconds!
-            Your CRINGO! card will be DMed to you.
-            The emojis will be called in your DM.
-            """.format(join_timer),
+            Click {} to join this game. You have {} seconds!
+            Your CRINGO! card and instructions will be DMed to you.
+            If you didn't get instructions, unreact and re-react!
+            Gameplay happens in DM, and the scoreboard will show up here.
+            """.format(emoji, join_timer),
             thumbnail='https://i.imgur.com/gpRToBn.png'  # jester
         )
-        await ctx.send(embed=embed)
+        join_message = await ctx.send(embed=embed)
+        await join_message.add_reaction(emoji)
 
         # solicit players to join the game
         # define check
-        def join_cringo(msg: discord.Message) -> bool:
-            banned = self.bot.is_banned(msg.author)
-            asks_to_join = msg.content.startswith('$join')
-            in_channel = msg.channel == ctx.message.channel
-            already_joined = msg.author in users_already_joined
-            return not banned and asks_to_join and in_channel and not already_joined
+        def join_cringo(reaction: discord.reaction, user: discord.user) -> bool:
+            banned = self.bot.is_banned(user)
+            is_bot = user.id == self.bot.user.id
+            correct_reaction = str(reaction.emoji) == emoji
+            already_joined = user in users_already_joined
+            return not banned and not is_bot and correct_reaction and not already_joined
 
         # initialize join-message listener
         users_already_joined = []
         end = time.time() + join_timer
         while time.time() < end:
             try:
-                join_request = await self.bot.wait_for('message', check=join_cringo, timeout=join_timer+1)
+                join_reaction, user_who_reacted = await self.bot.wait_for('reaction_add', check=join_cringo, timeout=join_timer+1)
             except asyncio.TimeoutError:
                 continue
 
-            if join_request is not None:
+            if join_reaction is not None:
                 # send instructions; if they can't receive DMs, they can't play
                 try:
-                    potential_player = join_request.author
+                    potential_player = user_who_reacted
                     embed = c.crimbed(
                         title='Welcome to **CRINGO!**',
                         description="""
                             Match the emojis called to the emojis on your card.
                             If you see a match, type the column and row of the match!
-                            For example, type ".b4" or ". a1" here. Spaces don't matter.
+                            Type `.<letter><number>` or `. <letter><number>`.
+                            You can put in multiple matches separated by a space!
+                            For example: `.a1 b2 c4` or `. b4 c3`.
                             Missed a match on a previous turn? No problem! Put it in anyway.
                             You'll still get your points (but with a lower multiplier).
                             Check your score in between turns in the channel. Good luck!
@@ -471,18 +476,18 @@ class Games(commands.Cog):
                         thumbnail='https://i.imgur.com/gpRToBn.png'  # jester
                     )
                     await potential_player.send(embed=embed)
-                    users_already_joined.append(join_request.author)
+                    users_already_joined.append(user_who_reacted)
                     embed = c.crimbed(
                         None,
-                        '**{}** has joined the game!'.format(join_request.author),
+                        '**{}** has joined the game!'.format(user_who_reacted),
                         None
                     )
                     await ctx.send(embed=embed)
-                    await join_request.delete()
+
                 except discord.errors.Forbidden:
                     embed = c.crimbed(
                         title=None,
-                        description='Uh oh, **{} CANNOT** join the game!'.format(join_request.author),
+                        description='Uh oh, **{} CANNOT** join the game!'.format(user_who_reacted),
                         footer="""
                             You can't call cringo from a DM!
                             You have to be able to receive DMs from crimsoBOT to play!
@@ -506,10 +511,9 @@ class Games(commands.Cog):
             await player.send(await crimsogames.deliver_card(player_object.card))
 
         # initial game variables
-        turn_timer = 30
+        turn_timer = 25
         turn = 1
-        total_turns = 9
-        game_on = True
+        total_turns = 1
         emojis_already_used: List[str] = []
 
         # define check
@@ -519,15 +523,15 @@ class Games(commands.Cog):
             is_dm = isinstance(msg.channel, discord.DMChannel)
             return begins_with_period and is_a_player and is_dm
 
-        while game_on:
+        while turn <= total_turns:
             # display initial leaderboard
             embed = c.crimbed(
                 title='**CRINGO!** scoreboard',
-                description=await crimsogames.cringo_leaderboard(list_of_players),
-                footer='Turn #{} coming up!'.format(turn)
+                description=await crimsogames.cringo_scoreboard(list_of_players),
+                footer='Round {}/{} coming up!'.format(turn, total_turns)
             )
             await ctx.send(embed=embed)
-            await asyncio.sleep(10)
+            await asyncio.sleep(8)
 
             # choose emojis, send to channel
             emojis_this_turn = await crimsogames.cringo_emoji(1, emojis_already_used)
@@ -536,7 +540,7 @@ class Games(commands.Cog):
 
             # send out the emojis for this turn
             embed = c.crimbed(
-                title='**CRINGO!** Turn #{}'.format(turn),
+                title='**CRINGO!** Round {}/{}'.format(turn, total_turns),
                 description=' '.join(emojis_this_turn[0]),
                 footer='{}x multiplier · {} seconds!'.format(multiplier, turn_timer)
             )
@@ -561,35 +565,43 @@ class Games(commands.Cog):
                             break
 
                     # determine if user's reponse is a match
-                    # matches with previous rounds is OK (they only lose the earlier round multiplier)
-                    match = await crimsogames.mark_card(user_object.card, response.content, emojis_already_used)
-                    if match:
-                        # each match gives points
-                        user_object.score += 10 * multiplier
-                        await response.author.send(await crimsogames.deliver_card(user_object.card))
-                    else:
-                        user_object.score -= 1
-                        await response.author.send('`Not a match! You lose one point.`')
+                    # matches missed in previous rounds are OK (they only lose the earlier round multiplier)
+                    # response str->List[str], check each
+                    positions = response.content.replace(".","").strip().split(" ")
+                    mismatch_detected = False
+                    for position in positions:
+                        match = await crimsogames.mark_card(user_object.card, position, emojis_already_used)
+                        if match:
+                            # each match gives points
+                            user_object.score += 10 * multiplier
+                        else:
+                            user_object.score -= 1
+                            embed = c.crimbed(None, "Mismatch(es) detected. You lose points for that!")
+                            mismatch_detected = True
+
+                    if mismatch_detected:
+                        await response.author.send(embed=embed)
+
+                    await response.author.send(await crimsogames.deliver_card(user_object.card))
 
             # end of turn, time to score matches
             for player in list_of_players:
                 await crimsogames.cringo_score(player, turn, multiplier)
 
-            # time's up message to each user
-            for player in list_of_players:
-                await player.player.send("`Time's up!`")
-
             turn += 1
             if turn > total_turns:
-                for player in list_of_players:
-                    await player.player.send('`Good game!`')
-                game_on = False
+                embed = c.crimbed(None, "Game over! Check the final score in <#{}>!".format(ctx.message.channel.id))
+            else:
+                embed = c.crimbed(None, "Time's up! Round {} incoming...".format(turn))
+            
+            for player in list_of_players:
+                await player.player.send(embed=embed)
 
         # Final score!
         nerf = (52 - 2 * len(list_of_players))  # (points / nerf = coin)
         embed = c.crimbed(
             title='**CRINGO!** FINAL SCORE',
-            description=await crimsogames.cringo_leaderboard(list_of_players, True, nerf),
+            description=await crimsogames.cringo_scoreboard(list_of_players, True, nerf),
             footer='Your points/{}=your crimsoCOIN winnings!'.format(nerf),
             thumbnail='https://i.imgur.com/gpRToBn.png'  # jester
         )
