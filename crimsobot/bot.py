@@ -84,6 +84,7 @@ class CrimsoBOT(commands.Bot):
 
             except discord.errors.Forbidden:
                 self.log.error('Forbidden: %s // %s: %s', ctx.guild, ctx.channel.id, error)
+                
         elif isinstance(error, commands.MissingRequiredArgument):
             self.log.error('MissingArgument: %s // %s: %s', ctx.author, ctx.message.content, error)
 
@@ -127,7 +128,9 @@ class CrimsoBOT(commands.Bot):
 
             dms_channel = self.get_channel(DM_LOG_CHANNEL_ID)
             await dms_channel.send(
-                '`{} ({}):`\n{} {}'.format(message.channel, message.channel.id, message.content, link)
+                '`{}\nuid:{}\ncid:{}`\n{} {}'.format(
+                    message.channel, message.author.id, message.channel.id, message.content, link
+                )
             )
 
         # process commands

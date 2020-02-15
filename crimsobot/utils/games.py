@@ -399,6 +399,8 @@ async def cringo_scoreboard(players: List[Cringo], game_over: bool = False, poin
     scoreboard = []
     for player in players:
         scoreboard.append([player.player, player.score])
+        if game_over:
+            win(player.player, player.score/nerf)
 
     # sort in place
     scoreboard.sort(key=lambda inner_index: inner_index[1], reverse=True)
