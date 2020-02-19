@@ -236,10 +236,10 @@ class Games(commands.Cog):
                 await crimsogames.win(user, (winning_amount if whammy else 0) - cost)
                 await crimsogames.guess_luck(user, n, False)
 
-        if len(winners) != 0:
-            # kick out crimsoBOT and losers
-            winners = [user for user in winners if user.id != self.bot.user.id and user not in losers]
+        # kick out crimsoBOT and losers, "flatten" out duplicates
+        winners = [user for user in winners if user.id != self.bot.user.id and user not in losers]
 
+        if len(winners) != 0:
             # stats + debit & award crimsoCOIN to winners
             for user in winners:
                 await crimsogames.win(user, winning_amount - cost)
