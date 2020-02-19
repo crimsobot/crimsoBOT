@@ -494,7 +494,6 @@ class Games(commands.Cog):
                             """
                     )
                     await ctx.send(embed=embed)
-                    await join_request.delete()
 
         # if no one joins, end game
         if len(users_already_joined) == 0:
