@@ -104,7 +104,7 @@ class Admin(commands.Cog):
         )
         embed = c.crimbed(
             title='crimsoBOT info!'
-            descr='crimsoBOT was born of boredom and is maintined from love.\n'
+            descr='crimsoBOT was born of boredom and is maintined from love.\n',
             thumb='https://i.imgur.com/9UTNIGi.png'
         )
         embed.add_field(
