@@ -103,7 +103,7 @@ class Admin(commands.Cog):
             473300048
         )
         embed = c.crimbed(
-            title='crimsoBOT info!'
+            title='crimsoBOT info!',
             descr='crimsoBOT was born of boredom and is maintined from love.\n',
             thumb='https://i.imgur.com/9UTNIGi.png'
         )
