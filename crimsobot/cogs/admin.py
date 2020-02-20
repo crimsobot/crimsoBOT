@@ -97,26 +97,41 @@ class Admin(commands.Cog):
     async def info(self, ctx: commands.Context) -> None:
         """crimsoBOT info and invites."""
 
-        title = 'crimsoBOT info'
-        descr = 'crimsoBOT is a poorly-coded, homebrew bot.\n'
-        thumb = 'https://i.imgur.com/9UTNIGi.png'
+        # change permissions integer here if need be
         auth_url = 'https://discordapp.com/api/oauth2/authorize?client_id={}&permissions={}&scope=bot'.format(
             self.bot.user.id,
             473300048
         )
-        embed = c.crimbed(title, descr, thumb)
-        embed.add_field(name="crimsoBOT's Discord server", value='https://discord.gg/Kj3WNHX', inline=False)
-        embed.add_field(name='Invite crimsoBOT to your server', value=auth_url, inline=False)
+        embed = c.crimbed(
+            title='crimsoBOT info!'
+            descr='crimsoBOT was born of boredom and is maintined from love.\n'
+            thumb='https://i.imgur.com/9UTNIGi.png'
+        )
         embed.add_field(
-            name='Support crimsoBOT and get stickers!',
+            name="crimsoBOT's Discord server",
+            value='https://discord.gg/Kj3WNHX',
+            inline=False
+        )
+        embed.add_field(
+            name='Invite crimsoBOT to your server',
+            value=auth_url,
+            inline=False
+        )
+        embed.add_field(
+            name='Support crimsoBOT server time, get a sticker!',
             value='https://www.patreon.com/crimso',
+            inline=False
+        )
+        embed.add_field(
+            name='Buy stickers and more *a la carte*!',
+            value='https://crimobot.weebly.com/',
             inline=False
         )
         embed.set_footer(text='Thanks for using crimsoBOT!')
 
         await ctx.send(embed=embed)
 
-    @commands.command()
+    @commands.command(hidden=True)
     @commands.is_owner()
     async def servers(self, ctx: commands.Context) -> None:
         """List crimsoBOT's servers."""
@@ -127,7 +142,7 @@ class Admin(commands.Cog):
             '\n'.join('`[{g.id}]` | {g.name}'.format(g=guild) for guild in guilds)
         )
 
-    @commands.command()
+    @commands.command(hidden=True)
     @commands.is_owner()
     async def serverinfo(self, ctx: commands.Context, server_id: Optional[int] = None) -> None:
         """Member count, owner, channel names, roles, and emojis."""
