@@ -104,8 +104,8 @@ class Admin(commands.Cog):
         )
         embed = c.crimbed(
             title='crimsoBOT info!',
-            descr='crimsoBOT was born of boredom and is maintined from love.\n',
-            thumb='https://i.imgur.com/9UTNIGi.png'
+            description='crimsoBOT was born of boredom and is maintined from love.\n',
+            thumbnail='https://i.imgur.com/9UTNIGi.png'
         )
         embed.add_field(
             name="crimsoBOT's Discord server",
@@ -124,7 +124,7 @@ class Admin(commands.Cog):
         )
         embed.add_field(
             name='Buy stickers and more *a la carte*!',
-            value='https://crimobot.weebly.com/',
+            value='https://crimsobot.weebly.com/',
             inline=False
         )
         embed.set_footer(text='Thanks for using crimsoBOT!')
