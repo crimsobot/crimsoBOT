@@ -1,7 +1,7 @@
 import random
 from collections import Counter
 from datetime import datetime
-from typing import List, Set, Tuple, Union
+from typing import List, Optional, Set, Tuple, Union
 
 import discord
 
@@ -393,14 +393,12 @@ async def cringo_score(player: Cringo, turn_number: int, multiplier: int) -> Non
     return None
 
 
-async def cringo_scoreboard(players: List[Cringo], game_over: bool = False, point_nerf: int = 1) -> str:
+async def cringo_scoreboard(players: List[Cringo]) -> str:
     """Unpack the player objects to get something that can be sorted and displayed."""
 
     scoreboard = []
     for player in players:
         scoreboard.append([player.player, player.score])
-        if game_over:
-            await win(player.player, player.score/point_nerf)
 
     # sort in place
     scoreboard.sort(key=lambda inner_index: inner_index[1], reverse=True)

@@ -11,6 +11,9 @@ from crimsobot.bot import CrimsoBOT
 from crimsobot.utils import games as crimsogames, tools as c
 from crimsobot.utils.leaderboard import Leaderboard
 
+# crimsoCOIN multiplier for games played in crimsoBOT server
+# simple logical checks for ctx.guild.id in in each game below
+server_bonus = 1.15
 
 class Games(commands.Cog):
     def __init__(self, bot: CrimsoBOT):
@@ -145,6 +148,8 @@ class Games(commands.Cog):
 
         # check if user can afford to play!
         winning_amount, cost = crimsogames.guess_economy(n)
+        if ctx.guild.id == 552650672965943296:
+            winning_amount = winning_amount * server_bonus
 
         # the candidates
         choices = [
@@ -399,6 +404,8 @@ class Games(commands.Cog):
             ind_plus_1, votes_for_winner = crimsogames.tally(votes)
             winner = stories[int(ind_plus_1) - 1]
             winning_amount = votes_for_winner * 10
+            if ctx.guild.id == 552650672965943296:
+                winning_amount = winning_amount * server_bonus
             await crimsogames.win(winner.author, winning_amount)
             ess = 's' if votes_for_winner > 1 else ''
 
@@ -451,7 +458,7 @@ class Games(commands.Cog):
         # initialize join-message listener
         users_already_joined = []
         end = time.time() + join_timer
-        while time.time() < end:
+        while time.time() < end and len(users_already_joined) < 20:
             try:
                 join_reaction, user_who_reacted = await self.bot.wait_for('reaction_add', check=join_cringo, timeout=join_timer+1)
             except asyncio.TimeoutError:
@@ -596,12 +603,20 @@ class Games(commands.Cog):
             for player in list_of_players:
                 await player.player.send(embed=embed)
 
-        # Final score!
-        nerf = (52 - 2 * len(list_of_players))  # (points / nerf = coin)
+        # final score + awards time!
+        # nerf calculated such that division by zero never attained within player limit
+        x = len(list_of_players)
+        nerf = 0.05*x**2 - 2.05*x + 52  # (points / nerf = coin)
+        if ctx.guild.id == 552650672965943296:
+            nerf = nerf * (2-server_bonus)
+        for player in list_of_players:
+            winning_amount = player.score/nerf
+            await crimsogames.win(player.player, winning_amount)
+
         embed = c.crimbed(
             title='**CRINGO!** FINAL SCORE',
-            description=await crimsogames.cringo_scoreboard(list_of_players, True, nerf),
-            footer='Your points/{}=your crimsoCOIN winnings!'.format(nerf),
+            description=await crimsogames.cringo_scoreboard(list_of_players),
+            footer='Your points/{:.1f}=your crimsoCOIN winnings!'.format(nerf),
             thumbnail='https://i.imgur.com/gpRToBn.png'  # jester
         )
         await ctx.send(embed=embed)
