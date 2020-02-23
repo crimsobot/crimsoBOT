@@ -435,7 +435,7 @@ class Games(commands.Cog):
         The more players in a game, the more crimsoCOIN everyone wins!
         """
         # generate game intro embed
-        join_timer = 5
+        join_timer = 45
         emoji = "<:crimsoCOIN:588558997238579202>"
         embed = c.crimbed(
             title="Let's play **CRINGO!**",
@@ -525,7 +525,7 @@ class Games(commands.Cog):
             await player.send(await crimsogames.deliver_card(player_object.card))
 
         # initial game variables
-        turn_timer = 5
+        turn_timer = 25
         turn = 1
         total_turns = 9
         emojis_already_used: List[str] = []
