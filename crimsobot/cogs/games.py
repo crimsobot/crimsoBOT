@@ -15,6 +15,9 @@ from crimsobot.utils.leaderboard import Leaderboard
 # simple logical checks for ctx.guild.id in in each game below
 server_bonus = 1.15
 
+# tools.checkin() used to prevent users from playing multiple cringo games at once
+cringo_users = []
+
 class Games(commands.Cog):
     def __init__(self, bot: CrimsoBOT):
         self.bot = bot
@@ -421,14 +424,15 @@ class Games(commands.Cog):
 
         await ctx.send(embed=embed)
 
-    @commands.command(aliases=['bingo'], brief='A quirky take on bingo.')
+    @commands.command(aliases=['suffer'], brief='A quirky take on bingo.')
     @commands.max_concurrency(1, commands.BucketType.channel)
     async def cringo(self, ctx: commands.Context) -> None:
         """
         A peculiar blend of slots and bingo that is totally not a ripoff of a popular 1990s PC game.
-        Points are awarded for matches, completing lines, and getting a full house.
-        The earlier you get a match or a line, the more points you get!
+        Points are awarded for matches [10], lines [100], and full card [1000].
+        The earlier you get a match, line, or full card, the higher the multiplier!
         Everyone is awarded a handsome amount of crimsoCOIN for playing.
+        The more players in a game, the more crimsoCOIN everyone wins!
         """
         # generate game intro embed
         join_timer = 45
@@ -449,11 +453,12 @@ class Games(commands.Cog):
         # solicit players to join the game
         # define check
         def join_cringo(reaction: discord.reaction, user: discord.user) -> bool:
+            right_game = reaction.message.id == join_message.id
             banned = self.bot.is_banned(user)
-            is_bot = user.id == self.bot.user.id
+            is_bot = user.bot
             correct_reaction = str(reaction.emoji) == emoji
             already_joined = user in users_already_joined
-            return not banned and not is_bot and correct_reaction and not already_joined
+            return right_game and not banned and not is_bot and correct_reaction and not already_joined
 
         # initialize join-message listener
         users_already_joined = []
@@ -468,6 +473,8 @@ class Games(commands.Cog):
                 # send instructions; if they can't receive DMs, they can't play
                 try:
                     potential_player = user_who_reacted
+                    if c.checkin('cringo', join_message.guild, user_who_reacted, cringo_users) is False:
+                        raise c.UserAlreadyJoined
                     embed = c.crimbed(
                         title='Welcome to **CRINGO!**',
                         description="""
@@ -491,13 +498,14 @@ class Games(commands.Cog):
                     )
                     await ctx.send(embed=embed)
 
-                except discord.errors.Forbidden:
+                except (discord.errors.Forbidden, c.UserAlreadyJoined):
                     embed = c.crimbed(
                         title=None,
                         description='Uh oh, **{} CANNOT** join the game!'.format(user_who_reacted),
                         footer="""
-                            You can't call cringo from a DM!
-                            You have to be able to receive DMs from crimsoBOT to play!
+                            · You can't call Cringo! from a DM!
+                            · You have to be able to receive DMs from crimsoBOT to play!
+                            · Are you already playing Cringo! in another channel?
                             """
                     )
                     await ctx.send(embed=embed)
@@ -619,6 +627,8 @@ class Games(commands.Cog):
             footer='Your points/{:.1f}=your crimsoCOIN winnings!'.format(nerf),
             thumbnail='https://i.imgur.com/gpRToBn.png'  # jester
         )
+
+        c.checkout('cringo', join_message.guild, user_who_reacted, cringo_users)
         await ctx.send(embed=embed)
 
     @commands.command(aliases=['bal'])

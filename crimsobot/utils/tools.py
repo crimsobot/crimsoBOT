@@ -9,6 +9,20 @@ log = logging.getLogger(__name__)
 Messageables = Union[DMChannel, GroupChannel, Member, TextChannel, User]
 
 
+class UserAlreadyJoined(Exception):
+    def __init__(self, *args):
+        if args:
+            self.message = args[0]
+        else:
+            self.message = None
+
+    def __str__(self):
+        if self.message:
+            return 'UserAlreadyJoined, {0} '.format(self.message)
+        else:
+            return 'UserAlreadyJoined: user already using function'
+
+
 def checkin(cmd: str, guild: Guild, channel: Messageables, running: List[int]) -> bool:
     """Is game already running in channel/DM?"""
 
@@ -22,7 +36,7 @@ def checkin(cmd: str, guild: Guild, channel: Messageables, running: List[int]) -
     else:
         guild_name = '*'
 
-    log.info('%s running on %s/%s (%s)...', cmd, guild_name, channel, channel.id)
+    # log.info('%s running on %s/%s (%s)...', cmd, guild_name, channel, channel.id)
 
     return True
 
@@ -37,7 +51,7 @@ def checkout(cmd: str, guild: Guild, channel: Messageables, running: List[int]) 
     else:
         guild_name = '*'
 
-    log.info('%s COMPLETE on %s/%s!', cmd, guild_name, channel)
+    # log.info('%s COMPLETE on %s/%s!', cmd, guild_name, channel)
 
 
 def crimbed(title: Optional[str], description: Optional[str], thumbnail: Optional[str] = None,
