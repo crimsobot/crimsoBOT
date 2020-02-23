@@ -15,11 +15,12 @@ DiscordUser = Union[discord.User, discord.Member]
 
 
 class Cringo:
-    def __init__(self, player: discord.Member, card: List[List[str]], score: int, matches: Set[str]):
+    def __init__(self, player: discord.Member, card: List[List[str]], score: int, matches: Set[str], mismatch_count: int):
         self.player = player
         self.card = card
         self.score = score
         self.matches = matches
+        self.mismatch_count = mismatch_count
 
 
 def emojistring() -> str:
@@ -275,7 +276,7 @@ async def deliver_card(list_of_lists: List[List[str]]) -> str:
     return '<:blank:589560784485613570>\n'+'\n'.join(final_string)
 
 
-async def mark_card(card: List[List[str]], position: str, emojis_to_check: List[str]) -> bool:
+async def mark_card(player: Cringo, position: str, emojis_to_check: List[str]) -> bool:
     """
     "Marks" the card with a star if there's a match.
     The card is a list of lists, formatted as such:
@@ -292,26 +293,26 @@ async def mark_card(card: List[List[str]], position: str, emojis_to_check: List[
     sublist = {'1': 1, '2': 2, '3': 3, '4': 4}
     item = {'a': 1, 'b': 2, 'c': 3, 'd': 4}
 
-
-
     # in case message begins with a period but has invalid keys
     try:
         # format the string from user that contains position
         indices = position.strip()
         col_abcd = indices[-2].lower()  # corresponds to item
         row_1234 = indices[-1]          # corresponds to sublist
-        selected_emoji = card[sublist[row_1234]][item[col_abcd]]
+        selected_emoji = player.card[sublist[row_1234]][item[col_abcd]]
     except KeyError:
         return False
     except IndexError:
+        player.mismatch_count += 1
         return False
 
     # check for match
-    is_match = selected_emoji in emojis_to_check and selected_emoji in (emoji for sublist in card for emoji in sublist)
+    is_match = selected_emoji in emojis_to_check and selected_emoji in (emoji for sublist in player.card for emoji in sublist)
     if is_match:
-        card[sublist[row_1234]][item[col_abcd]] = '⭐'
+        player.card[sublist[row_1234]][item[col_abcd]] = '⭐'
         return True
     else:
+        player.mismatch_count += 1
         return False
 
 
