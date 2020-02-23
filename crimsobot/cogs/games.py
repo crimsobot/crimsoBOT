@@ -620,6 +620,7 @@ class Games(commands.Cog):
         for player in list_of_players:
             winning_amount = player.score/nerf
             await crimsogames.win(player.player, winning_amount)
+            c.checkout('cringo', join_message.guild, player.player, cringo_users)
 
         embed = c.crimbed(
             title='**CRINGO!** FINAL SCORE',
@@ -628,7 +629,6 @@ class Games(commands.Cog):
             thumbnail='https://i.imgur.com/gpRToBn.png'  # jester
         )
 
-        c.checkout('cringo', join_message.guild, user_who_reacted, cringo_users)
         await ctx.send(embed=embed)
 
     @commands.command(aliases=['bal'])
