@@ -520,7 +520,7 @@ class Games(commands.Cog):
         list_of_players = []
         for player in users_already_joined:
             card = await crimsogames.cringo_card(await crimsogames.cringo_emoji(4))
-            player_object = crimsogames.Cringo(player, card, 0, set())
+            player_object = crimsogames.Cringo(player, card, 0, set(), 0)
             list_of_players.append(player_object)
             await player.send(await crimsogames.deliver_card(player_object.card))
 
@@ -537,7 +537,7 @@ class Games(commands.Cog):
             is_dm = isinstance(msg.channel, discord.DMChannel)
             return begins_with_period and is_a_player and is_dm
 
-        while turn <= total_turns:
+        while turn <= total_turns and len(list_of_players) > 0:
             # display initial leaderboard
             embed = c.crimbed(
                 title='**CRINGO!** scoreboard',
@@ -584,13 +584,13 @@ class Games(commands.Cog):
                     positions = response.content.replace(".","").strip().split(" ")
                     mismatch_detected = False
                     for position in positions:
-                        match = await crimsogames.mark_card(user_object.card, position, emojis_already_used)
+                        match = await crimsogames.mark_card(user_object, position, emojis_already_used)
                         if match:
                             # each match gives points
                             user_object.score += 10 * multiplier
                         else:
-                            user_object.score -= 1
                             embed = c.crimbed(None, "Mismatch(es) detected. You lose points for that!")
+                            user_object.score -= user_object.mismatch_count
                             mismatch_detected = True
 
                     if mismatch_detected:
@@ -609,7 +609,16 @@ class Games(commands.Cog):
                 embed = c.crimbed(None, "Time's up! Round {} incoming...".format(turn))
             
             for player in list_of_players:
-                await player.player.send(embed=embed)
+                if player.mismatch_count < 8:
+                    await player.player.send(embed=embed)
+                else:
+                    list_of_players.remove(player)
+                    c.checkout('cringo', join_message.guild, player.player, cringo_users)
+                    embed = c.crimbed(
+                        title=None,
+                        description="{} has been removed from the game.".format(player.player)
+                    )
+                    await ctx.send(embed=embed)
 
         # final score + awards time!
         # nerf calculated such that division by zero never attained within player limit
