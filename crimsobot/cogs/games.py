@@ -538,8 +538,10 @@ class Games(commands.Cog):
             card = await crimsogames.cringo_card(await crimsogames.cringo_emoji(4))
             player_object = crimsogames.Cringo(player, card, 0, set(), 0)
             list_of_players.append(player_object)
+        
+        for player in list_of_players:
             try:
-                await player.send(await crimsogames.deliver_card(player_object.card))
+                await player.player.send(await crimsogames.deliver_card(player_object.card))
             except discord.errors.Forbidden:
                 await player_remove(ctx, list_of_players, player)
 
