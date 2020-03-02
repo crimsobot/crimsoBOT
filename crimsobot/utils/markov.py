@@ -51,6 +51,8 @@ def scatter(msg_list: List[str]) -> str:
     while time.time() < now + 5:
         if out is None:
             out = model.make_short_sentence(r.randint(40, 400))
+            if out is not None:
+                break
 
     if out is None:
         out = "NO."
