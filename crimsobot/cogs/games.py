@@ -450,8 +450,19 @@ class Games(commands.Cog):
         join_message = await ctx.send(embed=embed)
         await join_message.add_reaction(emoji)
 
-        # solicit players to join the game
-        # define check
+        # first, a few helper functions to deal with players joining and leaving
+        async def player_remove(
+            ctx: commands.context, player_list: List[crimsogames.Cringo], player_object: crimsogames.Cringo
+        ) -> None:
+            # remove from list of players; edits in place, no need to return
+            player_list.remove(player_object)
+            c.checkout('cringo', join_message.guild, player_object.player, cringo_users)
+            embed = c.crimbed(
+                title=None,
+                description="{} has left the game.".format(player_object.player)
+            )
+            await ctx.send(embed=embed)
+        
         def join_cringo(reaction: discord.reaction, user: discord.user) -> bool:
             right_game = reaction.message.id == join_message.id
             banned = self.bot.is_banned(user)
@@ -459,6 +470,49 @@ class Games(commands.Cog):
             correct_reaction = str(reaction.emoji) == emoji
             already_joined = user in users_already_joined
             return right_game and not banned and not is_bot and correct_reaction and not already_joined
+        
+        async def process_player_joining(user_who_reacted: discord.User) -> None:
+            # send instructions; if they can't receive DMs, they can't play
+            try:
+                potential_player = user_who_reacted
+                if c.checkin('cringo', join_message.guild, user_who_reacted, cringo_users) is False:
+                    raise c.UserAlreadyJoined
+                embed = c.crimbed(
+                    title='Welcome to **CRINGO!**',
+                    description="""
+                        Match the emojis called to the emojis on your card.
+                        If you see a match, type the column and row of the match!
+                        Type `.<letter><number>` or `. <letter><number>`.
+                        You can put in multiple matches separated by a space!
+                        For example: `.a1 b2 c4` or `. b4 c3`.
+                        Missed a match on a previous turn? No problem! Put it in anyway.
+                        You'll still get your points (but with a lower multiplier).
+                        Check your score in between turns in the channel. Good luck!
+                        Want to leave game? Type `.leave` during a round.
+                        """,
+                    thumbnail='https://i.imgur.com/gpRToBn.png'  # jester
+                )
+                await potential_player.send(embed=embed)
+                users_already_joined.append(user_who_reacted)
+                embed = c.crimbed(
+                    None,
+                    '**{}** has joined the game!'.format(user_who_reacted),
+                    None
+                )
+                await ctx.send(embed=embed)
+
+            except (discord.errors.Forbidden, c.UserAlreadyJoined):
+                embed = c.crimbed(
+                    title=None,
+                    description='Uh oh, **{} CANNOT** join the game!'.format(user_who_reacted),
+                    footer="""
+                        · You can't call Cringo! from a DM!
+                        · You have to be able to receive DMs from crimsoBOT to play!
+                        · Are you already playing Cringo! in another channel?
+                        """
+                )
+                await ctx.send(embed=embed)
+                c.checkout('cringo', join_message.guild, user_who_reacted, cringo_users)
 
         # initialize join-message listener
         users_already_joined = []
@@ -470,45 +524,7 @@ class Games(commands.Cog):
                 continue
 
             if join_reaction is not None:
-                # send instructions; if they can't receive DMs, they can't play
-                try:
-                    potential_player = user_who_reacted
-                    if c.checkin('cringo', join_message.guild, user_who_reacted, cringo_users) is False:
-                        raise c.UserAlreadyJoined
-                    embed = c.crimbed(
-                        title='Welcome to **CRINGO!**',
-                        description="""
-                            Match the emojis called to the emojis on your card.
-                            If you see a match, type the column and row of the match!
-                            Type `.<letter><number>` or `. <letter><number>`.
-                            You can put in multiple matches separated by a space!
-                            For example: `.a1 b2 c4` or `. b4 c3`.
-                            Missed a match on a previous turn? No problem! Put it in anyway.
-                            You'll still get your points (but with a lower multiplier).
-                            Check your score in between turns in the channel. Good luck!
-                            """,
-                        thumbnail='https://i.imgur.com/gpRToBn.png'  # jester
-                    )
-                    await potential_player.send(embed=embed)
-                    users_already_joined.append(user_who_reacted)
-                    embed = c.crimbed(
-                        None,
-                        '**{}** has joined the game!'.format(user_who_reacted),
-                        None
-                    )
-                    await ctx.send(embed=embed)
-
-                except (discord.errors.Forbidden, c.UserAlreadyJoined):
-                    embed = c.crimbed(
-                        title=None,
-                        description='Uh oh, **{} CANNOT** join the game!'.format(user_who_reacted),
-                        footer="""
-                            · You can't call Cringo! from a DM!
-                            · You have to be able to receive DMs from crimsoBOT to play!
-                            · Are you already playing Cringo! in another channel?
-                            """
-                    )
-                    await ctx.send(embed=embed)
+                await process_player_joining(user_who_reacted)
 
         # if no one joins, end game
         if len(users_already_joined) == 0:
@@ -522,7 +538,12 @@ class Games(commands.Cog):
             card = await crimsogames.cringo_card(await crimsogames.cringo_emoji(4))
             player_object = crimsogames.Cringo(player, card, 0, set(), 0)
             list_of_players.append(player_object)
-            await player.send(await crimsogames.deliver_card(player_object.card))
+        
+        for player in list_of_players:
+            try:
+                await player.player.send(await crimsogames.deliver_card(player_object.card))
+            except discord.errors.Forbidden:
+                await player_remove(ctx, list_of_players, player)
 
         # initial game variables
         turn_timer = 25
@@ -536,6 +557,39 @@ class Games(commands.Cog):
             is_a_player = msg.author in users_already_joined
             is_dm = isinstance(msg.channel, discord.DMChannel)
             return begins_with_period and is_a_player and is_dm
+
+        async def process_player_response(response: discord.Message):
+            # find player's card
+            for player in list_of_players:
+                if player.player == response.author:
+                    user_object = player
+                    break
+
+            # determine if user's reponse is a match
+            # matches missed in previous rounds are OK (they only lose the earlier round multiplier)
+            # response str->List[str], check each
+            positions = response.content.replace(".","").strip().split(" ")
+            mismatch_detected = False
+            for position in positions:
+                # first, if they leave, then get that out the way
+                if position == "leave":
+                    await player_remove(ctx, list_of_players, user_object)
+                    return
+                # if they're still in the game, then check for matches
+                match = await crimsogames.mark_card(user_object, position, emojis_already_used)
+                if match:
+                    # each match gives points
+                    user_object.score += 10 * multiplier
+                else:
+                    embed = c.crimbed(None, "Mismatch(es) detected. You lose points for that!")
+                    user_object.score -= user_object.mismatch_count
+                    mismatch_detected = True
+
+            if mismatch_detected:
+                await response.author.send(embed=embed)
+
+            await response.author.send(await crimsogames.deliver_card(user_object.card))
+            return True
 
         while turn <= total_turns and len(list_of_players) > 0:
             # display initial leaderboard
@@ -558,10 +612,11 @@ class Games(commands.Cog):
                 description=' '.join(emojis_this_turn[0]),
                 footer='{}x multiplier · {} seconds!'.format(multiplier, turn_timer)
             )
-            # await ctx.send(embed=embed)
-
             for player in list_of_players:
-                await player.player.send(embed=embed)
+                try:
+                    await player.player.send(embed=embed)
+                except discord.errors.Forbidden:
+                    await player_remove(ctx, list_of_players, player)
 
             # set up listener for players scoring their cards
             turn_end = time.time() + turn_timer
@@ -572,31 +627,7 @@ class Games(commands.Cog):
                     continue
 
                 if response is not None:
-                    # find player's card
-                    for player in list_of_players:
-                        if player.player == response.author:
-                            user_object = player
-                            break
-
-                    # determine if user's reponse is a match
-                    # matches missed in previous rounds are OK (they only lose the earlier round multiplier)
-                    # response str->List[str], check each
-                    positions = response.content.replace(".","").strip().split(" ")
-                    mismatch_detected = False
-                    for position in positions:
-                        match = await crimsogames.mark_card(user_object, position, emojis_already_used)
-                        if match:
-                            # each match gives points
-                            user_object.score += 10 * multiplier
-                        else:
-                            embed = c.crimbed(None, "Mismatch(es) detected. You lose points for that!")
-                            user_object.score -= user_object.mismatch_count
-                            mismatch_detected = True
-
-                    if mismatch_detected:
-                        await response.author.send(embed=embed)
-
-                    await response.author.send(await crimsogames.deliver_card(user_object.card))
+                    await process_player_response(response)
 
             # end of turn, time to score matches
             for player in list_of_players:
@@ -606,19 +637,20 @@ class Games(commands.Cog):
             if turn > total_turns:
                 embed = c.crimbed(None, "Game over! Check the final score in <#{}>!".format(ctx.message.channel.id))
             else:
-                embed = c.crimbed(None, "Time's up! Round {} incoming...".format(turn))
+                embed = c.crimbed(
+                    None,
+                    "Time's up! Round {} incoming.\nCheck the score in <#{}>!".format(turn, ctx.message.channel.id)
+                )
             
+            # remove players with excessive mismatches
             for player in list_of_players:
                 if player.mismatch_count < 8:
-                    await player.player.send(embed=embed)
+                    try:
+                        await player.player.send(embed=embed)
+                    except discord.errors.Forbidden:
+                        await player_remove(ctx, list_of_players, player)
                 else:
-                    list_of_players.remove(player)
-                    c.checkout('cringo', join_message.guild, player.player, cringo_users)
-                    embed = c.crimbed(
-                        title=None,
-                        description="{} has been removed from the game.".format(player.player)
-                    )
-                    await ctx.send(embed=embed)
+                    await player_remove(ctx, list_of_players, player)
 
         # final score + awards time!
         # nerf calculated such that division by zero never attained within player limit
