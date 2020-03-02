@@ -637,8 +637,12 @@ class Games(commands.Cog):
             if turn > total_turns:
                 embed = c.crimbed(None, "Game over! Check the final score in <#{}>!".format(ctx.message.channel.id))
             else:
-                embed = c.crimbed(None, "Time's up! Round {} incoming...".format(turn))
+                embed = c.crimbed(
+                    None,
+                    "Time's up! Round {} incoming.\nCheck the score in <#{}>!".format(turn, ctx.message.channel.id)
+                )
             
+            # remove players with excessive mismatches
             for player in list_of_players:
                 if player.mismatch_count < 8:
                     try:
