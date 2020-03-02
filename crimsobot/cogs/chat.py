@@ -130,21 +130,6 @@ class Chat(commands.Cog):
 
         await ctx.send(embed=embed)
 
-    # @commands.command(hidden=True)
-    # async def final(self, ctx):
-    #     await ctx.send('`Final warning...`')
-    #
-    #     channel = ctx.message.channel
-    #     now = datetime.utcnow()
-    #     then = now.replace(hour=2, minute=25)
-    #
-    #     # grab message contents (which are strings):
-    #     async for message in channel.history(limit=10000):
-    #         if message.author.id in ADMIN_USER_IDS and message.created_at > then:
-    #             m.learner(message.content)
-    #
-    #     await ctx.send('`Task complete.`')
-
 
 def setup(bot: CrimsoBOT) -> None:
     bot.add_cog(Chat(bot))
