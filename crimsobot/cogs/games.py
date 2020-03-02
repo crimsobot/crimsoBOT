@@ -541,7 +541,7 @@ class Games(commands.Cog):
         
         for player in list_of_players:
             try:
-                await player.player.send(await crimsogames.deliver_card(player_object.card))
+                await player.player.send(await crimsogames.deliver_card(player.card))
             except discord.errors.Forbidden:
                 await player_remove(ctx, list_of_players, player)
 
