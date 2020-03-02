@@ -1,6 +1,7 @@
 import functools
 import random as r
 import re
+import time
 from typing import Any, Callable, List
 
 import markovify
@@ -23,21 +24,6 @@ class POSifiedText(markovify.Text):
         return sentence
 
 
-def clean_text(text: str) -> str:
-    """Clean text for Markov corpus."""
-
-    text = text.upper()
-    text = re.sub(r"[^A-Z0-9 .,?!\-']+", ' ', text)
-    text = text.replace('\n', ' ')
-    text = text.replace('\r', ' ')
-    text = text.replace('\n', ' ')
-    text = text.replace('\r', ' ')
-    text = text.replace('  ', ' ')
-    text = text.replace('  ', ' ')
-
-    return text
-
-
 def learner(msg: str) -> None:
     with open(c.clib_path_join('text', 'crimso.txt'), 'a', encoding='utf8', errors='ignore') as f:
         f.write('%s\n' % msg)
@@ -50,42 +36,24 @@ def scraper(msg: str) -> None:
 
 def scatter(msg_list: List[str]) -> str:
     """Write text file from list of strings."""
-
-    with open(c.clib_path_join('text', 'scatterbrain.txt'), 'w', encoding='utf8', errors='ignore') as f:
-        for item in msg_list:
-            if not item.startswith('>'):
-                if not item.startswith('?'):
-                    f.write('%s\n' % item)
-
-    g = open(c.clib_path_join('text', 'scatterbrain.txt'), 'r', encoding='utf8', errors='ignore')
-    li = g.read()
-    g.close()
-
-    # Note: listifying file() leaves \n at end of each list element
-    st = ''.join(li)
-    # comment out next line to get case-sensitive version
-    st = st.lower()
-    se = set(st.split('\n'))
-    text = '\n'.join(sorted(se))
-
-    text = text.replace('\n', ' ')
-    text = text.replace('\r', ' ')
-    text = text.replace('\n', ' ')
-    text = text.replace('\r', ' ')
-    text = text.replace('  ', ' ')
-    text = text.replace('  ', ' ')
-    text = text.replace('  ', ' ')
-    text = text.replace('  ', ' ')
-    text = text.replace('  ', ' ')
-    text = text.replace('  ', ' ')
-    text = text.upper()
+    
+    one_long_string = '\n'.join(msg_list)
+    one_long_string = one_long_string.upper()
 
     factor = 1
 
-    model = markovify.Text(text, state_size=factor)
+    model = markovify.NewlineText(one_long_string, state_size=factor)
+    
+    # sometimes this process will fail to make a new sentence if the corpus is too short or lacks variety.
+    # so I let it try for 8 seconds to do the thing, but kill it after that.
+    now = time.time()
     out = None
-    while out is None:
-        out = model.make_short_sentence(r.randint(40, 400))
+    while time.time() < now + 5:
+        if out is None:
+            out = model.make_short_sentence(r.randint(40, 400))
+
+    if out is None:
+        out = "NO."
 
     return out
 
@@ -93,20 +61,15 @@ def scatter(msg_list: List[str]) -> str:
 def poem(number_lines: int) -> str:
     """Write a poem."""
 
-    g = open(c.clib_path_join('text', 'all.txt'), encoding='utf8', errors='ignore')
-    text1 = g.read()
-    g.close()
-    text1 = clean_text(text1)
+    with open(c.clib_path_join('text', 'all.txt'), encoding='utf8', errors='ignore') as f:
+        text1 = f.read()
 
-    h = open(c.clib_path_join('text', 'randoms.txt'), encoding='utf8', errors='ignore')
-    text2 = h.read()
-    h.close()
-    text2 = clean_text(text2)
+    with open(c.clib_path_join('text', 'randoms.txt'), encoding='utf8', errors='ignore') as f:
+        text2 = f.read()
 
     poem_factor = 2
-
-    crimso_model = markovify.Text(text1, state_size=poem_factor)
-    other_model = markovify.Text(text2, state_size=poem_factor)
+    crimso_model = markovify.Text(text1, state_size=poem_factor, retain_original=False)
+    other_model = markovify.Text(text2, state_size=poem_factor, retain_original=True)
     model = markovify.combine([crimso_model, other_model], [1, 2])
 
     output_poem = []  # type: List[str]
@@ -122,9 +85,8 @@ def poem(number_lines: int) -> str:
 def wisdom() -> str:
     """Wisdom."""
 
-    f = open(c.clib_path_join('text', 'wisdom.txt'), encoding='utf8', errors='ignore')
-    text = f.read()
-    f.close()
+    with open(c.clib_path_join('text', 'wisdom.txt'), encoding='utf8', errors='ignore') as f:
+        text = f.read()
 
     factor = 3
     model = markovify.Text(text, state_size=factor)
@@ -139,8 +101,8 @@ def wisdom() -> str:
 def rovin() -> str:
     """Wisdom."""
 
-    f = open(c.clib_path_join('text', 'rovin.txt'), encoding='utf8', errors='ignore')
-    text = f.read()
+    with open(c.clib_path_join('text', 'rovin.txt'), encoding='utf8', errors='ignore') as f:
+        text = f.read()
     f.close()
 
     factor = 3
