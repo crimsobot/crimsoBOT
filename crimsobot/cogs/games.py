@@ -435,7 +435,7 @@ class Games(commands.Cog):
         The more players in a game, the more crimsoCOIN everyone wins!
         """
         # generate game intro embed
-        join_timer = 7
+        join_timer = 45
         emoji = "<:crimsoCOIN:588558997238579202>"
         embed = c.crimbed(
             title="Let's play **CRINGO!**",
