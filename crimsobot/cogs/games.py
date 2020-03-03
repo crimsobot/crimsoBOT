@@ -451,6 +451,7 @@ class Games(commands.Cog):
         await join_message.add_reaction(emoji)
 
         # first, a few helper functions to deal with players joining and leaving
+        # should this be moved to utils/games.py?
         async def player_remove(
             ctx: commands.context, player_list: List[crimsogames.Cringo], player_object: crimsogames.Cringo
         ) -> None:
@@ -484,7 +485,7 @@ class Games(commands.Cog):
                         If you see a match, type the column and row of the match!
                         Type `.<letter><number>` or `. <letter><number>`.
                         You can put in multiple matches separated by a space!
-                        For example: `.a1 b2 c4` or `. b4 c3`.
+                        For example: `.a1 b2 c4` or `. b4 c3`. Use only one period!
                         Missed a match on a previous turn? No problem! Put it in anyway.
                         You'll still get your points (but with a lower multiplier).
                         Check your score in between turns in the channel. Good luck!
@@ -525,6 +526,19 @@ class Games(commands.Cog):
 
             if join_reaction is not None:
                 await process_player_joining(user_who_reacted)
+        
+        # sometimes users who click aren't added; catch them here
+        cache_msg = discord.utils.get(self.bot.cached_messages, id=join_message.id)
+        for reaction in cache_msg.reactions:
+            if str(reaction.emoji) == emoji:
+                users_trying_to_join = await reaction.users().flatten()
+        
+        try:
+            for user in users_trying_to_join:
+                if user.id is not self.bot.user.id and user not in users_already_joined:
+                    await process_player_joining(user)
+        except UnboundLocalError:
+            pass
 
         # if no one joins, end game
         if len(users_already_joined) == 0:
@@ -559,11 +573,15 @@ class Games(commands.Cog):
             return begins_with_period and is_a_player and is_dm
 
         async def process_player_response(response: discord.Message):
-            # find player's card
+            # find player's card; if not a player, then return out of this
+            user_object = None
             for player in list_of_players:
                 if player.player == response.author:
                     user_object = player
                     break
+            
+            if user_object is None:
+                return
 
             # determine if user's reponse is a match
             # matches missed in previous rounds are OK (they only lose the earlier round multiplier)
