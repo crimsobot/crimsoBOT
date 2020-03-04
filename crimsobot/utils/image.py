@@ -69,10 +69,14 @@ def bigmoji(emoji: str) -> Tuple[Optional[str], Optional[str]]:
             else:  # numbers zero-nine
                 filename = '3' + filename
 
+        if filename.endswith('-fe0f'):  # "old" emojis (pre-Emoji v1.0 release)
+            filename = filename.replace('-fe0f','')
+
         # test if real file
         try:
             path = c.clib_path_join('emoji', filename + '.png')
             emoji_type = 'file'
+            print(path, emoji_type)
             f = open(path, 'rb')
             f.close()
         except OSError:
