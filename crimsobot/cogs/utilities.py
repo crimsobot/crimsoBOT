@@ -14,6 +14,7 @@ class Utilities(commands.Cog):
     def __init__(self, bot: CrimsoBOT):
         self.bot = bot
 
+
     @commands.command()
     @commands.cooldown(1, 10, commands.BucketType.guild)
     async def ping(self, ctx: commands.Context) -> None:
@@ -25,6 +26,7 @@ class Utilities(commands.Cog):
         ping = (time_out - time_in).microseconds / 1000
         await msg.edit(content='<:ping:569954524932997122>...{:d}ms'.format(int(ping)))
 
+
     @commands.command()
     async def color(self, ctx: commands.Context, hex_value: discord.Colour) -> None:
         """Get color sample from hex value."""
@@ -34,6 +36,7 @@ class Utilities(commands.Cog):
             '**' + str(hex_value) + '**',
             file=discord.File(fp, 'color.jpg')
         )
+
 
     @commands.command()
     @commands.cooldown(2, 8, commands.BucketType.guild)
@@ -45,8 +48,6 @@ class Utilities(commands.Cog):
         • SVGs are no.
         • Images with transparency will sometimes produce a less-than-stellar palette.
         """
-
-        log.info('palette running on %s/%s...', ctx.message.guild, ctx.message.channel)
 
         if not 1 <= number_of_colors <= 10:
             raise commands.BadArgument('Number of colors is out of bounds.')
@@ -61,22 +62,6 @@ class Utilities(commands.Cog):
             file=discord.File(mosaic, 'mosaic.png')
         )
 
-        log.info('palette COMPLETE on %s/%s!', ctx.message.guild, ctx.message.channel)
-
-    @commands.command(hidden=True)
-    async def dearcrimso(self, ctx: commands.Context, *, message: str) -> None:
-        """Leave a message in crimso's inbox. Spam = ban"""
-
-        if ctx.message.guild is not None:
-            guild = str(ctx.message.guild.name)
-            channel = str(ctx.message.channel.id)
-        else:
-            guild = '***'
-            channel = 'direct message'
-
-        user = str(ctx.message.author)
-        userid = str(ctx.message.author.id)
-        log.info('Inbox: %s/%s\n            %s (%s): %s', guild, channel, user, userid, message)
 
     @commands.command(hidden=True)
     @commands.is_owner()
@@ -87,6 +72,7 @@ class Utilities(commands.Cog):
             recip = await self.bot.fetch_user(int(dest[1:]))
 
         await recip.send(message, tts=tts)
+
 
     @commands.command()
     async def bigmoji(self, ctx: commands.Context, emoji: str) -> None:
@@ -101,6 +87,7 @@ class Utilities(commands.Cog):
                 await ctx.send(path)
         except Exception:
             await ctx.send('*Not a valid emoji.*')
+
 
     @commands.command(brief='Get info on when to see the ISS from the location you search!')
     @commands.cooldown(1, 30, commands.BucketType.user)
@@ -132,20 +119,32 @@ class Utilities(commands.Cog):
             header_string += 'Source: <{}>\n'.format(url)
             await ctx.send((header_string if i == 0 else '') + '```{}```'.format(string_list[i]))
 
-    @commands.command(aliases=['map'])
+
+    @commands.command()
     @commands.cooldown(3, 10, commands.BucketType.channel)
-    async def location(self, ctx: commands.Context, *, location: str) -> None:
+    async def map(self, ctx: commands.Context, *, location: str) -> None:
         """Get a map of a location."""
 
         location = location.upper()
-        map_url = astronomy.whereis(location)
+        lat, lon, map_url = astronomy.whereis(location)
 
-        if map_url:
-            embed = c.crimbed('Map of {}\n{}'.format(location, map_url), None, None)
+        if map_url is not None:
+            embed = c.crimbed(
+                title='Map of {}\n{}'.format(location, map_url),
+                descr=None,
+                footer="{}°, {}°".format(lat, lon)
+            )
             embed.set_image(url=map_url)
-            await ctx.send(embed=embed)
         else:
-            await ctx.send('*Location not found.*')
+            embed = c.crimbed(
+                title="**not good with location**",
+                descr="Location **{}** not found.".format(location),
+                thumb_name="weary",
+                footer="pls to help",
+                color_name="orange"
+            )
+        await ctx.send(embed=embed)
+
 
 
 def setup(bot: CrimsoBOT) -> None:

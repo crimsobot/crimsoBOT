@@ -1,5 +1,6 @@
 import logging
 import os
+import random
 from typing import List, Optional, Union
 
 from discord import ChannelType, DMChannel, Embed, GroupChannel, Guild, Member, TextChannel, User
@@ -9,7 +10,7 @@ log = logging.getLogger(__name__)
 Messageables = Union[DMChannel, GroupChannel, Member, TextChannel, User]
 
 
-class UserAlreadyJoined(Exception):
+class MessageableAlreadyJoined(Exception):
     def __init__(self, *args):
         if args:
             self.message = args[0]
@@ -18,47 +19,87 @@ class UserAlreadyJoined(Exception):
 
     def __str__(self):
         if self.message:
-            return 'UserAlreadyJoined, {0} '.format(self.message)
+            return 'MessageableAlreadyJoined, {0} '.format(self.message)
         else:
-            return 'UserAlreadyJoined: user already using function'
+            return 'MessagableAlreadyJoined: channel/direct message/user already using function'
 
 
-def checkin(cmd: str, guild: Guild, channel: Messageables, running: List[int]) -> bool:
-    """Is game already running in channel/DM?"""
+def checkin(messageable: Messageables, running_list: List[int]) -> bool:
+    """Add a messageable to a running list of messageables using a function."""
 
-    if channel.id in running:
-        return False
+    if messageable.id in running_list:
+        raise MessageableAlreadyJoined
 
-    running.append(channel.id)
-
-    if guild:
-        guild_name = guild.name
-    else:
-        guild_name = '*'
-
-    # log.info('%s running on %s/%s (%s)...', cmd, guild_name, channel, channel.id)
-
+    # the list passed is edited in place
+    running_list.append(messageable.id)
     return True
 
 
-def checkout(cmd: str, guild: Guild, channel: Messageables, running: List[int]) -> None:
-    """Is game already running in channel/DM?"""
+def checkout(messageable: Messageables, running_list: List[int]) -> None:
+    """Remove messageable from running list of messageables using a function."""
 
-    running.remove(channel.id)
+    try:
+        running_list.remove(messageable.id)
+    except ValueError:
+        return
 
-    if guild:
-        guild_name = guild.name
+
+def crimbed(title: Optional[str], descr: Optional[str], thumb_name: Optional[str] = None,
+            color_name: Optional[str] = "green", footer: Optional[str] = None) -> Embed:
+    """Discord embed builder with preset options for crimsoBOT colors and thumbnails."""
+
+    color_dict = {
+        "green": 0x5AC037,
+        "yellow": 0xEEE23C,
+        "orange": 0xE2853C,
+    }
+
+    if color_name == "random":
+        name, hex_int = random.choice(list(color_dict.items()))
     else:
-        guild_name = '*'
+        try:
+            hex_int = color_dict[color_name]
+        except KeyError:
+            hex_int = color_dict["green"]
 
-    # log.info('%s COMPLETE on %s/%s!', cmd, guild_name, channel)
+    embed = Embed(title=title, description=descr, color=hex_int)
 
+    # Give these one-word names, no spaces.
+    random_thumb_dict = {
+        "triumph": "https://i.imgur.com/bBXRFnO.png",
+        "joy": "https://i.imgur.com/8deo8Ak.png",
+        "hug": "https://i.imgur.com/lSPKbWf.png",
+        "think": "https://i.imgur.com/odD9yI2.png",
+        "scared": "https://i.imgur.com/sppk4te.png",
+        "weary": "https://i.imgur.com/VFtApPg.png",
+        "moneymouth": "https://i.imgur.com/lNR8qHe.png",
+    }
 
-def crimbed(title: Optional[str], description: Optional[str], thumbnail: Optional[str] = None,
-            color: Optional[int] = 0x5AC037, footer: Optional[str] = None) -> Embed:
-    embed = Embed(title=title, description=description, color=color)
-    if thumbnail is not None:
-        embed.set_thumbnail(url=thumbnail)
+    # These thumbnails are for specific uses only.
+    specific_thumb_dict = {
+        "jester": "https://i.imgur.com/gpRToBn.png",  # Cringo!
+        "crimsoCOIN": "https://i.imgur.com/rS2ec5d.png",  # bal
+        "pfp": "https://i.imgur.com/9UTNIGi.png",
+        "monty": "https://i.imgur.com/wOFf7PF.jpg",
+        "8ball": "https://i.imgur.com/6dzqq78.png",
+    }
+
+    if thumb_name is not None:
+        try:
+            if thumb_name == "random":
+                name, url = random.choice(list(random_thumb_dict.items()))
+            else:
+                try:
+                    url = specific_thumb_dict[thumb_name]
+                except KeyError:
+                    try:
+                        url = random_thumb_dict[thumb_name]
+                    except KeyError:
+                        url = thumb_name
+            embed.set_thumbnail(url=url)
+        except KeyError:
+            pass
+
     if footer is not None:
         embed.set_footer(text=footer)
 

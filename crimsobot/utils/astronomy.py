@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Union
 
 import aiohttp
 import pandas as pd
@@ -175,13 +175,13 @@ async def get_iss_loc(query: str, source: str = 'ha') -> Tuple[float, float, str
     return lat, lon, passes, url
 
 
-def whereis(query: str) -> Optional[str]:
+def whereis(query: str) -> Union[float, float, str]:
     # Nomanatim geocoder
     location = where_are_you(query)
 
     # return None if no location found
     if not location:
-        return None
+        return None, None, None
 
     lat = round(location.latitude, 6)
     lon = round(location.longitude, 6)
@@ -214,4 +214,4 @@ def whereis(query: str) -> Optional[str]:
     shortener = Shortener('Bitly', bitly_token=BITLY_TOKEN)
     short_url = shortener.short(url)  # type: str
 
-    return short_url
+    return lat, lon, short_url

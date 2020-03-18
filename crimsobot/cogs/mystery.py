@@ -9,6 +9,7 @@ class Mystery(commands.Cog):
     def __init__(self, bot: CrimsoBOT):
         self.bot = bot
 
+
     @commands.command(brief='Tarot readings by crimsoBOT.')
     @commands.cooldown(3, 300, commands.BucketType.user)
     async def tarot(self, ctx: commands.Context, spread: str = 'ppf') -> None:
@@ -57,6 +58,7 @@ class Mystery(commands.Cog):
 
         fp, descriptions = tarot.reading(spread)
         await ctx.send('\n'.join(descriptions), file=discord.File(fp, 'reading.png'))
+
 
 
 def setup(bot: CrimsoBOT) -> None:

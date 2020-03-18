@@ -22,8 +22,14 @@ class CrimsoBOT(commands.Bot):
         self.log = logging.getLogger(__name__)
         self._extensions_to_load = [
             'crimsobot.extensions.presence',  # 'crimsobot.extensions.reminder',
-            'crimsobot.cogs.admin', 'crimsobot.cogs.chat', 'crimsobot.cogs.games', 'crimsobot.cogs.image',
-            'crimsobot.cogs.mystery', 'crimsobot.cogs.text', 'crimsobot.cogs.utilities'
+            'crimsobot.cogs.admin',
+            'crimsobot.cogs.chat',
+            'crimsobot.cogs.cringo',
+            'crimsobot.cogs.games',
+            'crimsobot.cogs.image',
+            'crimsobot.cogs.mystery',
+            'crimsobot.cogs.text',
+            'crimsobot.cogs.utilities',
         ]
 
     def load_extensions(self) -> None:
