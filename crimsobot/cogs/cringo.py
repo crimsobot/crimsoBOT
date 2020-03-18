@@ -119,7 +119,7 @@ class Cringo(commands.Cog):
         try:
             for user in users_trying_to_join:
                 if user.id is not self.bot.user.id and user not in users_already_joined:
-                    embed = await cringo.process_player_joining(users_already_joined, user)
+                    embed = await cringo.process_player_joining(users_already_joined, user, minimum_balance[card_size])
                     await ctx.send(embed=embed)
         except UnboundLocalError:
             pass
