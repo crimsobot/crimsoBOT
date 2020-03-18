@@ -41,11 +41,12 @@ class Leaderboard:
             self._leaders.append(leader)
 
     async def get_luck_leaders(self) -> None:
+        min_plays = 100
         self._set_embed_title('luck')
-        self._embed_footer_extra = ' · Minimum 50 plays (will increase with time)'
+        self._embed_footer_extra = ' · Minimum {} plays (will increase with time)'.format(min_plays)
 
         stats = await GuessStatistic \
-            .filter(plays__gte=50) \
+            .filter(plays__gte=min_plays) \
             .prefetch_related('user')  # type: List[GuessStatistic]
 
         # luck_index is a computed property (not actually stored in the DB), so we have to sort here instead

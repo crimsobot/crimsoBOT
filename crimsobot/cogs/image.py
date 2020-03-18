@@ -18,10 +18,12 @@ class Image(commands.Cog):
     def __init__(self, bot: CrimsoBOT):
         self.bot = bot
 
+
     @commands.command(brief='Boop the snoot! Must mention someone to boop.')
     async def boop(self, ctx: commands.Context, mention: discord.Member) -> None:
         fp = imagetools.boop(ctx.author.display_name, mention.display_name)
         await ctx.send(file=discord.File(fp, 'boop.jpg'))
+
 
     @commands.command(aliases=['emojimage', 'eimg2'])
     @commands.cooldown(1, 60, commands.BucketType.user)
@@ -33,8 +35,9 @@ class Image(commands.Cog):
         A one-pixel-wide line is likely not going to show up in the final product.
         """
 
+
         line_list = await imagetools.make_emoji_image(ctx, image)
-        chk = c.checkin('eimg', ctx.message.guild, ctx.message.author, emoji_channels)
+        chk = c.checkin(ctx.message.author, emoji_channels)
         if chk is False:
             await ctx.send('`no!`')
             return
@@ -44,7 +47,8 @@ class Image(commands.Cog):
             await ctx.message.author.send(line)
             await asyncio.sleep(0.72)
 
-        c.checkout('eimg', ctx.message.guild, ctx.message.author, emoji_channels)
+        c.checkout(ctx.message.author, emoji_channels)
+
 
     @commands.command(hidden=True)
     @commands.cooldown(1, 4 * 60 * 60, commands.BucketType.user)
@@ -52,12 +56,10 @@ class Image(commands.Cog):
         """bless bless"""
 
         # read in lines of emojis
-        line_list = open(c.clib_path_join('img', 'bless.txt'),
-                         encoding='utf8',
-                         errors='ignore').readlines()
+        line_list = open(c.clib_path_join('img', 'bless.txt'), encoding='utf8', errors='ignore').readlines()
 
         # check-in
-        chk = c.checkin('bless', ctx.message.guild, ctx.message.author, emoji_channels)
+        chk = c.checkin(ctx.message.author, emoji_channels)
         if chk is False:
             await ctx.send('`no!`')
             return
@@ -70,7 +72,7 @@ class Image(commands.Cog):
             await ctx.message.author.send(line)
             await asyncio.sleep(1)
 
-        c.checkout('bless', ctx.message.guild, ctx.message.author, emoji_channels)
+        c.checkout(ctx.message.author, emoji_channels)
 
     @commands.command(hidden=True)
     @commands.is_owner()
@@ -78,9 +80,7 @@ class Image(commands.Cog):
         """crimsoBOT avatar as emojis!"""
 
         # read in lines of emojis
-        line_list = open(c.clib_path_join('text', 'emojiface.txt'),
-                         encoding='utf8',
-                         errors='ignore').readlines()
+        line_list = open(c.clib_path_join('text', 'emojiface.txt'), encoding='utf8', errors='ignore').readlines()
 
         # strip newlines
         line_list = [line.replace('\n', '') for line in line_list]
@@ -93,12 +93,13 @@ class Image(commands.Cog):
 
         await user.send(message)
 
+
     @commands.command(hidden=True)
     @commands.cooldown(1, 8 * 60 * 60, commands.BucketType.user)
     async def eface(self, ctx: commands.Context) -> None:
         """crimsoBOT avatar as emojis!"""
 
-        chk = c.checkin('eface', ctx.message.guild, ctx.message.author, emoji_channels)
+        chk = c.checkin(ctx.message.author, emoji_channels)
         if chk is False:
             await ctx.send('`no!`')
             return
@@ -112,7 +113,8 @@ class Image(commands.Cog):
             await ctx.message.author.send(line)
             await asyncio.sleep(1)
 
-        c.checkout('eface', ctx.message.guild, ctx.message.author, emoji_channels)
+        c.checkout(ctx.message.author, emoji_channels)
+
 
     @commands.command()
     @commands.cooldown(2, 10, commands.BucketType.guild)
@@ -123,23 +125,18 @@ class Image(commands.Cog):
         if not 1 <= number_of_hits <= 3:
             raise commands.BadArgument('Number of hits is out of bounds.')
 
-        log.info('acidify running on %s/%s...', ctx.message.guild, ctx.message.channel)
-
         fp = await imagetools.acid(ctx, number_of_hits, image)
 
         # pluralize 'hit' if need be
         ess = '' if number_of_hits == 1 else 's'
         await ctx.send('**{} hit{}:**'.format(number_of_hits, ess), file=discord.File(fp, 'acid.png'))
 
-        log.info('acidify COMPLETE on %s/%s!', ctx.message.guild, ctx.message.channel)
 
     @commands.command(hidden=True)
     @commands.is_owner()
     async def inspect(self, ctx: commands.Context, user: Optional[discord.User] = None) -> None:
         # read in lines of emojis
-        line_list = open(c.clib_path_join('games', 'emojilist.txt'),
-                         encoding='utf8',
-                         errors='ignore').readlines()
+        line_list = open(c.clib_path_join('games', 'emojilist.txt'), encoding='utf8', errors='ignore').readlines()
 
         # strip newlines
         line_list = [line.replace('\n', '') for line in line_list]
@@ -148,13 +145,10 @@ class Image(commands.Cog):
         if not user:
             user = ctx.message.author
 
-        log.info('%s is using inspect...', user)
-
         for line in line_list:
             await user.send(line)
             await asyncio.sleep(1)
 
-        log.info("%s's inspection is done!", user)
 
     @commands.command()
     async def needping(self, ctx: commands.Context, image: Optional[str] = None) -> None:
@@ -187,8 +181,17 @@ class Image(commands.Cog):
             except IndexError:
                 raise commands.MissingRequiredArgument('no')
 
-        thumb = 'https://emojipedia-us.s3.amazonaws.com/thumbs/120/twitter/185/input-symbol-for-numbers_1f522.png'
-        embed = c.crimbed('Choose a corner:', '1. Top left\n2. Top right\n3. Bottom left\n4. Bottom right', thumb)
+        embed = c.crimbed(
+            title="Choose a corner:",
+            descr="\n".join([
+                "1. Top left",
+                "2. Top right",
+                "3. Bottom left",
+                "4. Bottom right",
+            ]),
+            thumb_name=
+                "https://emojipedia-us.s3.amazonaws.com/thumbs/120/twitter/185/input-symbol-for-numbers_1f522.png",
+        )
         prompt = await ctx.send(embed=embed)
 
         # define check for position vote
@@ -216,6 +219,7 @@ class Image(commands.Cog):
             await msg.delete()
         await prompt.delete()
         await ctx.send(file=discord.File(fp, 'verpingt.png'))
+
 
 
 def setup(bot: CrimsoBOT) -> None:
