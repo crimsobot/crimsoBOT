@@ -140,7 +140,8 @@ class Utilities(commands.Cog):
                 title="**not good with location**",
                 descr="Location **{}** not found.".format(location),
                 thumb_name="weary",
-                footer="pls to help"
+                footer="pls to help",
+                color_name="orange"
             )
         await ctx.send(embed=embed)
 

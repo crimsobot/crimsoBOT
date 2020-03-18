@@ -60,16 +60,20 @@ class Games(commands.Cog):
         # iterate through keys, prompting and listening, rotating thru prefixes
         for key in keys:
             counter += 1
-            p = prefix[counter % len(prefix)]
+            which_prefix = counter % len(prefix)
+            p = prefix[which_prefix]
             # if a key begins with #, it's meant to be repeated throughout the story
             # but the "#" needs to be removed, ergo:
             key_to_print = key
             if key.startswith('#'):
                 key_to_print = key[1:]
 
+            color_dict = {0: "green", 1: "yellow", 2: "orange"}
+
             embed = c.crimbed(
                 title="PREFIX: {}".format(p),
                 descr='I need `{}{}`'.format(p, key_to_print),
+                color_name=color_dict[which_prefix],
             )
             await ctx.send(embed=embed)
 
