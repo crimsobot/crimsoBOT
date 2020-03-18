@@ -9,6 +9,7 @@ from discord import Embed
 
 from crimsobot.models.currency_account import CurrencyAccount
 from crimsobot.models.guess_statistic import GuessStatistic
+from crimsobot.utils import games as crimsogames
 from crimsobot.utils import tools as c
 
 DiscordUser = Union[discord.User, discord.Member]
@@ -16,7 +17,6 @@ DiscordUser = Union[discord.User, discord.Member]
 
 class Cringo:
     def __init__(self):
-        "player_object = cringo.Cringo(player, card, 0, set(), 0)"
         self.player: discord.Member = None
         self.card: List[List[str]] = None
         self.score: int = 0
@@ -40,61 +40,88 @@ async def player_remove(player_list: List[Cringo], player_object: Cringo) -> Emb
 
     embed = c.crimbed(
         title=None,
-        descr="{} has left the game.".format(player_object.player)
+        descr="{} has left the game.".format(player_object.player),
+        color_name="yellow",
     )
     return embed
 
 
-async def process_player_joining(player_list: List[Cringo], user_who_reacted: discord.User) -> Embed:
+async def process_player_joining(player_list: List[Cringo], user_to_join: discord.User, min_bal: int = 0) -> Embed:
     """Processes player joining game and returns embed to send to game channel."""
 
-    # attempt to send instructions via DM; if they can't receive DMs, they can't play
-    try:
-        # if checkin fails, c.MessageableAlreadyJoined is raised
-        c.checkin(user_who_reacted, cringo_users)
+    # first, check balance. cost is NOT debited.
+    current_bal = await crimsogames.check_balance(user_to_join)
+    cannot_play = current_bal < (min_bal if min_bal != 0 else float('-inf'))
+    # ...this should let people with negative balance play regular CRINGO!
 
-        # embed to DM to user to test if Forbidden
-        embed = c.crimbed(
-            title="Welcome to **CRINGO!**",
+    if cannot_play:
+        # these are passed to the embed_to_channel which is returned from this function
+        title="Uh oh, **{} CANNOT** join the game!".format(user_to_join)
+        descr="\n".join([
+            "· You must have a balance of \u20A2{:.2f} to play this game!".format(min_bal),
+            "· Don't fret; regular CRINGO! can be played by anyone!",
+        ])
+        color="orange"
+        thumb="moneymouth"
+    else:
+        try:
+            # if checkin fails, c.MessageableAlreadyJoined is raised
+            c.checkin(user_to_join, cringo_users)
+
+            # embed to DM to user to test if Forbidden
+            embed_to_user = c.crimbed(
+                title="Welcome to **CRINGO!**",
+                descr="\n".join([
+                    "Match the emojis called to the emojis on your card.",
+                    "If you see a match, type the column and row of the match!",
+                    "Type `.<letter><number>` or `. <letter><number>`.",
+                    "You can put in multiple matches separated by a space!",
+                    "For example: `.a1 b2 c4` or `. b4 c3`. Only use one period!",
+                    "Missed a match on a previous turn? No problem! Put it in anyway.",
+                    "You'll still get your points (but with a lower multiplier).",
+                    "Check your score in between turns in the channel. Good luck!",
+                ]),
+                thumb_name="jester"
+            )
+            await user_to_join.send(embed=embed_to_user)
+            
+            # if neither raise an error, then player is added
+            player_list.append(user_to_join)
+
+            # these are passed to the embed_to_channel which is returned from this function
+            title=None
+            descr="**{}** has joined the game!".format(user_to_join)
+            color="green"
+            thumb=None
+
+        except discord.errors.Forbidden:
+            # user was checked in, so gotta check them out
+            c.checkout(user_to_join, cringo_users)
+
+            # these are passed to the embed_to_channel which is returned from this function
+            title="Uh oh, **{} CANNOT** join the game!".format(user_to_join)
             descr="\n".join([
-                "Match the emojis called to the emojis on your card.",
-                "If you see a match, type the column and row of the match!",
-                "Type `.<letter><number>` or `. <letter><number>`.",
-                "You can put in multiple matches separated by a space!",
-                "For example: `.a1 b2 c4` or `. b4 c3`. Only use one period!",
-                "Missed a match on a previous turn? No problem! Put it in anyway.",
-                "You'll still get your points (but with a lower multiplier).",
-                "Check your score in between turns in the channel. Good luck!",
-            ]),
-            thumb_name="jester"
-        )
-        await user_who_reacted.send(embed=embed)
-        
-        # if neither raise an error, then player is added
-        player_list.append(user_who_reacted)
-
-        # this embed is sent back to cog to send in game channel
-        embed = c.crimbed(
-            title=None,
-            descr="**{}** has joined the game!".format(user_who_reacted),
-        )
-
-    except(discord.errors.Forbidden, c.MessageableAlreadyJoined):
-        # 
-        embed = c.crimbed(
-            title=None,
-            descr="Uh oh, **{} CANNOT** join the game!".format(user_who_reacted),
-            footer="\n".join([
-                "· You can't call Cringo! from a DM!",
+                "· You can't call CRINGO! from a DM!",
                 "· You have to be able to receive DMs from crimsoBOT to play!",
+            ])
+            color="orange"
+            thumb="weary"
+
+        except c.MessageableAlreadyJoined:
+            # these are passed to the embed_to_channel which is returned from this function
+            title="Uh oh, **{} CANNOT** join the game!".format(user_to_join)
+            descr="\n".join([
                 "· Are you already playing Cringo! in another channel?",
-            ]),
-        )
-    
-    return embed
+            ])
+            color="orange"
+            thumb="think"
+
+    embed_to_channel = c.crimbed(title=title, descr=descr, color_name=color, thumb_name=thumb)
+
+    return embed_to_channel
 
 
-async def cringo_emoji(number_of_rows: int, already_used: List[str] = None) -> List[List[str]]:
+async def cringo_emoji(number_of_rows: int, number_of_columns: int, already_used: List[str] = None) -> List[List[str]]:
     """Single row of emojis for game turn, four rows for game card"""
 
     # list of lists of emojis
@@ -103,17 +130,18 @@ async def cringo_emoji(number_of_rows: int, already_used: List[str] = None) -> L
         ['🐴', '🐈', '🐙', '🐺', '🦛', '🐼', '🐸', '🐍', '🐌', '🐝'],
         ['🍉', '🍋', '🍒', '🥑', '🍆', '🍄', '🥞', '🍕', '🧀', '🧄'],
         ['💞', '💯', '🎵', '🚱', '💊', '🛐', '♻️', '🎈', '💤', '🔋'],
+        ['🌹', '🌼', '🌴', '🏖️', '🍂', '🎃', '🎄', '❄️', '🌬️', '⛈️'],
+        ['🔭', '🌖', '☄️', '🪐', '🌌', '👩‍🚀', '🛸', '👾', '🚀', '🛰️'],
     ]
 
     # remove all emojis that have already been used
     if already_used is not None:
         # go through each list to eliminate already-used emojis
-        for row in range(0, len(game_emojis)):
+        for row in range(0, number_of_columns):
             game_emojis[row] = [x for x in game_emojis[row] if x not in already_used]
 
     # randomly select an emoji for each column x the number of rows requested
     selected_emojis = []
-    number_of_columns = len(game_emojis)
 
     for col in range(0, number_of_columns):
         # take one random sample from each column
@@ -128,10 +156,10 @@ async def cringo_emoji(number_of_rows: int, already_used: List[str] = None) -> L
 async def cringo_card(list_of_emojis: List[List[str]]) -> List[List[str]]:
     """This makes the Cringo! card complete with headers."""
 
-    top_row = ['🇦', '🇧', '🇨', '🇩']
-    side_column = ['<:lemonface:623315737796149257>', '1️⃣', '2️⃣', '3️⃣', '4️⃣']
+    top_row = ['🇦', '🇧', '🇨', '🇩', '🇪', '🇫']
+    side_column = ['<:lemonface:623315737796149257>', '1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣']
 
-    list_of_emojis.insert(0, top_row)
+    list_of_emojis.insert(0, top_row[0:len(list_of_emojis)])
 
     emojis_to_send = []
 
@@ -168,16 +196,16 @@ async def mark_card(player: Cringo, position: str, emojis_to_check: List[str], m
     """
 
     # card dict
-    sublist = {'1': 1, '2': 2, '3': 3, '4': 4}
-    item = {'a': 1, 'b': 2, 'c': 3, 'd': 4}
+    rows: dict = {'1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6}
+    cols: dict = {'a': 1, 'b': 2, 'c': 3, 'd': 4, 'e': 5, 'f': 6}
 
     # in case message begins with a period but has invalid keys
     try:
         # format the string from user that contains position
         indices = position.strip()
-        col_abcd = indices[-2].lower()  # corresponds to item
-        row_1234 = indices[-1]          # corresponds to sublist
-        selected_emoji = player.card[sublist[row_1234]][item[col_abcd]]
+        col_abc = indices[-2].lower()  # corresponds to item
+        row_123 = indices[-1]          # corresponds to sublist
+        selected_emoji = player.card[rows[row_123]][cols[col_abc]]
     except KeyError:
         return False
     except IndexError:
@@ -191,7 +219,7 @@ async def mark_card(player: Cringo, position: str, emojis_to_check: List[str], m
 
     match = True
     if is_match:
-        player.card[sublist[row_1234]][item[col_abcd]] = "⭐"
+        player.card[rows[row_123]][cols[col_abc]] = "<:crimsoBOT:689896690785976419>"
         player.score += 10 * multiplier
     else:
         player.mismatch_count += 1
@@ -235,6 +263,7 @@ async def process_player_response(
             embed = c.crimbed(
                 title=None,
                 descr="Mismatch(es) detected. You lose points for that!",
+                color_name="orange",
             )
             mismatch_detected = True
 
@@ -272,7 +301,7 @@ async def cringo_score(player: Cringo, turn_number: int, multiplier: int) -> Non
     # how big is the card? remember card is square
     n = len(player.card[0])
 
-    def line_score(direction: str, index: Optional[int] =0) -> bool:
+    def line_score(direction: str, index: Optional[int] = 0) -> bool:
         """Sort through rows or columns to check if all match."""
 
         # to keep from searching nonexistant rows and columns:
@@ -336,7 +365,6 @@ async def cringo_score(player: Cringo, turn_number: int, multiplier: int) -> Non
             player.score += 1000 * multiplier
             player.full = True
 
-    return None
 
 async def cringo_scoreboard(players: List[Cringo]) -> str:
     """Unpack the player objects to get something that can be sorted and displayed."""
