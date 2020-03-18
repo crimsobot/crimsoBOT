@@ -111,7 +111,7 @@ async def process_player_joining(player_list: List[Cringo], user_to_join: discor
             # these are passed to the embed_to_channel which is returned from this function
             title="Uh oh, **{} CANNOT** join the game!".format(user_to_join)
             descr="\n".join([
-                "· Are you already playing Cringo! in another channel?",
+                "· Are you already playing another game of CRINGO!?",
             ])
             color="orange"
             thumb="think"
