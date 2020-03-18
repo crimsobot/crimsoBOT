@@ -182,8 +182,8 @@ class Cringo(commands.Cog):
             # send out the emojis for this turn
             embed = c.crimbed(
                 title="**{}CRINGO!** Round {}/{}".format(name[card_size], turn, total_turns),
-                descr=' '.join(emojis_this_turn[0]),
-                footer="'{}x multiplier · {} seconds!".format(multiplier, turn_timer),
+                descr=" ".join(emojis_this_turn[0]),
+                footer="{}x multiplier · {} seconds!".format(multiplier, turn_timer),
                 color_name=color[card_size],
             )
             for player in list_of_players:
