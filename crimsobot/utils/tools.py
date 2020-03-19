@@ -82,6 +82,8 @@ def crimbed(title: Optional[str], descr: Optional[str], thumb_name: Optional[str
         "pfp": "https://i.imgur.com/9UTNIGi.png",
         "monty": "https://i.imgur.com/wOFf7PF.jpg",
         "8ball": "https://i.imgur.com/6dzqq78.png",
+        "small": "https://i.imgur.com/IrjA6zq.png",
+        "clock": "https://i.imgur.com/2eAdhsW.png",
     }
 
     if thumb_name is not None:

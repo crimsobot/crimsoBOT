@@ -626,11 +626,8 @@ class Games(commands.Cog):
             raise commands.BadArgument('Lucky number is out of bounds.')
 
         # pass to helper and spit out result in an embed
-        result_string = await crimsogames.daily(ctx.message.author, lucky_number)
-        embed = c.crimbed(
-            title=None,
-            descr=result_string,
-        )
+        embed = await crimsogames.daily(ctx.message.author, lucky_number)
+
         await ctx.send(embed=embed)
 
 

@@ -93,7 +93,7 @@ async def win(discord_user: DiscordUser, amount: float) -> None:
     await account.save()
 
 
-async def daily(discord_user: DiscordUser, lucky_number: int) -> str:
+async def daily(discord_user: DiscordUser, lucky_number: int) -> Embed:
     # fetch account
     account = await CurrencyAccount.get_by_discord_user(discord_user)  # type: CurrencyAccount
 
@@ -105,16 +105,18 @@ async def daily(discord_user: DiscordUser, lucky_number: int) -> str:
 
     last = account.ran_daily_at
 
-    # check if dates are same
+    # check if dates are same; if so, gotta wait
     if last and last.strftime('%Y-%m-%d') == now.strftime('%Y-%m-%d'):
         hours = (reset - now).seconds / 3600
         minutes = (hours - int(hours)) * 60
-        award_string = 'Daily award resets at midnight UTC, {}h{}m from now.'.format(int(hours), int(minutes + 1))
+        award_string = "Daily award resets at midnight UTC, {}h{}m from now.".format(int(hours), int(minutes + 1))
+        color = "yellow"
+        thumb = "clock"
     else:
         winning_number = random.randint(1, 100)
         if winning_number == lucky_number:
             daily_award = 500
-            jackpot = '**JACKPOT!** '
+            jackpot = "**JACKPOT!** "
         else:
             daily_award = 10
             jackpot = 'The winning number this time was **{}**, but no worries: '.format(
@@ -127,8 +129,17 @@ async def daily(discord_user: DiscordUser, lucky_number: int) -> str:
         # update their balance now (will repoen and reclose user)
         await win(discord_user, daily_award)
         award_string = '{}You have been awarded your daily **\u20A2{:.2f}**!'.format(jackpot, daily_award)
-
-    return award_string
+        thumb = "moneymouth" if daily_award == 500 else None
+        color = "green"
+    
+    # the embed to return
+    embed = c.crimbed(
+        title="\u200B\n"+award_string,
+        descr=None,
+        thumb_name=thumb,
+        color_name=color,
+    )
+    return embed
 
 
 async def check_balance(discord_user: DiscordUser) -> float:
