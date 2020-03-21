@@ -52,12 +52,14 @@ class Cringo(commands.Cog):
 
 
     @cringo.command(name='mega')
+    @commands.max_concurrency(1, commands.BucketType.channel)
     async def mega(self, ctx: commands.Context) -> None:
 
         await self.cringo_main(ctx, 6)
 
 
     @cringo.command(name='mini')
+    @commands.max_concurrency(1, commands.BucketType.channel)
     async def mini(self, ctx: commands.Context) -> None:
 
         await self.cringo_main(ctx, 2)
@@ -99,23 +101,21 @@ class Cringo(commands.Cog):
 
         # initialize join-message listener
         users_already_joined = []
-        end = time.time() + join_timer
-        while time.time() < end and len(users_already_joined) < 20:
-            try:
-                join_reaction, user_who_reacted = await self.bot.wait_for('reaction_add', check=join_cringo, timeout=join_timer+1)
-            except asyncio.TimeoutError:
-                continue
+        try:
+            join_reaction, user_who_reacted = await self.bot.wait_for('reaction_add', check=join_cringo, timeout=join_timer)
+        except asyncio.TimeoutError:
+            continue
 
-            if join_reaction is not None:
-                embed = await cringo.process_player_joining(users_already_joined, user_who_reacted, minimum_balance[card_size])
-                await ctx.send(embed=embed)
-        
+        if join_reaction is not None:
+            embed = await cringo.process_player_joining(users_already_joined, user_who_reacted, minimum_balance[card_size])
+            await ctx.send(embed=embed)
+
         # sometimes users who click aren't added; catch them here
         cache_msg = discord.utils.get(self.bot.cached_messages, id=join_message.id)
         for reaction in cache_msg.reactions:
             if str(reaction.emoji) == emoji:
                 users_trying_to_join = await reaction.users().flatten()
-        
+
         try:
             for user in users_trying_to_join:
                 if user.id is not self.bot.user.id and user not in users_already_joined:

@@ -219,7 +219,7 @@ async def mark_card(player: Cringo, position: str, emojis_to_check: List[str], m
 
     match = True
     if is_match:
-        player.card[rows[row_123]][cols[col_abc]] = "<:crimsoBOT:689896690785976419>"
+        player.card[rows[row_123]][cols[col_abc]] = "<:cringo:690799257216876585>"
         player.score += 10 * multiplier
     else:
         player.mismatch_count += 1
@@ -363,7 +363,6 @@ async def cringo_score(player: Cringo, turn_number: int, multiplier: int) -> Non
         if len(player.lines) == n*2 + 2:
             player.lines.add('full')
             player.score += 1000 * multiplier
-            player.full = True
 
 
 async def cringo_scoreboard(players: List[Cringo]) -> str:
