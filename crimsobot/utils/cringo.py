@@ -100,19 +100,14 @@ async def process_player_joining(player_list: List[Cringo], user_to_join: discor
 
             # these are passed to the embed_to_channel which is returned from this function
             title="Uh oh, **{} CANNOT** join the game!".format(user_to_join)
-            descr="\n".join([
-                "· You can't call CRINGO! from a DM!",
-                "· You have to be able to receive DMs from crimsoBOT to play!",
-            ])
+            descr="You have to be able to receive DMs from crimsoBOT to play!"
             color="orange"
             thumb="weary"
 
         except c.MessageableAlreadyJoined:
             # these are passed to the embed_to_channel which is returned from this function
             title="Uh oh, **{} CANNOT** join the game!".format(user_to_join)
-            descr="\n".join([
-                "· Are you already playing another game of CRINGO!?",
-            ])
+            descr="You're already playing another game of CRINGO! aren't you?"
             color="orange"
             thumb="think"
 
@@ -219,7 +214,7 @@ async def mark_card(player: Cringo, position: str, emojis_to_check: List[str], m
 
     match = True
     if is_match:
-        player.card[rows[row_123]][cols[col_abc]] = "<:crimsoBOT:689896690785976419>"
+        player.card[rows[row_123]][cols[col_abc]] = "<:cringo:690799257216876585>"
         player.score += 10 * multiplier
     else:
         player.mismatch_count += 1
@@ -299,17 +294,17 @@ async def cringo_score(player: Cringo, turn_number: int, multiplier: int) -> Non
     cols: dict = {'a': 1, 'b': 2, 'c': 3, 'd': 4, 'e': 5, 'f': 6}
 
     # how big is the card? remember card is square
-    n = len(player.card[0])
+    n = len(player.card[0]) - 1
 
     def line_score(direction: str, index: Optional[int] = 0) -> bool:
         """Sort through rows or columns to check if all match."""
 
         # to keep from searching nonexistant rows and columns:
-        if index >= n:
+        if index >= n+1:
             return False
         
         # we skip the header row and column with (1,n)
-        for i in range(1, n-1):
+        for i in range(1, n):
             if direction == "row":
                 if player.card[index][i] == player.card[index][i+1]:
                     pass
@@ -326,7 +321,7 @@ async def cringo_score(player: Cringo, turn_number: int, multiplier: int) -> Non
                 else:
                     return False
             if direction == "RL":
-                if player.card[i][n-i] == player.card[i+1][n-(i+1)]:
+                if player.card[i][(n+1)-i] == player.card[i+1][(n+1)-(i+1)]:
                     pass
                 else:
                     return False
@@ -363,7 +358,6 @@ async def cringo_score(player: Cringo, turn_number: int, multiplier: int) -> Non
         if len(player.lines) == n*2 + 2:
             player.lines.add('full')
             player.score += 1000 * multiplier
-            player.full = True
 
 
 async def cringo_scoreboard(players: List[Cringo]) -> str:
