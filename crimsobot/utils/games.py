@@ -109,18 +109,38 @@ async def daily(discord_user: DiscordUser, lucky_number: int) -> Embed:
     if last and last.strftime('%Y-%m-%d') == now.strftime('%Y-%m-%d'):
         hours = (reset - now).seconds / 3600
         minutes = (hours - int(hours)) * 60
+
+        title = "Patience..."
         award_string = "Daily award resets at midnight UTC, {}h{}m from now.".format(int(hours), int(minutes + 1))
-        color = "yellow"
         thumb = "clock"
+        color = "orange"
+    # if no wait, then check if winner or loser
     else:
         winning_number = random.randint(1, 100)
+
         if winning_number == lucky_number:
             daily_award = 500
-            jackpot = "**JACKPOT!** "
+        
+            title = "JACKPOT!"
+            wrong = ""  # they're not wrong!
+            thumb = "moneymouth"
+            color = "green"
+
         else:
             daily_award = 10
-            jackpot = 'The winning number this time was **{}**, but no worries: '.format(
-                winning_number) if lucky_number != 0 else ''
+        
+            title_choices = [
+                "*heck*",
+                "*frick*",
+                "*womp womp*",
+                "**😩**",
+                "Aw shucks.",
+                "Why even bother?",
+            ]
+            title = random.choice(title_choices)
+            wrong = "The winning number this time was **{}**, but no worries:".format(winning_number)
+            thumb = "crimsoCOIN"
+            color = "yellow"
 
         # update daily then save
         account.ran_daily_at = now
@@ -128,14 +148,15 @@ async def daily(discord_user: DiscordUser, lucky_number: int) -> Embed:
 
         # update their balance now (will repoen and reclose user)
         await win(discord_user, daily_award)
-        award_string = '{}You have been awarded your daily **\u20A2{:.2f}**!'.format(jackpot, daily_award)
-        thumb = "moneymouth" if daily_award == 500 else None
-        color = "green"
+
+        award_string = "{} You have been awarded your daily **\u20A2{:.2f}**!".format(wrong, daily_award)
+        thumb = thumb
+        color = color
     
     # the embed to return
     embed = c.crimbed(
-        title="\u200B\n"+award_string,
-        descr=None,
+        title=title,
+        descr=award_string,
         thumb_name=thumb,
         color_name=color,
     )
