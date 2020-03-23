@@ -11,7 +11,7 @@ from discord.ext import commands
 
 from config import ADMIN_USER_IDS
 from crimsobot.bot import CrimsoBOT
-from crimsobot.utils import games as crimsogames, tools as c
+from crimsobot.utils import games as crimsogames, markov as m, tools as c
 from crimsobot.utils.leaderboard import Leaderboard
 
 
@@ -128,7 +128,7 @@ class Games(commands.Cog):
             'absolutely!\n\n\n`not`',
             'of course!',
             'according to quantum superposition, the answer was both yes and no before you asked.',
-            "is the sky blue?\n\nis it? i don't know. i don't have eyes.",
+            "is the sky blue?\n\n(is it? i don't know. i don't have eyes.)",
             "i can't be bothered with this right now.",
             'funny you should ask--',
             'fine, sure, whatever',
@@ -138,18 +138,29 @@ class Games(commands.Cog):
             'hmmmm. no.',
             'uhhhhhhhhh',
             '<:uhhhh:495249068789071882>',
-            'eat glass!'
+            'eat glass!',
+            'it is important that you stop bothering me.',
+            'you CANNOT be serious',
+            'sure? how would i know?',
+            'what heck',
+            await m.async_wrap(self.bot, m.crimso)
         ]
 
         # embed for answer
         embed = c.crimbed(
-            title="**OH MIGHTY CRIMSOBALL...**",
-            descr="\n".join([
-                "{} asks:".format(ctx.message.author),
-                question,
-                "**crimsoBOT says**: {}".format(random.choice(answer_list))
-            ]),
+            title="OH MIGHTY CRIMSOBALL...",
+            descr=None,
             thumb_name="8ball",
+        )
+        embed.add_field(
+            name="{} asks:".format(ctx.message.author),
+            value=question,
+            inline=False
+        )
+        embed.add_field(
+            name="**crimsoBOT says:**",
+            value=random.choice(answer_list),
+            inline=False
         )
         await ctx.send(embed=embed)
 
@@ -288,7 +299,7 @@ class Games(commands.Cog):
                 winners_text, winning_amount, winning_emoji
             )
         else:
-            embed.description = "'...No one guessed it! The answer was {}".format(winning_emoji)
+            embed.description = "...No one guessed it! The answer was {}".format(winning_emoji)
 
         if whammy:
             embed.description = "**WHAMMY!** Everyone loses -\u20A2{:.2f} plus the cost of the game!".format(-winning_amount)
@@ -618,11 +629,11 @@ class Games(commands.Cog):
 
 
     @commands.command(hidden=True)
-    async def daily(self, ctx: commands.Context, lucky_number: int = 0) -> None:
+    async def daily(self, ctx: commands.Context, lucky_number: int) -> None:
         """Get a daily award! Pick a number 1-100 for a chance to win bigger!"""
 
         # exception handling
-        if not 0 <= lucky_number <= 100:
+        if not 1 <= lucky_number <= 100:
             raise commands.BadArgument('Lucky number is out of bounds.')
 
         # pass to helper and spit out result in an embed
