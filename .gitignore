@@ -6,3 +6,4 @@ __pycache__/
 *.py[cod]
 config.py
 .vscode/settings.json
+.vscode/.ropeproject/objectdb

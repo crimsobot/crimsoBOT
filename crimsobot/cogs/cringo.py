@@ -72,7 +72,7 @@ class Cringo(commands.Cog):
         thumb = {2: "small", 4: "jester", 6: "scared"}
         color = {2: "yellow", 4: "green", 6: "orange"}
         minimum_balance = {2: 3000, 4: 0, 6: 1000} # NOT debited.
-        timer = {2: 12, 4: 20, 6: 30}
+        timer = {2: 12, 4: 20, 6: 25}
 
         # generate game intro embed
         join_timer = 45
@@ -101,19 +101,25 @@ class Cringo(commands.Cog):
 
         # initialize join-message listener
         users_already_joined = []
+        users_bounced = []
         end = time.time() + join_timer
         while time.time() < end and len(users_already_joined) < 20:
             try:
-                join_reaction, user_who_reacted = await self.bot.wait_for('reaction_add', check=join_cringo, timeout=join_timer)
+                join_reaction, user_who_reacted = await self.bot.wait_for(
+                    'reaction_add', check=join_cringo, timeout=join_timer
+                )
             except asyncio.TimeoutError:
                 continue
 
             if join_reaction is not None:
-                embed = await cringo.process_player_joining(users_already_joined, user_who_reacted, minimum_balance[card_size])
+                embed = await cringo.process_player_joining(
+                    users_already_joined,
+                    users_bounced,
+                    user_who_reacted,
+                    minimum_balance[card_size])
                 await ctx.send(embed=embed)
 
         # sometimes users who click aren't added; catch them here
-        # cache_msg = discord.utils.get(self.bot.cached_messages, id=join_message.id)
         fetched_msg = await ctx.fetch_message(join_message.id)
         for reaction in fetched_msg.reactions:
             if str(reaction.emoji) == emoji:
@@ -121,8 +127,12 @@ class Cringo(commands.Cog):
         
         try:
             for user in users_trying_to_join:
-                if not user.bot and user not in users_already_joined:
-                    embed = await cringo.process_player_joining(users_already_joined, user, minimum_balance[card_size])
+                if not user.bot and user not in users_already_joined and user not in users_bounced:
+                    embed = await cringo.process_player_joining(
+                        users_already_joined,
+                        user,
+                        minimum_balance[card_size]
+                    )
                     await ctx.send(embed=embed)
         except UnboundLocalError:
             pass
@@ -131,7 +141,7 @@ class Cringo(commands.Cog):
         if len(users_already_joined) == 0:
             embed = c.crimbed(
                 title=None,
-                descr="No one joined! Game cancelled."
+                descr="No one joined {}CRINGO! Game cancelled.".format(name[card_size])
             )
             await ctx.send(embed=embed)
             return
@@ -139,15 +149,15 @@ class Cringo(commands.Cog):
         # initialize player objects
         list_of_players = []
         for player in users_already_joined:
-            player_object = cringo.Cringo()
-            player_object.player = player
+            player_object = cringo.CringoPlayer()
+            player_object.user = player
             player_object.card = await cringo.cringo_card(await cringo.cringo_emoji(card_size, card_size))
             list_of_players.append(player_object)
         
         # send everyone their card
         for player in list_of_players:
             try:
-                await player.player.send(await cringo.deliver_card(player.card))
+                await player.user.send(await cringo.deliver_card(player.card))
             except discord.errors.Forbidden:
                 embed = await cringo.player_remove(list_of_players, player)
                 await ctx.send(embed)
@@ -191,7 +201,7 @@ class Cringo(commands.Cog):
             )
             for player in list_of_players:
                 try:
-                    await player.player.send(embed=embed)
+                    await player.user.send(embed=embed)
                 except discord.errors.Forbidden:
                     embed = await cringo.player_remove(list_of_players, player)
                     await ctx.send(embed=embed)
@@ -229,7 +239,7 @@ class Cringo(commands.Cog):
             for player in list_of_players:
                 if player.mismatch_count < 8:
                     try:
-                        await player.player.send(embed=embed)
+                        await player.user.send(embed=embed)
                     except discord.errors.Forbidden:
                         await cringo.player_remove(list_of_players, player)
                 else:
@@ -256,7 +266,7 @@ class Cringo(commands.Cog):
             # pull a player, give them coin, kick them out
             player = list_of_players[0]
             winning_amount = player.score/nerf
-            await crimsogames.win(player.player, winning_amount)
+            await crimsogames.win(player.user, winning_amount)
             await cringo.player_remove(list_of_players, player)
 
         await ctx.send(embed=embed)
