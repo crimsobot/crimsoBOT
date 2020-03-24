@@ -1,10 +1,9 @@
 import random
 from collections import Counter
 from datetime import datetime
-from typing import List, Optional, Set, Tuple, Union
+from typing import List, Tuple, Union
 
 import discord
-
 from discord import Embed
 
 from crimsobot.models.currency_account import CurrencyAccount
@@ -110,37 +109,37 @@ async def daily(discord_user: DiscordUser, lucky_number: int) -> Embed:
         hours = (reset - now).seconds / 3600
         minutes = (hours - int(hours)) * 60
 
-        title = "Patience..."
-        award_string = "Daily award resets at midnight UTC, {}h{}m from now.".format(int(hours), int(minutes + 1))
-        thumb = "clock"
-        color = "orange"
+        title = 'Patience...'
+        award_string = 'Daily award resets at midnight UTC, {}h{}m from now.'.format(int(hours), int(minutes + 1))
+        thumb = 'clock'
+        color = 'orange'
     # if no wait, then check if winner or loser
     else:
         winning_number = random.randint(1, 100)
 
         if winning_number == lucky_number:
             daily_award = 500
-        
-            title = "JACKPOT!"
-            wrong = ""  # they're not wrong!
-            thumb = "moneymouth"
-            color = "green"
+
+            title = 'JACKPOT!'
+            wrong = ''  # they're not wrong!
+            thumb = 'moneymouth'
+            color = 'green'
 
         else:
             daily_award = 10
-        
+
             title_choices = [
-                "*heck*",
-                "*frick*",
-                "*womp womp*",
-                "**😩**",
-                "Aw shucks.",
-                "Why even bother?",
+                '*heck*',
+                '*frick*',
+                '*womp womp*',
+                '**😩**',
+                'Aw shucks.',
+                'Why even bother?',
             ]
             title = random.choice(title_choices)
-            wrong = "The winning number this time was **{}**, but no worries:".format(winning_number)
-            thumb = "crimsoCOIN"
-            color = "yellow"
+            wrong = 'The winning number this time was **{}**, but no worries:'.format(winning_number)
+            thumb = 'crimsoCOIN'
+            color = 'yellow'
 
         # update daily then save
         account.ran_daily_at = now
@@ -149,10 +148,10 @@ async def daily(discord_user: DiscordUser, lucky_number: int) -> Embed:
         # update their balance now (will repoen and reclose user)
         await win(discord_user, daily_award)
 
-        award_string = "{} You have been awarded your daily **\u20A2{:.2f}**!".format(wrong, daily_award)
+        award_string = '{} You have been awarded your daily **\u20A2{:.2f}**!'.format(wrong, daily_award)
         thumb = thumb
         color = color
-    
+
     # the embed to return
     embed = c.crimbed(
         title=title,
