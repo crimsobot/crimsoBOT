@@ -1,4 +1,3 @@
-import json
 from io import BytesIO
 from typing import List, Optional, Tuple
 
@@ -10,13 +9,12 @@ from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
 from PIL import ImageOps
-from colormath.color_conversions import convert_color
-from colormath.color_diff import delta_e_cie2000
-from colormath.color_objects import LabColor, sRGBColor
 from discord.ext.commands import BadArgument, Context
 from scipy.signal import convolve2d
 
+from crimsobot.data.img import color_dict, lookup_emoji, rgb_color_list
 from crimsobot.utils import tools as c
+from crimsobot.utils.color import hex_to_rgb
 
 
 def image_to_buffer(im: Image.Image, fmt: str = 'PNG') -> BytesIO:
@@ -128,14 +126,6 @@ async def fetch_image(ctx: Context, arg: Optional[str]) -> Image.Image:
     await session.close()
 
     return img
-
-
-def hex_to_rgb(color: str) -> Tuple[int, int, int]:
-    r = int(color[0:2], 16)
-    g = int(color[2:4], 16)
-    b = int(color[4:6], 16)
-
-    return r, g, b
 
 
 def make_color_img(hex_str: str) -> BytesIO:
@@ -268,16 +258,6 @@ async def pingbadge(ctx: Context, user_input: Optional[str], position: int) -> B
     return image_to_buffer(img, 'PNG')
 
 
-# the following scripts and functions help make_emoji_image()
-def hex_to_srgb(base: str) -> LabColor:
-    r, g, b = hex_to_rgb(base)
-
-    color_rgb = sRGBColor(r, g, b, is_upscaled=True)
-    color = convert_color(color_rgb, LabColor)
-
-    return color
-
-
 def quantizetopalette(silf: Image, palette: Image) -> Image.Image:
     """Convert an RGB or L mode image to use a given P image's palette."""
 
@@ -286,43 +266,6 @@ def quantizetopalette(silf: Image, palette: Image) -> Image.Image:
     im = silf.im.convert('P', 0, palette.im)  # 0 = dithering OFF
 
     return silf._new(im)
-
-
-# this is the list of colors and the emojis to which they correspond
-with open(c.clib_path_join('img', 'colors_emojis.json'), 'r', encoding='utf-8') as file:
-    color_dict = json.loads(file.read())
-
-
-# these are needed to make the PIL palette list [r1, g1, b1, ..., rn, gn, bn]
-rgb = []
-srgb_color_list = []
-for hex_color in color_dict:
-    hex_digits = hex_color[1:]
-
-    rgb.append(hex_to_rgb(hex_digits))
-    srgb_color_list.append(hex_to_srgb(hex_digits))
-
-# flatten list of tuples into list
-palettedata = [i for sub in rgb for i in sub]
-
-# create palette image
-palimage = Image.new('P', (1, 1))
-palimage.putpalette(palettedata)
-
-
-def lookup_emoji(hex_in: str) -> str:
-    """search (bc quantizing palette not working)"""
-
-    color_in = hex_to_srgb(hex_in)
-    nearest = min(srgb_color_list, key=lambda fc: delta_e_cie2000(color_in, fc))
-    nearest = convert_color(nearest, sRGBColor)
-    nearest = nearest.get_rgb_hex()
-
-    for key, value in color_dict.items():  # type: str, str
-        if nearest == key:
-            return value
-
-    return 'F'  # failure to find emoji
 
 
 async def make_emoji_image(ctx: Context, user_input: Optional[str]) -> List[str]:
@@ -346,8 +289,10 @@ async def make_emoji_image(ctx: Context, user_input: Optional[str]) -> List[str]
     input_image = input_image.resize((36, int(36 * ratio)), resample=Image.BICUBIC)
 
     # first: quantize to palette (has to be RGB mode for that)
+    palette = Image.new('P', (1, 1))
+    palette.putpalette([i for sub in rgb_color_list for i in sub])
     input_image = input_image.convert('RGB', dither=0)
-    input_image_p = input_image.quantize(palette=palimage, dither=0)
+    input_image_p = input_image.quantize(palette=palette, dither=0)
 
     # create dict to match palette number with actual color (for later step)
     # keys = palette integers; values = RGB tuples
