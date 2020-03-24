@@ -147,7 +147,7 @@ class Games(commands.Cog):
         ]
 
         response = random.choice(answer_list)
-        if response is 'random_response':
+        if response == 'random_response':
             response = await m.async_wrap(self.bot, m.crimso)
 
         # embed for answer
