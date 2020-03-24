@@ -90,7 +90,7 @@ class CrimsoBOT(commands.Bot):
 
             except discord.errors.Forbidden:
                 self.log.error('Forbidden: %s // %s: %s', ctx.guild, ctx.channel.id, error)
-                
+
         elif isinstance(error, commands.MissingRequiredArgument):
             self.log.error('MissingArgument: %s // %s: %s', ctx.author, ctx.message.content, error)
 

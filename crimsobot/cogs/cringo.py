@@ -1,18 +1,12 @@
 import asyncio
-import random
 import time
-from typing import List, Optional
+from typing import List
 
 import discord
-
-# from discord import Embed
-
 from discord.ext import commands
 
-from config import ADMIN_USER_IDS
 from crimsobot.bot import CrimsoBOT
 from crimsobot.utils import cringo, games as crimsogames, tools as c
-
 
 # crimsoCOIN multiplier for games played in crimsoBOT server
 # simple logical checks for ctx.guild.id in in each game below
@@ -22,7 +16,6 @@ server_bonus = 1.15
 class Cringo(commands.Cog):
     def __init__(self, bot: CrimsoBOT):
         self.bot = bot
-    
 
     # @commands.Cog.listener()
     # async def on_message(self, message: discord.Message) -> None:
@@ -34,8 +27,7 @@ class Cringo(commands.Cog):
     #     if is_dm and message.content.startswith(('.')):
     #         # do a thing
 
-
-    @commands.group(aliases=['suffer'], invoke_without_command=True, brief="A quirky take on bingo.")
+    @commands.group(aliases=['suffer'], invoke_without_command=True, brief='A quirky take on bingo.')
     @commands.max_concurrency(1, commands.BucketType.channel)
     async def cringo(self, ctx: commands.Context) -> None:
         """
@@ -50,43 +42,37 @@ class Cringo(commands.Cog):
         # Fallback to regular four-line Cringo! if no command is provided, retains prior functionality
         await self.cringo_main(ctx, 4)
 
-
     @cringo.command(name='mega')
     @commands.max_concurrency(1, commands.BucketType.channel)
     async def mega(self, ctx: commands.Context) -> None:
-
         await self.cringo_main(ctx, 6)
-
 
     @cringo.command(name='mini')
     @commands.max_concurrency(1, commands.BucketType.channel)
     async def mini(self, ctx: commands.Context) -> None:
-
         await self.cringo_main(ctx, 2)
 
-
     async def cringo_main(self, ctx: commands.Context, card_size: int = 4) -> None:
-
         # depending on game size: name, thumbnail, color, cost, timer...
-        name = {2: "mini", 4: "", 6: "MEGA"}
-        thumb = {2: "small", 4: "jester", 6: "scared"}
-        color = {2: "yellow", 4: "green", 6: "orange"}
-        minimum_balance = {2: 3000, 4: 0, 6: 1000} # NOT debited.
+        name = {2: 'mini', 4: '', 6: 'MEGA'}
+        thumb = {2: 'small', 4: 'jester', 6: 'scared'}
+        color = {2: 'yellow', 4: 'green', 6: 'orange'}
+        minimum_balance = {2: 3000, 4: 0, 6: 1000}  # NOT debited.
         timer = {2: 12, 4: 20, 6: 25}
 
         # generate game intro embed
         join_timer = 45
-        emoji = "<:crimsoCOIN:588558997238579202>"
+        emoji = '<:crimsoCOIN:588558997238579202>'
         embed = c.crimbed(
             title="Let's play **{}CRINGO!**".format(name[card_size]),
-            descr="\n".join([
-                "Click {} to join this game. You have {} seconds!".format(emoji, join_timer),
-                "Your card and instructions will be DMed to you.",
-                "Gameplay happens in DM, and the scoreboard will show up here.",
+            descr='\n'.join([
+                'Click {} to join this game. You have {} seconds!'.format(emoji, join_timer),
+                'Your card and instructions will be DMed to you.',
+                'Gameplay happens in DM, and the scoreboard will show up here.',
             ]),
             thumb_name=thumb[card_size],
             color_name=color[card_size],
-            footer="You must have a crimsoCOIN balance of {} to play!".format(minimum_balance[card_size]),
+            footer='You must have a crimsoCOIN balance of {} to play!'.format(minimum_balance[card_size]),
         )
         join_message = await ctx.send(embed=embed)
         await join_message.add_reaction(emoji)
@@ -100,8 +86,8 @@ class Cringo(commands.Cog):
             return right_game and not banned and not is_bot and correct_reaction and not already_joined
 
         # initialize join-message listener
-        users_already_joined = []
-        users_bounced = []
+        users_already_joined = []  # type: List[cringo.CringoPlayer]
+        users_bounced = []  # type: List[cringo.DiscordUser]
         end = time.time() + join_timer
         while time.time() < end and len(users_already_joined) < 20:
             try:
@@ -124,7 +110,7 @@ class Cringo(commands.Cog):
         for reaction in fetched_msg.reactions:
             if str(reaction.emoji) == emoji:
                 users_trying_to_join = await reaction.users().flatten()
-        
+
         try:
             for user in users_trying_to_join:
                 if not user.bot and user not in users_already_joined and user not in users_bounced:
@@ -141,7 +127,7 @@ class Cringo(commands.Cog):
         if len(users_already_joined) == 0:
             embed = c.crimbed(
                 title=None,
-                descr="No one joined {}CRINGO! Game cancelled.".format(name[card_size])
+                descr='No one joined {}CRINGO! Game cancelled.'.format(name[card_size])
             )
             await ctx.send(embed=embed)
             return
@@ -153,7 +139,7 @@ class Cringo(commands.Cog):
             player_object.user = player
             player_object.card = await cringo.cringo_card(await cringo.cringo_emoji(card_size, card_size))
             list_of_players.append(player_object)
-        
+
         # send everyone their card
         for player in list_of_players:
             try:
@@ -179,9 +165,9 @@ class Cringo(commands.Cog):
         while turn <= total_turns and len(list_of_players) > 0:
             # display initial leaderboard
             embed = c.crimbed(
-                title="**{}CRINGO!** scoreboard".format(name[card_size]),
+                title='**{}CRINGO!** scoreboard'.format(name[card_size]),
                 descr=await cringo.cringo_scoreboard(list_of_players),
-                footer="Round {}/{} coming up!".format(turn, total_turns),
+                footer='Round {}/{} coming up!'.format(turn, total_turns),
                 color_name=color[card_size],
             )
             await ctx.send(embed=embed)
@@ -194,9 +180,9 @@ class Cringo(commands.Cog):
 
             # send out the emojis for this turn
             embed = c.crimbed(
-                title="**{}CRINGO!** Round {}/{}".format(name[card_size], turn, total_turns),
-                descr=" ".join(emojis_this_turn[0]),
-                footer="{}x multiplier · {} seconds!".format(multiplier, turn_timer),
+                title='**{}CRINGO!** Round {}/{}'.format(name[card_size], turn, total_turns),
+                descr=' '.join(emojis_this_turn[0]),
+                footer='{}x multiplier · {} seconds!'.format(multiplier, turn_timer),
                 color_name=color[card_size],
             )
             for player in list_of_players:
@@ -215,7 +201,9 @@ class Cringo(commands.Cog):
                     continue
 
                 if response is not None:
-                    await cringo.process_player_response(ctx, response, list_of_players, emojis_already_used, multiplier)
+                    await cringo.process_player_response(ctx, response,
+                                                         list_of_players, emojis_already_used,
+                                                         multiplier)
 
             # end of turn, time to score matches
             for player in list_of_players:
@@ -225,16 +213,16 @@ class Cringo(commands.Cog):
             if turn > total_turns:
                 embed = c.crimbed(
                     title=None,
-                    descr="Game over! Check the final score in <#{}>!".format(ctx.message.channel.id),
+                    descr='Game over! Check the final score in <#{}>!'.format(ctx.channel.id),
                     color_name=color[card_size],
                 )
             else:
                 embed = c.crimbed(
                     title=None,
-                    descr="Time's up! Round {} incoming.\nCheck the score in <#{}>!".format(turn, ctx.message.channel.id),
+                    descr="Time's up! Round {} incoming.\nCheck the score in <#{}>!".format(turn, ctx.channel.id),
                     color_name=color[card_size],
                 )
-            
+
             # remove players with excessive mismatches
             for player in list_of_players:
                 if player.mismatch_count < 8:
@@ -254,9 +242,9 @@ class Cringo(commands.Cog):
             nerf = (2 - server_bonus)*nerf
 
         embed = c.crimbed(
-            title="**{}CRINGO!** FINAL SCORE".format(name[card_size]),
+            title='**{}CRINGO!** FINAL SCORE'.format(name[card_size]),
             descr=await cringo.cringo_scoreboard(list_of_players),
-            footer="Your points/{:.1f}=your crimsoCOIN winnings!".format(nerf),
+            footer='Your points/{:.1f}=your crimsoCOIN winnings!'.format(nerf),
             thumb_name=thumb[card_size],
             color_name=color[card_size],
         )
@@ -270,7 +258,6 @@ class Cringo(commands.Cog):
             await cringo.player_remove(list_of_players, player)
 
         await ctx.send(embed=embed)
-
 
 
 def setup(bot: CrimsoBOT) -> None:
