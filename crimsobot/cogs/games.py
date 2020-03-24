@@ -143,8 +143,12 @@ class Games(commands.Cog):
             'you CANNOT be serious',
             'sure? how would i know?',
             'what heck',
-            await m.async_wrap(self.bot, m.crimso)
+            'random_response',  # leave this alone
         ]
+
+        response = random.choice(answer_list)
+        if response is 'random_response':
+            response = await m.async_wrap(self.bot, m.crimso)
 
         # embed for answer
         embed = c.crimbed(
@@ -159,7 +163,7 @@ class Games(commands.Cog):
         )
         embed.add_field(
             name="**crimsoBOT says:**",
-            value=random.choice(answer_list),
+            value=response,
             inline=False
         )
         await ctx.send(embed=embed)

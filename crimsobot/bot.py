@@ -119,7 +119,7 @@ class CrimsoBOT(commands.Bot):
             )
         else:
             self.log.error('Uncaught exception', exc_info=error)
-
+    
     async def on_message(self, message: discord.Message) -> None:
         if self.is_banned(message.author):
             return
@@ -145,16 +145,25 @@ class CrimsoBOT(commands.Bot):
         # learn from crimso
         if message.author.id in LEARNER_USER_IDS and message.channel.id in LEARNER_CHANNEL_IDS:
             m.learner(message.content)
+        
+        # this little piggy cleans pings from crimsonic messages
+        cleaner = commands.clean_content(use_nicknames=False)
 
-        # respond to ping
-        if self.user in message.mentions:
+        # respond to ping or randomly talk
+        if self.user in message.mentions or (random.random() < 0.002 and not is_dm):
+            # make it look like bot is typing
+            await message.channel.trigger_typing()
             crimsonic = await m.async_wrap(self, m.crimso)
-            await message.channel.send(crimsonic)
+            
+            # no more pings!
+            try:
+                ctx = await self.get_context(message)
+                cleaned_output = await cleaner.convert(ctx, crimsonic)
+            except commands.errors.BadArgument:
+                cleaned_output = crimsonic
+                
+            await message.channel.send(cleaned_output)
 
-        # random chat
-        if random.random() < 0.001 and not is_dm:
-            crimsonic = await m.async_wrap(self, m.crimso)
-            await message.channel.send(crimsonic)
 
     async def on_guild_join(self, guild: discord.Guild) -> None:
         """Notify me when added to guild"""
