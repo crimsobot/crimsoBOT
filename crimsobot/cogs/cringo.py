@@ -238,8 +238,10 @@ class Cringo(commands.Cog):
         # nerf calculated such that division by zero never attained within player limit
         x = len(list_of_players)
         nerf = 0.05*x**2 - 2.05*x + 52  # (points / nerf = coin)
-        if ctx.guild.id == 552650672965943296:
-            nerf = (2 - server_bonus)*nerf
+
+        # check if crimsoBOT home server
+        if ctx.guild and ctx.guild.id == 552650672965943296:
+            nerf = (2 - server_bonus) * nerf
 
         embed = c.crimbed(
             title='**{}CRINGO!** FINAL SCORE'.format(name[card_size]),

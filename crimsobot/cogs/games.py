@@ -183,7 +183,9 @@ class Games(commands.Cog):
 
         # check if user can afford to play!
         winning_amount, cost = crimsogames.guess_economy(n)
-        if ctx.guild.id == 552650672965943296:
+
+        # check if crimsoBOT home server
+        if ctx.guild and ctx.guild.id == 552650672965943296:
             winning_amount = winning_amount * server_bonus
 
         # the candidates
@@ -446,9 +448,11 @@ class Games(commands.Cog):
             ind_plus_1, votes_for_winner = crimsogames.tally(votes)
             winner = stories[int(ind_plus_1) - 1]
             winning_amount = votes_for_winner * 10.0
+
             # check if crimsoBOT home server
-            if ctx.guild.id == 552650672965943296:
+            if ctx.guild and ctx.guild.id == 552650672965943296:
                 winning_amount = winning_amount * server_bonus
+
             await crimsogames.win(winner.author, winning_amount)
             ess = 's' if votes_for_winner > 1 else ''
 
