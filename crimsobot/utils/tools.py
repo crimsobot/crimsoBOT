@@ -1,7 +1,7 @@
 import logging
 import os
 import random
-from typing import List, Optional, Union
+from typing import Any, List, Optional, Union
 
 from discord import ChannelType, DMChannel, Embed, GroupChannel, Guild, Member, TextChannel, User
 
@@ -11,13 +11,13 @@ Messageables = Union[DMChannel, GroupChannel, Member, TextChannel, User]
 
 
 class MessageableAlreadyJoined(Exception):
-    def __init__(self, *args):
+    def __init__(self, *args: Any):
         if args:
             self.message = args[0]
         else:
             self.message = None
 
-    def __str__(self):
+    def __str__(self) -> str:
         if self.message:
             return 'MessageableAlreadyJoined, {0} '.format(self.message)
         else:
@@ -45,50 +45,49 @@ def checkout(messageable: Messageables, running_list: List[int]) -> None:
 
 
 def crimbed(title: Optional[str], descr: Optional[str], thumb_name: Optional[str] = None,
-            color_name: Optional[str] = "green", footer: Optional[str] = None) -> Embed:
+            color_name: Optional[str] = 'green', footer: Optional[str] = None) -> Embed:
     """Discord embed builder with preset options for crimsoBOT colors and thumbnails."""
 
     color_dict = {
-        "green": 0x5AC037,
-        "yellow": 0xEEE23C,
-        "orange": 0xE2853C,
+        'green': 0x5AC037,
+        'yellow': 0xEEE23C,
+        'orange': 0xE2853C,
     }
 
-    if color_name == "random":
+    if color_name == 'random':
         name, hex_int = random.choice(list(color_dict.items()))
+    elif color_name is not None:
+        hex_int = color_dict[color_name]
     else:
-        try:
-            hex_int = color_dict[color_name]
-        except KeyError:
-            hex_int = color_dict["green"]
+        hex_int = color_dict['green']
 
     embed = Embed(title=title, description=descr, color=hex_int)
 
     # Give these one-word names, no spaces.
     random_thumb_dict = {
-        "triumph": "https://i.imgur.com/bBXRFnO.png",
-        "joy": "https://i.imgur.com/8deo8Ak.png",
-        "hug": "https://i.imgur.com/lSPKbWf.png",
-        "think": "https://i.imgur.com/odD9yI2.png",
-        "scared": "https://i.imgur.com/sppk4te.png",
-        "weary": "https://i.imgur.com/VFtApPg.png",
-        "moneymouth": "https://i.imgur.com/lNR8qHe.png",
+        'triumph': 'https://i.imgur.com/bBXRFnO.png',
+        'joy': 'https://i.imgur.com/8deo8Ak.png',
+        'hug': 'https://i.imgur.com/lSPKbWf.png',
+        'think': 'https://i.imgur.com/odD9yI2.png',
+        'scared': 'https://i.imgur.com/sppk4te.png',
+        'weary': 'https://i.imgur.com/VFtApPg.png',
+        'moneymouth': 'https://i.imgur.com/lNR8qHe.png',
     }
 
     # These thumbnails are for specific uses only.
     specific_thumb_dict = {
-        "jester": "https://i.imgur.com/gpRToBn.png",  # Cringo!
-        "crimsoCOIN": "https://i.imgur.com/rS2ec5d.png",  # bal
-        "pfp": "https://i.imgur.com/9UTNIGi.png",
-        "monty": "https://i.imgur.com/wOFf7PF.jpg",
-        "8ball": "https://i.imgur.com/6dzqq78.png",
-        "small": "https://i.imgur.com/IrjA6zq.png",
-        "clock": "https://i.imgur.com/2eAdhsW.png",
+        'jester': 'https://i.imgur.com/gpRToBn.png',  # Cringo!
+        'crimsoCOIN': 'https://i.imgur.com/rS2ec5d.png',  # bal
+        'pfp': 'https://i.imgur.com/9UTNIGi.png',
+        'monty': 'https://i.imgur.com/wOFf7PF.jpg',
+        '8ball': 'https://i.imgur.com/6dzqq78.png',
+        'small': 'https://i.imgur.com/IrjA6zq.png',
+        'clock': 'https://i.imgur.com/2eAdhsW.png',
     }
 
-    if thumb_name is not None:
+    if thumb_name:
         try:
-            if thumb_name == "random":
+            if thumb_name == 'random':
                 name, url = random.choice(list(random_thumb_dict.items()))
             else:
                 try:

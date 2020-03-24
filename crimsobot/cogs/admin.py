@@ -18,20 +18,18 @@ class Admin(commands.Cog):
     def __init__(self, bot: CrimsoBOT) -> None:
         self.bot = bot
 
-
     @commands.command(hidden=True)
     @commands.is_owner()
     async def testing(self, ctx: commands.Context, *args: str) -> None:
         """Testing..."""
-        embed=c.crimbed(
-            title="**{}!**".format(args[0].upper()),
+        embed = c.crimbed(
+            title='**{}!**'.format(args[0].upper()),
             descr="This embed features the thumbnail \"{}!\" Ain't it swell?".format(args[0]),
             thumb_name=args[0],
-            color_name="random"
+            color_name='random'
         )
 
         await ctx.send(embed=embed)
-
 
     @commands.command(hidden=True)
     @commands.is_owner()
@@ -53,13 +51,12 @@ class Admin(commands.Cog):
 
         embed = c.crimbed(
             title=None,
-            descr="**{}** has been banned from using crimsoBOT.".format(discord_user),
-            color_name="orange"
+            descr='**{}** has been banned from using crimsoBOT.'.format(discord_user),
+            color_name='orange'
         )
 
         msg = await ctx.send(embed=embed)
         await msg.add_reaction('👺')
-
 
     @commands.command(hidden=True)
     @commands.is_owner()
@@ -80,13 +77,12 @@ class Admin(commands.Cog):
 
         embed = c.crimbed(
             title=None,
-            descr="**{}** has been unbanned from using crimsoBOT.".format(discord_user),
-            color_name="yellow"
+            descr='**{}** has been unbanned from using crimsoBOT.'.format(discord_user),
+            color_name='yellow'
         )
 
         msg = await ctx.send(embed=embed)
         await msg.add_reaction('🛐')
-
 
     @commands.command(hidden=True)
     @commands.is_owner()
@@ -106,7 +102,6 @@ class Admin(commands.Cog):
         for msg in msg_list:
             await ctx.send('```{}```'.format(msg))
 
-
     @commands.command()
     async def info(self, ctx: commands.Context) -> None:
         """crimsoBOT info and invites."""
@@ -117,34 +112,33 @@ class Admin(commands.Cog):
             473300048
         )
         embed = c.crimbed(
-            title="crimsoBOT info!",
-            descr="crimsoBOT was born of boredom and is maintained from love.\n",
-            thumb_name="pfp",
-            footer="Thanks for using crimsoBOT!"
+            title='crimsoBOT info!',
+            descr='crimsoBOT was born of boredom and is maintained from love.\n',
+            thumb_name='pfp',
+            footer='Thanks for using crimsoBOT!'
         )
         embed.add_field(
             name="crimsoBOT's Discord server",
-            value="https://discord.gg/Kj3WNHX",
+            value='https://discord.gg/Kj3WNHX',
             inline=False
         )
         embed.add_field(
-            name="Invite crimsoBOT to your server!",
+            name='Invite crimsoBOT to your server!',
             value=auth_url,
             inline=False
         )
         embed.add_field(
-            name="Support crimsoBOT server time, get a sticker!",
-            value="https://www.patreon.com/crimso",
+            name='Support crimsoBOT server time, get a sticker!',
+            value='https://www.patreon.com/crimso',
             inline=False
         )
         embed.add_field(
-            name="Buy stickers and more *a la carte*!",
-            value="https://crimsobot.weebly.com/",
+            name='Buy stickers and more *a la carte*!',
+            value='https://crimsobot.weebly.com/',
             inline=False
         )
 
         await ctx.send(embed=embed)
-
 
     @commands.command(hidden=True)
     @commands.is_owner()
@@ -156,7 +150,6 @@ class Admin(commands.Cog):
             '**Connected on {} servers:**\n'.format(len(guilds)) +
             '\n'.join('`[{g.id}]` | {g.name}'.format(g=guild) for guild in guilds)
         )
-
 
     @commands.command(hidden=True)
     @commands.is_owner()
@@ -176,7 +169,6 @@ class Admin(commands.Cog):
         except discord.HTTPException:
             log.info("Guild info still too long, can't send...")
 
-
     @commands.command(hidden=True)
     @commands.is_owner()
     async def save_from(self, ctx: commands.Context, server_id: int) -> None:
@@ -187,7 +179,6 @@ class Admin(commands.Cog):
             await guild.leave()
             log.info('crimsoBOT REMOVED from %s [%s]', guild, guild.id)
 
-
     @commands.command(hidden=True)
     @commands.is_owner()
     async def reload(self, ctx: commands.Context) -> None:
@@ -195,7 +186,6 @@ class Admin(commands.Cog):
 
         self.bot.reload_extensions()
         log.info('All extensions have been reloaded.')
-
 
 
 def setup(bot: CrimsoBOT) -> None:

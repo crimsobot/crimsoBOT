@@ -36,14 +36,14 @@ def scraper(msg: str) -> None:
 
 def scatter(msg_list: List[str]) -> str:
     """Write text file from list of strings."""
-    
+
     one_long_string = '\n'.join(msg_list)
     one_long_string = one_long_string.upper()
 
     factor = 1
 
     model = markovify.NewlineText(one_long_string, state_size=factor)
-    
+
     # sometimes this process will fail to make a new sentence if the corpus is too short or lacks variety.
     # so I let it try for 8 seconds to do the thing, but kill it after that.
     now = time.time()
@@ -55,7 +55,7 @@ def scatter(msg_list: List[str]) -> str:
                 break
 
     if out is None:
-        out = "NO."
+        out = 'NO.'
 
     return out
 

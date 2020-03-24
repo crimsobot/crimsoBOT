@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Optional, Tuple, Union
+from typing import List, Optional, Tuple
 
 import aiohttp
 import pandas as pd
@@ -175,7 +175,7 @@ async def get_iss_loc(query: str, source: str = 'ha') -> Tuple[float, float, str
     return lat, lon, passes, url
 
 
-def whereis(query: str) -> Union[float, float, str]:
+def whereis(query: str) -> Tuple[Optional[float], Optional[float], Optional[str]]:
     # Nomanatim geocoder
     location = where_are_you(query)
 
