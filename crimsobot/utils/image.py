@@ -70,7 +70,7 @@ def bigmoji(emoji: str) -> Tuple[Optional[str], Optional[str]]:
                 filename = '3' + filename
 
         if filename.endswith('-fe0f'):  # "old" emojis (pre-Emoji v1.0 release)
-            filename = filename.replace('-fe0f','')
+            filename = filename.replace('-fe0f', '')
 
         # test if real file
         try:

@@ -8,7 +8,6 @@ class Text(commands.Cog):
     def __init__(self, bot: CrimsoBOT):
         self.bot = bot
 
-
     @commands.command()
     async def e(self, ctx: commands.Context, *, message: str) -> None:
         """Convert message to emojis. Character limit ~450."""
@@ -22,7 +21,6 @@ class Text(commands.Cog):
         for line in lines:
             await ctx.send(line)
 
-
     @commands.command()
     async def small(self, ctx: commands.Context, *, text: str) -> None:
         """Make text small!"""
@@ -30,14 +28,12 @@ class Text(commands.Cog):
         output = texttools.superscript(text)
         await ctx.send('{}: {}'.format(ctx.message.author.mention, output))
 
-
     @commands.command()
     async def flip(self, ctx: commands.Context, *, text: str) -> None:
         """Make text upside down!"""
 
         output = texttools.upsidedown(text)
         await ctx.send('{}: {}'.format(ctx.message.author.mention, output))
-
 
     @commands.command(aliases=['xokclock', 'xoktime', 'emojitime'])
     async def emojiclock(self, ctx: commands.Context, *args: str) -> None:
@@ -75,7 +71,6 @@ class Text(commands.Cog):
         lines[-1] = lines[-1] + ' \u200B                      \u200B'
         for line in lines:
             await ctx.send(line)
-
 
 
 def setup(bot: CrimsoBOT) -> None:

@@ -12,7 +12,6 @@ class Chat(commands.Cog):
     def __init__(self, bot: CrimsoBOT) -> None:
         self.bot = bot
 
-
     @commands.command()
     async def scatterbrain(self, ctx: commands.Context) -> None:
         """Short-term memory mania."""
@@ -26,7 +25,6 @@ class Chat(commands.Cog):
 
         output = m.scatter(messages)
         await ctx.send(output)
-
 
     @commands.command()
     async def poem(self, ctx: commands.Context) -> None:
@@ -50,47 +48,44 @@ class Chat(commands.Cog):
 
         generated_poem = await m.async_wrap(self.bot, m.poem, int(random.gauss(5, 1)))
         embed = c.crimbed(
-            title="**A poem.**",
+            title='**A poem.**',
             descr=generated_poem.lower(),
-            footer="{}, {}".format(choice[0], random.randint(choice[1], choice[2])),
+            footer='{}, {}'.format(choice[0], random.randint(choice[1], choice[2])),
         )
         await ctx.send(embed=embed)
-
 
     @commands.command()
     async def wisdom(self, ctx: commands.Context) -> None:
         """Crimsonic wisdom."""
 
         embed = c.crimbed(
-            title="**CRIMSONIC WISDOM**",
+            title='**CRIMSONIC WISDOM**',
             descr=m.wisdom(),
-            thumb_name="think",
+            thumb_name='think',
         )
         await ctx.send(embed=embed)
-
 
     @commands.command(aliases=['monty'])
     async def montyward(self, ctx: commands.Context) -> None:
         """Monty mindfuck!"""
 
         footer_text = [
-            "Those black spots on your bananas? Those are tarantula eggs.",
+            'Those black spots on your bananas? Those are tarantula eggs.',
             "You don't know Monty but he knows you.",
-            "Look behind you. Now to your left. Now your right! Nevermind, Monty is already gone.",
+            'Look behind you. Now to your left. Now your right! Nevermind, Monty is already gone.',
             "You wrote this story before you fell into the coma. Don't bother waking up, the world is ending.",
-            "You know that urge you have to scratch the itch behind your eyelids? Those are the worms.",
+            'You know that urge you have to scratch the itch behind your eyelids? Those are the worms.',
             "Scream if you must, it won't do you any good.",
             "Word to the wise: don't look at the moon."
         ]
 
         embed = c.crimbed(
-            title="An excerpt from **THE FIRST NECROMANCER (sort of)**, by Monty Ward",
+            title='An excerpt from **THE FIRST NECROMANCER (sort of)**, by Monty Ward',
             descr=await m.async_wrap(self.bot, m.rovin),
-            thumb_name="monty",
-            footer="{} Sleep tight.".format(random.choice(footer_text)),
+            thumb_name='monty',
+            footer='{} Sleep tight.'.format(random.choice(footer_text)),
         )
         await ctx.send(embed=embed)
-
 
     @commands.command(hidden=True)
     @commands.is_owner()

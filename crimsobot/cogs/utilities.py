@@ -14,7 +14,6 @@ class Utilities(commands.Cog):
     def __init__(self, bot: CrimsoBOT):
         self.bot = bot
 
-
     @commands.command()
     @commands.cooldown(1, 10, commands.BucketType.guild)
     async def ping(self, ctx: commands.Context) -> None:
@@ -26,7 +25,6 @@ class Utilities(commands.Cog):
         ping = (time_out - time_in).microseconds / 1000
         await msg.edit(content='<:ping:569954524932997122>...{:d}ms'.format(int(ping)))
 
-
     @commands.command()
     async def color(self, ctx: commands.Context, hex_value: discord.Colour) -> None:
         """Get color sample from hex value."""
@@ -36,7 +34,6 @@ class Utilities(commands.Cog):
             '**' + str(hex_value) + '**',
             file=discord.File(fp, 'color.jpg')
         )
-
 
     @commands.command()
     @commands.cooldown(2, 8, commands.BucketType.guild)
@@ -62,7 +59,6 @@ class Utilities(commands.Cog):
             file=discord.File(mosaic, 'mosaic.png')
         )
 
-
     @commands.command(hidden=True)
     @commands.is_owner()
     async def csay(self, ctx: commands.Context, dest: str, tts: bool, *, message: str) -> None:
@@ -72,7 +68,6 @@ class Utilities(commands.Cog):
             recip = await self.bot.fetch_user(int(dest[1:]))
 
         await recip.send(message, tts=tts)
-
 
     @commands.command()
     async def bigmoji(self, ctx: commands.Context, emoji: str) -> None:
@@ -87,7 +82,6 @@ class Utilities(commands.Cog):
                 await ctx.send(path)
         except Exception:
             await ctx.send('*Not a valid emoji.*')
-
 
     @commands.command(brief='Get info on when to see the ISS from the location you search!')
     @commands.cooldown(1, 30, commands.BucketType.user)
@@ -119,10 +113,9 @@ class Utilities(commands.Cog):
             header_string += 'Source: <{}>\n'.format(url)
             await ctx.send((header_string if i == 0 else '') + '```{}```'.format(string_list[i]))
 
-
-    @commands.command()
+    @commands.command(name='map')
     @commands.cooldown(3, 10, commands.BucketType.channel)
-    async def map(self, ctx: commands.Context, *, location: str) -> None:
+    async def get_map(self, ctx: commands.Context, *, location: str) -> None:
         """Get a map of a location."""
 
         location = location.upper()
@@ -132,19 +125,19 @@ class Utilities(commands.Cog):
             embed = c.crimbed(
                 title='Map of {}\n{}'.format(location, map_url),
                 descr=None,
-                footer="{}°, {}°".format(lat, lon)
+                footer='{}°, {}°'.format(lat, lon)
             )
             embed.set_image(url=map_url)
         else:
             embed = c.crimbed(
-                title="**not good with location**",
-                descr="Location **{}** not found.".format(location),
-                thumb_name="weary",
-                footer="pls to help",
-                color_name="orange"
+                title='**not good with location**',
+                descr='Location **{}** not found.'.format(location),
+                thumb_name='weary',
+                footer='pls to help',
+                color_name='orange'
             )
-        await ctx.send(embed=embed)
 
+        await ctx.send(embed=embed)
 
 
 def setup(bot: CrimsoBOT) -> None:
