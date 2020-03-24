@@ -119,7 +119,6 @@ class CrimsoBOT(commands.Bot):
             )
         else:
             self.log.error('Uncaught exception', exc_info=error)
-    
     async def on_message(self, message: discord.Message) -> None:
         if self.is_banned(message.author):
             return
