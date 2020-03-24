@@ -116,6 +116,7 @@ class Cringo(commands.Cog):
                 if not user.bot and user not in users_already_joined and user not in users_bounced:
                     embed = await cringo.process_player_joining(
                         users_already_joined,
+                        users_bounced,
                         user,
                         minimum_balance[card_size]
                     )
