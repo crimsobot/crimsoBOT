@@ -240,11 +240,8 @@ class Cringo(commands.Cog):
         nerf = 0.05*x**2 - 2.05*x + 52  # (points / nerf = coin)
 
         # check if crimsoBOT home server
-        try:
-            if ctx.guild.id == 552650672965943296:
-                nerf = (2 - server_bonus) * nerf
-        except AttributeError:  # if DM, then guild is None
-            pass
+        if ctx.guild and ctx.guild.id == 552650672965943296:
+            nerf = (2 - server_bonus) * nerf
 
         embed = c.crimbed(
             title='**{}CRINGO!** FINAL SCORE'.format(name[card_size]),

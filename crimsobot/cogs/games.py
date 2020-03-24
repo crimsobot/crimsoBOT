@@ -185,11 +185,8 @@ class Games(commands.Cog):
         winning_amount, cost = crimsogames.guess_economy(n)
 
         # check if crimsoBOT home server
-        try:
-            if ctx.guild.id == 552650672965943296:
-                winning_amount = winning_amount * server_bonus
-        except AttributeError:  # if DM, then guild is None
-            pass
+        if ctx.guild and ctx.guild.id == 552650672965943296:
+            winning_amount = winning_amount * server_bonus
 
         # the candidates
         choices = [
@@ -453,11 +450,8 @@ class Games(commands.Cog):
             winning_amount = votes_for_winner * 10.0
 
             # check if crimsoBOT home server
-            try:
-                if ctx.guild.id == 552650672965943296:
-                    winning_amount = winning_amount * server_bonus
-            except AttributeError:  # if DM, then guild is None
-                pass
+            if ctx.guild and ctx.guild.id == 552650672965943296:
+                winning_amount = winning_amount * server_bonus
 
             await crimsogames.win(winner.author, winning_amount)
             ess = 's' if votes_for_winner > 1 else ''
