@@ -24,14 +24,25 @@ class Chat(commands.Cog):
             if message.author.id != self.bot.user.id:
                 messages.append(message.content)
 
-        output = m.scatter(messages)
-        await ctx.send(output)
+        # this little piggy cleans pings from messages
+        cleaner = commands.clean_content(use_nicknames=False)
+
+        output = await m.async_wrap(self.bot, m.scatter, messages)
+
+        # no more pings!
+        try:
+            cleaned_output = await cleaner.convert(ctx, output)
+        except commands.errors.BadArgument:
+            cleaned_output = output
+
+        await message.channel.send(cleaned_output)
 
 
     @commands.command()
     async def poem(self, ctx: commands.Context) -> None:
         """Spits out a poem."""
 
+        # this list of sets used to generate a fake author and fake year for the fake poem
         fake_author = [
             ('Crimso Allen Poe', 1827, 1848),
             ('Maya Crimsolou', 1969, 2013),
@@ -63,7 +74,7 @@ class Chat(commands.Cog):
 
         embed = c.crimbed(
             title="**CRIMSONIC WISDOM**",
-            descr=m.wisdom(),
+            descr=await m.async_wrap(self.bot, m.wisdom),
             thumb_name="think",
         )
         await ctx.send(embed=embed)
