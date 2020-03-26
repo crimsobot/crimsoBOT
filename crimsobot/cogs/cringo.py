@@ -6,7 +6,6 @@ import discord
 from discord.ext import commands
 
 from crimsobot.bot import CrimsoBOT
-from crimsobot.models.cringo_statistic import CringoStatistic
 from crimsobot.utils import cringo, games as crimsogames, tools as c
 from crimsobot.utils.cringo_leaderboard import CringoLeaderboard
 

@@ -4,8 +4,8 @@ from typing import List
 from discord import Embed
 from discord.ext import commands
 
-from crimsobot.models.currency_account import CurrencyAccount
 from crimsobot.models.cringo_statistic import CringoStatistic
+from crimsobot.models.currency_account import CurrencyAccount
 from crimsobot.utils.tools import crimbed
 
 PLACES_PER_PAGE = 10
@@ -41,7 +41,6 @@ class CringoLeaderboard:
             self._leaders.append(leader)
 
     async def get_wins_leaders(self) -> None:
-        min_plays = 100
         self._set_embed_title('wins')
 
         stats = await CringoStatistic \
@@ -61,12 +60,12 @@ class CringoLeaderboard:
     async def get_plays_leaders(self) -> None:
         self._set_embed_title('plays')
 
-        stats = await GuessStatistic \
+        stats = await CringoStatistic \
             .filter(plays__gt=0) \
             .order_by('-plays') \
             .limit(PLACES_PER_PAGE) \
             .offset(self._offset) \
-            .prefetch_related('user')  # type: List[GuessStatistic]
+            .prefetch_related('user')  # type: List[CringoStatistic]
 
         for stat in stats:
             leader = Leader(
@@ -78,12 +77,12 @@ class CringoLeaderboard:
     async def get_score_leaders(self) -> None:
         self._set_embed_title('high score')
 
-        stats = await GuessStatistic \
+        stats = await CringoStatistic \
             .filter(high_score__gt=0) \
             .order_by('-high_score') \
             .limit(PLACES_PER_PAGE) \
             .offset(self._offset) \
-            .prefetch_related('user')  # type: List[GuessStatistic]
+            .prefetch_related('user')  # type: List[CringoStatistic]
 
         for stat in stats:
             leader = Leader(
