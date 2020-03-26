@@ -6,7 +6,9 @@ import discord
 from discord.ext import commands
 
 from crimsobot.bot import CrimsoBOT
+from crimsobot.models.cringo_statistic import CringoStatistic
 from crimsobot.utils import cringo, games as crimsogames, tools as c
+from crimsobot.utils.cringo_leaderboard import CringoLeaderboard
 
 # crimsoCOIN multiplier for games played in crimsoBOT server
 # simple logical checks for ctx.guild.id in in each game below
@@ -61,7 +63,7 @@ class Cringo(commands.Cog):
         timer = {2: 12, 4: 20, 6: 25}
 
         # generate game intro embed
-        join_timer = 45
+        join_timer = 36
         emoji = '<:crimsoCOIN:588558997238579202>'
         embed = c.crimbed(
             title="Let's play **{}CRINGO!**".format(name[card_size]),
@@ -165,9 +167,11 @@ class Cringo(commands.Cog):
 
         while turn <= total_turns and len(list_of_players) > 0:
             # display initial leaderboard
+            score_string, _ = await cringo.cringo_scoreboard(list_of_players)
+
             embed = c.crimbed(
                 title='**{}CRINGO!** scoreboard'.format(name[card_size]),
-                descr=await cringo.cringo_scoreboard(list_of_players),
+                descr=score_string,
                 footer='Round {}/{} coming up!'.format(turn, total_turns),
                 color_name=color[card_size],
             )
@@ -244,9 +248,11 @@ class Cringo(commands.Cog):
         if ctx.guild and ctx.guild.id == 552650672965943296:
             nerf = (2 - server_bonus) * nerf
 
+        score_string, winner = await cringo.cringo_scoreboard(list_of_players)
+
         embed = c.crimbed(
             title='**{}CRINGO!** FINAL SCORE'.format(name[card_size]),
-            descr=await cringo.cringo_scoreboard(list_of_players),
+            descr=score_string,
             footer='Your points/{:.1f}=your crimsoCOIN winnings!'.format(nerf),
             thumb_name=thumb[card_size],
             color_name=color[card_size],
@@ -256,9 +262,58 @@ class Cringo(commands.Cog):
         while len(list_of_players) != 0:
             # pull a player, give them coin, kick them out
             player = list_of_players[0]
+            win = True if player.user == winner else False
             winning_amount = player.score/nerf
-            await crimsogames.win(player.user, winning_amount)
+            coin_awarded = await crimsogames.win(player.user, winning_amount)
+            await cringo.cringo_stats(player, coin_awarded, win)
             await cringo.player_remove(list_of_players, player)
+
+        await ctx.send(embed=embed)
+
+    @commands.group(aliases=['clb'], invoke_without_command=True)
+    async def cringo_lb(self, ctx: commands.Context) -> None:
+        """CRINGO! leaderboards!"""
+
+        # Fallback to coin leaderboard if no command is provided, retains prior functionality
+        await self.clb_coin.invoke(ctx)
+
+    @cringo_lb.command(name='coin')
+    async def clb_coin(self, ctx: commands.Context, page: int = 1) -> None:
+        """CRINGO! leaderboard: COIN!"""
+
+        lb = CringoLeaderboard(page)
+        await lb.get_coin_leaders()
+        embed = await lb.get_embed(ctx)
+
+        await ctx.send(embed=embed)
+
+    @cringo_lb.command(name='wins')
+    async def clb_wins(self, ctx: commands.Context, page: int = 1) -> None:
+        """CRINGO! leaderboard: WINS!"""
+
+        lb = CringoLeaderboard(page)
+        await lb.get_wins_leaders()
+        embed = await lb.get_embed(ctx)
+
+        await ctx.send(embed=embed)
+
+    @cringo_lb.command(name='plays')
+    async def clb_plays(self, ctx: commands.Context, page: int = 1) -> None:
+        """CRINGO! leaderboard: PLAYS!"""
+
+        lb = CringoLeaderboard(page)
+        await lb.get_plays_leaders()
+        embed = await lb.get_embed(ctx)
+
+        await ctx.send(embed=embed)
+
+    @cringo_lb.command(name='score')
+    async def clb_score(self, ctx: commands.Context, page: int = 1) -> None:
+        """CRINGO! leaderboard: HIGH SCORE!"""
+
+        lb = CringoLeaderboard(page)
+        await lb.get_score_leaders()
+        embed = await lb.get_embed(ctx)
 
         await ctx.send(embed=embed)
 

@@ -5,6 +5,7 @@ import discord
 from discord import Embed
 from discord.ext.commands import Context
 
+from crimsobot.models.cringo_statistic import CringoStatistic
 from crimsobot.utils import games as crimsogames
 from crimsobot.utils import tools as c
 
@@ -386,9 +387,28 @@ async def cringo_scoreboard(players: List[CringoPlayer]) -> str:
 
     # sort in place
     scoreboard.sort(key=lambda inner_index: inner_index[1], reverse=True)
+    leader = scoreboard[0][0]
 
     scoreboard_list = []
     for line in scoreboard:
         scoreboard_list.append('{} · **{}** points'.format(line[0], line[1]))
 
-    return '\n'.join(scoreboard_list)
+    return '\n'.join(scoreboard_list), leader
+
+
+async def cringo_stats(player: CringoPlayer, coin: float, won: bool) -> None:
+    stats = await CringoStatistic.get_by_discord_user(player.user)  # type: CringoStatistic
+
+    stats.plays += 1
+
+    if won:
+        stats.wins += 1
+
+    stats.coin_won += coin
+
+    if player.score > stats.high_score:
+        stats.high_score = player.score
+
+    stats.mean_score = (stats.mean_score * stats.plays + player.score) / (stats.plays + 1)
+
+    await stats.save()
