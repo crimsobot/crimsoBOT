@@ -1,5 +1,5 @@
 import random
-from typing import List, Set, Union
+from typing import Any, List, Optional, Set, Tuple, Union
 
 import discord
 from discord import Embed
@@ -380,7 +380,7 @@ async def cringo_score(player: CringoPlayer, turn_number: int, multiplier: int) 
             player.full_card = 1
 
 
-async def cringo_scoreboard(players: List[CringoPlayer]) -> str:
+async def cringo_scoreboard(players: List[CringoPlayer]) -> Tuple[str, Optional[Any]]:
     """Unpack the player objects to get something that can be sorted and displayed."""
 
     scoreboard = []
