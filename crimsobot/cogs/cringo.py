@@ -1,6 +1,6 @@
 import asyncio
 import time
-from typing import List
+from typing import List, Optional
 
 import discord
 from discord.ext import commands
@@ -31,8 +31,7 @@ class Cringo(commands.Cog):
     @commands.group(aliases=['suffer'], invoke_without_command=True, brief='A quirky take on bingo.')
     @commands.max_concurrency(1, commands.BucketType.channel)
     async def cringo(self, ctx: commands.Context) -> None:
-        """
-        A peculiar blend of slots and bingo that is totally not a ripoff of a popular 1990s PC game.
+        """A peculiar blend of slots and bingo that is totally not a ripoff of a popular 1990s PC game.
         Points are awarded for matches [10], lines [100], and full card [1000].
         The earlier you get a match, line, or full card, the higher the multiplier!
         Everyone is awarded a handsome amount of crimsoCOIN for playing.
@@ -60,9 +59,10 @@ class Cringo(commands.Cog):
         color = {2: 'yellow', 4: 'green', 6: 'orange'}
         minimum_balance = {2: 3000, 4: 0, 6: 1000}  # NOT debited.
         timer = {2: 12, 4: 20, 6: 25}
+        turns = {2: 7, 4: 9, 6: 9}
 
         # generate game intro embed
-        join_timer = 36
+        join_timer = 30
         emoji = '<:crimsoCOIN:588558997238579202>'
         embed = c.crimbed(
             title="Let's play **{}CRINGO!**".format(name[card_size]),
@@ -154,7 +154,7 @@ class Cringo(commands.Cog):
         turn_timer = timer[card_size]
 
         turn = 1
-        total_turns = 7 if card_size == 2 else 9
+        total_turns = turns[card_size]
         emojis_already_used: List[str] = []
 
         # define check
@@ -259,12 +259,17 @@ class Cringo(commands.Cog):
 
         # for some reason, a for loop wasn't doing the trick here...
         while len(list_of_players) != 0:
-            # pull a player, give them coin, kick them out
+            # pull a player...
             player = list_of_players[0]
-            win = True if player.user == winner else False
+            # ...trip this is they are the winner...
+            win = player.user == winner
+            # ...calcuilate and give out winnings
             winning_amount = player.score/nerf
-            coin_awarded = await crimsogames.win(player.user, winning_amount)
-            await cringo.cringo_stats(player, coin_awarded, win)
+            await crimsogames.win(player.user, winning_amount)
+            # ...do stats but only if regular cringo...
+            if card_size == 4:
+                await cringo.cringo_stats(player, winning_amount, win)
+            # ...and finally remove them from list
             await cringo.player_remove(list_of_players, player)
 
         await ctx.send(embed=embed)
@@ -314,6 +319,21 @@ class Cringo(commands.Cog):
         await lb.get_score_leaders()
         embed = await lb.get_embed(ctx)
 
+        await ctx.send(embed=embed)
+
+    @commands.command(aliases=['stats'])
+    async def cringostats(self, ctx: commands.Context, whose: Optional[discord.Member] = None) -> None:
+        """Check your or someone else's CRINGO! stats!
+        Stats will not be counted for incomplete games.
+        Wins are counted only for games with two or more players.
+        Expected average score and lines/game were found via Monte Carlo simulation (n=2.16 million).
+        Expected matches/game and full cards are exact values.
+        """
+
+        if not whose:
+            whose = ctx.message.author
+
+        embed = await cringo.cringo_stat_embed(whose)
         await ctx.send(embed=embed)
 
 

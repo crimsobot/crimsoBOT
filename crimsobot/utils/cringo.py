@@ -17,7 +17,9 @@ class CringoPlayer:
         self.user: discord.Member = None
         self.card: List[List[str]] = []
         self.score: int = 0
+        self.matches: int = 0
         self.lines: Set[str] = set()
+        self.full_card: int = 0
         self.mismatch_count: int = 0
 
 
@@ -225,16 +227,15 @@ async def mark_card(player: CringoPlayer, position: str, emojis_to_check: List[s
     # check for match
     check1 = selected_emoji in emojis_to_check
     check2 = selected_emoji in (emoji for sublist in player.card for emoji in sublist)
-    is_match = check1 and check2
+    match = check1 and check2
 
-    match = True
-    if is_match:
+    if match:
         player.card[rows[row_123]][cols[col_abc]] = marker
         player.score += 10 * multiplier
+        player.matches += 1
     else:
         player.mismatch_count += 1
         player.score -= player.mismatch_count
-        match = False
 
     # this bool used later to give feedback to user
     return match
@@ -376,6 +377,7 @@ async def cringo_score(player: CringoPlayer, turn_number: int, multiplier: int) 
         if len(player.lines) == n*2 + 2:
             player.lines.add('full')
             player.score += 1000 * multiplier
+            player.full_card = 1
 
 
 async def cringo_scoreboard(players: List[CringoPlayer]) -> str:
@@ -387,7 +389,10 @@ async def cringo_scoreboard(players: List[CringoPlayer]) -> str:
 
     # sort in place
     scoreboard.sort(key=lambda inner_index: inner_index[1], reverse=True)
-    leader = scoreboard[0][0]
+
+    leader = None
+    if len(scoreboard) > 1:
+        leader = scoreboard[0][0]
 
     scoreboard_list = []
     for line in scoreboard:
@@ -399,6 +404,11 @@ async def cringo_scoreboard(players: List[CringoPlayer]) -> str:
 async def cringo_stats(player: CringoPlayer, coin: float, won: bool) -> None:
     stats = await CringoStatistic.get_by_discord_user(player.user)  # type: CringoStatistic
 
+    # do not count stats if player did not "truly" play
+    # minimum guaranteed matches = 12
+    if player.matches < 12:
+        return
+
     stats.plays += 1
 
     if won:
@@ -409,6 +419,70 @@ async def cringo_stats(player: CringoPlayer, coin: float, won: bool) -> None:
     if player.score > stats.high_score:
         stats.high_score = player.score
 
-    stats.mean_score = (stats.mean_score * stats.plays + player.score) / (stats.plays + 1)
+    stats.total_score += player.score
+
+    stats.matches += player.matches
+    stats.lines += len(player.lines)
+    stats.full_cards += player.full_card
 
     await stats.save()
+
+
+async def cringo_stat_embed(user: DiscordUser) -> Embed:
+    """Return a big ol' embed of Cringo! stats"""
+
+    s = await CringoStatistic.get_by_discord_user(user)
+
+    if s.plays == 0:
+        embed = c.crimbed(
+            title='Hold up—',
+            descr="You haven't played any games of CRINGO yet!",
+            thumb_name='jester',
+            footer='Play >cringo today!',
+        )
+    else:
+        embed = c.crimbed(
+            title='CRINGO! stats for {}'.format(user),
+            descr=None,
+            thumb_name='jester',
+            footer='As of {d.year}-{d.month:02d}-{d.day:02d} · Regular CRINGO! only'.format(d=s.created_at),
+        )
+
+        ess = '' if s.plays == 1 else 's'
+        ess2 = '' if s.wins == 1 else 's'
+        # list of tuples (name, value) for embed.add_field
+        field_list = [
+            (
+                'Gameplay',
+                '**{}** game{ess} played, **{}** win{ess2}'.format(s.plays, s.wins, ess=ess, ess2=ess2)
+            ),
+            (
+                'crimsoCOIN won',
+                '**\u20A2{:.2f}**'.format(s.coin_won)
+            ),
+            (
+                'High score',
+                '**{}** points'.format(s.high_score)
+            ),
+            (
+                'Average score (expected: 2260)',
+                '**{:.1f}** points/game'.format(s.mean_score)
+            ),
+            (
+                'Matches/game (expected: 14.4)',
+                '**{:.1f}** matches/game'.format(s.matches / s.plays)
+            ),
+            (
+                'Lines/game: (expected: 6.34)',
+                '**{:.1f}** lines/game'.format(s.lines / s.plays)
+            ),
+            (
+                'Full cards (expected in {} game{ess}: {})'.format(s.plays, 0.1296 * s.plays, ess=ess),
+                '**{}** full cards'.format(s.full_cards)
+            ),
+        ]
+
+        for field in field_list:
+            embed.add_field(name=field[0], value=field[1], inline=False)
+
+    return embed

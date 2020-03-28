@@ -5,7 +5,6 @@ from discord import Embed
 from discord.ext import commands
 
 from crimsobot.models.cringo_statistic import CringoStatistic
-from crimsobot.models.currency_account import CurrencyAccount
 from crimsobot.utils.tools import crimbed
 
 PLACES_PER_PAGE = 10
@@ -17,7 +16,7 @@ class CringoLeaderboard:
     def __init__(self, page: int) -> None:
         self._leaders = []  # type: List[Leader]
 
-        self._embed = crimbed(None, None, 'https://i.imgur.com/rS2ec5d.png')
+        self._embed = crimbed(title=None, descr=None, thumb_name='jester')
         self._embed_footer_extra = ''  # type: str
 
         self.page = page
@@ -31,7 +30,7 @@ class CringoLeaderboard:
             .order_by('-coin_won') \
             .limit(PLACES_PER_PAGE) \
             .offset(self._offset) \
-            .prefetch_related('user')  # type: List[CurrencyAccount]
+            .prefetch_related('user')  # type: List[CringoStatistic]
 
         for stat in stats:
             leader = Leader(
@@ -44,16 +43,16 @@ class CringoLeaderboard:
         self._set_embed_title('wins')
 
         stats = await CringoStatistic \
-            .filter(plays__gt=0) \
-            .order_by('-plays') \
+            .filter(wins__gt=0) \
+            .order_by('-wins') \
             .limit(PLACES_PER_PAGE) \
             .offset(self._offset) \
-            .prefetch_related('user')  # type: List[CurrencyAccount]
+            .prefetch_related('user')  # type: List[CringoStatistic]
 
         for stat in stats:
             leader = Leader(
                 user_id=stat.user.discord_user_id,
-                value=str(stat.wins)
+                value='{} wins'.format(stat.wins)
             )
             self._leaders.append(leader)
 
@@ -70,7 +69,7 @@ class CringoLeaderboard:
         for stat in stats:
             leader = Leader(
                 user_id=stat.user.discord_user_id,
-                value=str(stat.plays)
+                value='{} games'.format(stat.plays)
             )
             self._leaders.append(leader)
 
@@ -87,7 +86,7 @@ class CringoLeaderboard:
         for stat in stats:
             leader = Leader(
                 user_id=stat.user.discord_user_id,
-                value=str(stat.high_score)
+                value='{} points'.format(stat.high_score)
             )
             self._leaders.append(leader)
 
@@ -96,21 +95,25 @@ class CringoLeaderboard:
 
         # add attributes in place: discord user object, place
         if not leaders:
-            self._embed.add_field(name="You've gone too far!",
-                                  value="There aren't that many players yet!",
-                                  inline=False)
+            self._embed.add_field(
+                name="You've gone too far!",
+                value="There aren't that many players yet!",
+                inline=False
+            )
             self._embed_footer_extra = ' does not exist.'
         else:
             for place, leader in enumerate(leaders):
                 discord_user = await ctx.bot.fetch_user(leader.user_id)
                 place = self._offset + place + 1
-                self._embed.add_field(name='{p}. **{u.name}#{u.discriminator}**'.format(p=place, u=discord_user),
-                                      value=leader.value,
-                                      inline=False)
+                self._embed.add_field(
+                    name='{}. **{}**'.format(place, str(discord_user)),
+                    value=leader.value,
+                    inline=False
+                )
 
         self._embed.set_footer(text='Page {}{}'.format(self.page, self._embed_footer_extra))
 
         return self._embed
 
     def _set_embed_title(self, stat: str) -> None:
-        self._embed.title = '<:crimsoCOIN_symbol:588492640559824896> CRINGO! leaderboard: **{}**'.format(stat.upper())
+        self._embed.title = '<:cringo:690799257216876585> CRINGO! leaderboard: **{}**'.format(stat.upper())
