@@ -4,8 +4,7 @@ from typing import List
 from discord import Embed
 from discord.ext import commands
 
-from crimsobot.models.currency_account import CurrencyAccount
-from crimsobot.models.guess_statistic import GuessStatistic
+from crimsobot.models.cringo_statistic import CringoStatistic
 from crimsobot.utils.tools import crimbed
 
 PLACES_PER_PAGE = 10
@@ -13,11 +12,11 @@ PLACES_PER_PAGE = 10
 Leader = collections.namedtuple('Leader', ['user_id', 'value'])
 
 
-class Leaderboard:
+class CringoLeaderboard:
     def __init__(self, page: int) -> None:
         self._leaders = []  # type: List[Leader]
 
-        self._embed = crimbed(title=None, descr=None, thumb_name='crimsoCOIN')
+        self._embed = crimbed(title=None, descr=None, thumb_name='jester')
         self._embed_footer_extra = ''  # type: str
 
         self.page = page
@@ -26,54 +25,68 @@ class Leaderboard:
     async def get_coin_leaders(self) -> None:
         self._set_embed_title('coin')
 
-        accounts = await CurrencyAccount \
-            .filter(balance__gt=0) \
-            .order_by('-balance') \
+        stats = await CringoStatistic \
+            .filter(coin_won__gt=0) \
+            .order_by('-coin_won') \
             .limit(PLACES_PER_PAGE) \
             .offset(self._offset) \
-            .prefetch_related('user')  # type: List[CurrencyAccount]
-
-        for account in accounts:
-            leader = Leader(
-                user_id=account.user.discord_user_id,
-                value='\u20A2{:.2f}'.format(account.get_balance())
-            )
-            self._leaders.append(leader)
-
-    async def get_luck_leaders(self) -> None:
-        min_plays = 100
-        self._set_embed_title('luck')
-        self._embed_footer_extra = ' · Minimum {} plays (will increase with time)'.format(min_plays)
-
-        stats = await GuessStatistic \
-            .filter(plays__gte=min_plays) \
-            .prefetch_related('user')  # type: List[GuessStatistic]
-
-        # luck_index is a computed property (not actually stored in the DB), so we have to sort here instead
-        stats.sort(key=lambda s: s.luck_index, reverse=True)
-        stats = stats[self._offset:self._offset + PLACES_PER_PAGE]
+            .prefetch_related('user')  # type: List[CringoStatistic]
 
         for stat in stats:
             leader = Leader(
                 user_id=stat.user.discord_user_id,
-                value='{:.3f} ({} plays)'.format(stat.luck_index * 100, stat.plays)
+                value='\u20A2{:.2f}'.format(stat.coin_won)
+            )
+            self._leaders.append(leader)
+
+    async def get_wins_leaders(self) -> None:
+        self._set_embed_title('wins')
+
+        stats = await CringoStatistic \
+            .filter(wins__gt=0) \
+            .order_by('-wins') \
+            .limit(PLACES_PER_PAGE) \
+            .offset(self._offset) \
+            .prefetch_related('user')  # type: List[CringoStatistic]
+
+        for stat in stats:
+            leader = Leader(
+                user_id=stat.user.discord_user_id,
+                value='{} wins'.format(stat.wins)
             )
             self._leaders.append(leader)
 
     async def get_plays_leaders(self) -> None:
         self._set_embed_title('plays')
 
-        stats = await GuessStatistic \
+        stats = await CringoStatistic \
             .filter(plays__gt=0) \
             .order_by('-plays') \
             .limit(PLACES_PER_PAGE) \
             .offset(self._offset) \
-            .prefetch_related('user')  # type: List[GuessStatistic]
+            .prefetch_related('user')  # type: List[CringoStatistic]
 
         for stat in stats:
             leader = Leader(
                 user_id=stat.user.discord_user_id,
-                value=str(stat.plays)
+                value='{} games'.format(stat.plays)
+            )
+            self._leaders.append(leader)
+
+    async def get_score_leaders(self) -> None:
+        self._set_embed_title('high score')
+
+        stats = await CringoStatistic \
+            .filter(high_score__gt=0) \
+            .order_by('-high_score') \
+            .limit(PLACES_PER_PAGE) \
+            .offset(self._offset) \
+            .prefetch_related('user')  # type: List[CringoStatistic]
+
+        for stat in stats:
+            leader = Leader(
+                user_id=stat.user.discord_user_id,
+                value='{} points'.format(stat.high_score)
             )
             self._leaders.append(leader)
 
@@ -103,5 +116,4 @@ class Leaderboard:
         return self._embed
 
     def _set_embed_title(self, stat: str) -> None:
-        stat = stat.upper()
-        self._embed.title = '<:cr:588492640559824896> crimsoCOIN leaderboard: **{}**'.format(stat)
+        self._embed.title = '<:cringo:690799257216876585> CRINGO! leaderboard: **{}**'.format(stat.upper())

@@ -38,7 +38,7 @@ def initdb():
 
     async def coro() -> None:
         await db.connect()
-        await db.create_schemas(safe=False)
+        await db.create_schemas(safe=True)
 
     try:
         loop.run_until_complete(coro())
