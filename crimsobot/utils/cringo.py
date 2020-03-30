@@ -23,6 +23,41 @@ class CringoPlayer:
         self.mismatch_count: int = 0
 
 
+# no clue where to put this, so here goes
+raw_cringo_emojis = [
+    [
+        '<:cringo_01:693934587705032857>', '<:cringo_02:693934619804041297>',
+        '<:cringo_03:693934628586913932>', '<:cringo_04:693934628523868260>',
+        '<:cringo_05:693934628565942302>', '<:cringo_06:693934628221747292>'
+    ],
+    [
+        '<:cringo_07:693934628737646642>', '<:cringo_08:693934625931657317>',
+        '<:cringo_09:693934622568087582>', '<:cringo_10:693934622605574245>',
+        '<:cringo_11:693934628335124572>', '<:cringo_12:693934628121346089>'
+    ],
+    [
+        '<:cringo_13:693934628511154306>', '<:cringo_14:693934625461895180>',
+        '<:cringo_15:693934613957181451>', '<:cringo_16:693934614212771931>',
+        '<:cringo_17:693934623998083083>', '<:cringo_18:693934628805017627>'
+    ],
+    [
+        '<:cringo_19:693934628679057449>', '<:cringo_20:693934628981178399>',
+        '<:cringo_21:693934628649566219>', '<:cringo_22:693934628305895475>',
+        '<:cringo_23:693934628855218216>', '<:cringo_24:693934628938973265>'
+    ],
+    [
+        '<:cringo_25:693934628888641536>', '<:cringo_26:693934629001887805>',
+        '<:cringo_27:693934629086036018>', '<:cringo_28:693934628637245480>',
+        '<:cringo_29:693934628968464475>', '<:cringo_30:693934628796629053>'
+    ],
+    [
+        '<:cringo_31:693934629048025108>', '<:cringo_32:693934628800692276>',
+        '<:cringo_33:693934629119459459>', '<:cringo_34:693934629127979009>',
+        '<:cringo_35:693934629027184650>', '<:cringo_36:693934629060870194>'
+    ]
+]
+
+
 # tools.checkin() used to prevent users from playing multiple cringo games at once
 cringo_users = []  # type: List[int]
 
@@ -85,7 +120,7 @@ async def process_player_joining(
                     'For example: `.a1 b2 c4` or `. b4 c3`. Only use one period!',
                     'Missed a match on a previous turn? No problem! Put it in anyway.',
                     "You'll still get your points (but with a lower multiplier).",
-                    'Check your score in between turns in the channel. Good luck!',
+                    'Need to leave the game? Type `.leave` during a round.',
                 ]),
                 thumb_name='jester'
             )
@@ -191,9 +226,23 @@ async def deliver_card(list_of_lists: List[List[str]]) -> str:
     return '<:blank:589560784485613570>\n' + '\n'.join(final_string)
 
 
+# this emoji marks the card
+async def marker(cardsize: int, row: int, column: int) -> str:
+    """Returns which custom emoji to use to mark card."""
+
+    # if card size = 2, only use the one marker: cringo_36
+    if cardsize == 2:
+        marker_emoji = raw_cringo_emojis[row + 1][column + 1]
+    if cardsize == 4:
+        marker_emoji = raw_cringo_emojis[row][column]
+    if cardsize == 6:
+        marker_emoji = raw_cringo_emojis[row - 1][column - 1]
+
+    return marker_emoji
+
+
 async def mark_card(player: CringoPlayer, position: str, emojis_to_check: List[str], multiplier: int) -> bool:
-    """
-    "Marks" the card with a star if there's a match and adds to player score.
+    """Marks the card with a star if there's a match and adds to player score.
     The card is a list of lists, formatted as such:
         [
             [ ...headers... ],
@@ -204,12 +253,12 @@ async def mark_card(player: CringoPlayer, position: str, emojis_to_check: List[s
         ]
     """
 
-    # this emoji marks the card
-    marker = '<:cr:588492640559824896>'
-
     # card dict
     rows: dict = {'1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6}
     cols: dict = {'a': 1, 'b': 2, 'c': 3, 'd': 4, 'e': 5, 'f': 6}
+
+    # a player's card has header rows and columns
+    card_size = len(player.card) - 1
 
     # in case message begins with a period but has invalid keys
     try:
@@ -230,7 +279,7 @@ async def mark_card(player: CringoPlayer, position: str, emojis_to_check: List[s
     match = check1 and check2
 
     if match:
-        player.card[rows[row_123]][cols[col_abc]] = marker
+        player.card[rows[row_123]][cols[col_abc]] = await marker(card_size, rows[row_123], cols[col_abc])
         player.score += 10 * multiplier
         player.matches += 1
     else:
@@ -288,8 +337,7 @@ async def process_player_response(
 
 
 async def cringo_score(player: CringoPlayer, turn_number: int, multiplier: int) -> None:
-    """
-    This function checks for and scores complete lines. mark_card() scores individual matches.
+    """This function checks for and scores complete lines. mark_card() scores individual matches.
 
     Possible matches:
         Columns A, B, C, D
@@ -321,26 +369,25 @@ async def cringo_score(player: CringoPlayer, turn_number: int, multiplier: int) 
         if index >= n+1:
             return False
 
-        # 588492640559824896
         # we skip the header row and column with (1,n)
         for i in range(1, n):
             if direction == 'row':
-                if player.card[index][i] == player.card[index][i+1]:
+                if 'cringo' in player.card[index][i] and 'cringo' in player.card[index][i+1]:
                     pass
                 else:
                     return False
             if direction == 'column':
-                if player.card[i][index] == player.card[i+1][index]:
+                if 'cringo' in player.card[i][index] and 'cringo' in player.card[i+1][index]:
                     pass
                 else:
                     return False
             if direction == 'LR':
-                if player.card[i][i] == player.card[i+1][i+1]:
+                if 'cringo' in player.card[i][i] and 'cringo' in player.card[i+1][i+1]:
                     pass
                 else:
                     return False
             if direction == 'RL':
-                if player.card[i][(n+1)-i] == player.card[i+1][(n+1)-(i+1)]:
+                if 'cringo' in player.card[i][(n+1)-i] and 'cringo' in player.card[i+1][(n+1)-(i+1)]:
                     pass
                 else:
                     return False
@@ -450,6 +497,17 @@ async def cringo_stat_embed(user: DiscordUser) -> Embed:
 
         ess = '' if s.plays == 1 else 's'
         ess2 = '' if s.wins == 1 else 's'
+        ess3 = '' if s.full_cards == 1 else 's'
+
+        def dec() -> float:
+            """This helps display the correct amount of total digits of expected full cards."""
+            # the length of the integer of plays...
+            n = len(str(s.plays))
+            # ...determines the number of total digits (therefore number of digits after decimal)
+            length = {1: .4, 2: .3, 3: .2, 4: .1, 5: .0}
+
+            return length[n]
+
         # list of tuples (name, value) for embed.add_field
         field_list = [
             (
@@ -474,11 +532,11 @@ async def cringo_stat_embed(user: DiscordUser) -> Embed:
             ),
             (
                 'Lines/game: (expected: 6.34)',
-                '**{:.1f}** lines/game'.format(s.lines / s.plays)
+                '**{:.2f}** lines/game'.format(s.lines / s.plays)
             ),
             (
-                'Full cards (expected in {} game{ess}: {})'.format(s.plays, 0.1296 * s.plays, ess=ess),
-                '**{}** full cards'.format(s.full_cards)
+                'Full cards (expected in {} game{ess}: {:{}f})'.format(s.plays, 0.1296 * s.plays, dec(), ess=ess),
+                '**{}** full card{ess3}'.format(s.full_cards, ess3=ess3)
             ),
         ]
 
