@@ -227,7 +227,7 @@ async def deliver_card(list_of_lists: List[List[str]]) -> str:
 
 
 # this emoji marks the card
-async def marker(cardsize: int, row: int, column: int) -> str:
+def marker(cardsize: int, row: int, column: int) -> str:
     """Returns which custom emoji to use to mark card."""
 
     # if card size = 2, only use the one marker: cringo_36
@@ -279,7 +279,7 @@ async def mark_card(player: CringoPlayer, position: str, emojis_to_check: List[s
     match = check1 and check2
 
     if match:
-        player.card[rows[row_123]][cols[col_abc]] = await marker(card_size, rows[row_123], cols[col_abc])
+        player.card[rows[row_123]][cols[col_abc]] = marker(card_size, rows[row_123], cols[col_abc])
         player.score += 10 * multiplier
         player.matches += 1
     else:
@@ -499,15 +499,6 @@ async def cringo_stat_embed(user: DiscordUser) -> Embed:
         ess2 = '' if s.wins == 1 else 's'
         ess3 = '' if s.full_cards == 1 else 's'
 
-        def dec() -> float:
-            """This helps display the correct amount of total digits of expected full cards."""
-            # the length of the integer of plays...
-            n = len(str(s.plays))
-            # ...determines the number of total digits (therefore number of digits after decimal)
-            length = {1: .4, 2: .3, 3: .2, 4: .1, 5: .0}
-
-            return length[n]
-
         # list of tuples (name, value) for embed.add_field
         field_list = [
             (
@@ -535,7 +526,7 @@ async def cringo_stat_embed(user: DiscordUser) -> Embed:
                 '**{:.2f}** lines/game'.format(s.lines / s.plays)
             ),
             (
-                'Full cards (expected in {} game{ess}: {:{}f})'.format(s.plays, 0.1296 * s.plays, dec(), ess=ess),
+                'Full cards (expected in {} game{ess}: {:.4f})'.format(s.plays, 0.1296 * s.plays, ess=ess),
                 '**{}** full card{ess3}'.format(s.full_cards, ess3=ess3)
             ),
         ]
