@@ -10,6 +10,41 @@ from crimsobot.utils.image import image_to_buffer
 from crimsobot.utils.tools import clib_path_join
 
 
+def list_cards(suit: Optional[str]) -> List[str]:
+    cards_in_suit = []
+
+    if suit == 'Major arcana':
+        for i in range(0, 22):
+            cards_in_suit.append(DECK[i]['name'])
+    else:
+        for card in DECK:
+            if suit in card['name']:
+                cards_in_suit.append(card['name'])
+
+    return cards_in_suit
+
+
+def inspect_card(suit_name: str, card_number: int) -> Tuple[str, str]:
+    if suit_name == 'Major arcana':
+        # the marjor arcana cards are in order at the beginning of the DECK
+        card_choice = DECK[card_number]
+    else:
+        # minor arcana card image filenames are in format "cups-02.jpg" etc.
+        card_image_name = '{}-{:02d}.jpg'.format(suit_name.lower(), card_number)
+        # find that image name and you've got your card
+        for card in DECK:
+            if card['image'] == card_image_name:
+                card_choice = card
+                break
+
+    card_image_path = clib_path_join('tarot', 'deck', card_choice['image'])
+    card_description = '**{}**\n**Upright:** {}\n**Reversed:** {}'.format(
+        card_choice['name'].upper(), card_choice['desc0'], card_choice['desc1']
+    )
+
+    return card_image_path, card_description
+
+
 def draw_background(size: Tuple[int, int]) -> Image.Image:
     return Image.new('RGBA', size, (0, 0, 0, 0))
 
