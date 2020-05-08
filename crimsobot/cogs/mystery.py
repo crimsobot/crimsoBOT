@@ -1,3 +1,5 @@
+import asyncio
+
 import discord
 from discord.ext import commands
 
@@ -58,15 +60,16 @@ class Mystery(commands.Cog):
         fp, descriptions = tarot.reading(spread)
         await ctx.send('\n'.join(descriptions), file=discord.File(fp, 'reading.png'))
 
-    @commands.command(aliases=['tarotcard'])
+    @commands.command(aliases=['tarotcard'], brief='Inspect a tarot card for further study.')
     async def card(self, ctx: commands.Context) -> None:
-        """Inspect a tarot card chosen from the menu for further study."""
+        """Inspect a tarot card chosen from the menu for further study.
+        See also >help tarot for more info about the Major Arcana and the four suits."""
 
         # the suits
-        suit_dict = {0: 'Major arcana', 1: 'Wands', 2: 'Pentacles', 3: 'Cups', 4: 'Swords'}
+        suits = ['Major arcana', 'Wands', 'Pentacles', 'Cups', 'Swords']
         suit_list = []
-        for suit in suit_dict:
-            suit_list.append('{}. {}'.format(suit, suit_dict[suit]))
+        for idx, suit in enumerate(suits):
+            suit_list.append('{}. {}'.format(idx, suit))
 
         # prompt 1 of 2: choose suit
         embed = c.crimbed(
@@ -90,21 +93,23 @@ class Mystery(commands.Cog):
                 return False
 
         # wait for user to spcify suit
-        msg = await self.bot.wait_for('message', check=suit_check, timeout=20)
-
-        if msg is None:
+        try:
+            msg = await self.bot.wait_for('message', check=suit_check, timeout=20)
+        except asyncio.TimeoutError:
             await prompt_suit.delete()
             return
-        else:
+
+        if msg is not None:
             suit_choice = int(msg.content)
             await msg.delete()
             await prompt_suit.delete()
 
         # prompt 2 of 2: choose card in suit
-        card_names = tarot.list_cards(suit_dict[suit_choice])
+        card_names = tarot.list_cards(suits[suit_choice])
         card_list = []
-        for i in range(0, len(card_names)):
-            card_list.append('{}. {}'.format(i+1 if suit_choice != 0 else i, card_names[i]))
+        for idx, card_name in enumerate(card_names):
+            idx = idx + 1 if suit_choice > 0 else idx
+            card_list.append('{}. {}'.format(idx, card_name))
 
         embed = c.crimbed(
             title='Choose a card:',
@@ -127,17 +132,18 @@ class Mystery(commands.Cog):
                 return False
 
         # wait for user to spcify suit
-        msg = await self.bot.wait_for('message', check=card_check, timeout=20)
-
-        if msg is None:
+        try:
+            msg = await self.bot.wait_for('message', check=card_check, timeout=20)
+        except asyncio.TimeoutError:
             await prompt_card.delete()
             return
-        else:
+
+        if msg is not None:
             card_choice = int(msg.content)
             await msg.delete()
             await prompt_card.delete()
 
-        path, description = tarot.inspect_card(suit_dict[suit_choice], card_choice)
+        path, description = tarot.inspect_card(suits[suit_choice], card_choice)
         await ctx.send(description, file=discord.File(path, path))
 
 
