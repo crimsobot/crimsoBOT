@@ -99,10 +99,13 @@ class Mystery(commands.Cog):
             await prompt_suit.delete()
             return
 
-        if msg is not None:
-            suit_choice = int(msg.content)
-            await msg.delete()
-            await prompt_suit.delete()
+        await prompt_suit.delete()
+
+        if msg is None:
+            return
+
+        suit_choice = int(msg.content)
+        await msg.delete()
 
         # prompt 2 of 2: choose card in suit
         card_names = tarot.list_cards(suits[suit_choice])
@@ -138,10 +141,13 @@ class Mystery(commands.Cog):
             await prompt_card.delete()
             return
 
-        if msg is not None:
-            card_choice = int(msg.content)
-            await msg.delete()
-            await prompt_card.delete()
+        await prompt_card.delete()
+
+        if msg is None:
+            return
+
+        card_choice = int(msg.content)
+        await msg.delete()
 
         path, description = tarot.inspect_card(suits[suit_choice], card_choice)
         await ctx.send(description, file=discord.File(path, path))
