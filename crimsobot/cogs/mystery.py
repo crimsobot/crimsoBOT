@@ -1,8 +1,11 @@
+import asyncio
+
 import discord
 from discord.ext import commands
 
 from crimsobot.bot import CrimsoBOT
 from crimsobot.utils import tarot
+from crimsobot.utils import tools as c
 
 
 class Mystery(commands.Cog):
@@ -12,8 +15,7 @@ class Mystery(commands.Cog):
     @commands.command(brief='Tarot readings by crimsoBOT.')
     @commands.cooldown(3, 300, commands.BucketType.user)
     async def tarot(self, ctx: commands.Context, spread: str = 'ppf') -> None:
-        """
-        Do you seek wisdom and guidance?
+        """Do you seek wisdom and guidance?
         Unveil the Mysteries of the past, the present, and the future with a tarot reading.
         A brief meaning of each card appears next to its name.
         Meditate deeply upon the words of wise crimsoBOT, and all shall become clear...
@@ -57,6 +59,98 @@ class Mystery(commands.Cog):
 
         fp, descriptions = tarot.reading(spread)
         await ctx.send('\n'.join(descriptions), file=discord.File(fp, 'reading.png'))
+
+    @commands.command(aliases=['tarotcard'], brief='Inspect a tarot card for further study.')
+    async def card(self, ctx: commands.Context) -> None:
+        """Inspect a tarot card chosen from the menu for further study.
+        See also >help tarot for more info about the Major Arcana and the four suits."""
+
+        # the suits
+        suits = ['Major arcana', 'Wands', 'Pentacles', 'Cups', 'Swords']
+        suit_list = []
+        for idx, suit in enumerate(suits):
+            suit_list.append('{}. {}'.format(idx, suit))
+
+        # prompt 1 of 2: choose suit
+        embed = c.crimbed(
+            title='Choose a suit:',
+            descr='\n'.join(suit_list),
+            thumb_name='wizard',
+            footer='Type the number to choose.'
+        )
+        prompt_suit = await ctx.send(embed=embed)
+
+        # define check for suit
+        def suit_check(msg: discord.Message) -> bool:
+            try:
+                valid_choice = 0 <= int(msg.content) <= 4
+                in_channel = msg.channel == ctx.message.channel
+                is_author = msg.author == ctx.message.author
+
+                return valid_choice and in_channel and is_author
+
+            except ValueError:
+                return False
+
+        # wait for user to spcify suit
+        try:
+            msg = await self.bot.wait_for('message', check=suit_check, timeout=20)
+        except asyncio.TimeoutError:
+            await prompt_suit.delete()
+            return
+
+        await prompt_suit.delete()
+
+        if msg is None:
+            return
+
+        suit_choice = int(msg.content)
+        await msg.delete()
+
+        # prompt 2 of 2: choose card in suit
+        card_names = tarot.list_cards(suits[suit_choice])
+        card_list = []
+        for idx, card_name in enumerate(card_names):
+            idx = idx + 1 if suit_choice > 0 else idx
+            card_list.append('{}. {}'.format(idx, card_name))
+
+        embed = c.crimbed(
+            title='Choose a card:',
+            descr='\n'.join(card_list),
+            thumb_name='wizard',
+            footer='Type the number to choose.',
+        )
+        prompt_card = await ctx.send(embed=embed)
+
+        # define check for card
+        def card_check(msg: discord.Message) -> bool:
+            try:
+                valid_choice = 0 <= int(msg.content) <= len(card_names)
+                in_channel = msg.channel == ctx.message.channel
+                is_author = msg.author == ctx.message.author
+
+                return valid_choice and in_channel and is_author
+
+            except ValueError:
+                return False
+
+        # wait for user to spcify suit
+        try:
+            msg = await self.bot.wait_for('message', check=card_check, timeout=20)
+        except asyncio.TimeoutError:
+            await prompt_card.delete()
+            return
+
+        await prompt_card.delete()
+
+        if msg is None:
+            return
+
+        card_choice = int(msg.content)
+        await msg.delete()
+
+        path, description = tarot.inspect_card(suits[suit_choice], card_choice)
+        await ctx.send(description, file=discord.File(path, path))
 
 
 def setup(bot: CrimsoBOT) -> None:
