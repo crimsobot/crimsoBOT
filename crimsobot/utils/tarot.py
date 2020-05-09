@@ -1,67 +1,117 @@
 import io
 import random
+from enum import Enum
+from io import BytesIO
 from typing import List, Optional, Tuple
 
+import aiofiles
+import yaml
 from PIL import Image
 from discord.ext import commands
 
-from crimsobot.data.tarot import DECK
 from crimsobot.utils.image import image_to_buffer
 from crimsobot.utils.tools import clib_path_join
 
 
-def list_cards(suit: Optional[str]) -> List[str]:
-    cards_in_suit = []
+class Suit(Enum):
+    MAJOR_ARCANA = 1
+    WANDS = 2
+    PENTACLES = 3
+    CUPS = 4
+    SWORDS = 5
 
-    if suit == 'Major arcana':
-        for i in range(0, 22):
-            cards_in_suit.append(DECK[i]['name'])
-    else:
-        for card in DECK:
-            if suit in card['name']:
-                cards_in_suit.append(card['name'])
+    def __str__(self) -> str:
+        words = self.name.split('_')
+        words = [w.title() for w in words]
+        name = ' '.join(words)
 
-    return cards_in_suit
-
-
-def inspect_card(suit_name: str, card_number: int) -> Tuple[str, str]:
-    if suit_name == 'Major arcana':
-        # the marjor arcana cards are in order at the beginning of the DECK
-        card_choice = DECK[card_number]
-    else:
-        # minor arcana card image filenames are in format "cups-02.jpg" etc.
-        card_image_name = '{}-{:02d}.jpg'.format(suit_name.lower(), card_number)
-        # find that image name and you've got your card
-        for card in DECK:
-            if card['image'] == card_image_name:
-                card_choice = card
-                break
-
-    card_image_path = clib_path_join('tarot', 'deck', card_choice['image'])
-    card_description = '**{}**\n**Upright:** {}\n**Reversed:** {}'.format(
-        card_choice['name'].upper(), card_choice['desc0'], card_choice['desc1']
-    )
-
-    return card_image_path, card_description
+        return name
 
 
-def draw_background(size: Tuple[int, int]) -> Image.Image:
-    return Image.new('RGBA', size, (0, 0, 0, 0))
+class Card:
+    def __init__(self, name: str, suit: Suit, number: int,
+                 image_filename: str,
+                 description_upright: str, description_reversed: str
+                 ) -> None:
+        self.name = name
+        self.suit = suit
+        self.number = number
+        self.image_filename = image_filename
+        self.description_upright = description_upright
+        self.description_reversed = description_reversed
+
+    async def get_image(self, reversed: bool = False) -> Image.Image:
+        filename = clib_path_join('tarot', 'deck', self.image_filename)
+        async with aiofiles.open(filename, 'rb') as f:
+            img_bytes = await f.read()
+
+        img = Image.open(BytesIO(img_bytes))
+        if reversed:
+            img.rotate(180)
+
+        return img
+
+    async def get_image_buff(self, reversed: bool = False) -> BytesIO:
+        return image_to_buffer(await self.get_image(reversed), 'PNG')
 
 
-def get_cards(n: int) -> List[dict]:
-    return random.sample(DECK, n)
+class Deck:
+    _deck = None
+
+    @classmethod
+    async def get_cards(cls) -> List[Card]:
+        if cls._deck is None:
+            await cls._load_cards()
+
+        return cls._deck
+
+    @classmethod
+    async def get_random_cards(cls, n: int) -> List[Card]:
+        deck = await cls.get_cards()
+
+        return random.sample(deck, n)
+
+    @classmethod
+    async def get_cards_in_suit(cls, suit: Suit) -> List[Card]:
+        deck = await cls.get_cards()
+
+        return [c for c in deck if c.suit is suit]
+
+    @classmethod
+    async def get_card(cls, suit: Suit, number: int) -> Optional[Card]:
+        deck = await cls.get_cards()
+
+        for card in deck:
+            if card.suit is suit and card.number == number:
+                return card
+
+        return None
+
+    @classmethod
+    async def _load_cards(cls) -> None:
+        deck_path = clib_path_join('tarot', 'deck.yaml')
+
+        async with aiofiles.open(deck_path) as f:
+            contents = await f.read()
+            deck_raw = yaml.safe_load_all(contents)
+
+        deck = []
+        for card_raw in deck_raw:
+            suit_raw = card_raw['suit']
+            suit = Suit[suit_raw]
+
+            card = Card(
+                card_raw['name'], suit, card_raw['number'],
+                card_raw['image_filename'],
+                card_raw['description_upright'], card_raw['description_reversed']
+            )
+
+            deck.append(card)
+
+        cls._deck = deck
 
 
-def paste_card(bg_image: Image.Image, card_path: str, pos_xy: Tuple[int, int], reverse: bool) -> None:
-    card_image = Image.open(card_path)
-    if reverse:
-        card_image = card_image.rotate(180)
-
-    bg_image.paste(card_image, pos_xy)
-
-
-def reading(spread: str) -> Tuple[Optional[io.BytesIO], List[str]]:
+async def reading(spread: str) -> Tuple[Optional[io.BytesIO], List[str]]:
     w, h = (200, 326)  # card size
     space = 20  # space between cards
 
@@ -70,8 +120,7 @@ def reading(spread: str) -> Tuple[Optional[io.BytesIO], List[str]]:
     if spread == 'ppf':
         # three cards dealt horizontally
         bg_size = (3 * w + 4 * space, h + 2 * space)
-        bg = draw_background(bg_size)
-        cards = get_cards(3)
+        cards = await Deck.get_random_cards(3)
         position = [
             (space, space),
             (w + 2 * space, space),
@@ -82,8 +131,7 @@ def reading(spread: str) -> Tuple[Optional[io.BytesIO], List[str]]:
     elif spread == 'five':
         # five cards dealt in a cross
         bg_size = (3 * w + 4 * space, 3 * h + 4 * space)
-        bg = draw_background(bg_size)
-        cards = get_cards(5)
+        cards = await Deck.get_random_cards(5)
         position = [
             (space, 2 * space + h),
             (w + 2 * space, 2 * space + h),
@@ -96,14 +144,18 @@ def reading(spread: str) -> Tuple[Optional[io.BytesIO], List[str]]:
     else:
         raise commands.BadArgument('Spread is invalid.')
 
-    for ii in range(len(cards)):
-        card = clib_path_join('tarot', 'deck', cards[ii]['image'])
+    bg = Image.new('RGBA', bg_size, (0, 0, 0, 0))
+
+    for i, card in enumerate(cards):
         reverse = True if random.random() < 0.1 else False
-        paste_card(bg, card, position[ii], reverse)
+
+        card_image = await card.get_image(reverse)
+        bg.paste(card_image, position[i])
+
         if not reverse:
-            card_description = cards[ii]['name'] + ': ' + cards[ii]['desc0']
+            card_description = card.name + ': ' + card.description_upright
         else:
-            card_description = cards[ii]['name'] + ' (reversed): ' + cards[ii]['desc1']
-        interpret.append('**{} ·** {}'.format(position_legend[ii], card_description))
+            card_description = card.name + ' (reversed): ' + card.description_reversed
+        interpret.append('**{} ·** {}'.format(position_legend[i], card_description))
 
     return image_to_buffer(bg, 'PNG'), interpret
