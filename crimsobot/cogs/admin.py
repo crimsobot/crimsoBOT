@@ -22,14 +22,9 @@ class Admin(commands.Cog):
     @commands.is_owner()
     async def testing(self, ctx: commands.Context, *args: str) -> None:
         """Testing..."""
-        embed = c.crimbed(
-            title='**{}!**'.format(args[0].upper()),
-            descr="This embed features the thumbnail \"{}!\" Ain't it swell?".format(args[0]),
-            thumb_name=args[0],
-            color_name='random'
-        )
 
-        await ctx.send(embed=embed)
+        print(args)
+        await ctx.send('`{}`'.format(args))
 
     @commands.command(hidden=True)
     @commands.is_owner()
