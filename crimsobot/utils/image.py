@@ -1,3 +1,4 @@
+import os
 from io import BytesIO
 from typing import List, Optional, Tuple
 
@@ -5,8 +6,6 @@ import aiofiles
 import aiohttp
 import matplotlib.image as plt
 import numpy as np
-import os 
-
 from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
