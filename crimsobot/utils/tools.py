@@ -83,6 +83,7 @@ def crimbed(title: Optional[str], descr: Optional[str], thumb_name: Optional[str
         '8ball': 'https://i.imgur.com/6dzqq78.png',
         'small': 'https://i.imgur.com/IrjA6zq.png',
         'clock': 'https://i.imgur.com/2eAdhsW.png',
+        'wizard': 'https://i.imgur.com/anaCs7G.png',
     }
 
     if thumb_name:
