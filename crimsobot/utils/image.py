@@ -5,6 +5,8 @@ import aiofiles
 import aiohttp
 import matplotlib.image as plt
 import numpy as np
+import os 
+
 from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
@@ -67,19 +69,15 @@ def bigmoji(emoji: str) -> Tuple[Optional[str], Optional[str]]:
             else:  # numbers zero-nine
                 filename = '3' + filename
 
-        # test if real file
-        try:
-            path = c.clib_path_join('emoji', filename + '.png')
-            emoji_type = 'file'
-            f = open(path, 'rb')  # will raise OSError here if not real file
-            f.close()
-        except OSError:
-            # some "old" emojis (pre Emoji v1.0) have this strange artifact in their filenames.
-            # input from Discord indicates they should end with "-fe0f" but their Twimoji filename does not.
+        path = c.clib_path_join('emoji', filename + '.png')
+        emoji_type = 'file'
+
+        # Some "old" emojis (pre Emoji v1.0) have the variation indicator '-fe0f' in their Unicode sequence.
+        # Well, Discord seems to think so. Twemoji thinks otherwise. So this handles that disagreement.
+        if not os.path.exists(path):
             if filename.endswith('-fe0f'):
                 filename = filename.replace('-fe0f', '')
             path = c.clib_path_join('emoji', filename + '.png')
-            emoji_type = 'file'
 
     return path, emoji_type
 
@@ -257,25 +255,6 @@ async def pingbadge(ctx: Context, user_input: Optional[str], position: int) -> B
     img.paste(badge, corner, badge)
 
     return image_to_buffer(img, 'PNG')
-
-
-# async def lateralus_cover(ctx: Context, user_input: Optional[str]) -> BytesIO:
-#     # grab user image and covert to RGBA
-#     img = await fetch_image(ctx, user_input)
-#     img = img.convert('RGBA')
-
-#     # determine user image size, resize to fit the album cover
-#     width, height = img.size
-#     ratio = max(width, height) / 500
-#     img = img.resize((int(width / ratio), int(height / ratio)), resample=Image.BICUBIC)
-
-#     width, height = img.size
-#     ban = Image.open(c.clib_path_join('img', 'ban.png'))
-#     ban = ban.resize((width, height), resample=Image.BICUBIC)
-
-#     img.paste(ban, (0, 0), ban)
-
-#     return image_to_buffer(img, 'PNG')
 
 
 def quantizetopalette(silf: Image, palette: Image) -> Image.Image:
