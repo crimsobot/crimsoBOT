@@ -40,23 +40,23 @@ class Card:
         self.description_upright = description_upright
         self.description_reversed = description_reversed
 
-    async def get_image(self, reversed: bool = False) -> Image.Image:
+    async def get_image(self, reverse: bool = False) -> Image.Image:
         filename = clib_path_join('tarot', 'deck', self.image_filename)
         async with aiofiles.open(filename, 'rb') as f:
             img_bytes = await f.read()
 
         img = Image.open(BytesIO(img_bytes))
-        if reversed:
+        if reverse:
             img.rotate(180)
 
         return img
 
-    async def get_image_buff(self, reversed: bool = False) -> BytesIO:
-        return image_to_buffer(await self.get_image(reversed), 'PNG')
+    async def get_image_buff(self, reverse: bool = False) -> BytesIO:
+        return image_to_buffer(await self.get_image(reverse), 'PNG')
 
 
 class Deck:
-    _deck = None
+    _deck = None  # type: List[Card]
 
     @classmethod
     async def get_cards(cls) -> List[Card]:
@@ -78,14 +78,14 @@ class Deck:
         return [c for c in deck if c.suit is suit]
 
     @classmethod
-    async def get_card(cls, suit: Suit, number: int) -> Optional[Card]:
+    async def get_card(cls, suit: Suit, number: int) -> Card:
         deck = await cls.get_cards()
 
         for card in deck:
             if card.suit is suit and card.number == number:
                 return card
 
-        return None
+        raise Exception('Card does not exist')
 
     @classmethod
     async def _load_cards(cls) -> None:
