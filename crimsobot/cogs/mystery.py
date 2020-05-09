@@ -6,6 +6,7 @@ from discord.ext import commands
 from crimsobot.bot import CrimsoBOT
 from crimsobot.utils import tarot
 from crimsobot.utils import tools as c
+from crimsobot.utils.tarot import Deck, Suit
 
 
 class Mystery(commands.Cog):
@@ -57,7 +58,7 @@ class Mystery(commands.Cog):
         They cut through delusion towards clarity with sometimes unforgiving sharpness.
         """
 
-        fp, descriptions = tarot.reading(spread)
+        fp, descriptions = await tarot.reading(spread)
         await ctx.send('\n'.join(descriptions), file=discord.File(fp, 'reading.png'))
 
     @commands.command(aliases=['tarotcard'], brief='Inspect a tarot card for further study.')
@@ -66,10 +67,10 @@ class Mystery(commands.Cog):
         See also >help tarot for more info about the Major Arcana and the four suits."""
 
         # the suits
-        suits = ['Major arcana', 'Wands', 'Pentacles', 'Cups', 'Swords']
+        suits = [s for s in Suit]
         suit_list = []
         for idx, suit in enumerate(suits):
-            suit_list.append('{}. {}'.format(idx, suit))
+            suit_list.append('{}. {}'.format(idx + 1, suit))
 
         # prompt 1 of 2: choose suit
         embed = c.crimbed(
@@ -83,7 +84,7 @@ class Mystery(commands.Cog):
         # define check for suit
         def suit_check(msg: discord.Message) -> bool:
             try:
-                valid_choice = 0 <= int(msg.content) <= 4
+                valid_choice = 0 < int(msg.content) <= len(suits)
                 in_channel = msg.channel == ctx.message.channel
                 is_author = msg.author == ctx.message.author
 
@@ -108,11 +109,11 @@ class Mystery(commands.Cog):
         await msg.delete()
 
         # prompt 2 of 2: choose card in suit
-        card_names = tarot.list_cards(suits[suit_choice])
+        suit = suits[suit_choice - 1]
+        cards = await Deck.get_cards_in_suit(suit)
         card_list = []
-        for idx, card_name in enumerate(card_names):
-            idx = idx + 1 if suit_choice > 0 else idx
-            card_list.append('{}. {}'.format(idx, card_name))
+        for card in cards:
+            card_list.append('{}. {}'.format(card.number, card.name))
 
         embed = c.crimbed(
             title='Choose a card:',
@@ -125,7 +126,8 @@ class Mystery(commands.Cog):
         # define check for card
         def card_check(msg: discord.Message) -> bool:
             try:
-                valid_choice = 0 <= int(msg.content) <= len(card_names)
+                card_numbers = [c.number for c in cards]
+                valid_choice = int(msg.content) in card_numbers
                 in_channel = msg.channel == ctx.message.channel
                 is_author = msg.author == ctx.message.author
 
@@ -146,11 +148,15 @@ class Mystery(commands.Cog):
         if msg is None:
             return
 
-        card_choice = int(msg.content)
+        card_number = int(msg.content)
         await msg.delete()
 
-        path, description = tarot.inspect_card(suits[suit_choice], card_choice)
-        await ctx.send(description, file=discord.File(path, path))
+        card = await Deck.get_card(suit, card_number)
+        description = '**{}**\n**Upright:** {}\n**Reversed:** {}'.format(
+            card.name.upper(), card.description_upright, card.description_reversed
+        )
+        fp = await card.get_image_buff()
+        await ctx.send(description, file=discord.File(fp, 'card.png'))
 
 
 def setup(bot: CrimsoBOT) -> None:
