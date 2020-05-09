@@ -256,6 +256,53 @@ async def pingbadge(ctx: Context, user_input: Optional[str], position: int) -> B
     return image_to_buffer(img, 'PNG')
 
 
+async def lateralus_cover(ctx: Context, user_input: Optional[str]) -> BytesIO:
+    # grab user image and covert to RGBA
+    img = await fetch_image(ctx, user_input)
+    img = img.convert('RGBA')
+
+    # 1. determine user image size, resize to fit in its place
+    width, height = img.size
+    ratio = width / 333
+    img = img.resize((int(width / ratio), int(height / ratio)), resample=Image.BICUBIC)
+    # get new size
+    width, height = img.size
+
+    # 2. paste into cover back (462 x 462 pixels)
+    back = Image.open(c.clib_path_join('img', 'lateralus_back.png'))
+    back.paste(img, (65, 129), img)
+
+    # 3. paste wordmark over result
+    wordmark = Image.open(c.clib_path_join('img', 'lateralus_wordmark.png'))
+    back.paste(wordmark, (0, 0), wordmark)
+
+    return image_to_buffer(back, 'PNG')
+
+
+async def aenima_cover(ctx: Context, user_input: Optional[str]) -> BytesIO:
+    # grab user image and covert to RGBA
+    img = await fetch_image(ctx, user_input)
+    img = img.convert('RGBA')
+
+    # 1. determine user image size, resize to fit in its place
+    width, height = img.size
+    ratio = width / 180
+    img = img.resize((int(width / ratio), int(height / ratio)), resample=Image.BICUBIC)
+    # get new size
+    width, height = img.size
+
+    # 2. paste over white bg
+    bg = Image.new('RGBA', (500, 500), (255, 255, 255, 255))
+    position = int(250 - height/2)
+    bg.paste(img, (163, position), img)
+
+    # 3. paste cover over result
+    cover = Image.open(c.clib_path_join('img', 'aenima_cover.png'))
+    bg.alpha_composite(cover, (0, 0))
+
+    return image_to_buffer(bg, 'PNG')
+
+
 def quantizetopalette(silf: Image, palette: Image) -> Image.Image:
     """Convert an RGB or L mode image to use a given P image's palette."""
 
