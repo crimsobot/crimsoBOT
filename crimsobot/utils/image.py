@@ -1,3 +1,4 @@
+import os
 from io import BytesIO
 from typing import List, Optional, Tuple
 
@@ -67,18 +68,15 @@ def bigmoji(emoji: str) -> Tuple[Optional[str], Optional[str]]:
             else:  # numbers zero-nine
                 filename = '3' + filename
 
-        if filename.endswith('-fe0f'):  # "old" emojis (pre-Emoji v1.0 release)
-            filename = filename.replace('-fe0f', '')
+        path = c.clib_path_join('emoji', filename + '.png')
+        emoji_type = 'file'
 
-        # test if real file
-        try:
+        # Some "old" emojis (pre Emoji v1.0) have the variation indicator '-fe0f' in their Unicode sequence.
+        # Well, Discord seems to think so. Twemoji thinks otherwise. So this handles that disagreement.
+        if not os.path.exists(path):
+            if filename.endswith('-fe0f'):
+                filename = filename.replace('-fe0f', '')
             path = c.clib_path_join('emoji', filename + '.png')
-            emoji_type = 'file'
-            print(path, emoji_type)
-            f = open(path, 'rb')
-            f.close()
-        except OSError:
-            return None, None
 
     return path, emoji_type
 
