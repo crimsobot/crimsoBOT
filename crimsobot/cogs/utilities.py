@@ -1,15 +1,13 @@
+import asyncio
 import logging
-import random
-import time
 from datetime import datetime
 from typing import List, Optional, Tuple
 
-import asyncio
 import discord
 from discord.ext import commands
 
 from crimsobot.bot import CrimsoBOT
-from crimsobot.utils import astronomy, games as crimsogames, image as imagetools, tools as c
+from crimsobot.utils import astronomy, image as imagetools, tools as c
 
 log = logging.getLogger(__name__)
 
@@ -22,7 +20,7 @@ class Utilities(commands.Cog):
     async def poll(self, ctx: commands.Context, *, input: str) -> None:
         """Make a poll! Use the form of some question;option 1;option 2;etc.
         For example:
-        
+
         >poll What should I eat?;tacos;ramen;the rich
 
         Polls can have up to 20 choices, but keep in mind Discord's 2000-character message limit.
@@ -70,18 +68,17 @@ class Utilities(commands.Cog):
         try:
             async for message in ctx.channel.history(limit=10000):
                 if (message.author.id == self.bot.user.id and
-                    len(message.embeds) != 0 and
-                    '\u200dPoll ID:' in message.embeds[0].footer.text):
+                        len(message.embeds) != 0 and
+                        '\u200dPoll ID:' in message.embeds[0].footer.text):
                     # grab poll ID from embed to check against user input, if any
-                    poll_id_from_embed = message.embeds[0].footer.text.replace('\u200dPoll ID: ','')
+                    poll_id_from_embed = message.embeds[0].footer.text.replace('\u200dPoll ID: ', '')
                     # if none supplied, then most recent poll it is; if not, check IDs against each other
-                    if poll_id == None or poll_id == poll_id_from_embed:
-                        title = message.embeds[0].title
+                    if poll_id is None or poll_id == poll_id_from_embed:
                         descr = message.embeds[0].description
                         reactions = message.reactions
                         url = message.jump_url
                         break
-        except:
+        except Exception:
             await ctx.send('`Poll ID not found, or poll is too old.`')
             return
 
@@ -97,7 +94,7 @@ class Utilities(commands.Cog):
         options = descr[options_begin:]
 
         # count reactions; they will be in order 1-10, A-J
-        reaction_counts: List[Tuple(str, int)] = []
+        reaction_counts: List[Tuple[str, int]] = []
         for reaction in reactions:
             reaction_counts.append((reaction.emoji, reaction.count))
 
@@ -113,17 +110,16 @@ class Utilities(commands.Cog):
             title='{} has tallied a poll!'.format(ctx.author),
             descr='{}'.format('\n'.join(poll_body)),
             thumb_name='think',
-            footer='Tally as of {} UTC'.format(datetime.utcnow().strftime("%Y %b %d %H:%M:%S")
-            )
+            footer='Tally as of {} UTC'.format(datetime.utcnow().strftime('%Y %b %d %H:%M:%S'))
         )
-        
+
         embed.add_field(
             name='Poll ID: {}'.format(poll_id_from_embed),
             value='[Jump to poll]({})'.format(url),
             inline=False
         )
 
-        msg = await ctx.send(embed=embed)
+        await ctx.send(embed=embed)
 
     @commands.command()
     @commands.cooldown(1, 10, commands.BucketType.guild)
