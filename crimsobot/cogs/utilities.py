@@ -17,6 +17,7 @@ class Utilities(commands.Cog):
         self.bot = bot
 
     @commands.command(brief='Create a poll!')
+    @commands.cooldown(1, 20, commands.BucketType.guild)
     async def poll(self, ctx: commands.Context, *, input: str) -> None:
         """Make a poll! Use the form of some question;option 1;option 2;etc.
         For example:
@@ -58,6 +59,7 @@ class Utilities(commands.Cog):
                 return
 
     @commands.command(aliases=['tally'], brief='Tally results of a poll!')
+    @commands.cooldown(1, 20, commands.BucketType.guild)
     async def polltally(self, ctx: commands.Context, poll_id: Optional[str] = None) -> None:
         """Tally the results of the most recent poll in a channel, or of a previous poll if you give the poll's ID.
         You can only tally the results of a poll in the same channel as the poll.
@@ -90,7 +92,7 @@ class Utilities(commands.Cog):
             if '1️⃣' in option:
                 options_begin = idx
 
-        question = '\n'.join(descr[0:options_begin-1])
+        question = '\n'.join(descr[:options_begin])
         options = descr[options_begin:]
 
         # count reactions; they will be in order 1-10, A-J
@@ -99,7 +101,7 @@ class Utilities(commands.Cog):
             reaction_counts.append((reaction.emoji, reaction.count))
 
         # this becomes the description in the tally embed
-        poll_body = ['{}\n'.format(question)]
+        poll_body = ['{}'.format(question)]
         for idx, choice in enumerate(options):
             count = reaction_counts[idx][1] - 1
             ess = '' if count == 1 else 's'
