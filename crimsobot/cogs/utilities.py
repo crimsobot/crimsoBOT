@@ -65,21 +65,29 @@ class Utilities(commands.Cog):
 
         # so this is kinda hacky...
         # first, check channel's message history (backwards from present) for prior polls from bot
-        try:
-            async for message in ctx.channel.history(limit=10000):
-                if (message.author.id == self.bot.user.id and
-                        len(message.embeds) != 0 and
-                        '\u200dPoll ID:' in message.embeds[0].footer.text):
-                    # grab poll ID from embed to check against user input, if any
-                    poll_id_from_embed = message.embeds[0].footer.text.replace('\u200dPoll ID: ', '')
-                    # if none supplied, then most recent poll it is; if not, check IDs against each other
-                    if poll_id is None or poll_id == poll_id_from_embed:
-                        descr = message.embeds[0].description
-                        reactions = message.reactions
-                        url = message.jump_url
+        poll_found = False
+
+        async for message in ctx.channel.history(limit=10000):
+            # look for embed; if none found, 
+            if message.author.id == self.bot.user.id and len(message.embeds) != 0:
+                # look for a footer; if no footer, TypeError is raised.
+                try:
+                    if not '\u200dPoll ID:' in message.embeds[0].footer.text:
+                        continue
+                except TypeError:
+                    continue
+                # grab poll ID from embed to check against user input, if any
+                poll_id_from_embed = message.embeds[0].footer.text.replace('\u200dPoll ID: ', '')
+                # if none supplied, then most recent poll it is; if not, check IDs against each other
+                if poll_id is None or poll_id == poll_id_from_embed:
+                    poll_found = True
+                    descr = message.embeds[0].description
+                    reactions = message.reactions
+                    url = message.jump_url
                         break
-        except Exception:
-            await ctx.send('`Poll ID not found, or poll is too old.`')
+
+        if not poll_found:
+            await ctx.send('`Poll ID not found, or poll is too old.`', delete_after=10)
             return
 
         # both the question and the choices will be in here; split into list
