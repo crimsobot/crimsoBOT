@@ -9,6 +9,7 @@ from discord.ext import commands
 from config import ADMIN_USER_IDS
 from crimsobot.bot import CrimsoBOT
 from crimsobot.utils import games as crimsogames, markov as m, tools as c
+from crimsobot.utils.guess_leaderboard import GuessLeaderboard
 from crimsobot.utils.leaderboard import Leaderboard
 
 # crimsoCOIN multiplier for games played in crimsoBOT server
@@ -500,23 +501,6 @@ class Games(commands.Cog):
         )
         await ctx.send(embed=embed)
 
-    @commands.command(aliases=['luck'])
-    async def luckindex(self, ctx: commands.Context, whose: Optional[discord.Member] = None) -> None:
-        """Check your or someone else's luck at Guessmoji!"""
-
-        if not whose:
-            whose = ctx.message.author
-
-        luck, plays = await crimsogames.guess_luck_balance(whose)
-
-        embed = c.crimbed(
-            title='\u200B\n{} has a **{:.3f}** luck index on {} plays.'.format(whose, 100*luck, plays),
-            descr='*Luck tracking as of 01 July 2019.*',
-            thumb_name='crimsoCOIN',
-            footer='100 is expected · >100 means better luck · <100 means worse luck',
-        )
-        await ctx.send(embed=embed)
-
     @commands.command()
     @commands.cooldown(2, 60*30, commands.BucketType.user)
     async def give(self, ctx: commands.Context, recipient: discord.Member, amount: float) -> None:
@@ -583,16 +567,9 @@ class Games(commands.Cog):
         )
         await ctx.send(embed=embed)
 
-    @commands.group(aliases=['leaders', 'lb'], invoke_without_command=True)
-    async def leaderboard(self, ctx: commands.Context) -> None:
-        """crimsoCOIN leaderboard!"""
-
-        # Fallback to coin leaderboard if no command is provided, retains prior functionality
-        await self.leaderboard_coin.invoke(ctx)
-
-    @leaderboard.command(name='coin')
-    async def leaderboard_coin(self, ctx: commands.Context, page: int = 1) -> None:
-        """crimsoCOIN leaderboard: COIN!"""
+    @commands.command(aliases=['lb'])
+    async def leaderboard(self, ctx: commands.Context, page: int = 1) -> None:
+        """Overall crimsoCOIN winnings leaderboard."""
 
         lb = Leaderboard(page)
         await lb.get_coin_leaders()
@@ -600,21 +577,38 @@ class Games(commands.Cog):
 
         await ctx.send(embed=embed)
 
-    @leaderboard.command(name='luck')
-    async def leaderboard_luck(self, ctx: commands.Context, page: int = 1) -> None:
-        """crimsoCOIN leaderboard: LUCK!"""
+    @commands.command(aliases=['luck', 'gstats'])
+    async def guessstats(self, ctx: commands.Context, whose: Optional[discord.Member] = None) -> None:
+        """Check your or someone else's GUESSMOJI! stats!"""
 
-        lb = Leaderboard(page)
+        if not whose:
+            whose = ctx.message.author
+
+        embed = await crimsogames.guess_stat_embed(whose)
+        await ctx.send(embed=embed)
+
+    @commands.group(aliases=['glb'], invoke_without_command=True)
+    async def guess_lb(self, ctx: commands.Context) -> None:
+        """GUESSMOJI! leaderboards"""
+
+        # Fallback to luck leaderboard if no command is provided
+        await self.glb_luck.invoke(ctx)
+
+    @guess_lb.command(name='luck')
+    async def glb_luck(self, ctx: commands.Context, page: int = 1) -> None:
+        """GUESSMOJI! luck leaderboard."""
+
+        lb = GuessLeaderboard(page)
         await lb.get_luck_leaders()
         embed = await lb.get_embed(ctx)
 
         await ctx.send(embed=embed)
 
-    @leaderboard.command(name='plays')
-    async def leaderboard_plays(self, ctx: commands.Context, page: int = 1) -> None:
-        """crimsoCOIN leaderboard: PLAYS!"""
+    @guess_lb.command(name='plays')
+    async def glb_plays(self, ctx: commands.Context, page: int = 1) -> None:
+        """GUESSMOJI! plays leaderboard"""
 
-        lb = Leaderboard(page)
+        lb = GuessLeaderboard(page)
         await lb.get_plays_leaders()
         embed = await lb.get_embed(ctx)
 
