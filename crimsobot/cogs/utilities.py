@@ -68,11 +68,10 @@ class Utilities(commands.Cog):
         poll_found = False
 
         async for message in ctx.channel.history(limit=10000):
-            # look for embed; if none found, 
             if message.author.id == self.bot.user.id and len(message.embeds) != 0:
                 # look for a footer; if no footer, TypeError is raised.
                 try:
-                    if not '\u200dPoll ID:' in message.embeds[0].footer.text:
+                    if '\u200dPoll ID:' not in message.embeds[0].footer.text:
                         continue
                 except TypeError:
                     continue
@@ -84,7 +83,7 @@ class Utilities(commands.Cog):
                     descr = message.embeds[0].description
                     reactions = message.reactions
                     url = message.jump_url
-                        break
+                    break
 
         if not poll_found:
             await ctx.send('`Poll ID not found, or poll is too old.`', delete_after=10)
