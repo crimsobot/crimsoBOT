@@ -16,14 +16,14 @@ class GuessLeaderboard:
     def __init__(self, page: int) -> None:
         self._leaders = []  # type: List[Leader]
 
-        self._embed = crimbed(title=None, descr=None, thumb_name='crimsoCOIN')
+        self._embed = crimbed(title=None, descr=None, thumb_name='shrug')
         self._embed_footer_extra = ''  # type: str
 
         self.page = page
         self._offset = (page - 1) * PLACES_PER_PAGE
 
     async def get_luck_leaders(self) -> None:
-        min_plays = 2
+        min_plays = 100
         self._set_embed_title('luck')
         self._embed_footer_extra = ' · Minimum {} plays'.format(min_plays)
 
@@ -86,4 +86,4 @@ class GuessLeaderboard:
 
     def _set_embed_title(self, stat: str) -> None:
         stat = stat.upper()
-        self._embed.title = '<:cr:588492640559824896> Guessmoji leaderboard: **{}**'.format(stat)
+        self._embed.title = '<a:guessmoji_think:595388191411011615> GUESSMOJI! leaderboard: **{}**'.format(stat)

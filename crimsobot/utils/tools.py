@@ -68,10 +68,12 @@ def crimbed(title: Optional[str], descr: Optional[str], thumb_name: Optional[str
         'triumph': 'https://i.imgur.com/bBXRFnO.png',
         'joy': 'https://i.imgur.com/8deo8Ak.png',
         'hug': 'https://i.imgur.com/lSPKbWf.png',
-        'think': 'https://i.imgur.com/odD9yI2.png',
+        # 'think': 'https://i.imgur.com/odD9yI2.png',
+        'think': 'https://i.imgur.com/L6tdtKB.png',
         'scared': 'https://i.imgur.com/sppk4te.png',
         'weary': 'https://i.imgur.com/VFtApPg.png',
         'moneymouth': 'https://i.imgur.com/lNR8qHe.png',
+        'shrug': 'https://i.imgur.com/CmokCt9.png',
     }
 
     # These thumbnails are for specific uses only.
