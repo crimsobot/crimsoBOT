@@ -34,11 +34,21 @@ class Utilities(commands.Cog):
         ]
 
         choices = input.split(';')
-        question = choices.pop(0)
+        question = choices.pop(0).strip()
 
-        poll_body = ['**{}**\n'.format(question.strip())]
+        # some tests to ensure there's a question and at least two choices
+        if len(question) == 0:
+            question = 'QUICK POLL!'
+
+        choices = [choice.strip() for choice in choices if len(choice.strip()) != 0]
+
+        if len(choices) < 2:
+            return
+
+        # poll embned
+        poll_body = ['**{}**\n'.format(question)]
         for idx, choice in enumerate(choices):
-            poll_body.append('{} {}'.format(poll_pool[idx], choice.strip()))
+            poll_body.append('{} {}'.format(poll_pool[idx], choice))
 
         embed = c.crimbed(
             title='{} has created a poll!'.format(ctx.author),
