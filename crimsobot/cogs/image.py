@@ -6,7 +6,7 @@ import discord
 from discord.ext import commands
 
 from crimsobot.bot import CrimsoBOT
-from crimsobot.utils import image as imagetools, tools as c
+from crimsobot.utils import image as imagetools, image2 as imagetools2, tools as c
 
 log = logging.getLogger(__name__)
 
@@ -110,7 +110,7 @@ class Image(commands.Cog):
 
         c.checkout(ctx.message.author, emoji_channels)
 
-    @commands.command()
+    @commands.command(aliases=['acid'])
     @commands.cooldown(2, 10, commands.BucketType.guild)
     async def acidify(self, ctx: commands.Context, number_of_hits: int, image: Optional[str] = None) -> None:
         """1-3 hits only. Can use image link, attachment, mention, or emoji."""
@@ -119,11 +119,11 @@ class Image(commands.Cog):
         if not 1 <= number_of_hits <= 3:
             raise commands.BadArgument('Number of hits is out of bounds.')
 
-        fp = await imagetools.acid(ctx, number_of_hits, image)
+        fp = await imagetools2.process_image(ctx, image, 'acidify', number_of_hits)
 
         # pluralize 'hit' if need be
         ess = '' if number_of_hits == 1 else 's'
-        await ctx.send('**{} hit{}:**'.format(number_of_hits, ess), file=discord.File(fp, 'acid.png'))
+        await ctx.send('**{} hit{}:**'.format(number_of_hits, ess), file=discord.File(fp, 'acid.gif'))
 
     @commands.command(hidden=True)
     @commands.is_owner()
@@ -213,8 +213,8 @@ class Image(commands.Cog):
 
     @commands.command(hidden=True)
     async def lateralus(self, ctx: commands.Context, image: Optional[str] = None) -> None:
-        fp = await imagetools.lateralus_cover(ctx, image)
-        await ctx.send(file=discord.File(fp, 'lateralus.png'))
+        fp = await imagetools2.process_image(ctx, image, 'lateralus')
+        await ctx.send(file=discord.File(fp, 'lateralus.gif'))
 
     @commands.command(hidden=True)
     async def aenima(self, ctx: commands.Context, image: Optional[str] = None) -> None:
