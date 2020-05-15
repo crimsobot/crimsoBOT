@@ -5,7 +5,6 @@ from discord import Embed
 from discord.ext import commands
 
 from crimsobot.models.currency_account import CurrencyAccount
-from crimsobot.models.guess_statistic import GuessStatistic
 from crimsobot.utils.tools import crimbed
 
 PLACES_PER_PAGE = 10
@@ -37,43 +36,6 @@ class Leaderboard:
             leader = Leader(
                 user_id=account.user.discord_user_id,
                 value='\u20A2{:.2f}'.format(account.get_balance())
-            )
-            self._leaders.append(leader)
-
-    async def get_luck_leaders(self) -> None:
-        min_plays = 100
-        self._set_embed_title('luck')
-        self._embed_footer_extra = ' · Minimum {} plays (will increase with time)'.format(min_plays)
-
-        stats = await GuessStatistic \
-            .filter(plays__gte=min_plays) \
-            .prefetch_related('user')  # type: List[GuessStatistic]
-
-        # luck_index is a computed property (not actually stored in the DB), so we have to sort here instead
-        stats.sort(key=lambda s: s.luck_index, reverse=True)
-        stats = stats[self._offset:self._offset + PLACES_PER_PAGE]
-
-        for stat in stats:
-            leader = Leader(
-                user_id=stat.user.discord_user_id,
-                value='{:.3f} ({} plays)'.format(stat.luck_index * 100, stat.plays)
-            )
-            self._leaders.append(leader)
-
-    async def get_plays_leaders(self) -> None:
-        self._set_embed_title('plays')
-
-        stats = await GuessStatistic \
-            .filter(plays__gt=0) \
-            .order_by('-plays') \
-            .limit(PLACES_PER_PAGE) \
-            .offset(self._offset) \
-            .prefetch_related('user')  # type: List[GuessStatistic]
-
-        for stat in stats:
-            leader = Leader(
-                user_id=stat.user.discord_user_id,
-                value=str(stat.plays)
             )
             self._leaders.append(leader)
 

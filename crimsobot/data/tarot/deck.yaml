@@ -1,0 +1,546 @@
+---
+name: The Fool
+suit: MAJOR_ARCANA
+number: 0
+image_filename: fool.jpg
+description_upright: Sell your cleverness and buy bewilderment. -Rumi
+description_reversed: Bliss is ignorance.
+---
+name: The Magician
+suit: MAJOR_ARCANA
+number: 1
+image_filename: magician.jpg
+description_upright: Everything has come together, as if by magic...
+description_reversed: Taken by an illusion, perhaps of one's own doing.
+---
+name: The High Priestess
+suit: MAJOR_ARCANA
+number: 2
+image_filename: highpriestess.jpg
+description_upright: The High Priestess presides over the Hidden. They know the Secrets; can you?
+description_reversed: That which is Hidden remains hidden. Now is not the time.
+---
+name: The Empress
+suit: MAJOR_ARCANA
+number: 3
+image_filename: empress.jpg
+description_upright: The Empress, subtle and gentle, like water carves her will into stone.
+description_reversed: Indecision, imbalance, undoing of fragile bonds.
+---
+name: The Emperor
+suit: MAJOR_ARCANA
+number: 4
+image_filename: emperor.jpg
+description_upright: The Emperor is a great power. Bend the knee or suffer.
+description_reversed: Mercy, benevolence, perhaps confusion and misdirection.
+---
+name: The Hierophant
+suit: MAJOR_ARCANA
+number: 5
+image_filename: hierophant.jpg
+description_upright: Those who Seek may find guidance in the Office of the Hierophant.
+description_reversed: Society, community, organic expression; irreverence, weakness.
+---
+name: The Lovers
+suit: MAJOR_ARCANA
+number: 6
+image_filename: lovers.jpg
+description_upright: Love and beauty reign—pure, if not innocent.
+description_reversed: Frustration, failure, communication breakdown.
+---
+name: The Chariot
+suit: MAJOR_ARCANA
+number: 7
+image_filename: chariot.jpg
+description_upright: A prince traverses the bridge between two. Unity, aid, victory.
+description_reversed: Discord, litigation, quabbles, communication breakdown.
+---
+name: Strength
+suit: MAJOR_ARCANA
+number: 8
+image_filename: strength.jpg
+description_upright: True strength is not brutish but clever, and wielded with confidence.
+description_reversed: Pride, abuse of power. Perilously forcing open the jaws of a lion.
+---
+name: The Hermit
+suit: MAJOR_ARCANA
+number: 9
+image_filename: hermit.jpg
+description_upright: A light shines in the darkness. Those who would gain wisdom follow it deeper, deeper...
+description_reversed: A thousand miles from nowhere. Loneliness, isolation, and bitterness.
+---
+name: Wheel of Fortune
+suit: MAJOR_ARCANA
+number: 10
+image_filename: wheeloffortune.jpg
+description_upright: The Wheel spins, spins, spins. Today it favors you. Tomorrow...?
+description_reversed: The world is maintained by change. Do not resist.
+---
+name: Justice
+suit: MAJOR_ARCANA
+number: 11
+image_filename: justice.jpg
+description_upright: The truth does not care about our needs or wants. It does not care about our idealogies or religions. It will lie in wait for all time.
+description_reversed: You know what you've done. How long can you hide it?
+---
+name: The Hanged Man
+suit: MAJOR_ARCANA
+number: 12
+image_filename: hangedman.jpg
+description_upright: A new perspective is needed to see clearly. Pause and surrender to it.
+description_reversed: Delays, resistance; indecision and muddled thoughts.
+---
+name: Death
+suit: MAJOR_ARCANA
+number: 13
+image_filename: death.jpg
+description_upright: The Death of the old comes to clear the way for the new.
+description_reversed: Fear of change leaves one trapped in limbo, neither living nor dead.
+---
+name: Temperance
+suit: MAJOR_ARCANA
+number: 14
+image_filename: temperance.jpg
+description_upright: Balance, moderation, and patience obtain all things.
+description_reversed: Dissipation, imbalance. The cup runneth over, and soon will run out.
+---
+name: The Devil
+suit: MAJOR_ARCANA
+number: 15
+image_filename: devil.jpg
+description_upright: Your Shadow Self is weary of being in chains. Set it free.
+description_reversed: Addiction, shame; self-limiting beliefs and anxieties.
+---
+name: The Tower
+suit: MAJOR_ARCANA
+number: 16
+image_filename: tower.jpg
+description_upright: The Tower is struck, bringing chaos, upheaval, and the end of the illusion of control.
+description_reversed: Disaster has been averted, perhaps narrowly. Rejoice--for now.
+---
+name: The Star
+suit: MAJOR_ARCANA
+number: 17
+image_filename: star.jpg
+description_upright: The Stars sing with their light, a shining chorus of hope and renewal.
+description_reversed: Disconnection, lack of purpose, stagnation. The Universe holds no wonder, only the cold light of unreachable worlds.
+---
+name: The Moon
+suit: MAJOR_ARCANA
+number: 18
+image_filename: moon.jpg
+description_upright: Monsters and demons come out to play in the moonlit night--but are they real?
+description_reversed: The Moon lights the night, leading the way out of fear, confusion, and repressed emotions.
+---
+name: The Sun
+suit: MAJOR_ARCANA
+number: 19
+image_filename: sun.jpg
+description_upright: Light, warmth, and vitality. The Sun radiates over all, bringing abundance and cheer.
+description_reversed: Do not fly too close to the sun, lest your wings turn to ash. Keep your feet firmly planted on the ground.
+---
+name: Judgement
+suit: MAJOR_ARCANA
+number: 20
+image_filename: judgement.jpg
+description_upright: The trumpet sounds, calling you to rise from the grave into new life, into greatness. Arise!
+description_reversed: Self-doubt and negative self-talk abound. Extend to yourself the hand of mercy, not the fist of retribution.
+---
+name: The World
+suit: MAJOR_ARCANA
+number: 21
+image_filename: world.jpg
+description_upright: All shall be well, all shall be well; all manner of things shall be well.
+description_reversed: The quickest path does not always bring success. Learning the hard way is often the best way.
+---
+name: Ace of Wands
+suit: WANDS
+number: 1
+image_filename: wands-01.jpg
+description_upright: The new green shoots of spring are emerging, unfurling with pure potential.
+description_reversed: Delays, distractions, and lack of direction cause new growth to wither on the vine.
+---
+name: Two of Wands
+suit: WANDS
+number: 2
+image_filename: wands-02.jpg
+description_upright: A plan of action is needed to bring inspiration to fruition.
+description_reversed: Fear of the unknown, poor planning; inner alignment is thrown off and must be righted.
+---
+name: Three of Wands
+suit: WANDS
+number: 3
+image_filename: wands-03.jpg
+description_upright: Progress, expansion, and opportunity. The horizon is yours.
+description_reversed: Playing it safe will get you nowhere. Do not dare not to dare.
+---
+name: Four of Wands
+suit: WANDS
+number: 4
+image_filename: wands-04.jpg
+description_upright: Celebration, joy, and harmony are the order of the day. Savor them.
+description_reversed: Can you trust those closest to you?
+---
+name: Five of Wands
+suit: WANDS
+number: 5
+image_filename: wands-05.jpg
+description_upright: Discord is sown, to no discernible end. Gridlock, tension, and futility.
+description_reversed: Inner turmoil stews. It is best to reckon with it sooner rather than later.
+---
+name: Six of Wands
+suit: WANDS
+number: 6
+image_filename: wands-06.jpg
+description_upright: Victory is at hand.
+description_reversed: Hubris, arrogance, and the resulting fall.
+---
+name: Seven of Wands
+suit: WANDS
+number: 7
+image_filename: wands-07.jpg
+description_upright: Hold your ground and let none take what you have fought hard to earn.
+description_reversed: The battle has been lost, but not the war.
+---
+name: Eight of Wands
+suit: WANDS
+number: 8
+image_filename: wands-08.jpg
+description_upright: Forward motion, dynamism, propulsion. Things are in motion that cannot be stopped.
+description_reversed: What's the rush? Planning and patience is needed, not haste.
+---
+name: Nine of Wands
+suit: WANDS
+number: 9
+image_filename: wands-09.jpg
+description_upright: Resilience in the face of adversity. The finish line is near.
+description_reversed: Resources and energy are exhausted. What can be done to replenish them?
+---
+name: Ten of Wands
+suit: WANDS
+number: 10
+image_filename: wands-10.jpg
+description_upright: The burden is great, but the rewards are rich.
+description_reversed: A stick in a bundle cannot be broken--you don't have to go it alone.
+---
+name: Page of Wands
+suit: WANDS
+number: 11
+image_filename: wands-11.jpg
+description_upright: Inspiration, discovery, free-spiriedness. Embracing whatever may come.
+description_reversed: A new seed is sprouting. How will you call it into the light?
+---
+name: Knight of Wands
+suit: WANDS
+number: 12
+image_filename: wands-12.jpg
+description_upright: The Knight charges forth with energy and passion, a bold explorer of the unknown.
+description_reversed: Energy is building and must find an outlet.
+---
+name: Queen of Wands
+suit: WANDS
+number: 13
+image_filename: wands-13.jpg
+description_upright: In their garden, the Queen sits enthroned among flowers, showing their power for all to see.
+description_reversed: Introversion, observation, and renewal of energy.
+---
+name: King of Wands
+suit: WANDS
+number: 14
+image_filename: wands-14.jpg
+description_upright: Leadership & vision. The King unites their people towards a noble goal.
+description_reversed: Are you using your power, or abusing it?
+---
+name: Ace of Pentacles
+suit: PENTACLES
+number: 1
+image_filename: pentacles-01.jpg
+description_upright: Abundance, manifestation, and opportunity. Invest wisely.
+description_reversed: Hold tightly to what you have and do not take it for granted.
+---
+name: Two of Pentacles
+suit: PENTACLES
+number: 2
+image_filename: pentacles-02.jpg
+description_upright: If resources are not managed carefully, they may fall right out of your hands.
+description_reversed: The limit is in danger of being exceeded. How much longer can you hold on?
+---
+name: Three of Pentacles
+suit: PENTACLES
+number: 3
+image_filename: pentacles-03.jpg
+description_upright: Brick by brick the temple is built. Keep building.
+description_reversed: A shoddy job with corners cut will cause the temple to collapse. Beware.
+---
+name: Four of Pentacles
+suit: PENTACLES
+number: 4
+image_filename: pentacles-04.jpg
+description_upright: The fruits of labor are meant to be enjoyed, not hoarded away.
+description_reversed: More, more, more--but at what cost?
+---
+name: Five of Pentacles
+suit: PENTACLES
+number: 5
+image_filename: pentacles-05.jpg
+description_upright: Isolation, poverty, loss. Wandering the trackless wastes.
+description_reversed: There is a way out. Be vigilant.
+---
+name: Six of Pentacles
+suit: PENTACLES
+number: 6
+image_filename: pentacles-06.jpg
+description_upright: Wealth is meant to be shared and redistributed.
+description_reversed: Bleeding out, giving all for nothing.
+---
+name: Seven of Pentacles
+suit: PENTACLES
+number: 7
+image_filename: pentacles-07.jpg
+description_upright: The farmer surveys the fruits of their labor. Perseverance has obtained a rich harvest.
+description_reversed: You can't get blood from a stone, or much of anything besides stone for that matter. Expend energy elsewhere.
+---
+name: Eight of Pentacles
+suit: PENTACLES
+number: 8
+image_filename: pentacles-08.jpg
+description_upright: A master craftsperson does not become so overnight. Hone your skills patiently.
+description_reversed: Take care not to sharpen the knife away to nothing.
+---
+name: Nine of Pentacles
+suit: PENTACLES
+number: 9
+image_filename: pentacles-09.jpg
+description_upright: There are few joys greater than well-deserved success.
+description_reversed: Overwork & lack of self-worth. Your worth lies beyond your ability to produce.
+---
+name: Ten of Pentacles
+suit: PENTACLES
+number: 10
+image_filename: pentacles-10.jpg
+description_upright: Completion, accomplishment; the work is done and it is time to let it rest.
+description_reversed: Stability and security have a price. Be sure you are willing to pay it.
+---
+name: Page of Pentacles
+suit: PENTACLES
+number: 11
+image_filename: pentacles-11.jpg
+description_upright: Development, creativity, motivation. It is time for dreams and goals to be realized.
+description_reversed: Do not lose sight of your original inspiration; minimize distractions.
+---
+name: Knight of Pentacles
+suit: PENTACLES
+number: 12
+image_filename: pentacles-12.jpg
+description_upright: The Knight wisely looks before they leap, and knows the value of hard work and perseverance.
+description_reversed: Boredom, perfectionism. Forward motion has come to a complete standstill and progress is lost in the weeds.
+---
+name: Queen of Pentacles
+suit: PENTACLES
+number: 13
+image_filename: pentacles-13.jpg
+description_upright: Work-life balance is in perfect harmony, and domestic bliss ensues.
+description_reversed: Take care that the current path remains sustainable in the long-term.
+---
+name: King of Pentacles
+suit: PENTACLES
+number: 14
+image_filename: pentacles-14.jpg
+description_upright: Self-discipline and the safety of routine create fertile soil for abundance.
+description_reversed: What does it profit someone to gain the world yet lose their soul?
+---
+name: Ace of Cups
+suit: CUPS
+number: 1
+image_filename: cups-01.jpg
+description_upright: The Cup is a deep wellspring of love, compassion, and harmony.
+description_reversed: Do not be afraid to engage with your emotions, however strong or overflowing they may be.
+---
+name: Two of Cups
+suit: CUPS
+number: 2
+image_filename: cups-02.jpg
+description_upright: Love flows between two people, nourishing a relationship of compassion and mutual respect.
+description_reversed: Give love to yourself before giving it away to others.
+---
+name: Three of Cups
+suit: CUPS
+number: 3
+image_filename: cups-03.jpg
+description_upright: Celebration, friendship, joy. What do you have to celebrate, and with whom?
+description_reversed: Exclusion and isolation. You are on the outside looking in.
+---
+name: Four of Cups
+suit: CUPS
+number: 4
+image_filename: cups-04.jpg
+description_upright: The Cup is freely offered--will you take it or refuse?
+description_reversed: Guard and honor your boundaries; create your own space to be comfortable.
+---
+name: Five of Cups
+suit: CUPS
+number: 5
+image_filename: cups-05.jpg
+description_upright: The Cups have run dry, leaving behind only regret and disappointment. They've been drained to the dregs but have failed to satisfy.
+description_reversed: The finite Cups are left behind in favor of other sources that will not run dry so quickly.
+---
+name: Six of Cups
+suit: CUPS
+number: 6
+image_filename: cups-06.jpg
+description_upright: Innocence and joy; nostalgia and simplicity. Cooperation and an open heart are needed.
+description_reversed: You cling to the past, or perhaps the past clings to you, obscuring the blessings of the present.
+---
+name: Seven of Cups
+suit: CUPS
+number: 7
+image_filename: cups-07.jpg
+description_upright: Not everything is as it seems. Tread carefully and wisely.
+description_reversed: Trust in your inner wisdom to show you the way.
+---
+name: Eight of Cups
+suit: CUPS
+number: 8
+image_filename: cups-08.jpg
+description_upright: Turning your back on your emotions will not make them go away or make them more manageable.
+description_reversed: Second chances, perseverance; what you were looking for was perhaps here all along.
+---
+name: Nine of Cups
+suit: CUPS
+number: 9
+image_filename: cups-09.jpg
+description_upright: Contentment, satisfaction, and gratitude. The Cups are full and refreshing.
+description_reversed: Self-indulgence and stagnation. What you want is not necessarily what you need.
+---
+name: Ten of Cups
+suit: CUPS
+number: 10
+image_filename: cups-10.jpg
+description_upright: Inner and outer worlds are in harmony and in sync.
+description_reversed: Relationships may be suffering. Disconnection, misalignment, struggle.
+---
+name: Page of Cups
+suit: CUPS
+number: 11
+image_filename: cups-11.jpg
+description_upright: A quirky and creative fellow, the Page is full of surprises--and more than a little weirdness. Roll with it.
+description_reversed: Emotional immaturity & stuffiness. Get out of your comfort zone.
+---
+name: Knight of Cups
+suit: CUPS
+number: 12
+image_filename: cups-12.jpg
+description_upright: Intuition and emotion are needed more than brute force or stoicism. Think poetry, not prose.
+description_reversed: Emotions are not weapons to be used against others or yourself.
+---
+name: Queen of Cups
+suit: CUPS
+number: 13
+image_filename: cups-13.jpg
+description_upright: The Queen is full of compassion and sensitivity, easily perceiving the needs of others.
+description_reversed: Co-dependency and emotional exhaustion. Too much is being given and too little received.
+---
+name: King of Cups
+suit: CUPS
+number: 14
+image_filename: cups-14.jpg
+description_upright: Diplomacy, emotional availability, and empathy. The King knows that true power comes when one is emotionally engaged with the self and others.
+description_reversed: Self-involvement, myopia, and paranoia. Emotions are not always facts.
+---
+name: Ace of Swords
+suit: SWORDS
+number: 1
+image_filename: swords-01.jpg
+description_upright: The great Sword slices the air, cutting a path to mental clarity.
+description_reversed: Dark clouds gather in the mind, muddling thought and tangling the tongue.
+---
+name: Two of Swords
+suit: SWORDS
+number: 2
+image_filename: swords-02.jpg
+description_upright: Two swords, two paths. Make your choice, or perish.
+description_reversed: If you sit on the path without making a decision, you will be cut down. Avoidance is not an option.
+---
+name: Three of Swords
+suit: SWORDS
+number: 3
+image_filename: swords-03.jpg
+description_upright: Pain and sorrow pierce the heart, an unavoidable human experience.
+description_reversed: Be soft and gentle, not hard and sharp, with yourself.
+---
+name: Four of Swords
+suit: SWORDS
+number: 4
+image_filename: swords-04.jpg
+description_upright: Rest the mind in meditation and contemplation. Recuperation and withdrawal are needed.
+description_reversed: Exhaustion, burn-out, stagnation. Overthinking only leads to futility.
+---
+name: Five of Swords
+suit: SWORDS
+number: 5
+image_filename: swords-05.jpg
+description_upright: The battle is won, but at what cost?
+description_reversed: The pen is not the only thing mightier than the sword. Forge alternative solutions to conflict.
+---
+name: Six of Swords
+suit: SWORDS
+number: 6
+image_filename: swords-06.jpg
+description_upright: There is no going back. Face the horizon bravely and accept what is.
+description_reversed: Discomfort is not always your enemy. Lean into it for unexpected rewards.
+---
+name: Seven of Swords
+suit: SWORDS
+number: 7
+image_filename: swords-07.jpg
+description_upright: The thief creeps about, their mind full of nothing but treachery and betrayal.
+description_reversed: You may tell yourself that everything is well and good--but is it?
+---
+name: Eight of Swords
+suit: SWORDS
+number: 8
+image_filename: swords-08.jpg
+description_upright: A ring of Swords surrounds, imprisoning the mind in fear and uncertainty.
+description_reversed: The mind must be refreshed time to time by new and unfamiliar ideas.
+---
+name: Nine of Swords
+suit: SWORDS
+number: 9
+image_filename: swords-09.jpg
+description_upright: Anxiety, fear, and worry turn the mind into a living nightmare. It is time to wake up.
+description_reversed: The sun is quickly rising upon fear and delusion--the nightmare is almost over.
+---
+name: Ten of Swords
+suit: SWORDS
+number: 10
+image_filename: swords-10.jpg
+description_upright: The Swords have reaped the consequences of their violence--they cannot give life, only destroy it.
+description_reversed: Redemption, recovery, & regeneration. Destruction is avoidable.
+---
+name: Page of Swords
+suit: SWORDS
+number: 11
+image_filename: swords-11.jpg
+description_upright: The Page expresses themselves with confidence and intelligence. They are curious and thirsty for knowledge.
+description_reversed: All talk and no action. Haphazardness, miscommunication.
+---
+name: Knight of Swords
+suit: SWORDS
+number: 12
+image_filename: swords-12.jpg
+description_upright: Rushing with the wind, the ambitious Knight is quick-thinking and driven to see their ideas become reality.
+description_reversed: Restlessness, hyperactivity, and lack of focus befuddle the thoughts.
+---
+name: Queen of Swords
+suit: SWORDS
+number: 13
+image_filename: swords-13.jpg
+description_upright: The fierce and independent Queen is forthright to the point of bluntness. Their clear eyes see all.
+description_reversed: The heart and the head must be balanced; neither can function properly without the other.
+---
+name: King of Swords
+suit: SWORDS
+number: 14
+image_filename: swords-14.jpg
+description_upright: Authority and truth reign. Be honest with yourself and others.
+description_reversed: Those who use their intelligence to manipulate others may find themselves caught in their own snares.

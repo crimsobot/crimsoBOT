@@ -1,5 +1,7 @@
+import asyncio
 import logging
-from typing import Optional
+from datetime import datetime
+from typing import List, Optional, Tuple
 
 import discord
 from discord.ext import commands
@@ -13,6 +15,130 @@ log = logging.getLogger(__name__)
 class Utilities(commands.Cog):
     def __init__(self, bot: CrimsoBOT):
         self.bot = bot
+
+    @commands.command(brief='Create a poll!')
+    @commands.cooldown(1, 20, commands.BucketType.guild)
+    async def poll(self, ctx: commands.Context, *, input: str) -> None:
+        """Make a poll! Use the form of some question;option 1;option 2;etc.
+        For example:
+
+        >poll What should I eat?;tacos;ramen;the rich
+
+        Polls can have up to 20 choices, but keep in mind Discord's 2000-character message limit.
+        Polls technically never close, but you can >tally the results whenever you like!
+        """
+
+        poll_pool = [
+            '1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟',
+            '🇦', '🇧', '🇨', '🇩', '🇪', '🇫', '🇬', '🇭', '🇮', '🇯'
+        ]
+
+        choices = input.split(';')
+        question = choices.pop(0).strip()
+
+        # some tests to ensure there's a question and at least two choices
+        if len(question) == 0:
+            question = 'QUICK POLL!'
+
+        choices = [choice.strip() for choice in choices if len(choice.strip()) != 0]
+
+        if len(choices) < 2:
+            return
+
+        # poll embned
+        poll_body = ['**{}**\n'.format(question)]
+        for idx, choice in enumerate(choices):
+            poll_body.append('{} {}'.format(poll_pool[idx], choice))
+
+        embed = c.crimbed(
+            title='{} has created a poll!'.format(ctx.author),
+            descr='{}'.format('\n'.join(poll_body)),
+            thumb_name='think',
+            footer='\u200dPoll ID: {d.month}{d.day}{d.hour}{d.minute}{d.second}'.format(d=datetime.utcnow())
+        )
+
+        msg = await ctx.send(embed=embed)
+
+        # add reactions to msg
+        for emoji in poll_pool[0:len(choices)]:
+            try:
+                await msg.add_reaction(emoji)
+                await asyncio.sleep(0.36)  # smoother rollout of reactions
+            except Exception:
+                await ctx.send('**Someone added emojis!** Wait for me to add them, then choose. `Poll crashed.`')
+                return
+
+    @commands.command(aliases=['tally'], brief='Tally results of a poll!')
+    @commands.cooldown(1, 20, commands.BucketType.guild)
+    async def polltally(self, ctx: commands.Context, poll_id: Optional[str] = None) -> None:
+        """Tally the results of the most recent poll in a channel, or of a previous poll if you give the poll's ID.
+        You can only tally the results of a poll in the same channel as the poll.
+        Tallying a poll does not close the poll; its results can be tallied again if it's not too old."""
+
+        # so this is kinda hacky...
+        # first, check channel's message history (backwards from present) for prior polls from bot
+        poll_found = False
+
+        async for message in ctx.channel.history(limit=10000):
+            if message.author.id == self.bot.user.id and len(message.embeds) != 0:
+                # look for a footer; if no footer, TypeError is raised.
+                try:
+                    if '\u200dPoll ID:' not in message.embeds[0].footer.text:
+                        continue
+                except TypeError:
+                    continue
+                # grab poll ID from embed to check against user input, if any
+                poll_id_from_embed = message.embeds[0].footer.text.replace('\u200dPoll ID: ', '')
+                # if none supplied, then most recent poll it is; if not, check IDs against each other
+                if poll_id is None or poll_id == poll_id_from_embed:
+                    poll_found = True
+                    descr = message.embeds[0].description
+                    reactions = message.reactions
+                    url = message.jump_url
+                    break
+
+        if not poll_found:
+            await ctx.send('`Poll ID not found, or poll is too old.`', delete_after=10)
+            return
+
+        # both the question and the choices will be in here; split into list
+        descr = descr.split('\n')
+
+        # find where the options begin; separate questions and options
+        for idx, option in enumerate(descr):
+            if '1️⃣' in option:
+                options_begin = idx
+
+        question = '\n'.join(descr[:options_begin])
+        options = descr[options_begin:]
+
+        # count reactions; they will be in order 1-10, A-J
+        reaction_counts: List[Tuple[str, int]] = []
+        for reaction in reactions:
+            reaction_counts.append((reaction.emoji, reaction.count))
+
+        # this becomes the description in the tally embed
+        poll_body = ['{}'.format(question)]
+        for idx, choice in enumerate(options):
+            count = reaction_counts[idx][1] - 1
+            ess = '' if count == 1 else 's'
+            poll_body.append('{} · **{}** vote{}'.format(choice, count, ess))
+
+        # create embed and send
+        embed = c.crimbed(
+            title='{} has tallied a poll!'.format(ctx.author),
+            descr='{}'.format('\n'.join(poll_body)),
+            thumb_name='think',
+            footer='Tally as of {} UTC'.format(datetime.utcnow().strftime('%Y %b %d %H:%M:%S'))
+        )
+
+        embed.add_field(
+            name='Poll ID: {}'.format(poll_id_from_embed),
+            value='[Jump to poll]({})'.format(url),
+            inline=False
+        )
+
+        await ctx.send(embed=embed)
 
     @commands.command()
     @commands.cooldown(1, 10, commands.BucketType.guild)

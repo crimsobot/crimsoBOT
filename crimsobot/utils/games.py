@@ -200,10 +200,50 @@ async def guess_luck(discord_user: DiscordUser, n: int, won: bool) -> None:
     await stats.save()
 
 
-async def guess_luck_balance(discord_user: DiscordUser) -> Tuple[float, int]:
-    stats = await GuessStatistic.get_by_discord_user(discord_user)  # type: GuessStatistic
+# async def guess_luck_balance(discord_user: DiscordUser) -> Tuple[float, int]:
+#     stats = await GuessStatistic.get_by_discord_user(discord_user)  # type: GuessStatistic
 
-    return stats.luck_index, stats.plays
+#     return stats.luck_index, stats.plays
+
+async def guess_stat_embed(user: DiscordUser) -> Embed:
+    """Return a big ol' embed of Guessmoji! stats"""
+
+    s = await GuessStatistic.get_by_discord_user(user)
+
+    if s.plays == 0:
+        embed = c.crimbed(
+            title='HOW—',
+            descr="You haven't played GUESSMOJI! yet!",
+            thumb_name='weary',
+            footer='Play >guess [n] today!',
+        )
+    else:
+        embed = c.crimbed(
+            title='GUESSMOJI! stats for {}'.format(user),
+            descr=None,
+            thumb_name='crimsoCOIN',
+            footer='Stat tracking as of {d.year}-{d.month:02d}-{d.day:02d}'.format(d=s.created_at),
+        )
+
+        ess = '' if s.plays == 1 else 's'
+        ess2 = '' if s.wins == 1 else 's'
+
+        # list of tuples (name, value) for embed.add_field
+        field_list = [
+            (
+                'Gameplay',
+                '**{}** game{ess} played, **{}** win{ess2}'.format(s.plays, s.wins, ess=ess, ess2=ess2)
+            ),
+            (
+                'Luck index (expected: 100)',
+                '**{:.3f}**'.format(100 * s.luck_index)
+            ),
+        ]
+
+        for field in field_list:
+            embed.add_field(name=field[0], value=field[1], inline=False)
+
+    return embed
 
 
 def guesslist() -> str:

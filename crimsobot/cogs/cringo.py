@@ -321,7 +321,7 @@ class Cringo(commands.Cog):
 
         await ctx.send(embed=embed)
 
-    @commands.command(aliases=['stats'])
+    @commands.command(aliases=['stats', 'cstats'])
     async def cringostats(self, ctx: commands.Context, whose: Optional[discord.Member] = None) -> None:
         """Check your or someone else's CRINGO! stats!
         Stats will not be counted for incomplete games.

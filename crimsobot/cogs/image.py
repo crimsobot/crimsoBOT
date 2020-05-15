@@ -211,6 +211,16 @@ class Image(commands.Cog):
         await prompt.delete()
         await ctx.send(file=discord.File(fp, 'verpingt.png'))
 
+    @commands.command(hidden=True)
+    async def lateralus(self, ctx: commands.Context, image: Optional[str] = None) -> None:
+        fp = await imagetools.lateralus_cover(ctx, image)
+        await ctx.send(file=discord.File(fp, 'lateralus.png'))
+
+    @commands.command(hidden=True)
+    async def aenima(self, ctx: commands.Context, image: Optional[str] = None) -> None:
+        fp = await imagetools.aenima_cover(ctx, image)
+        await ctx.send(file=discord.File(fp, 'aenima.png'))
+
 
 def setup(bot: CrimsoBOT) -> None:
     bot.add_cog(Image(bot))
