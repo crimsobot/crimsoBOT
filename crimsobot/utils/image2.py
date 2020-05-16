@@ -519,7 +519,8 @@ async def process_image(ctx: Context, image: Optional[str], effect: str, arg: Op
             'acidify': acid,
         }
 
-        img_out = await function_dict[effect](img.convert('RGBA'), arg)
+        # TODO: how do we type-hint function_dict properly?
+        img_out = await function_dict[effect](img.convert('RGBA'), arg)  # type: ignore
         frame_list.append(img_out)
 
     fp = image_to_buffer(frame_list, tuple(durations))
