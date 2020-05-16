@@ -32,10 +32,10 @@ def gif_frame_transparency(img: Image.Image) -> Image.Image:
     return img
 
 
-def image_to_buffer(list_im: List[Image.Image], durations: Tuple[Optional[int]] = ()) -> BytesIO:
+def image_to_buffer(list_im: List[Image.Image], durations: Optional[Tuple[int, ...]] = None) -> BytesIO:
     fp = BytesIO()
 
-    if len(durations) == 0:
+    if not durations:
         list_im[0].save(fp, 'PNG')
     else:
         giffed_frames = []
