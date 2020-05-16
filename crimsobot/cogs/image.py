@@ -120,6 +120,8 @@ class Image(commands.Cog):
             raise commands.BadArgument('Number of hits is out of bounds.')
 
         fp = await imagetools2.process_image(ctx, image, 'acidify', number_of_hits)
+        if fp is None:
+            return
 
         # pluralize 'hit' if need be
         ess = '' if number_of_hits == 1 else 's'
@@ -146,22 +148,25 @@ class Image(commands.Cog):
     async def needping(self, ctx: commands.Context, image: Optional[str] = None) -> None:
         """SOMEONE needs PING. User mention, attachment, link, or emoji."""
 
-        fp = await imagetools.fishe(ctx, image)
-        await ctx.send(file=discord.File(fp, 'needping.png'))
+        fp = await imagetools2.process_image(ctx, image, 'fishe')
+        if fp:
+            await ctx.send(file=discord.File(fp, 'needping.gif'))
 
     @commands.command()
     async def needban(self, ctx: commands.Context, image: Optional[str] = None) -> None:
         """SOMEONE needs BAN. User mention, attachment, link, or emoji."""
 
-        fp = await imagetools.ban_overlay(ctx, image)
-        await ctx.send(file=discord.File(fp, 'needban.png'))
+        fp = await imagetools2.process_image(ctx, image, 'ban')
+        if fp:
+            await ctx.send(file=discord.File(fp, 'needban.gif'))
 
     @commands.command()
     async def xokked(self, ctx: commands.Context, image: Optional[str] = None) -> None:
         """Get xokked! User mention, attachment, link, or emoji."""
 
-        fp = await imagetools.xok(ctx, image)
-        await ctx.send(file=discord.File(fp, 'xokked.png'))
+        fp = await imagetools2.process_image(ctx, image, 'xok')
+        if fp:
+            await ctx.send(file=discord.File(fp, 'xokked.gif'))
 
     @commands.command(aliases=['pingbadge'])
     async def verpingt(self, ctx: commands.Context, image: Optional[str] = None) -> None:
@@ -203,23 +208,29 @@ class Image(commands.Cog):
             position = int(msg.content)
 
         # send to pingbadge
-        fp = await imagetools.pingbadge(ctx, image, position)
+        fp = await imagetools2.process_image(ctx, image, 'pingbadge', position)
+        if fp is None:
+            return
 
         # delete prompt and vote, send image
         if msg is not None:
             await msg.delete()
         await prompt.delete()
-        await ctx.send(file=discord.File(fp, 'verpingt.png'))
+        await ctx.send(file=discord.File(fp, 'verpingt.gif'))
 
     @commands.command(hidden=True)
     async def lateralus(self, ctx: commands.Context, image: Optional[str] = None) -> None:
+
         fp = await imagetools2.process_image(ctx, image, 'lateralus')
-        await ctx.send(file=discord.File(fp, 'lateralus.gif'))
+        if fp:
+            await ctx.send(file=discord.File(fp, 'lateralus.gif'))
 
     @commands.command(hidden=True)
     async def aenima(self, ctx: commands.Context, image: Optional[str] = None) -> None:
-        fp = await imagetools.aenima_cover(ctx, image)
-        await ctx.send(file=discord.File(fp, 'aenima.png'))
+
+        fp = await imagetools2.process_image(ctx, image, 'aenima')
+        if fp:
+            await ctx.send(file=discord.File(fp, 'aenima.gif'))
 
 
 def setup(bot: CrimsoBOT) -> None:

@@ -19,16 +19,33 @@ from crimsobot.utils import tools as c
 from crimsobot.utils.color import hex_to_rgb
 
 
-def image_to_buffer(list_im: List[Image.Image], durations: Tuple[int]) -> BytesIO:
+def gif_frame_transparency(img: Image.Image) -> Image.Image:
+    # get alpha mask
+    alpha = img.convert('RGBA').split()[-1]
+    # convert back to P mode but only using 255 of available 256 colors
+    img = img.convert('RGB').convert('P', palette=Image.ADAPTIVE, colors=255)
+    # set all pixel values below 128 to 255 and the rest to 0
+    mask = Image.eval(alpha, lambda a: 255 if a <= 88 else 0)
+    # paste the color of index 255 and use alpha as a mask
+    img.paste(255, mask.convert('L'))  # the transparency index is now 255
+
+    return img
+
+
+def image_to_buffer(list_im: List[Image.Image], durations: Tuple[Optional[int]] = ()) -> BytesIO:
     fp = BytesIO()
 
     if len(durations) == 0:
         list_im[0].save(fp, 'PNG')
     else:
-        list_im[0].save(fp, format='GIF', transparency=0, append_images=list_im[1:], save_all=True, duration=durations, loop=0, disposal=2)
+        giffed_frames = []
+        for frame in list_im:
+            new_frame = gif_frame_transparency(frame)
+            giffed_frames.append(new_frame)
+        giffed_frames[0].save(fp, format='GIF', transparency=255, append_images=giffed_frames[1:],
+                              save_all=True, duration=durations, loop=0, disposal=2)
 
     fp.seek(0)
-
     return fp
 
 
@@ -142,7 +159,8 @@ def make_color_img(hex_str: str) -> BytesIO:
 
     img = Image.new('RGB', (300, 100), color)
 
-    return image_to_buffer(img, 'JPEG')
+    fp = image_to_buffer(img)
+    return fp
 
 
 def boop(the_booper: str, the_booped: str) -> BytesIO:
@@ -185,22 +203,20 @@ def boop(the_booper: str, the_booped: str) -> BytesIO:
     draw.text((10, 450), the_booper, font=f, fill=(255, 255, 255))
     img.paste(ImageOps.colorize(w, (0, 0, 0), (255, 255, 255)), (370, 0), w)
 
-    return image_to_buffer(img, 'JPEG')
+    return image_to_buffer(img)
 
 
-async def fishe(ctx: Context, user_input: Optional[str]) -> BytesIO:
-    img = await fetch_image(ctx, user_input)
+async def fishe(img: Image.Image, arg: None) -> Image.Image:
     img = img.convert('RGBA')
     img = img.resize((71, 105), resample=Image.BICUBIC)
 
     base = Image.open(c.clib_path_join('img', 'fishe_on_head.png'))
     base.paste(img, (7, 4))
 
-    return image_to_buffer(base, 'PNG')
+    return base
 
 
-async def xok(ctx: Context, user_input: Optional[str]) -> BytesIO:
-    img = await fetch_image(ctx, user_input)
+async def xok(img: Image.Image, arg: None) -> Image.Image:
     img = img.convert('RGBA')
 
     width, height = img.size
@@ -211,11 +227,10 @@ async def xok(ctx: Context, user_input: Optional[str]) -> BytesIO:
     base = Image.open(c.clib_path_join('img', 'xokked_base.png'))
     base.paste(img, (30, 118 - int(height / 2)))
 
-    return image_to_buffer(base, 'PNG')
+    return base
 
 
-async def ban_overlay(ctx: Context, user_input: Optional[str]) -> BytesIO:
-    img = await fetch_image(ctx, user_input)
+async def ban_overlay(img: Image.Image, arg: None) -> Image.Image:
     img = img.convert('RGBA')
 
     width, height = img.size
@@ -229,11 +244,11 @@ async def ban_overlay(ctx: Context, user_input: Optional[str]) -> BytesIO:
 
     img.paste(ban, (0, 0), ban)
 
-    return image_to_buffer(img, 'PNG')
+    return img
 
 
-async def pingbadge(ctx: Context, user_input: Optional[str], position: int) -> BytesIO:
-    img = await fetch_image(ctx, user_input)
+async def pingbadge(img: Image.Image, position: int) -> Image.Image:
+    # resize input image
     img = img.convert('RGBA')
 
     width, height = img.size
@@ -259,10 +274,12 @@ async def pingbadge(ctx: Context, user_input: Optional[str], position: int) -> B
 
     img.paste(badge, corner, badge)
 
-    return image_to_buffer(img, 'PNG')
+    return img
 
 
-async def lateralus_cover(img: Image.Image, arg: None) -> BytesIO:
+async def lateralus_cover(img: Image.Image, arg: None) -> Image.Image:
+    img = img.convert('RGBA')
+
     # 1. determine user image size, resize to fit in its place
     width, height = img.size
     ratio = width / 333
@@ -270,36 +287,18 @@ async def lateralus_cover(img: Image.Image, arg: None) -> BytesIO:
     # get new size
     width, height = img.size
 
-    # alpha mask
-    alpha = img.convert('RGBA').split()[-1]
-
-    # this is unnecessary but it's here to mimic acid(), which works correctly
-    new_img_fp  = BytesIO()
-    img.save(new_img_fp, 'PNG')
-    new_img_fp.seek(0)
-
-    # open as PIL image to apply alpha mask
-    new_img = Image.open(new_img_fp).convert('P')
-
-    # a lot of steps here are commented out just to try one thing at a time
     # 2. paste into cover back (462 x 462 pixels)
-    back = Image.new('RGBA', (462, 462), (0, 0, 0, 0))
-    # lat_back = Image.open(c.clib_path_join('img', 'lateralus_back.png'))
-    # back.paste(lat_back, (0, 0), lat_back)
-    back.paste(new_img, (65, 129), alpha)
+    back = Image.open(c.clib_path_join('img', 'lateralus_back.png'))
+    back.paste(img, (65, 129), img)
 
     # 3. paste wordmark over result
-    # wordmark = Image.open(c.clib_path_join('img', 'lateralus_wordmark.png'))
-    # back.paste(wordmark, (0, 0), wordmark)
-
+    wordmark = Image.open(c.clib_path_join('img', 'lateralus_wordmark.png'))
+    back.paste(wordmark, (0, 0), wordmark)
+    back.save('back.png')
     return back
 
 
-async def aenima_cover(ctx: Context, user_input: Optional[str]) -> BytesIO:
-    # grab user image and covert to RGBA
-    img = await fetch_image(ctx, user_input)
-    img = img.convert('RGBA')
-
+async def aenima_cover(img: Image.Image, arg: None) -> Image.Image:
     # 1. determine user image size, resize to fit in its place
     width, height = img.size
     ratio = width / 180
@@ -316,7 +315,7 @@ async def aenima_cover(ctx: Context, user_input: Optional[str]) -> BytesIO:
     cover = Image.open(c.clib_path_join('img', 'aenima_cover.png'))
     bg.alpha_composite(cover, (0, 0))
 
-    return image_to_buffer(bg, 'PNG')
+    return bg
 
 
 def quantizetopalette(silf: Image, palette: Image) -> Image.Image:
@@ -417,7 +416,7 @@ def make_mosaic(colors: List[int]) -> BytesIO:
             mosaic.paste(tiles[k], (i, j))
             k = k + 1
 
-    return image_to_buffer(mosaic, 'PNG')
+    return image_to_buffer(mosaic)
 
 
 async def get_image_palette(ctx: Context, n: int, user_input: Optional[str]) -> Tuple[str, BytesIO, BytesIO]:
@@ -438,7 +437,7 @@ async def get_image_palette(ctx: Context, n: int, user_input: Optional[str]) -> 
     background.paste(img, mask=img.split()[3])  # 3 is the alpha channel
 
     img = background.quantize(colors=n, method=1, kmeans=n)
-    resample = image_to_buffer(img, 'PNG')
+    resample = image_to_buffer(img)
 
     img_colors = img.convert('RGB').getcolors()
     img_colors = sorted(img_colors, key=lambda tup: tup[0], reverse=True)
@@ -454,17 +453,18 @@ async def get_image_palette(ctx: Context, n: int, user_input: Optional[str]) -> 
     return ' '.join(hex_colors), mosaic, resample
 
 
-async def acid(img: Image.Image, window: int) -> BytesIO:
-    # resize if too large
+async def acid(img: Image.Image, window: int) -> Image.Image:
+    # get image size, resize if too big
     width, height = img.size
     if max(width, height) > 500:
         ratio = max(width, height) / 500
         img = img.resize((int(width / ratio), int(height / ratio)), resample=Image.BICUBIC)
 
-    # alpha mask
+    # alpha mask (for later)
     alpha = img.convert('RGBA').split()[-1]
+    img = img.convert('RGB')
 
-    # open image as raster
+    # open as raster
     raster = plt.pil_to_array(img)
 
     # create acidify kernel
@@ -483,33 +483,44 @@ async def acid(img: Image.Image, window: int) -> BytesIO:
     acid_raster_fp.seek(0)
 
     # open as PIL image to apply alpha mask
-    img_acid = Image.open(acid_raster_fp).convert('P')
+    img = Image.open(acid_raster_fp)
+    img.putalpha(alpha)
 
-    new_image = Image.new('RGBA', img.size, (54, 57, 63, 0))
-    new_image.paste(img_acid, (0, 0), alpha)
-
-    return new_image
+    return img
 
 
-async def process_image(ctx: Context, image: Optional[str], effect: str, arg: Optional[int] = None) -> BytesIO:
+async def process_image(ctx: Context, image: Optional[str], effect: str, arg: Optional[int] = None
+                        ) -> Optional[BytesIO]:
     # grab user image and covert to RGBA
     img = await fetch_image(ctx, image)
 
+    # if too many frames, kick it out
+    if (getattr(img, 'is_animated', False)) and img.n_frames > 50:
+        await ctx.send('`Too many frames!`', delete_after=10)
+        return None
+
+    # this will only loop once for still images
     frame_list, durations = [], []
     for _ in ImageSequence.Iterator(img):
         # if not animated, will throw KeyError
         try:
             durations.append(img.info['duration'])
         except KeyError:
+            # an empty tuple for durations tells image_to_buffer that image is still
             pass
 
         function_dict = {
+            'fishe': fishe,
+            'xok': xok,
+            'ban': ban_overlay,
+            'pingbadge': pingbadge,
             'lateralus': lateralus_cover,
+            'aenima': aenima_cover,
             'acidify': acid,
-            }
+        }
 
         img_out = await function_dict[effect](img.convert('RGBA'), arg)
-
         frame_list.append(img_out)
 
-    return(image_to_buffer(frame_list, tuple(durations)))
+    fp = image_to_buffer(frame_list, tuple(durations))
+    return fp
