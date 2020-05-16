@@ -504,7 +504,8 @@ async def process_image(ctx: Context, image: Optional[str], effect: str, arg: Op
     for _ in ImageSequence.Iterator(img):
         # if not animated, will throw KeyError
         try:
-            durations.append(img.info['duration'])
+            duration = img.info['duration']  # type: int
+            durations.append(duration)
         except KeyError:
             # an empty tuple for durations tells image_to_buffer that image is still
             pass
