@@ -1,3 +1,5 @@
+import asyncio
+import functools
 import os
 from io import BytesIO
 from typing import List, Optional, Tuple
@@ -294,7 +296,7 @@ async def lateralus_cover(img: Image.Image, arg: None) -> Image.Image:
     # 3. paste wordmark over result
     wordmark = Image.open(c.clib_path_join('img', 'lateralus_wordmark.png'))
     back.paste(wordmark, (0, 0), wordmark)
-    back.save('back.png')
+
     return back
 
 
@@ -453,7 +455,7 @@ async def get_image_palette(ctx: Context, n: int, user_input: Optional[str]) -> 
     return ' '.join(hex_colors), mosaic, resample
 
 
-async def acid(img: Image.Image, window: int) -> Image.Image:
+def acid(img: Image.Image, window: int) -> Image.Image:
     # get image size, resize if too big
     width, height = img.size
     if max(width, height) > 500:
@@ -489,16 +491,57 @@ async def acid(img: Image.Image, window: int) -> Image.Image:
     return img
 
 
-async def process_image(ctx: Context, image: Optional[str], effect: str, arg: Optional[int] = None
-                        ) -> Optional[BytesIO]:
-    # grab user image and covert to RGBA
-    img = await fetch_image(ctx, image)
+# async def process_image(ctx: Context, image: Optional[str], effect: str, arg: Optional[int] = None
+#                         ) -> Optional[BytesIO]:
+#     # grab user image and covert to RGBA
+#     img = await fetch_image(ctx, image)
 
-    # if too many frames, kick it out
-    if (getattr(img, 'is_animated', False)) and img.n_frames > 50:
-        await ctx.send('`Too many frames!`', delete_after=10)
-        return None
+#     # if too many frames, kick it out
+#     if (getattr(img, 'is_animated', False)) and img.n_frames > 50:
+#         await ctx.send('`Too many frames!`', delete_after=10)
+#         return None
 
+#     # this will only loop once for still images
+#     frame_list, durations = [], []
+#     for _ in ImageSequence.Iterator(img):
+#         # if not animated, will throw KeyError
+#         try:
+#             duration = img.info['duration']  # type: int
+#             durations.append(duration)
+#         except KeyError:
+#             # an empty tuple for durations tells image_to_buffer that image is still
+#             pass
+
+#         function_dict = {
+#             'fishe': fishe,
+#             'xok': xok,
+#             'ban': ban_overlay,
+#             'pingbadge': pingbadge,
+#             'lateralus': lateralus_cover,
+#             'aenima': aenima_cover,
+#             'acidify': acid,
+#         }  # Mapping[str, Awaitable]
+
+#         # TODO: how do we type-hint function_dict properly?
+#         img_out = await function_dict[effect](img.convert('RGBA'), arg)  # type: ignore
+#         frame_list.append(img_out)
+
+#     fp = await image_to_buffer(frame_list, tuple(durations))
+#     return fp
+
+
+async def executor_function(sync_function):
+    @functools.wraps(sync_function)
+    async def sync_wrapper(*args, **kwargs):
+        loop = asyncio.get_event_loop()
+        reconstructed_function = functools.partial(sync_function, *args, **kwargs)
+        return loop.run_in_executor(None, reconstructed_function)
+
+    return await sync_wrapper
+
+
+# @executor_function
+def process_lower_level(img, effect, arg):
     # this will only loop once for still images
     frame_list, durations = [], []
     for _ in ImageSequence.Iterator(img):
@@ -518,11 +561,24 @@ async def process_image(ctx: Context, image: Optional[str], effect: str, arg: Op
             'lateralus': lateralus_cover,
             'aenima': aenima_cover,
             'acidify': acid,
-        }
+        }  # Mapping[str, Awaitable]
 
-        # TODO: how do we type-hint function_dict properly?
-        img_out = await function_dict[effect](img.convert('RGBA'), arg)  # type: ignore
+        # these are no longer coroutines
+        img_out = function_dict[effect](img.convert('RGBA'), arg)  # type: ignore
         frame_list.append(img_out)
 
     fp = image_to_buffer(frame_list, tuple(durations))
     return fp
+
+
+async def process_image(ctx: Context, image: Optional[str], effect: str, arg: Optional[int] = None
+                        ) -> Optional[BytesIO]:
+    # grab user image and covert to RGBA
+    img = await fetch_image(ctx, image)
+
+    # if too many frames, kick it out
+    if (getattr(img, 'is_animated', False)) and img.n_frames > 50:
+        await ctx.send('`Too many frames!`', delete_after=10)
+        return None
+
+    return await executor_function(process_lower_level(img, effect, arg))
