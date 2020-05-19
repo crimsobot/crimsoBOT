@@ -1,8 +1,6 @@
-import asyncio
 import os
-import signal
 from io import BytesIO
-from typing import Any, Awaitable, List, Optional, Tuple
+from typing import Any, Callable, List, Mapping, Optional, Tuple
 
 import aiofiles
 import aiohttp
@@ -34,7 +32,8 @@ def gif_frame_transparency(img: Image.Image) -> Image.Image:
     return img
 
 
-def image_to_buffer(image_list: List[Image.Image], durations: Optional[Tuple[int, ...]] = None) -> BytesIO:
+def image_to_buffer(image_list: List[Image.Image], durations: Optional[Tuple[int, ...]] = None,
+                    loops: Optional[bool] = None) -> BytesIO:
     fp = BytesIO()
 
     if not durations:
@@ -44,8 +43,12 @@ def image_to_buffer(image_list: List[Image.Image], durations: Optional[Tuple[int
         for frame in image_list:
             new_frame = gif_frame_transparency(frame)
             giffed_frames.append(new_frame)
-        giffed_frames[0].save(fp, format='GIF', transparency=255, append_images=giffed_frames[1:],
-                              save_all=True, duration=durations, loop=0, disposal=2)
+        if loops:
+            giffed_frames[0].save(fp, format='GIF', transparency=255, append_images=giffed_frames[1:],
+                                  save_all=True, duration=durations, loop=0, disposal=2)
+        else:
+            giffed_frames[0].save(fp, format='GIF', transparency=255, append_images=giffed_frames[1:],
+                                  save_all=True, duration=durations, disposal=2)
 
     fp.seek(0)
     return fp
@@ -495,6 +498,15 @@ def resize_img(img: Image.Image, scale: float) -> Image.Image:
 def process_lower_level(img: Image.Image, effect: str, arg: int) -> BytesIO:
     # this will only loop once for still images
     frame_list, durations = [], []
+
+    # if a GIF loops, it will have the attribute loop = 0; if not, then attribute does not exist
+    try:
+        img.info['loop']
+        image_loop = True
+    except KeyError:
+        image_loop = False
+        pass
+
     for _ in ImageSequence.Iterator(img):
         # if not animated, will throw KeyError
         try:
@@ -504,7 +516,7 @@ def process_lower_level(img: Image.Image, effect: str, arg: int) -> BytesIO:
             # an empty tuple for durations tells image_to_buffer that image is still
             pass
 
-        function_dict = {
+        function_dict: Mapping[str, Callable] = {
             'acid': make_acid_img,
             'aenima': make_aenima_img,
             'lateralus': make_lateralus_img,
@@ -513,44 +525,47 @@ def process_lower_level(img: Image.Image, effect: str, arg: int) -> BytesIO:
             'pingbadge': make_pingbadge_img,
             'xokked': make_xokked_img,
             'resize': resize_img,
-        }  # Mapping[str, Awaitable]
+        }
 
         # these are no longer coroutines
         img_out = function_dict[effect](img.convert('RGBA'), arg)  # type: ignore
         frame_list.append(img_out)
 
-    fp = image_to_buffer(frame_list, tuple(durations))
+    fp = image_to_buffer(frame_list, tuple(durations), image_loop)
 
     return fp
 
 
-def taking_a_while(signum, frame):
-    print('`pls to hold...`')
-
-
 async def process_image(ctx: Context, image: Optional[str], effect: str, arg: Optional[int] = None) -> Any:
-    # this is used to tell user if they will need to wait
-    signal.signal(signal.SIGALRM, taking_a_while)
-    signal.alarm(2)
-
     # grab user image and covert to RGBA
     img = await fetch_image(ctx, image)
 
+    msg = await ctx.send('`{}: pls to hold...`'.format(ctx.author))
+
     # if too many frames, kick it out
-    if (getattr(img, 'is_animated', False)) and img.n_frames > 100:
+    if (getattr(img, 'is_animated', False)) and img.n_frames > 250:
         await ctx.send('`Too many frames!`', delete_after=10)
         return None
 
     fp = await process_lower_level(img, effect, arg)
+
+    await msg.edit(content='`{}: pls to hold...image processed!`'.format(ctx.author))
 
     # if file too large to send via Discord, then resize
     n_bytes = fp.getbuffer().nbytes
     max_bytes = 8000000
 
     while n_bytes > max_bytes:
+        await msg.edit(content='`{}: pls to hold...image processed! resizing...`'.format(ctx.author))
+        # recursively resize image until it meets Discord filesize limit
         img = Image.open(fp)
         scale = 0.9
         fp = await process_lower_level(img, 'resize', scale)
         n_bytes = fp.getbuffer().nbytes
+
+    try:
+        await msg.delete()
+    except AttributeError:
+        pass
 
     return fp
