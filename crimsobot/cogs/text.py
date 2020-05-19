@@ -43,8 +43,8 @@ class Text(commands.Cog):
         emoji = args[0]
         location_args = args[1:]
 
-        # if an emoji was not specified by user, bigmoji() returns (False, False)
-        emoji_check, _ = imagetools.bigmoji(emoji)
+        # if an emoji was not specified by user, find_emoji_img() returns (False, False)
+        emoji_check, _ = imagetools.find_emoji_img(emoji)
         if not emoji_check:
             # if no emoji specified, then input "emoji" is actually first word of location
             emoji = '<:xok:563825728102334465>'  # default to xok emoji in crimsoBOT server

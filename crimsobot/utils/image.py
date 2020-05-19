@@ -1,6 +1,8 @@
+import asyncio
 import os
+import signal
 from io import BytesIO
-from typing import Any, List, Optional, Tuple
+from typing import Any, Awaitable, List, Optional, Tuple
 
 import aiofiles
 import aiohttp
@@ -32,58 +34,20 @@ def gif_frame_transparency(img: Image.Image) -> Image.Image:
     return img
 
 
-def image_to_buffer(image_list: List[Image.Image], gif_durations: Optional[Tuple[int, ...]] = None) -> BytesIO:
+def image_to_buffer(image_list: List[Image.Image], durations: Optional[Tuple[int, ...]] = None) -> BytesIO:
+    fp = BytesIO()
 
-    def construct_image(list_im: List[Image.Image], durations: Optional[Tuple[int, ...]] = None) -> BytesIO:
-        fp = BytesIO()
+    if not durations:
+        image_list[0].save(fp, 'PNG')
+    else:
+        giffed_frames = []
+        for frame in image_list:
+            new_frame = gif_frame_transparency(frame)
+            giffed_frames.append(new_frame)
+        giffed_frames[0].save(fp, format='GIF', transparency=255, append_images=giffed_frames[1:],
+                              save_all=True, duration=durations, loop=0, disposal=2)
 
-        if not durations:
-            img_format = 'PNG'
-            list_im[0].save(fp, img_format)
-        else:
-            img_format = 'GIF'
-            giffed_frames = []
-            for frame in list_im:
-                new_frame = gif_frame_transparency(frame)
-                giffed_frames.append(new_frame)
-            giffed_frames[0].save(fp, format=img_format, transparency=255, append_images=giffed_frames[1:],
-                                  save_all=True, duration=durations, loop=0, disposal=2)
-
-        fp.seek(0)
-        return fp
-
-    fp = construct_image(image_list, gif_durations)
-
-    # check filesize to see if it can be sent
-    n_bytes = fp.getbuffer().nbytes
-    max_bytes = 8000000
-
-    while n_bytes > max_bytes:
-        img = Image.open(fp)
-
-        scale = max_bytes / n_bytes / 1.25
-
-        frame_list, durations = [], []
-        for _ in ImageSequence.Iterator(img):
-            # if not animated, will throw KeyError
-            try:
-                duration = img.info['duration']  # type: int
-                durations.append(duration)
-            except KeyError:
-                # an empty tuple for durations tells image_to_buffer that image is still
-                pass
-
-            img_out = resize_img(img, scale)  # type: ignore
-            frame_list.append(img_out)
-
-        fp = construct_image(frame_list, durations)
-        n_bytes = fp.getbuffer().nbytes
-        print('n_bytes: {}, max_bytes: {}, test: {}'.format(n_bytes, max_bytes, n_bytes > max_bytes))
-
-        if n_bytes < max_bytes:
-            print('break')
-            break
-
+    fp.seek(0)
     return fp
 
 
@@ -201,7 +165,7 @@ def make_color_img(hex_str: str) -> BytesIO:
     return fp
 
 
-def make_boop_img(the_booper: str, the_booped: str) -> List[Image.Image]:
+def make_boop_img(the_booper: str, the_booped: str) -> BytesIO:
     # font selection
     f = ImageFont.truetype(c.clib_path_join('img', 'Roboto-BlackItalic.ttf'), 36)
 
@@ -555,12 +519,20 @@ def process_lower_level(img: Image.Image, effect: str, arg: int) -> BytesIO:
         img_out = function_dict[effect](img.convert('RGBA'), arg)  # type: ignore
         frame_list.append(img_out)
 
-        fp = image_to_buffer(frame_list, durations)
+    fp = image_to_buffer(frame_list, tuple(durations))
 
     return fp
 
 
-async def process_image(ctx: Optional[Context], image: Optional[str], effect: str, arg: Optional[int] = None) -> Any:
+def taking_a_while(signum, frame):
+    print('`pls to hold...`')
+
+
+async def process_image(ctx: Context, image: Optional[str], effect: str, arg: Optional[int] = None) -> Any:
+    # this is used to tell user if they will need to wait
+    signal.signal(signal.SIGALRM, taking_a_while)
+    signal.alarm(2)
+
     # grab user image and covert to RGBA
     img = await fetch_image(ctx, image)
 
@@ -569,4 +541,16 @@ async def process_image(ctx: Optional[Context], image: Optional[str], effect: st
         await ctx.send('`Too many frames!`', delete_after=10)
         return None
 
-    return await process_lower_level(img, effect, arg)
+    fp = await process_lower_level(img, effect, arg)
+
+    # if file too large to send via Discord, then resize
+    n_bytes = fp.getbuffer().nbytes
+    max_bytes = 8000000
+
+    while n_bytes > max_bytes:
+        img = Image.open(fp)
+        scale = 0.9
+        fp = await process_lower_level(img, 'resize', scale)
+        n_bytes = fp.getbuffer().nbytes
+
+    return fp
