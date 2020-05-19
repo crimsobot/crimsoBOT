@@ -1,7 +1,9 @@
+import asyncio
+import functools
 import logging
 import os
 import random
-from typing import Any, List, Optional, Union
+from typing import Any, Awaitable, Callable, List, Optional, Union
 
 from discord import ChannelType, DMChannel, Embed, GroupChannel, Guild, Member, TextChannel, User
 
@@ -22,6 +24,16 @@ class MessageableAlreadyJoined(Exception):
             return 'MessageableAlreadyJoined, {0} '.format(self.message)
         else:
             return 'MessagableAlreadyJoined: channel/direct message/user already using function'
+
+
+def executor_function(sync_function: Callable) -> Callable:
+    @functools.wraps(sync_function)
+    async def sync_wrapper(*args: Any, **kwargs: Any) -> Awaitable[Any]:
+        loop = asyncio.get_event_loop()
+        reconstructed_function = functools.partial(sync_function, *args, **kwargs)
+        return await loop.run_in_executor(None, reconstructed_function)
+
+    return sync_wrapper
 
 
 def checkin(messageable: Messageables, running_list: List[int]) -> bool:

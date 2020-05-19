@@ -7,3 +7,6 @@ __pycache__/
 config.py
 .vscode/settings.json
 .vscode/.ropeproject/objectdb
+crimsobot/utils/image2.py
+crimsobot/utils/image_old.py
+crimsobot/utils/image2.py

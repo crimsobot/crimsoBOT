@@ -1,8 +1,6 @@
-import asyncio
-import functools
 import os
 from io import BytesIO
-from typing import List, Optional, Tuple
+from typing import Any, List, Optional, Tuple
 
 import aiofiles
 import aiohttp
@@ -165,7 +163,7 @@ def make_color_img(hex_str: str) -> BytesIO:
     return fp
 
 
-def boop(the_booper: str, the_booped: str) -> BytesIO:
+def boop(the_booper: str, the_booped: str) -> List[Image.Image]:
     # font selection
     f = ImageFont.truetype(c.clib_path_join('img', 'Roboto-BlackItalic.ttf'), 36)
 
@@ -205,119 +203,9 @@ def boop(the_booper: str, the_booped: str) -> BytesIO:
     draw.text((10, 450), the_booper, font=f, fill=(255, 255, 255))
     img.paste(ImageOps.colorize(w, (0, 0, 0), (255, 255, 255)), (370, 0), w)
 
-    return image_to_buffer(img)
+    fp = image_to_buffer([img_in_list])
 
-
-async def fishe(img: Image.Image, arg: None) -> Image.Image:
-    img = img.convert('RGBA')
-    img = img.resize((71, 105), resample=Image.BICUBIC)
-
-    base = Image.open(c.clib_path_join('img', 'fishe_on_head.png'))
-    base.paste(img, (7, 4))
-
-    return base
-
-
-async def xok(img: Image.Image, arg: None) -> Image.Image:
-    img = img.convert('RGBA')
-
-    width, height = img.size
-    ratio = width / 120
-    img = img.resize((int(width / ratio), int(height / ratio)), resample=Image.BICUBIC)
-
-    width, height = img.size
-    base = Image.open(c.clib_path_join('img', 'xokked_base.png'))
-    base.paste(img, (30, 118 - int(height / 2)))
-
-    return base
-
-
-async def ban_overlay(img: Image.Image, arg: None) -> Image.Image:
-    img = img.convert('RGBA')
-
-    width, height = img.size
-    if max(width, height) > 500:
-        ratio = max(width, height) / 500
-        img = img.resize((int(width / ratio), int(height / ratio)), resample=Image.BICUBIC)
-
-    width, height = img.size
-    ban = Image.open(c.clib_path_join('img', 'ban.png'))
-    ban = ban.resize((width, height), resample=Image.BICUBIC)
-
-    img.paste(ban, (0, 0), ban)
-
-    return img
-
-
-async def pingbadge(img: Image.Image, position: int) -> Image.Image:
-    # resize input image
-    img = img.convert('RGBA')
-
-    width, height = img.size
-    if max(width, height) > 500:
-        ratio = max(width, height) / 500
-        img = img.resize((int(width / ratio), int(height / ratio)), resample=Image.BICUBIC)
-
-    width, height = img.size
-    size = int(width / 3)
-    badge = Image.open(c.clib_path_join('img', 'roundping.png'))
-    badge = badge.resize((size, size), resample=Image.BICUBIC)
-
-    if position == 1:
-        corner = (0, 0)
-    elif position == 2:
-        corner = (width - size, 0)
-    elif position == 3:
-        corner = (0, height - size)
-    elif position == 4:
-        corner = (width - size, height - size)
-    else:
-        raise BadArgument('Invalid position.')
-
-    img.paste(badge, corner, badge)
-
-    return img
-
-
-async def lateralus_cover(img: Image.Image, arg: None) -> Image.Image:
-    img = img.convert('RGBA')
-
-    # 1. determine user image size, resize to fit in its place
-    width, height = img.size
-    ratio = width / 333
-    img = img.resize((int(width / ratio), int(height / ratio)), resample=Image.BICUBIC)
-    # get new size
-    width, height = img.size
-
-    # 2. paste into cover back (462 x 462 pixels)
-    back = Image.open(c.clib_path_join('img', 'lateralus_back.png'))
-    back.paste(img, (65, 129), img)
-
-    # 3. paste wordmark over result
-    wordmark = Image.open(c.clib_path_join('img', 'lateralus_wordmark.png'))
-    back.paste(wordmark, (0, 0), wordmark)
-
-    return back
-
-
-async def aenima_cover(img: Image.Image, arg: None) -> Image.Image:
-    # 1. determine user image size, resize to fit in its place
-    width, height = img.size
-    ratio = width / 180
-    img = img.resize((int(width / ratio), int(height / ratio)), resample=Image.BICUBIC)
-    # get new size
-    width, height = img.size
-
-    # 2. paste over white bg
-    bg = Image.new('RGBA', (500, 500), (255, 255, 255, 255))
-    position = int(250 - height/2)
-    bg.paste(img, (163, position), img)
-
-    # 3. paste cover over result
-    cover = Image.open(c.clib_path_join('img', 'aenima_cover.png'))
-    bg.alpha_composite(cover, (0, 0))
-
-    return bg
+    return fp
 
 
 def quantizetopalette(silf: Image, palette: Image) -> Image.Image:
@@ -418,7 +306,9 @@ def make_mosaic(colors: List[int]) -> BytesIO:
             mosaic.paste(tiles[k], (i, j))
             k = k + 1
 
-    return image_to_buffer(mosaic)
+    fp = image_to_buffer(mosaic)
+
+    return fp
 
 
 async def get_image_palette(ctx: Context, n: int, user_input: Optional[str]) -> Tuple[str, BytesIO, BytesIO]:
@@ -453,6 +343,119 @@ async def get_image_palette(ctx: Context, n: int, user_input: Optional[str]) -> 
     mosaic = make_mosaic(colors)
 
     return ' '.join(hex_colors), mosaic, resample
+
+
+# from here and below are the blocking image functions (that suupport GIF) which require the executor_function wrapper
+def fishe(img: Image.Image, arg: None) -> Image.Image:
+    img = img.convert('RGBA')
+    img = img.resize((71, 105), resample=Image.BICUBIC)
+
+    base = Image.open(c.clib_path_join('img', 'fishe_on_head.png'))
+    base.paste(img, (7, 4))
+
+    return base
+
+
+def xok(img: Image.Image, arg: None) -> Image.Image:
+    img = img.convert('RGBA')
+
+    width, height = img.size
+    ratio = width / 120
+    img = img.resize((int(width / ratio), int(height / ratio)), resample=Image.BICUBIC)
+
+    width, height = img.size
+    base = Image.open(c.clib_path_join('img', 'xokked_base.png'))
+    base.paste(img, (30, 118 - int(height / 2)))
+
+    return base
+
+
+def ban_overlay(img: Image.Image, arg: None) -> Image.Image:
+    img = img.convert('RGBA')
+
+    width, height = img.size
+    if max(width, height) > 500:
+        ratio = max(width, height) / 500
+        img = img.resize((int(width / ratio), int(height / ratio)), resample=Image.BICUBIC)
+
+    width, height = img.size
+    ban = Image.open(c.clib_path_join('img', 'ban.png'))
+    ban = ban.resize((width, height), resample=Image.BICUBIC)
+
+    img.paste(ban, (0, 0), ban)
+
+    return img
+
+
+def pingbadge(img: Image.Image, position: int) -> Image.Image:
+    # resize input image
+    img = img.convert('RGBA')
+
+    width, height = img.size
+    if max(width, height) > 500:
+        ratio = max(width, height) / 500
+        img = img.resize((int(width / ratio), int(height / ratio)), resample=Image.BICUBIC)
+
+    width, height = img.size
+    size = int(width / 3)
+    badge = Image.open(c.clib_path_join('img', 'roundping.png'))
+    badge = badge.resize((size, size), resample=Image.BICUBIC)
+
+    if position == 1:
+        corner = (0, 0)
+    elif position == 2:
+        corner = (width - size, 0)
+    elif position == 3:
+        corner = (0, height - size)
+    elif position == 4:
+        corner = (width - size, height - size)
+    else:
+        raise BadArgument('Invalid position.')
+
+    img.paste(badge, corner, badge)
+
+    return img
+
+
+def lateralus_cover(img: Image.Image, arg: None) -> Image.Image:
+    img = img.convert('RGBA')
+
+    # 1. determine user image size, resize to fit in its place
+    width, height = img.size
+    ratio = width / 333
+    img = img.resize((int(width / ratio), int(height / ratio)), resample=Image.BICUBIC)
+    # get new size
+    width, height = img.size
+
+    # 2. paste into cover back (462 x 462 pixels)
+    back = Image.open(c.clib_path_join('img', 'lateralus_back.png'))
+    back.paste(img, (65, 129), img)
+
+    # 3. paste wordmark over result
+    wordmark = Image.open(c.clib_path_join('img', 'lateralus_wordmark.png'))
+    back.paste(wordmark, (0, 0), wordmark)
+
+    return back
+
+
+def aenima_cover(img: Image.Image, arg: None) -> Image.Image:
+    # 1. determine user image size, resize to fit in its place
+    width, height = img.size
+    ratio = width / 180
+    img = img.resize((int(width / ratio), int(height / ratio)), resample=Image.BICUBIC)
+    # get new size
+    width, height = img.size
+
+    # 2. paste over white bg
+    bg = Image.new('RGBA', (500, 500), (255, 255, 255, 255))
+    position = int(250 - height/2)
+    bg.paste(img, (163, position), img)
+
+    # 3. paste cover over result
+    cover = Image.open(c.clib_path_join('img', 'aenima_cover.png'))
+    bg.alpha_composite(cover, (0, 0))
+
+    return bg
 
 
 def acid(img: Image.Image, window: int) -> Image.Image:
@@ -491,57 +494,8 @@ def acid(img: Image.Image, window: int) -> Image.Image:
     return img
 
 
-# async def process_image(ctx: Context, image: Optional[str], effect: str, arg: Optional[int] = None
-#                         ) -> Optional[BytesIO]:
-#     # grab user image and covert to RGBA
-#     img = await fetch_image(ctx, image)
-
-#     # if too many frames, kick it out
-#     if (getattr(img, 'is_animated', False)) and img.n_frames > 50:
-#         await ctx.send('`Too many frames!`', delete_after=10)
-#         return None
-
-#     # this will only loop once for still images
-#     frame_list, durations = [], []
-#     for _ in ImageSequence.Iterator(img):
-#         # if not animated, will throw KeyError
-#         try:
-#             duration = img.info['duration']  # type: int
-#             durations.append(duration)
-#         except KeyError:
-#             # an empty tuple for durations tells image_to_buffer that image is still
-#             pass
-
-#         function_dict = {
-#             'fishe': fishe,
-#             'xok': xok,
-#             'ban': ban_overlay,
-#             'pingbadge': pingbadge,
-#             'lateralus': lateralus_cover,
-#             'aenima': aenima_cover,
-#             'acidify': acid,
-#         }  # Mapping[str, Awaitable]
-
-#         # TODO: how do we type-hint function_dict properly?
-#         img_out = await function_dict[effect](img.convert('RGBA'), arg)  # type: ignore
-#         frame_list.append(img_out)
-
-#     fp = await image_to_buffer(frame_list, tuple(durations))
-#     return fp
-
-
-async def executor_function(sync_function):
-    @functools.wraps(sync_function)
-    async def sync_wrapper(*args, **kwargs):
-        loop = asyncio.get_event_loop()
-        reconstructed_function = functools.partial(sync_function, *args, **kwargs)
-        return loop.run_in_executor(None, reconstructed_function)
-
-    return await sync_wrapper
-
-
-# @executor_function
-def process_lower_level(img, effect, arg):
+@c.executor_function
+def process_lower_level(img: Image.Image, effect: str, arg: int) -> BytesIO:
     # this will only loop once for still images
     frame_list, durations = [], []
     for _ in ImageSequence.Iterator(img):
@@ -571,14 +525,15 @@ def process_lower_level(img, effect, arg):
     return fp
 
 
-async def process_image(ctx: Context, image: Optional[str], effect: str, arg: Optional[int] = None
-                        ) -> Optional[BytesIO]:
+async def process_image(ctx: Context, image: Optional[str], effect: str, arg: Optional[int] = None) -> Any:
     # grab user image and covert to RGBA
     img = await fetch_image(ctx, image)
 
+    # size = img.st_size
+
     # if too many frames, kick it out
-    if (getattr(img, 'is_animated', False)) and img.n_frames > 50:
+    if (getattr(img, 'is_animated', False)) and img.n_frames > 100:
         await ctx.send('`Too many frames!`', delete_after=10)
         return None
 
-    return await executor_function(process_lower_level(img, effect, arg))
+    return await process_lower_level(img, effect, arg)
