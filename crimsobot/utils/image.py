@@ -15,7 +15,7 @@ from discord.ext.commands import BadArgument, Context
 from scipy.signal import convolve2d
 
 from crimsobot.data.img import color_dict, lookup_emoji, rgb_color_list
-from crimsobot.utils import tools as c
+from crimsobot.utils import games as crimsogames, tools as c
 from crimsobot.utils.color import hex_to_rgb
 
 
@@ -540,12 +540,41 @@ async def process_image(ctx: Context, image: Optional[str], effect: str, arg: Op
     # grab user image and covert to RGBA
     img = await fetch_image(ctx, image)
 
-    msg = await ctx.send('`{}: pls to hold...`'.format(ctx.author))
+    # if GIF, kick out if too many frames; if not, charge per frame
+    frame_limit = 200
+    cost_per_frame = 0.06
 
-    # if too many frames, kick it out
-    if (getattr(img, 'is_animated', False)) and img.n_frames > 250:
-        await ctx.send('`Too many frames!`', delete_after=10)
-        return None
+    if (getattr(img, 'is_animated', False)):
+        if img.n_frames > frame_limit:
+            embed = c.crimbed(
+                title=None,
+                descr='Too many frames! Limit is {}'.format(frame_limit),
+                color_name='orange',
+            )
+            await ctx.send(embed=embed, delete_after=15)
+            return None
+        else:
+            cost = img.n_frames * cost_per_frame
+            bal = await crimsogames.check_balance(ctx.author)
+            if bal < cost:
+                embed = c.crimbed(
+                    title="**GIFs ain't free!**",
+                    descr='\n'.join([
+                        "You can't afford this! GIFs cost **\u20A2{:.2f}** per frame.".format(cost_per_frame),
+                        'GIF cost: **\u20A2{:.2f}** · Your balance: **\u20A2{:.2f}**'.format(cost, bal),
+                    ]),
+                    footer='Play >daily, >cringo, >guessmoji, or >emojistory to win crimsoCOIN!',
+                    thumb_name='weary',
+                    color_name='orange',
+                )
+                await ctx.send(embed=embed, delete_after=20)
+                return None
+            else:
+                # debit the user, credit the bot
+                await crimsogames.win(ctx.author, -cost)
+                await crimsogames.win(ctx.guild.me, cost)
+
+    msg = await ctx.send('`{}: pls to hold...`'.format(ctx.author))
 
     fp = await process_lower_level(img, effect, arg)
 
