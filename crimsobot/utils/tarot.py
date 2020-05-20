@@ -52,7 +52,7 @@ class Card:
         return img
 
     async def get_image_buff(self, reverse: bool = False) -> BytesIO:
-        return image_to_buffer(await self.get_image(reverse), 'PNG')
+        return image_to_buffer([await self.get_image(reverse)])
 
 
 class Deck:
@@ -158,4 +158,4 @@ async def reading(spread: str) -> Tuple[Optional[io.BytesIO], List[str]]:
             card_description = card.name + ' (reversed): ' + card.description_reversed
         interpret.append('**{} ·** {}'.format(position_legend[i], card_description))
 
-    return image_to_buffer(bg, 'PNG'), interpret
+    return image_to_buffer([bg]), interpret

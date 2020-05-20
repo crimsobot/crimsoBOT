@@ -1,6 +1,6 @@
 import os
 from io import BytesIO
-from typing import List, Optional, Tuple
+from typing import Any, Callable, List, Mapping, Optional, Tuple
 
 import aiofiles
 import aiohttp
@@ -10,19 +10,47 @@ from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
 from PIL import ImageOps
+from PIL import ImageSequence
 from discord.ext.commands import BadArgument, Context
 from scipy.signal import convolve2d
 
 from crimsobot.data.img import color_dict, lookup_emoji, rgb_color_list
-from crimsobot.utils import tools as c
+from crimsobot.utils import games as crimsogames, tools as c
 from crimsobot.utils.color import hex_to_rgb
 
 
-def image_to_buffer(im: Image.Image, fmt: str = 'PNG') -> BytesIO:
-    fp = BytesIO()
-    im.save(fp, fmt)
-    fp.seek(0)
+def gif_frame_transparency(img: Image.Image) -> Image.Image:
+    # get alpha mask
+    alpha = img.convert('RGBA').split()[-1]
+    # convert back to P mode but only using 255 of available 256 colors
+    img = img.convert('RGB').convert('P', palette=Image.ADAPTIVE, colors=255)
+    # set all pixel values below 128 to 255 and the rest to 0
+    mask = Image.eval(alpha, lambda a: 255 if a <= 88 else 0)
+    # paste the color of index 255 and use alpha as a mask
+    img.paste(255, mask.convert('L'))  # the transparency index is now 255
 
+    return img
+
+
+def image_to_buffer(image_list: List[Image.Image], durations: Optional[Tuple[int, ...]] = None,
+                    loops: Optional[bool] = None) -> BytesIO:
+    fp = BytesIO()
+
+    if not durations:
+        image_list[0].save(fp, 'PNG')
+    else:
+        giffed_frames = []
+        for frame in image_list:
+            new_frame = gif_frame_transparency(frame)
+            giffed_frames.append(new_frame)
+        if loops:
+            giffed_frames[0].save(fp, format='GIF', transparency=255, append_images=giffed_frames[1:],
+                                  save_all=True, duration=durations, loop=0, disposal=2)
+        else:
+            giffed_frames[0].save(fp, format='GIF', transparency=255, append_images=giffed_frames[1:],
+                                  save_all=True, duration=durations, disposal=2)
+
+    fp.seek(0)
     return fp
 
 
@@ -39,7 +67,7 @@ def remove_unicode_prefix(word: str) -> str:
     return word
 
 
-def bigmoji(emoji: str) -> Tuple[Optional[str], Optional[str]]:
+def find_emoji_img(emoji: str) -> Tuple[Optional[str], Optional[str]]:
     # custom emojis <[a]:emoji_name:emoji_id>
     if emoji.startswith('<:') or emoji.startswith('<a:'):
         ind = emoji.find(':', 3)
@@ -108,7 +136,7 @@ async def fetch_image(ctx: Context, arg: Optional[str]) -> Image.Image:
                 img = await open_img_from_url(arg)
         except Exception:
             # if not an image url, it's probably an emoji
-            big_emoji, emoji_type = bigmoji(arg)
+            big_emoji, emoji_type = find_emoji_img(arg)
             if big_emoji is None:
                 pass
             elif emoji_type == 'file':
@@ -136,10 +164,11 @@ def make_color_img(hex_str: str) -> BytesIO:
 
     img = Image.new('RGB', (300, 100), color)
 
-    return image_to_buffer(img, 'JPEG')
+    fp = image_to_buffer(img)
+    return fp
 
 
-def boop(the_booper: str, the_booped: str) -> BytesIO:
+def make_boop_img(the_booper: str, the_booped: str) -> BytesIO:
     # font selection
     f = ImageFont.truetype(c.clib_path_join('img', 'Roboto-BlackItalic.ttf'), 36)
 
@@ -179,138 +208,8 @@ def boop(the_booper: str, the_booped: str) -> BytesIO:
     draw.text((10, 450), the_booper, font=f, fill=(255, 255, 255))
     img.paste(ImageOps.colorize(w, (0, 0, 0), (255, 255, 255)), (370, 0), w)
 
-    return image_to_buffer(img, 'JPEG')
-
-
-async def fishe(ctx: Context, user_input: Optional[str]) -> BytesIO:
-    img = await fetch_image(ctx, user_input)
-    img = img.convert('RGBA')
-    img = img.resize((71, 105), resample=Image.BICUBIC)
-
-    base = Image.open(c.clib_path_join('img', 'fishe_on_head.png'))
-    base.paste(img, (7, 4))
-
-    return image_to_buffer(base, 'PNG')
-
-
-async def xok(ctx: Context, user_input: Optional[str]) -> BytesIO:
-    img = await fetch_image(ctx, user_input)
-    img = img.convert('RGBA')
-
-    width, height = img.size
-    ratio = width / 120
-    img = img.resize((int(width / ratio), int(height / ratio)), resample=Image.BICUBIC)
-
-    width, height = img.size
-    base = Image.open(c.clib_path_join('img', 'xokked_base.png'))
-    base.paste(img, (30, 118 - int(height / 2)))
-
-    return image_to_buffer(base, 'PNG')
-
-
-async def ban_overlay(ctx: Context, user_input: Optional[str]) -> BytesIO:
-    img = await fetch_image(ctx, user_input)
-    img = img.convert('RGBA')
-
-    width, height = img.size
-    if max(width, height) > 500:
-        ratio = max(width, height) / 500
-        img = img.resize((int(width / ratio), int(height / ratio)), resample=Image.BICUBIC)
-
-    width, height = img.size
-    ban = Image.open(c.clib_path_join('img', 'ban.png'))
-    ban = ban.resize((width, height), resample=Image.BICUBIC)
-
-    img.paste(ban, (0, 0), ban)
-
-    return image_to_buffer(img, 'PNG')
-
-
-async def pingbadge(ctx: Context, user_input: Optional[str], position: int) -> BytesIO:
-    img = await fetch_image(ctx, user_input)
-    img = img.convert('RGBA')
-
-    width, height = img.size
-    if max(width, height) > 500:
-        ratio = max(width, height) / 500
-        img = img.resize((int(width / ratio), int(height / ratio)), resample=Image.BICUBIC)
-
-    width, height = img.size
-    size = int(width / 3)
-    badge = Image.open(c.clib_path_join('img', 'roundping.png'))
-    badge = badge.resize((size, size), resample=Image.BICUBIC)
-
-    if position == 1:
-        corner = (0, 0)
-    elif position == 2:
-        corner = (width - size, 0)
-    elif position == 3:
-        corner = (0, height - size)
-    elif position == 4:
-        corner = (width - size, height - size)
-    else:
-        raise BadArgument('Invalid position.')
-
-    img.paste(badge, corner, badge)
-
-    return image_to_buffer(img, 'PNG')
-
-
-async def lateralus_cover(ctx: Context, user_input: Optional[str]) -> BytesIO:
-    # grab user image and covert to RGBA
-    img = await fetch_image(ctx, user_input)
-    img = img.convert('RGBA')
-
-    # 1. determine user image size, resize to fit in its place
-    width, height = img.size
-    ratio = width / 333
-    img = img.resize((int(width / ratio), int(height / ratio)), resample=Image.BICUBIC)
-    # get new size
-    width, height = img.size
-
-    # 2. paste into cover back (462 x 462 pixels)
-    back = Image.open(c.clib_path_join('img', 'lateralus_back.png'))
-    back.paste(img, (65, 129), img)
-
-    # 3. paste wordmark over result
-    wordmark = Image.open(c.clib_path_join('img', 'lateralus_wordmark.png'))
-    back.paste(wordmark, (0, 0), wordmark)
-
-    return image_to_buffer(back, 'PNG')
-
-
-async def aenima_cover(ctx: Context, user_input: Optional[str]) -> BytesIO:
-    # grab user image and covert to RGBA
-    img = await fetch_image(ctx, user_input)
-    img = img.convert('RGBA')
-
-    # 1. determine user image size, resize to fit in its place
-    width, height = img.size
-    ratio = width / 180
-    img = img.resize((int(width / ratio), int(height / ratio)), resample=Image.BICUBIC)
-    # get new size
-    width, height = img.size
-
-    # 2. paste over white bg
-    bg = Image.new('RGBA', (500, 500), (255, 255, 255, 255))
-    position = int(250 - height/2)
-    bg.paste(img, (163, position), img)
-
-    # 3. paste cover over result
-    cover = Image.open(c.clib_path_join('img', 'aenima_cover.png'))
-    bg.alpha_composite(cover, (0, 0))
-
-    return image_to_buffer(bg, 'PNG')
-
-
-def quantizetopalette(silf: Image, palette: Image) -> Image.Image:
-    """Convert an RGB or L mode image to use a given P image's palette."""
-
-    silf.load()
-    palette.load()  # use palette from reference image made below
-    im = silf.im.convert('P', 0, palette.im)  # 0 = dithering OFF
-
-    return silf._new(im)
+    fp = image_to_buffer([img])
+    return fp
 
 
 async def make_emoji_image(ctx: Context, user_input: Optional[str]) -> List[str]:
@@ -401,7 +300,8 @@ def make_mosaic(colors: List[int]) -> BytesIO:
             mosaic.paste(tiles[k], (i, j))
             k = k + 1
 
-    return image_to_buffer(mosaic, 'PNG')
+    fp = image_to_buffer([mosaic])
+    return fp
 
 
 async def get_image_palette(ctx: Context, n: int, user_input: Optional[str]) -> Tuple[str, BytesIO, BytesIO]:
@@ -422,7 +322,7 @@ async def get_image_palette(ctx: Context, n: int, user_input: Optional[str]) -> 
     background.paste(img, mask=img.split()[3])  # 3 is the alpha channel
 
     img = background.quantize(colors=n, method=1, kmeans=n)
-    resample = image_to_buffer(img, 'PNG')
+    resample = image_to_buffer([img])
 
     img_colors = img.convert('RGB').getcolors()
     img_colors = sorted(img_colors, key=lambda tup: tup[0], reverse=True)
@@ -438,17 +338,16 @@ async def get_image_palette(ctx: Context, n: int, user_input: Optional[str]) -> 
     return ' '.join(hex_colors), mosaic, resample
 
 
-async def acid(ctx: Context, window: int, user_input: Optional[str]) -> BytesIO:
-    img = await fetch_image(ctx, user_input)
-
+# below are the blocking image functions (that suupport GIF) which require the executor_function wrapper
+def make_acid_img(img: Image.Image, window: int) -> Image.Image:
+    # get image size, resize if too big
     width, height = img.size
     if max(width, height) > 500:
         ratio = max(width, height) / 500
         img = img.resize((int(width / ratio), int(height / ratio)), resample=Image.BICUBIC)
 
-    # alpha mask
-    img2 = img.convert('RGBA')
-    alpha = img2.split()[-1]
+    # alpha mask (for later)
+    alpha = img.convert('RGBA').split()[-1]
     img = img.convert('RGB')
 
     # open as raster
@@ -473,4 +372,230 @@ async def acid(ctx: Context, window: int, user_input: Optional[str]) -> BytesIO:
     img = Image.open(acid_raster_fp)
     img.putalpha(alpha)
 
-    return image_to_buffer(img, 'PNG')
+    return img
+
+
+def make_aenima_img(img: Image.Image, arg: None) -> Image.Image:
+    # 1. determine user image size, resize to fit in its place
+    width, height = img.size
+    ratio = width / 180
+    img = img.resize((int(width / ratio), int(height / ratio)), resample=Image.BICUBIC)
+    # get new size
+    width, height = img.size
+
+    # 2. paste over white bg
+    bg = Image.new('RGBA', (500, 500), (255, 255, 255, 255))
+    position = int(250 - height/2)
+    bg.paste(img, (163, position), img)
+
+    # 3. paste cover over result
+    cover = Image.open(c.clib_path_join('img', 'aenima_cover.png'))
+    bg.alpha_composite(cover, (0, 0))
+
+    return bg
+
+
+def make_lateralus_img(img: Image.Image, arg: None) -> Image.Image:
+    img = img.convert('RGBA')
+
+    # 1. determine user image size, resize to fit in its place
+    width, height = img.size
+    ratio = width / 333
+    img = img.resize((int(width / ratio), int(height / ratio)), resample=Image.BICUBIC)
+    # get new size
+    width, height = img.size
+
+    # 2. paste into cover back (462 x 462 pixels)
+    back = Image.open(c.clib_path_join('img', 'lateralus_back.png'))
+    back.paste(img, (65, 129), img)
+
+    # 3. paste wordmark over result
+    wordmark = Image.open(c.clib_path_join('img', 'lateralus_wordmark.png'))
+    back.paste(wordmark, (0, 0), wordmark)
+
+    return back
+
+
+def make_needban_img(img: Image.Image, arg: None) -> Image.Image:
+    img = img.convert('RGBA')
+
+    width, height = img.size
+    if max(width, height) > 500:
+        ratio = max(width, height) / 500
+        img = img.resize((int(width / ratio), int(height / ratio)), resample=Image.BICUBIC)
+
+    width, height = img.size
+    ban = Image.open(c.clib_path_join('img', 'ban.png'))
+    ban = ban.resize((width, height), resample=Image.BICUBIC)
+
+    img.paste(ban, (0, 0), ban)
+
+    return img
+
+
+def make_needping_img(img: Image.Image, arg: None) -> Image.Image:
+    img = img.convert('RGBA')
+    img = img.resize((71, 105), resample=Image.BICUBIC)
+
+    base = Image.open(c.clib_path_join('img', 'fishe_on_head.png'))
+    base.paste(img, (7, 4))
+
+    return base
+
+
+def make_pingbadge_img(img: Image.Image, position: int) -> Image.Image:
+    # resize input image
+    img = img.convert('RGBA')
+
+    width, height = img.size
+    if max(width, height) > 500:
+        ratio = max(width, height) / 500
+        img = img.resize((int(width / ratio), int(height / ratio)), resample=Image.BICUBIC)
+
+    width, height = img.size
+    size = int(width / 3)
+    badge = Image.open(c.clib_path_join('img', 'roundping.png'))
+    badge = badge.resize((size, size), resample=Image.BICUBIC)
+
+    if position == 1:
+        corner = (0, 0)
+    elif position == 2:
+        corner = (width - size, 0)
+    elif position == 3:
+        corner = (0, height - size)
+    elif position == 4:
+        corner = (width - size, height - size)
+    else:
+        raise BadArgument('Invalid position.')
+
+    img.paste(badge, corner, badge)
+
+    return img
+
+
+def make_xokked_img(img: Image.Image, arg: None) -> Image.Image:
+    img = img.convert('RGBA')
+
+    width, height = img.size
+    ratio = width / 120
+    img = img.resize((int(width / ratio), int(height / ratio)), resample=Image.BICUBIC)
+
+    width, height = img.size
+    base = Image.open(c.clib_path_join('img', 'xokked_base.png'))
+    base.paste(img, (30, 118 - int(height / 2)))
+
+    return base
+
+
+def resize_img(img: Image.Image, scale: float) -> Image.Image:
+    width, height = img.size
+    img = img.resize((int(width * scale), int(height * scale)), resample=Image.ANTIALIAS)
+
+    return img
+
+
+@c.executor_function
+def process_lower_level(img: Image.Image, effect: str, arg: int) -> BytesIO:
+    # this will only loop once for still images
+    frame_list, durations = [], []
+
+    # if a GIF loops, it will have the attribute loop = 0; if not, then attribute does not exist
+    try:
+        img.info['loop']
+        image_loop = True
+    except KeyError:
+        image_loop = False
+        pass
+
+    for _ in ImageSequence.Iterator(img):
+        # if not animated, will throw KeyError
+        try:
+            duration = img.info['duration']  # type: int
+            durations.append(duration)
+        except KeyError:
+            # an empty tuple for durations tells image_to_buffer that image is still
+            pass
+
+        function_dict: Mapping[str, Callable] = {
+            'acid': make_acid_img,
+            'aenima': make_aenima_img,
+            'lateralus': make_lateralus_img,
+            'needban': make_needban_img,
+            'needping': make_needping_img,
+            'pingbadge': make_pingbadge_img,
+            'xokked': make_xokked_img,
+            'resize': resize_img,
+        }
+
+        # these are no longer coroutines
+        img_out = function_dict[effect](img.convert('RGBA'), arg)
+        frame_list.append(img_out)
+
+    fp = image_to_buffer(frame_list, tuple(durations), image_loop)
+
+    return fp
+
+
+async def process_image(ctx: Context, image: Optional[str], effect: str, arg: Optional[int] = None) -> Any:
+    # grab user image and covert to RGBA
+    img = await fetch_image(ctx, image)
+    img_format = img.format
+
+    # if GIF, kick out if too many frames; if not, charge per frame
+    frame_limit = 200
+    cost_per_frame = 0.06
+
+    if (getattr(img, 'is_animated', False)):
+        if img.n_frames > frame_limit:
+            embed = c.crimbed(
+                title=None,
+                descr='Too many frames! Limit is {}'.format(frame_limit),
+                color_name='orange',
+            )
+            await ctx.send(embed=embed, delete_after=15)
+            return None
+        else:
+            cost = img.n_frames * cost_per_frame
+            bal = await crimsogames.check_balance(ctx.author)
+            if bal < cost:
+                embed = c.crimbed(
+                    title="**GIFs ain't free!**",
+                    descr='\n'.join([
+                        "You can't afford this! GIFs cost **\u20A2{:.2f}** per frame.".format(cost_per_frame),
+                        'GIF cost: **\u20A2{:.2f}** · Your balance: **\u20A2{:.2f}**'.format(cost, bal),
+                    ]),
+                    footer='Play >daily, >cringo, >guessmoji, or >emojistory to win crimsoCOIN!',
+                    thumb_name='weary',
+                    color_name='orange',
+                )
+                await ctx.send(embed=embed, delete_after=20)
+                return None
+            else:
+                # debit the user, credit the bot
+                await crimsogames.win(ctx.author, -cost)
+                await crimsogames.win(ctx.guild.me, cost)
+
+    msg = await ctx.send('`{}: pls to hold...`'.format(ctx.author))
+
+    fp = await process_lower_level(img, effect, arg)
+
+    await msg.edit(content='`{}: pls to hold...image processed!`'.format(ctx.author))
+
+    # if file too large to send via Discord, then resize
+    n_bytes = fp.getbuffer().nbytes
+    max_bytes = 8000000
+
+    while n_bytes > max_bytes:
+        await msg.edit(content='`{}: pls to hold...image processed! resizing...`'.format(ctx.author))
+        # recursively resize image until it meets Discord filesize limit
+        img = Image.open(fp)
+        scale = 0.9
+        fp = await process_lower_level(img, 'resize', scale)
+        n_bytes = fp.getbuffer().nbytes
+
+    try:
+        await msg.delete()
+    except AttributeError:
+        pass
+
+    return fp, img_format
