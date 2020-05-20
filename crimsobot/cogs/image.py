@@ -27,20 +27,21 @@ class Image(commands.Cog):
         if not 1 <= number_of_hits <= 3:
             raise commands.BadArgument('Number of hits is out of bounds.')
 
-        fp = await imagetools.process_image(ctx, image, 'acid', number_of_hits)
+        fp, img_format = await imagetools.process_image(ctx, image, 'acid', number_of_hits)
         if fp is None:
             return
 
         # pluralize 'hit' if need be
         ess = '' if number_of_hits == 1 else 's'
-        await ctx.send('**{} hit{}:**'.format(number_of_hits, ess), file=discord.File(fp, 'acid.gif'))
+        await ctx.send('**{} hit{}:**'.format(number_of_hits, ess),
+                       file=discord.File(fp, 'acid.{}'.format(img_format.lower())))
 
     @commands.command(hidden=True)
     async def aenima(self, ctx: commands.Context, image: Optional[str] = None) -> None:
 
-        fp = await imagetools.process_image(ctx, image, 'aenima')
+        fp, img_format = await imagetools.process_image(ctx, image, 'aenima')
         if fp:
-            await ctx.send(file=discord.File(fp, 'aenima.gif'))
+            await ctx.send(file=discord.File(fp, 'aenima.{}'.format(img_format.lower())))
 
     @commands.command(hidden=True)
     @commands.cooldown(1, 4 * 60 * 60, commands.BucketType.user)
@@ -154,25 +155,25 @@ class Image(commands.Cog):
     @commands.command(hidden=True)
     async def lateralus(self, ctx: commands.Context, image: Optional[str] = None) -> None:
 
-        fp = await imagetools.process_image(ctx, image, 'lateralus')
+        fp, img_format = await imagetools.process_image(ctx, image, 'lateralus')
         if fp:
-            await ctx.send(file=discord.File(fp, 'lateralus.gif'))
+            await ctx.send(file=discord.File(fp, 'lateralus.{}'.format(img_format.lower())))
 
     @commands.command()
     async def needban(self, ctx: commands.Context, image: Optional[str] = None) -> None:
         """SOMEONE needs BAN. User mention, attachment, link, or emoji."""
 
-        fp = await imagetools.process_image(ctx, image, 'needban')
+        fp, img_format = await imagetools.process_image(ctx, image, 'needban')
         if fp:
-            await ctx.send(file=discord.File(fp, 'needban.gif'))
+            await ctx.send(file=discord.File(fp, 'needban.{}'.format(img_format.lower())))
 
     @commands.command()
     async def needping(self, ctx: commands.Context, image: Optional[str] = None) -> None:
         """SOMEONE needs PING. User mention, attachment, link, or emoji."""
 
-        fp = await imagetools.process_image(ctx, image, 'needping')
+        fp, img_format = await imagetools.process_image(ctx, image, 'needping')
         if fp:
-            await ctx.send(file=discord.File(fp, 'needping.gif'))
+            await ctx.send(file=discord.File(fp, 'needping.{}'.format(img_format.lower())))
 
     @commands.command(aliases=['verpingt'])
     async def pingbadge(self, ctx: commands.Context, image: Optional[str] = None) -> None:
@@ -214,7 +215,7 @@ class Image(commands.Cog):
             position = int(msg.content)
 
         # send to pingbadge
-        fp = await imagetools.process_image(ctx, image, 'pingbadge', position)
+        fp, img_format = await imagetools.process_image(ctx, image, 'pingbadge', position)
         if fp is None:
             return
 
@@ -222,15 +223,15 @@ class Image(commands.Cog):
         if msg is not None:
             await msg.delete()
         await prompt.delete()
-        await ctx.send(file=discord.File(fp, 'verpingt.gif'))
+        await ctx.send(file=discord.File(fp, 'verpingt.{}'.format(img_format.lower())))
 
     @commands.command()
     async def xokked(self, ctx: commands.Context, image: Optional[str] = None) -> None:
         """Get xokked! User mention, attachment, link, or emoji."""
 
-        fp = await imagetools.process_image(ctx, image, 'xokked')
+        fp, img_format = await imagetools.process_image(ctx, image, 'xokked')
         if fp:
-            await ctx.send(file=discord.File(fp, 'xokked.gif'))
+            await ctx.send(file=discord.File(fp, 'xokked.{}'.format(img_format.lower())))
 
 
 def setup(bot: CrimsoBOT) -> None:
