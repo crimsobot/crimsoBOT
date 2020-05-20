@@ -528,7 +528,7 @@ def process_lower_level(img: Image.Image, effect: str, arg: int) -> BytesIO:
         }
 
         # these are no longer coroutines
-        img_out = function_dict[effect](img.convert('RGBA'), arg)  # type: ignore
+        img_out = function_dict[effect](img.convert('RGBA'), arg)
         frame_list.append(img_out)
 
     fp = image_to_buffer(frame_list, tuple(durations), image_loop)
