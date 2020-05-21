@@ -34,7 +34,20 @@ class Mystery(commands.Cog):
         """This three-card spread is read from left to right to explore your past, present, and future."""
 
         fp, descriptions = await tarot.reading(spread)
-        await ctx.send('\n'.join(descriptions), file=discord.File(fp, 'reading.png'))
+        filename = 'reading.png'
+        f = discord.File(fp, filename)
+
+        embed = c.crimbed(
+            title="{}'s reading".format(ctx.author),
+            descr=None,
+            attachment=filename,
+            footer='Type ">tarot card" for more on a specific card.',
+        )
+
+        for card_tuple in descriptions:
+            embed.add_field(name=card_tuple[0], value='**{}**\n{}'.format(card_tuple[1], card_tuple[2]))
+
+        await ctx.send(file=f, embed=embed)
 
     @tarot.command(name='five', brief='Look deeper into your Reason and Potential.')
     @commands.cooldown(3, 300, commands.BucketType.user)
@@ -44,7 +57,20 @@ class Mystery(commands.Cog):
         The Potential card looks toward the outcome should you change paths."""
 
         fp, descriptions = await tarot.reading(spread)
-        await ctx.send('\n'.join(descriptions), file=discord.File(fp, 'reading.png'))
+        filename = 'reading.png'
+        f = discord.File(fp, filename)
+
+        embed = c.crimbed(
+            title="{}'s reading".format(ctx.author),
+            descr=None,
+            attachment=filename,
+            footer='Type ">tarot card" for more on a specific card.',
+        )
+
+        for card_tuple in descriptions:
+            embed.add_field(name=card_tuple[0], value='**{}**\n{}'.format(card_tuple[1], card_tuple[2]))
+
+        await ctx.send(file=f, embed=embed)
 
     @tarot.command(name='card', brief='Inspect an individual card.')
     async def card(self, ctx: commands.Context) -> None:
@@ -136,15 +162,22 @@ class Mystery(commands.Cog):
         await msg.delete()
 
         card = await Deck.get_card(suit, card_number)
-        description = '\n'.join([
-            '**{}**'.format(card.name.upper()),
-            '**Element:** {}'.format(card.element),
-            '**Upright:** {}'.format(card.description_upright),
-            '**Reversed:** {}'.format(card.description_reversed),
-            '\n{}'.format(card.description_long),
-        ])
+
         fp = await card.get_image_buff()
-        await ctx.send(description, file=discord.File(fp, 'card.png'))
+        filename = 'card.png'
+        f = discord.File(fp, filename)
+
+        embed = c.crimbed(
+            title='**{}**'.format(card.name.upper()),
+            descr='\n'.join([
+                '**Element:** {}'.format(card.element),
+                '**Upright:** {}'.format(card.description_upright),
+                '**Reversed:** {}'.format(card.description_reversed),
+                '\n{}'.format(card.description_long),
+            ]),
+            attachment=filename,
+        )
+        await ctx.send(file=f, embed=embed)
 
 
 def setup(bot: CrimsoBOT) -> None:
