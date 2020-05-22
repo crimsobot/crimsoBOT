@@ -35,6 +35,9 @@ from crimsobot.utils.tools import clib_path_join
 """
 
 
+# TODO: descriptions to add to >tarot card embed moved to suits.yaml
+
+
 class Suit(Enum):
     MAJOR_ARCANA = 1
     WANDS = 2
@@ -72,7 +75,7 @@ class Card:
 
         img = Image.open(BytesIO(img_bytes))
         if reverse:
-            img.rotate(180)
+            img = img.rotate(180)
 
         return img
 
@@ -137,11 +140,9 @@ class Deck:
         cls._deck = deck
 
 
-async def reading(spread: str) -> Tuple[Optional[io.BytesIO], List[str]]:
+async def reading(spread: str) -> Tuple[Optional[io.BytesIO], List[Tuple[str, str, str]]]:
     w, h = (200, 326)  # card size
     space = 20  # space between cards
-
-    interpret = []  # type: List[str]
 
     if spread == 'ppf':
         # three cards dealt horizontally
@@ -172,16 +173,20 @@ async def reading(spread: str) -> Tuple[Optional[io.BytesIO], List[str]]:
 
     bg = Image.new('RGBA', bg_size, (0, 0, 0, 0))
 
+    interpretation = []  # type: List[Tuple[str, str, str]]
     for i, card in enumerate(cards):
-        reverse = True if random.random() < 0.1 else False
+        reverse = True if random.random() < 0.12 else False
 
         card_image = await card.get_image(reverse)
         bg.paste(card_image, position[i])
 
-        if not reverse:
-            card_description = card.name + ': ' + card.description_upright
+        if reverse:
+            name = card.name + '\n(Reversed)'
+            descr = card.description_reversed
         else:
-            card_description = card.name + ' (reversed): ' + card.description_reversed
-        interpret.append('**{} ·** {}'.format(position_legend[i], card_description))
+            name = card.name
+            descr = card.description_upright
 
-    return image_to_buffer([bg]), interpret
+        interpretation.append((position_legend[i], name, descr))
+
+    return image_to_buffer([bg]), interpretation
