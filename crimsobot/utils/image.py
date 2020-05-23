@@ -164,7 +164,7 @@ def make_color_img(hex_str: str) -> BytesIO:
 
     img = Image.new('RGB', (300, 100), color)
 
-    fp = image_to_buffer(img)
+    fp = image_to_buffer([img])
     return fp
 
 
