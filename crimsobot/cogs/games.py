@@ -614,7 +614,7 @@ class Games(commands.Cog):
 
         await ctx.send(embed=embed)
 
-    @commands.command(hidden=True)
+    @commands.command()
     async def daily(self, ctx: commands.Context, lucky_number: int) -> None:
         """Get a daily award! Pick a number 1-100 for a chance to win bigger!"""
 

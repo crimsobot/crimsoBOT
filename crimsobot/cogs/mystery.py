@@ -13,58 +13,68 @@ class Mystery(commands.Cog):
     def __init__(self, bot: CrimsoBOT):
         self.bot = bot
 
-    @commands.command(brief='Tarot readings by crimsoBOT.')
-    @commands.cooldown(3, 300, commands.BucketType.user)
-    async def tarot(self, ctx: commands.Context, spread: str = 'ppf') -> None:
+    @commands.group(invoke_without_command=True, brief='Delve into the mysteries of tarot.')
+    async def tarot(self, ctx: commands.Context) -> None:
         """Do you seek wisdom and guidance?
         Unveil the Mysteries of the past, the present, and the future with a tarot reading.
         A brief meaning of each card appears next to its name.
         Meditate deeply upon the words of wise crimsoBOT, and all shall become clear...
 
-        >tarot ppf
-        This three-card spread is read from left to right to explore your past, present, and future.
-
-        >tarot five
-        This spread delves deeper into the present, exploring your Reason for seeking guidance.
-        The Future card speaks toward the outcome should you stay on your current path.
-        The Potential card looks toward the outcome should you change paths.
-
         You may choose to have a specific question in mind before you ask for your cards.
         However, taking a reading without a question in mind
             may help coax from you the reason you seek the tarot's guidance.
-
-        ABOUT THE DECK
-
-        The Major Arcana:
-        Beginning with The Fool and ending with The World, these 22 cards represent major archetypes.
-        They indicate great cosmic forces at work. Be especially attentive to what they have to say.
-
-        The Minor Arcana of 56 cards is divided into four suits. These are:
-
-        • The Wands: The Wands are ruled by the element of fire.
-        Their sphere of influence is energy, motivation, will, and passion:
-        that which most deeply animates and ignites the soul.
-
-        • The Pentacles: Ruled by the element of earth.
-        The Pentacles deal with earthly matters--
-        health, finances, the body, the domestic sphere, and one's sense of security.
-
-        • The Cups: The Cups are ruled by the element of water.
-        They preside over matters of the heart.
-        Emotion, relationships, inutition, and mystery are all found within their depths.
-
-        • The Swords: The Swords are ruled by the element of air.
-        Their main concern is the mind and the intellect.
-        They cut through delusion towards clarity with sometimes unforgiving sharpness.
         """
 
-        fp, descriptions = await tarot.reading(spread)
-        await ctx.send('\n'.join(descriptions), file=discord.File(fp, 'reading.png'))
+        # if no subcommand provided, give a three-card reading
+        await self.ppf(ctx)
 
-    @commands.command(aliases=['tarotcard'], brief='Inspect a tarot card for further study.')
+    @tarot.command(name='ppf', brief='Past, present, and future.')
+    @commands.cooldown(3, 300, commands.BucketType.user)
+    async def ppf(self, ctx: commands.Context, spread: str = 'ppf') -> None:
+        """This three-card spread is read from left to right to explore your past, present, and future."""
+
+        fp, descriptions = await tarot.reading(spread)
+        filename = 'reading.png'
+        f = discord.File(fp, filename)
+
+        embed = c.crimbed(
+            title="{}'s reading".format(ctx.author),
+            descr=None,
+            attachment=filename,
+            footer='Type ">tarot card" for more on a specific card.',
+        )
+
+        for card_tuple in descriptions:
+            embed.add_field(name=card_tuple[0], value='**{}**\n{}'.format(card_tuple[1], card_tuple[2]))
+
+        await ctx.send(file=f, embed=embed)
+
+    @tarot.command(name='five', brief='Look deeper into your Reason and Potential.')
+    @commands.cooldown(3, 300, commands.BucketType.user)
+    async def five(self, ctx: commands.Context, spread: str = 'five') -> None:
+        """This spread delves deeper into the present, exploring your Reason for seeking guidance.
+        The Future card speaks toward the outcome should you stay on your current path.
+        The Potential card looks toward the outcome should you change paths."""
+
+        fp, descriptions = await tarot.reading(spread)
+        filename = 'reading.png'
+        f = discord.File(fp, filename)
+
+        embed = c.crimbed(
+            title="{}'s reading".format(ctx.author),
+            descr=None,
+            attachment=filename,
+            footer='Type ">tarot card" for more on a specific card.',
+        )
+
+        for card_tuple in descriptions:
+            embed.add_field(name=card_tuple[0], value='**{}**\n{}'.format(card_tuple[1], card_tuple[2]))
+
+        await ctx.send(file=f, embed=embed)
+
+    @tarot.command(name='card', brief='Inspect an individual card.')
     async def card(self, ctx: commands.Context) -> None:
-        """Inspect a tarot card chosen from the menu for further study.
-        See also >help tarot for more info about the Major Arcana and the four suits."""
+        """Inspect an individual tarot card. A longer description is given for each."""
 
         # the suits
         suits = [s for s in Suit]
@@ -95,7 +105,7 @@ class Mystery(commands.Cog):
 
         # wait for user to spcify suit
         try:
-            msg = await self.bot.wait_for('message', check=suit_check, timeout=20)
+            msg = await self.bot.wait_for('message', check=suit_check, timeout=45)
         except asyncio.TimeoutError:
             await prompt_suit.delete()
             return
@@ -152,11 +162,22 @@ class Mystery(commands.Cog):
         await msg.delete()
 
         card = await Deck.get_card(suit, card_number)
-        description = '**{}**\n**Upright:** {}\n**Reversed:** {}'.format(
-            card.name.upper(), card.description_upright, card.description_reversed
-        )
+
         fp = await card.get_image_buff()
-        await ctx.send(description, file=discord.File(fp, 'card.png'))
+        filename = 'card.png'
+        f = discord.File(fp, filename)
+
+        embed = c.crimbed(
+            title='**{}**'.format(card.name.upper()),
+            descr='\n'.join([
+                '**Element:** {}'.format(card.element),
+                '**Upright:** {}'.format(card.description_upright),
+                '**Reversed:** {}'.format(card.description_reversed),
+                '\n{}'.format(card.description_long),
+            ]),
+            attachment=filename,
+        )
+        await ctx.send(file=f, embed=embed)
 
 
 def setup(bot: CrimsoBOT) -> None:

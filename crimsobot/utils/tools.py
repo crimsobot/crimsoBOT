@@ -1,7 +1,9 @@
+import asyncio
+import functools
 import logging
 import os
 import random
-from typing import Any, List, Optional, Union
+from typing import Any, Awaitable, Callable, List, Optional, Union
 
 from discord import ChannelType, DMChannel, Embed, GroupChannel, Guild, Member, TextChannel, User
 
@@ -24,6 +26,30 @@ class MessageableAlreadyJoined(Exception):
             return 'MessagableAlreadyJoined: channel/direct message/user already using function'
 
 
+class ImageAlreadySet(Exception):
+    def __init__(self, *args: Any):
+        if args:
+            self.message = args[0]
+        else:
+            self.message = None
+
+    def __str__(self) -> str:
+        if self.message:
+            return 'ImageAlreadySet, {0} '.format(self.message)
+        else:
+            return 'ImageAlreadySet: cannot set two images for an embed'
+
+
+def executor_function(sync_function: Callable) -> Callable:
+    @functools.wraps(sync_function)
+    async def sync_wrapper(*args: Any, **kwargs: Any) -> Awaitable[Any]:
+        loop = asyncio.get_event_loop()
+        reconstructed_function = functools.partial(sync_function, *args, **kwargs)
+        return await loop.run_in_executor(None, reconstructed_function)
+
+    return sync_wrapper
+
+
 def checkin(messageable: Messageables, running_list: List[int]) -> bool:
     """Add a messageable to a running list of messageables using a function."""
 
@@ -44,8 +70,10 @@ def checkout(messageable: Messageables, running_list: List[int]) -> None:
         return
 
 
-def crimbed(title: Optional[str], descr: Optional[str], thumb_name: Optional[str] = None,
-            color_name: Optional[str] = 'green', footer: Optional[str] = None) -> Embed:
+def crimbed(title: Optional[str], descr: Optional[str],
+            thumb_name: Optional[str] = None, color_name: Optional[str] = 'green',
+            image_url: Optional[str] = None, attachment: Optional[str] = None,
+            footer: Optional[str] = None) -> Embed:
     """Discord embed builder with preset options for crimsoBOT colors and thumbnails."""
 
     color_dict = {
@@ -103,6 +131,19 @@ def crimbed(title: Optional[str], descr: Optional[str], thumb_name: Optional[str
             embed.set_thumbnail(url=url)
         except KeyError:
             pass
+
+    image_already_set = False
+
+    if image_url is not None:
+        embed.set_image(url=image_url)
+        image_already_set = True
+
+    if attachment is not None:
+        if image_already_set is False:
+            embed.set_image(url='attachment://{}'.format(attachment))
+            image_already_set = True
+        else:
+            raise ImageAlreadySet
 
     if footer is not None:
         embed.set_footer(text=footer)

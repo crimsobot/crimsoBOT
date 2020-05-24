@@ -199,7 +199,7 @@ class Utilities(commands.Cog):
     async def bigmoji(self, ctx: commands.Context, emoji: str) -> None:
         """Get larger version of either a default or custom emoji!"""
 
-        path, emoji_type = imagetools.bigmoji(emoji)
+        path, emoji_type = imagetools.find_emoji_img(emoji)
 
         try:
             if emoji_type == 'file':

@@ -18,33 +18,30 @@ class Image(commands.Cog):
     def __init__(self, bot: CrimsoBOT):
         self.bot = bot
 
-    @commands.command(brief='Boop the snoot! Must mention someone to boop.')
-    async def boop(self, ctx: commands.Context, mention: discord.Member) -> None:
-        fp = imagetools.boop(ctx.author.display_name, mention.display_name)
-        await ctx.send(file=discord.File(fp, 'boop.jpg'))
+    @commands.command(aliases=['acidify'])
+    @commands.cooldown(2, 10, commands.BucketType.guild)
+    async def acid(self, ctx: commands.Context, number_of_hits: int, image: Optional[str] = None) -> None:
+        """1-3 hits only. Can use image link, attachment, mention, or emoji."""
 
-    @commands.command(aliases=['emojimage', 'eimg2'])
-    @commands.cooldown(1, 60, commands.BucketType.user)
-    async def eimg(self, ctx: commands.Context, image: Optional[str] = None) -> None:
-        """
-        Convert image to emojis with a bit more detail!
-        WARNING: Best on desktop. You will get a LOT of PMs. SVGs are no.
-        Works best with images with good contrast and larger features.
-        A one-pixel-wide line is likely not going to show up in the final product.
-        """
+        # exception handling
+        if not 1 <= number_of_hits <= 3:
+            raise commands.BadArgument('Number of hits is out of bounds.')
 
-        line_list = await imagetools.make_emoji_image(ctx, image)
-        chk = c.checkin(ctx.message.author, emoji_channels)
-        if chk is False:
-            await ctx.send('`no!`')
+        fp, img_format = await imagetools.process_image(ctx, image, 'acid', number_of_hits)
+        if fp is None:
             return
 
-        # send line-by-line as DM
-        for line in line_list:
-            await ctx.message.author.send(line)
-            await asyncio.sleep(0.72)
+        # pluralize 'hit' if need be
+        ess = '' if number_of_hits == 1 else 's'
+        await ctx.send('**{} hit{}:**'.format(number_of_hits, ess),
+                       file=discord.File(fp, 'acid.{}'.format(img_format.lower())))
 
-        c.checkout(ctx.message.author, emoji_channels)
+    @commands.command(hidden=True)
+    async def aenima(self, ctx: commands.Context, image: Optional[str] = None) -> None:
+
+        fp, img_format = await imagetools.process_image(ctx, image, 'aenima')
+        if fp:
+            await ctx.send(file=discord.File(fp, 'aenima.{}'.format(img_format.lower())))
 
     @commands.command(hidden=True)
     @commands.cooldown(1, 4 * 60 * 60, commands.BucketType.user)
@@ -70,24 +67,10 @@ class Image(commands.Cog):
 
         c.checkout(ctx.message.author, emoji_channels)
 
-    @commands.command(hidden=True)
-    @commands.is_owner()
-    async def eface_pm(self, ctx: commands.Context, user: discord.User, *, message: str) -> None:
-        """crimsoBOT avatar as emojis!"""
-
-        # read in lines of emojis
-        line_list = open(c.clib_path_join('text', 'emojiface.txt'), encoding='utf8', errors='ignore').readlines()
-
-        # strip newlines
-        line_list = [line.replace('\n', '') for line in line_list]
-        line_list = line_list[0:-1]
-
-        # send line-by-line as DM
-        for line in line_list:
-            await user.send(line)
-            await asyncio.sleep(1)
-
-        await user.send(message)
+    @commands.command(brief='Boop the snoot! Must mention someone to boop.')
+    async def boop(self, ctx: commands.Context, mention: discord.Member) -> None:
+        fp = imagetools.make_boop_img(ctx.author.display_name, mention.display_name)
+        await ctx.send(file=discord.File(fp, 'boop.jpg'))
 
     @commands.command(hidden=True)
     @commands.cooldown(1, 8 * 60 * 60, commands.BucketType.user)
@@ -110,20 +93,47 @@ class Image(commands.Cog):
 
         c.checkout(ctx.message.author, emoji_channels)
 
-    @commands.command()
-    @commands.cooldown(2, 10, commands.BucketType.guild)
-    async def acidify(self, ctx: commands.Context, number_of_hits: int, image: Optional[str] = None) -> None:
-        """1-3 hits only. Can use image link, attachment, mention, or emoji."""
+    @commands.command(hidden=True)
+    @commands.is_owner()
+    async def eface_pm(self, ctx: commands.Context, user: discord.User, *, message: str) -> None:
+        """crimsoBOT avatar as emojis!"""
 
-        # exception handling
-        if not 1 <= number_of_hits <= 3:
-            raise commands.BadArgument('Number of hits is out of bounds.')
+        # read in lines of emojis
+        line_list = open(c.clib_path_join('text', 'emojiface.txt'), encoding='utf8', errors='ignore').readlines()
 
-        fp = await imagetools.acid(ctx, number_of_hits, image)
+        # strip newlines
+        line_list = [line.replace('\n', '') for line in line_list]
+        line_list = line_list[0:-1]
 
-        # pluralize 'hit' if need be
-        ess = '' if number_of_hits == 1 else 's'
-        await ctx.send('**{} hit{}:**'.format(number_of_hits, ess), file=discord.File(fp, 'acid.png'))
+        # send line-by-line as DM
+        for line in line_list:
+            await user.send(line)
+            await asyncio.sleep(1)
+
+        await user.send(message)
+
+    @commands.command(aliases=['emojimage', 'eimg2'])
+    @commands.cooldown(1, 60, commands.BucketType.user)
+    async def eimg(self, ctx: commands.Context, image: Optional[str] = None) -> None:
+        """
+        Convert image to emojis with a bit more detail!
+        WARNING: Best on desktop. You will get a LOT of PMs. SVGs are no.
+        Works best with images with good contrast and larger features.
+        A one-pixel-wide line is likely not going to show up in the final product.
+        """
+
+        line_list = await imagetools.make_emoji_image(ctx, image)
+        chk = c.checkin(ctx.message.author, emoji_channels)
+        if chk is False:
+            await ctx.send('`no!`')
+            return
+
+        # send line-by-line as DM
+        for line in line_list:
+            await ctx.message.author.send(line)
+            await asyncio.sleep(0.72)
+
+        c.checkout(ctx.message.author, emoji_channels)
 
     @commands.command(hidden=True)
     @commands.is_owner()
@@ -142,29 +152,31 @@ class Image(commands.Cog):
             await user.send(line)
             await asyncio.sleep(1)
 
-    @commands.command()
-    async def needping(self, ctx: commands.Context, image: Optional[str] = None) -> None:
-        """SOMEONE needs PING. User mention, attachment, link, or emoji."""
+    @commands.command(hidden=True)
+    async def lateralus(self, ctx: commands.Context, image: Optional[str] = None) -> None:
 
-        fp = await imagetools.fishe(ctx, image)
-        await ctx.send(file=discord.File(fp, 'needping.png'))
+        fp, img_format = await imagetools.process_image(ctx, image, 'lateralus')
+        if fp:
+            await ctx.send(file=discord.File(fp, 'lateralus.{}'.format(img_format.lower())))
 
     @commands.command()
     async def needban(self, ctx: commands.Context, image: Optional[str] = None) -> None:
         """SOMEONE needs BAN. User mention, attachment, link, or emoji."""
 
-        fp = await imagetools.ban_overlay(ctx, image)
-        await ctx.send(file=discord.File(fp, 'needban.png'))
+        fp, img_format = await imagetools.process_image(ctx, image, 'needban')
+        if fp:
+            await ctx.send(file=discord.File(fp, 'needban.{}'.format(img_format.lower())))
 
     @commands.command()
-    async def xokked(self, ctx: commands.Context, image: Optional[str] = None) -> None:
-        """Get xokked! User mention, attachment, link, or emoji."""
+    async def needping(self, ctx: commands.Context, image: Optional[str] = None) -> None:
+        """SOMEONE needs PING. User mention, attachment, link, or emoji."""
 
-        fp = await imagetools.xok(ctx, image)
-        await ctx.send(file=discord.File(fp, 'xokked.png'))
+        fp, img_format = await imagetools.process_image(ctx, image, 'needping')
+        if fp:
+            await ctx.send(file=discord.File(fp, 'needping.{}'.format(img_format.lower())))
 
-    @commands.command(aliases=['pingbadge'])
-    async def verpingt(self, ctx: commands.Context, image: Optional[str] = None) -> None:
+    @commands.command(aliases=['verpingt'])
+    async def pingbadge(self, ctx: commands.Context, image: Optional[str] = None) -> None:
         """Add Discord notification badge to an image."""
 
         if image is None:
@@ -203,23 +215,23 @@ class Image(commands.Cog):
             position = int(msg.content)
 
         # send to pingbadge
-        fp = await imagetools.pingbadge(ctx, image, position)
+        fp, img_format = await imagetools.process_image(ctx, image, 'pingbadge', position)
+        if fp is None:
+            return
 
         # delete prompt and vote, send image
         if msg is not None:
             await msg.delete()
         await prompt.delete()
-        await ctx.send(file=discord.File(fp, 'verpingt.png'))
+        await ctx.send(file=discord.File(fp, 'verpingt.{}'.format(img_format.lower())))
 
-    @commands.command(hidden=True)
-    async def lateralus(self, ctx: commands.Context, image: Optional[str] = None) -> None:
-        fp = await imagetools.lateralus_cover(ctx, image)
-        await ctx.send(file=discord.File(fp, 'lateralus.png'))
+    @commands.command()
+    async def xokked(self, ctx: commands.Context, image: Optional[str] = None) -> None:
+        """Get xokked! User mention, attachment, link, or emoji."""
 
-    @commands.command(hidden=True)
-    async def aenima(self, ctx: commands.Context, image: Optional[str] = None) -> None:
-        fp = await imagetools.aenima_cover(ctx, image)
-        await ctx.send(file=discord.File(fp, 'aenima.png'))
+        fp, img_format = await imagetools.process_image(ctx, image, 'xokked')
+        if fp:
+            await ctx.send(file=discord.File(fp, 'xokked.{}'.format(img_format.lower())))
 
 
 def setup(bot: CrimsoBOT) -> None:
