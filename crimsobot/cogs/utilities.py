@@ -7,6 +7,7 @@ import discord
 from discord.ext import commands
 
 from crimsobot.bot import CrimsoBOT
+from crimsobot.models.fun_facts import FunFacts
 from crimsobot.utils import astronomy, image as imagetools, tools as c
 
 log = logging.getLogger(__name__)
@@ -15,6 +16,25 @@ log = logging.getLogger(__name__)
 class Utilities(commands.Cog):
     def __init__(self, bot: CrimsoBOT):
         self.bot = bot
+
+    @commands.command()
+    async def fact(self, ctx: commands.Context, *, something: str) -> None:
+        """Testing out facts"""
+        fact_object = await FunFacts.get_by_subject(something)
+
+        await ctx.send(fact_object.funfact)
+
+    @commands.command()
+    async def factadd(self, ctx: commands.Context, *, something: str) -> None:
+        """Add a fact"""
+        user_input = something.split(';')
+        fact_subject = user_input.pop(0).strip()
+        fact = user_input[0]
+
+        new_fact_created = await FunFacts.create_fact(ctx.author, fact_subject, fact)
+
+        if new_fact_created:
+            await ctx.send('Fact added!')
 
     @commands.command(brief='Create a poll!')
     @commands.cooldown(1, 20, commands.BucketType.guild)
