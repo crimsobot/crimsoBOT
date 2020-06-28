@@ -1,5 +1,4 @@
 import logging
-import random
 from typing import Any, List, Union
 
 import discord
@@ -73,60 +72,79 @@ class CrimsoBOT(commands.Bot):
     async def on_command_error(self, ctx: commands.Context, error: Exception) -> None:
         """For known exceptions, displays error message to user and suppresses verbose traceback in console."""
 
+        traceback_needed = False
+
         if isinstance(error, commands.MaxConcurrencyReached):
-            self.log.error('MaxConcurrency: {} // {}: {}'.format(ctx.author, ctx.message.content, error))
-            await ctx.send('`Already running in this channel!`', delete_after=7)
+            error_type = 'MAX CONCURRENCY'
+            msg_to_user = '`Already running in this channel!`'
 
         elif isinstance(error, commands.CommandOnCooldown):
-            self.log.error('Cooldown: %s // %s: %s', ctx.author, ctx.message.content, error)
-
-            await ctx.send('**eat glass.** %.0fs cooldown.' % error.retry_after, delete_after=7)
+            error_type = 'COOLDOWN'
+            msg_to_user = f'**eat glass!** {error.retry_after:.0f}s cooldown.'
 
         elif isinstance(error, commands.CommandInvokeError):
-            self.log.error('Invoke: %s // %s: %s', ctx.author, ctx.message.content, error, exc_info=error)
-
-            try:
-                await ctx.send(':poop: `E R R O R` :poop:', delete_after=7)
-
-            except discord.errors.Forbidden:
-                self.log.error('Forbidden: %s // %s: %s', ctx.guild, ctx.channel.id, error)
+            error_type = 'INVOKE ERROR'
+            traceback_needed = True
+            msg_to_user = ':poop: `E R R O R` :poop:'
 
         elif isinstance(error, commands.MissingRequiredArgument):
-            self.log.error('MissingArgument: %s // %s: %s', ctx.author, ctx.message.content, error)
-
-            await ctx.send(
-                f'*this command requires more arguments. try `>help {ctx.command.qualified_name}`*',
-                delete_after=7
-            )
+            error_type = 'MISSING ARGUMENT'
+            msg_to_user = f'This command requires more arguments. Try `>help {ctx.command.qualified_name}`'
 
         elif isinstance(error, commands.BadArgument):
-            self.log.error('BadArgument: %s // %s: %s', ctx.author, ctx.message.content, error)
-
-            await ctx.send(
-                f"*that's not a valid argument value! try `>help {ctx.command.qualified_name}`*",
-                delete_after=7
-            )
+            error_type = 'BAD ARGUMENT'
+            msg_to_user = f"That's not a valid argument value! Try `>help {ctx.command.qualified_name}`"
 
         elif isinstance(error, commands.NotOwner):
-            self.log.error('NotOwner: %s // %s: %s', ctx.author, ctx.message.content, error)
-
-            await ctx.send(':rotating_light: not crimso! :rotating_light:', delete_after=7)
+            error_type = 'NOT OWNER'
+            msg_to_user = ':rotating_light: not crimso! :rotating_light:'
 
         elif isinstance(error, commands.CommandNotFound):
-            self.log.error(
-                'NotFound/Forbidden: %s/%s // %s: %s',
-                ctx.message.guild.id, ctx.message.channel, ctx.message.content, error
-            )
+            error_type = 'NOT FOUND'
+
         else:
-            self.log.error('Uncaught exception', exc_info=error)
+            error_type = 'UNCAUGHT EXCEPTION'
+            traceback_needed = True
+
+        # send error message
+        try:
+            embed = c.crimbed(
+                title=f'**{error_type}**!',
+                descr=msg_to_user,
+                thumb_name='weary',
+                color_name='orange',
+                footer='bad at computer. bad at computer!',
+            )
+            await ctx.send(embed=embed, delete_after=10)
+        except discord.errors.Forbidden:
+            error_type = 'FORBIDDEN'
+            traceback_needed = True
+        except UnboundLocalError:  # if no msg_to_user is given
+            pass
+
+        # log error
+        try:
+            guild_string = f'guild: {ctx.guild} ({ctx.guild.id})'
+        except AttributeError:
+            guild_string = 'guild: None (direct message)'
+
+        self.log.error(
+            '\n    '.join([
+                f'{error_type}',
+                guild_string,
+                f' user: {ctx.author} ({ctx.author.id})',
+                f'  msg: {ctx.message.content}\n',
+            ]), exc_info=(error if traceback_needed else None)
+        )
 
     async def on_message(self, message: discord.Message) -> None:
-        if self.is_banned(message.author):
+        # do not respond if message from banned user or a bot
+        if self.is_banned(message.author) or message.author.bot:
             return
 
-        # DM self.logger
+        # send DMs to the bot that are not bot commands to the specified channel
         is_dm = isinstance(message.channel, discord.DMChannel)
-        if is_dm and message.author.id != self.user.id and not message.content.startswith(('>', '.')):
+        if is_dm and not message.content.startswith(('>', '.')):
             try:
                 link = message.attachments[0].url
             except IndexError:
@@ -134,9 +152,12 @@ class CrimsoBOT(commands.Bot):
 
             dms_channel = self.get_channel(DM_LOG_CHANNEL_ID)
             await dms_channel.send(
-                '`{}\nuid:{}\ncid:{}`\n{} {}'.format(
-                    message.channel, message.author.id, message.channel.id, message.content, link
-                )
+                '\n'.join([
+                    f'`{message.channel}`',  # e.g. 'Direct message with username#1234'
+                    f'`uid:{message.author.id}`',
+                    f'`cid:{message.channel.id}`',
+                    f'{message.content} {link}',
+                ])
             )
 
         # process commands
@@ -149,11 +170,8 @@ class CrimsoBOT(commands.Bot):
         # this little piggy cleans pings from crimsonic messages
         cleaner = commands.clean_content(use_nicknames=False)
 
-        # respond to ping or randomly talk
-        if (message.author.id != self.user.id and
-                self.user in message.mentions or
-                (random.random() < 0.002 and not is_dm)):
-            # make it look like bot is typing
+        # respond to ping with a Markov chain from crimso corpus
+        if self.user in message.mentions:
             await message.channel.trigger_typing()
             crimsonic = await m.async_wrap(self, m.crimso)
 
@@ -170,21 +188,22 @@ class CrimsoBOT(commands.Bot):
         """Notify me when added to guild"""
 
         if guild.id in BANNED_GUILD_IDS:
+            self.log.warning(f'Banned guild {guild.id} attempted to add crimsoBOT.')
             await guild.leave()
-            self.log.warning('Banned guild %s attempted to add crimsoBOT.', guild.id)
             return
 
-        self.log.info("Joined %s's %s [%s]", guild.owner, guild, guild.id)
+        self.log.info(f"Joined {guild.owner}'s {guild} ({guild.id})")
 
         embed = c.get_guild_info_embed(guild)
 
         # ...and send
         for user_id in ADMIN_USER_IDS:
-            user = await self.get_user(user_id)
+            user = self.get_user(user_id)
+
             try:
-                await user.send('Added to {guild}'.format(guild=guild), embed=embed)
+                await user.send(f"I've been added to a server!", embed=embed)
             except Exception:
-                await user.send('Added to {guild}'.format(guild=guild))
+                await user.send(f"I've been added to {guild} ({guild.id})!")
 
     def add_command(self, command: commands.Command) -> None:
         command.cooldown_after_parsing = True
