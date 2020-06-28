@@ -130,7 +130,7 @@ class CrimsoBOT(commands.Bot):
 
         self.log.error(
             '\n    '.join([
-                f'{error_type}',
+                error_type,
                 guild_string,
                 f' user: {ctx.author} ({ctx.author.id})',
                 f'  msg: {ctx.message.content}\n',
@@ -201,7 +201,7 @@ class CrimsoBOT(commands.Bot):
             user = self.get_user(user_id)
 
             try:
-                await user.send(f"I've been added to a server!", embed=embed)
+                await user.send("I've been added to a server!", embed=embed)
             except Exception:
                 await user.send(f"I've been added to {guild} ({guild.id})!")
 
