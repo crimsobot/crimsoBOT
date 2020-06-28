@@ -150,7 +150,9 @@ class CrimsoBOT(commands.Bot):
         cleaner = commands.clean_content(use_nicknames=False)
 
         # respond to ping or randomly talk
-        if self.user in message.mentions or (random.random() < 0.002 and not is_dm):
+        if (message.author.id != self.user.id and
+                self.user in message.mentions or
+                (random.random() < 0.002 and not is_dm)):
             # make it look like bot is typing
             await message.channel.trigger_typing()
             crimsonic = await m.async_wrap(self, m.crimso)
