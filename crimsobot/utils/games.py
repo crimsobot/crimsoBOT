@@ -5,6 +5,7 @@ from typing import List, Tuple, Union
 
 import discord
 from discord import Embed
+from discord.ext import commands
 
 from crimsobot.models.currency_account import CurrencyAccount
 from crimsobot.models.guess_statistic import GuessStatistic
@@ -13,7 +14,7 @@ from crimsobot.utils import tools as c
 DiscordUser = Union[discord.User, discord.Member]
 
 
-def return_cball_answer(ctx) -> str:  # function to give first answer a ctx to work with
+def return_cball_answer(ctx: commands.Context) -> str:  # function to give first answer a ctx to work with
     # don't know if this is any better than just putting it
     # inside of the crimsoball command
     answer_list = [
