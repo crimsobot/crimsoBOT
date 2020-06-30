@@ -168,6 +168,16 @@ async def reading(spread: str) -> Tuple[Optional[io.BytesIO], List[Tuple[str, st
         ]
         position_legend = ['PAST', 'PRESENT', 'FUTURE', 'REASON', 'POTENTIAL']
 
+    elif spread == 'one':
+        # a singular card on its own
+        # what is it? present?
+        bg_size = (w, h)
+        cards = await Deck.get_random_cards(1)
+        position = [
+            (0, 0)
+        ]
+        position_legend = ['PRESENT']  # just assuming once again
+
     else:
         raise commands.BadArgument('Spread is invalid.')
 

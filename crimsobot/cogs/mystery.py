@@ -28,6 +28,27 @@ class Mystery(commands.Cog):
         # if no subcommand provided, give a three-card reading
         await self.ppf(ctx)
 
+    @tarot.command(name='one', brief='Get a single card.')  # something better needs to be put here, i do not know much
+    @commands.cooldown(3, 300, commands.BucketType.user)
+    async def one(self, ctx: commands.Context, spread: str = 'one') -> None:
+        """ One card """  # this also needs to be improved
+
+        fp, descriptions = await tarot.reading(spread)
+        filename = 'reading.png'
+        f = discord.File(fp, filename)
+
+        embed = c.crimbed(
+            title="{}'s reading".format(ctx.author),
+            descr=None,
+            attachment=filename,
+            footer='Type ">tarot card" for more on a specific card.',
+        )
+
+        for card_tuple in descriptions:
+            embed.add_field(name=card_tuple[0], value='**{}**\n{}'.format(card_tuple[1], card_tuple[2]))
+
+        await ctx.send(file=f, embed=embed)
+
     @tarot.command(name='ppf', brief='Past, present, and future.')
     @commands.cooldown(3, 300, commands.BucketType.user)
     async def ppf(self, ctx: commands.Context, spread: str = 'ppf') -> None:
