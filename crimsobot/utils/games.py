@@ -45,6 +45,7 @@ def return_cball_answer(ctx: commands.Context) -> str:  # function to give first
             'what heck',
             'random_response',  # leave this alone
         ]
+
     return random.choice(answer_list)
 
 
