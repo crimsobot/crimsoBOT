@@ -35,7 +35,7 @@ class Mystery(commands.Cog):
 
         fp, descriptions = await tarot.reading(spread)
         filename = 'reading.png'
-        f = discord.File(fp, filename)
+        f = discord.File(fp, 'reading.png')
 
         embed = c.crimbed(
             title="{}'s reading".format(ctx.author),
@@ -65,8 +65,8 @@ class Mystery(commands.Cog):
             footer='Type ">tarot card" for more on a specific card.',
         )
 
-        for card_tuple in descriptions:
-            embed.add_field(name=card_tuple[0], value='**{}**\n{}'.format(card_tuple[1], card_tuple[2]))
+        card_tuple = descriptions[0]
+        embed.add_field(name=card_tuple[0], value='**{}**\n{}'.format(card_tuple[1], card_tuple[2]))
 
         await ctx.send(file=f, embed=embed)
 
