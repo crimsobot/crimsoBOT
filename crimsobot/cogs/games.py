@@ -111,37 +111,8 @@ class Games(commands.Cog):
 
     @commands.command(aliases=['cball', 'crimsobot'], brief='Ask crimsoBOT what will be.')
     async def crimsoball(self, ctx: commands.Context, *, question: str) -> None:
-        # list of answers (which I need to store somewhere besides in the function)
-        answer_list = [
-            '{} haha ping'.format(ctx.message.author.mention),
-            'ye!',
-            '**no**',
-            'what do you think?',
-            '*perhaps*',
-            'OMAN',
-            "i can't answer this, you need an adult",
-            'absolutely!\n\n\n`not`',
-            'of course!',
-            'according to quantum superposition, the answer was both yes and no before you asked.',
-            "is the sky blue?\n\n(is it? i don't know. i don't have eyes.)",
-            "i can't be bothered with this right now.",
-            'funny you should ask--',
-            'fine, sure, whatever',
-            '<:xok:551174281367650356>',
-            'ask seannerz. ping him now and ask.',
-            'ehhhh sure',
-            'hmmmm. no.',
-            'uhhhhhhhhh',
-            '<:uhhhh:495249068789071882>',
-            'eat glass!',
-            'it is important that you stop bothering me.',
-            'you CANNOT be serious',
-            'sure? how would i know?',
-            'what heck',
-            'random_response',  # leave this alone
-        ]
 
-        response = random.choice(answer_list)
+        response = crimsogames.return_cball_answer(ctx)
         if response == 'random_response':
             response = await m.async_wrap(self.bot, m.crimso)
 
