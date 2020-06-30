@@ -36,6 +36,7 @@ class Text(commands.Cog):
         await ctx.send('{}: {}'.format(ctx.message.author.mention, output))
 
     @commands.command(aliases=['xokclock', 'xoktime', 'emojitime'])
+    @commands.cooldown(1, 10, commands.BucketType.user)
     async def emojiclock(self, ctx: commands.Context, *args: str) -> None:
         """Get the time at location (required) in emojis!"""
 

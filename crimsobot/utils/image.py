@@ -24,10 +24,10 @@ def gif_frame_transparency(img: Image.Image) -> Image.Image:
     alpha = img.convert('RGBA').split()[-1]
     # convert back to P mode but only using 255 of available 256 colors
     img = img.convert('RGB').convert('P', palette=Image.ADAPTIVE, colors=255)
-    # set all pixel values below 128 to 255 and the rest to 0
+    # set all pixel values in alpha below threshhold to 255 and the rest to 0
     mask = Image.eval(alpha, lambda a: 255 if a <= 88 else 0)
     # paste the color of index 255 and use alpha as a mask
-    img.paste(255, mask.convert('L'))  # the transparency index is now 255
+    img.paste(255, mask)  # the transparency index will later be set to 255
 
     return img
 
