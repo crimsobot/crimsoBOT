@@ -11,9 +11,11 @@ Installing
 
 .. code:: sh
 
+    # first-run steps
     poetry install
     cp config.example.py config.py
     # edit config.py in your favorite editor
+    poetry run python3 cli.py initdb
 
     poetry run bot
 
