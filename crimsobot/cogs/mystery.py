@@ -28,7 +28,7 @@ class Mystery(commands.Cog):
         # if no subcommand provided, give a three-card reading
         await self.ppf(ctx)
 
-    @tarot.command(name='one', brief='Get a single card.')  # something better needs to be put here, i do not know much
+    @tarot.command(name='one', brief='Get a single reading.')  # something better needs to be put here, i do not know much
     @commands.cooldown(3, 300, commands.BucketType.user)
     async def one(self, ctx: commands.Context, spread: str = 'one') -> None:
         """ One card """  # this also needs to be improved
