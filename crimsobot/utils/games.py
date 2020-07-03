@@ -5,12 +5,48 @@ from typing import List, Tuple, Union
 
 import discord
 from discord import Embed
+from discord.ext import commands
 
 from crimsobot.models.currency_account import CurrencyAccount
 from crimsobot.models.guess_statistic import GuessStatistic
 from crimsobot.utils import tools as c
 
 DiscordUser = Union[discord.User, discord.Member]
+
+
+def get_crimsoball_answer(ctx: commands.Context) -> str:  # function to give first answer a ctx to work with
+    # don't know if this is any better than just putting it
+    # inside of the crimsoball command
+    answer_list = [
+            '{} haha ping'.format(ctx.message.author.mention),
+            'ye!',
+            '**no**',
+            'what do you think?',
+            '*perhaps*',
+            'OMAN',
+            "i can't answer this, you need an adult",
+            'absolutely!\n\n\n`not`',
+            'of course!',
+            'according to quantum superposition, the answer was both yes and no before you asked.',
+            "is the sky blue?\n\n(is it? i don't know. i don't have eyes.)",
+            "i can't be bothered with this right now.",
+            'funny you should ask--',
+            'fine, sure, whatever',
+            '<:xok:551174281367650356>',
+            'ask seannerz. ping him now and ask.',
+            'ehhhh sure',
+            'hmmmm. no.',
+            'uhhhhhhhhh',
+            '<:uhhhh:495249068789071882>',
+            'eat glass!',
+            'it is important that you stop bothering me.',
+            'you CANNOT be serious',
+            'sure? how would i know?',
+            'what heck',
+            'random_response',  # leave this alone
+        ]
+
+    return random.choice(answer_list)
 
 
 def emojistring() -> str:
