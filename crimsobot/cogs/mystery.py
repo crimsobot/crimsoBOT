@@ -31,7 +31,7 @@ class Mystery(commands.Cog):
     @tarot.command(name='one', brief='Get a single reading.')  # something better needs to be put here, i do not know much
     @commands.cooldown(3, 300, commands.BucketType.user)
     async def one(self, ctx: commands.Context, spread: str = 'one') -> None:
-        """ One card """  # this also needs to be improved
+        """This single-card reading is your answer to any question you may have."""
 
         fp, descriptions = await tarot.reading(spread)
         filename = 'reading.png'
