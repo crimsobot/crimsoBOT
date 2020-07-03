@@ -18,7 +18,7 @@ class Utilities(commands.Cog):
 
     @commands.command(brief='Create a poll!')
     @commands.cooldown(1, 20, commands.BucketType.guild)
-    async def poll(self, ctx: commands.Context, *, input: str) -> None:
+    async def poll(self, ctx: commands.Context, *, poll_input: str) -> None:
         """Make a poll! Use the form of some question;option 1;option 2;etc.
         For example:
 
@@ -33,7 +33,7 @@ class Utilities(commands.Cog):
             '🇦', '🇧', '🇨', '🇩', '🇪', '🇫', '🇬', '🇭', '🇮', '🇯'
         ]
 
-        choices = input.split(';')
+        choices = poll_input.split(';')
         question = choices.pop(0).strip()
 
         # some tests to ensure there's a question and at least two choices

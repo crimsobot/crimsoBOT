@@ -1,0 +1,51 @@
+[tool.poetry]
+name = "crimsobot"
+version = "0.0.0"
+description = "A playful little Discord bot."
+license = "MIT"
+authors = ["Andrew <48505803@users.noreply.github.com>", "William McKinnerney <me@williammck.net>"]
+readme = "README.rst"
+homepage = "https://crimso.bot"
+repository = "https://github.com/crimsobot/crimsoBOT"
+
+[tool.poetry.dependencies]
+aiofiles = "^0.4.0"
+aiosqlite = "^0.10.0"
+aiomysql = "^0.0.20"
+click = "^7.0"
+colormath = "^3.0.0"
+"discord.py" = "^1.3.3"
+geopy = "^1.20.0"
+lxml = "^4.4.1"
+markovify = "^0.7.2"
+matplotlib = "^3.1.1"
+nltk = "^3.4.5"
+numpy = "^1.17.4"
+pandas = "^0.25.3"
+Pillow = "^6.2.1"
+pyshorteners = "^0.6.1"
+python = "^3.6"
+pyyaml = "^5.3.1"
+requests = "^2.22.0"
+scipy = "^1.3.2"
+timezonefinder = "^4.1.0"
+tortoise-orm = "^0.14.2"
+
+[tool.poetry.dev-dependencies]
+bandit = "^1.6.2"
+flake8 = "^3.7.9"
+flake8-import-order = "^0.18.1"
+flake8-bugbear = "^19.8.0"
+flake8-builtins = "^1.4.1"
+flake8-quotes = "^2.1.1"
+mccabe = "^0.6.1"
+mypy = "^0.740"
+pep8-naming = "^0.9.1"
+pre-commit = "^1.20.0"
+
+[tool.poetry.scripts]
+bot = "cli:run"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
