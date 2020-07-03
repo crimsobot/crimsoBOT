@@ -16,14 +16,16 @@ class FunFacts(Model):
 
     @classmethod
     async def get_by_subject(cls, subject: str) -> 'FunFacts':
-        fact, _ = await FunFacts.get(subject=subject)  # type: FunFacts, bool
+        fact = await FunFacts.get(subject=subject)  # type: FunFacts
+
+        return fact
 
     @classmethod
-    async def create_fact(cls, creator, subject: str, funfact: str) -> bool:
+    async def create_fact(cls, creator, subject: str, funfact: str) -> 'FunFacts':
         user = await User.get_by_discord_user(creator)
-        _, success = await FunFacts.create(created_by=user, subject=subject, funfact=funfact)
+        fact = await FunFacts.create(created_by=user, subject=subject, funfact=funfact)
 
-        return success
+        return fact
 
     class Meta:
         table = 'fun_facts'
