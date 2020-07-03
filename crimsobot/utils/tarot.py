@@ -176,7 +176,7 @@ async def reading(spread: str) -> Tuple[Optional[io.BytesIO], List[Tuple[str, st
         position = [
             (0, 0)
         ]
-        position_legend = ['PRESENT']  # just assuming once again
+        position_legend = ['']  # just assuming once again
 
     else:
         raise commands.BadArgument('Spread is invalid.')
