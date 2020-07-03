@@ -112,7 +112,7 @@ class Games(commands.Cog):
     @commands.command(aliases=['cball', 'crimsobot'], brief='Ask crimsoBOT what will be.')
     async def crimsoball(self, ctx: commands.Context, *, question: str) -> None:
 
-        response = crimsogames.return_cball_answer(ctx)
+        response = crimsogames.get_crimsoball_answer(ctx)
         if response == 'random_response':
             response = await m.async_wrap(self.bot, m.crimso)
 
