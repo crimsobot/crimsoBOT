@@ -31,9 +31,9 @@ class Utilities(commands.Cog):
         fact_subject = user_input.pop(0).strip()
         fact = user_input[0]
 
-        new_fact_created = await FunFacts.create_fact(ctx.author, fact_subject, fact)
+        new_fact = await FunFacts.create_fact(ctx.author, fact_subject, fact)
 
-        if new_fact_created:
+        if new_fact:
             await ctx.send('Fact added!')
 
     @commands.command(brief='Create a poll!')
