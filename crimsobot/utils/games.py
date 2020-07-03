@@ -14,7 +14,7 @@ from crimsobot.utils import tools as c
 DiscordUser = Union[discord.User, discord.Member]
 
 
-def return_cball_answer(ctx: commands.Context) -> str:  # function to give first answer a ctx to work with
+def get_crimsoball_answer(ctx: commands.Context) -> str:  # function to give first answer a ctx to work with
     # don't know if this is any better than just putting it
     # inside of the crimsoball command
     answer_list = [
