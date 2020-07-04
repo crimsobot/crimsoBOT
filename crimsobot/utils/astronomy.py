@@ -84,7 +84,7 @@ def where_are_you(location: str) -> Optional[Location]:
     """ input: string (location search)
        output: Nominatim object"""
 
-    geolocator = Nominatim()
+    geolocator = Nominatim(user_agent='crimsoBOT/astronomy')
     return geolocator.geocode(location)
 
 
@@ -211,7 +211,7 @@ def whereis(query: str) -> Tuple[Optional[float], Optional[float], Optional[str]
 
     # return url
     # bit.ly shortner
-    shortener = Shortener('Bitly', bitly_token=BITLY_TOKEN)
-    short_url = shortener.short(url)  # type: str
+    shortener = Shortener(api_key=BITLY_TOKEN)
+    short_url = shortener.bitly.short(url)  # type: str
 
     return lat, lon, short_url
