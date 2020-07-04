@@ -1,0 +1,52 @@
+[tool.poetry]
+name = "crimsobot"
+version = "0.0.0"
+description = "A playful little Discord bot."
+license = "MIT"
+authors = ["Andrew <48505803@users.noreply.github.com>", "William McKinnerney <me@williammck.net>"]
+readme = "README.rst"
+homepage = "https://crimso.bot"
+repository = "https://github.com/crimsobot/crimsoBOT"
+
+[tool.poetry.dependencies]
+aiofiles = "^0.5.0"
+aiosqlite = "^0.13.0"
+aiomysql = "^0.0.20"
+click = "^7.0"
+colormath = "^3.0.0"
+"discord.py" = "^1.3.3"
+geopy = "^2.0.0"
+lxml = "^4.4.1"
+markovify = "^0.8.2"
+matplotlib = "^3.1.1"
+nltk = "^3.4.5"
+numpy = "^1.17.4"
+pandas = "^1.0.5"
+Pillow = "^6.2.1"
+pypika = "<=0.37.1" # locking this until we get on tortoise-orm >= 0.16.10
+pyshorteners = "^1.0.1"
+python = "^3.6.1"
+pyyaml = "^5.3.1"
+requests = "^2.22.0"
+scipy = "^1.3.2"
+timezonefinder = "^4.1.0"
+tortoise-orm = "^0.15.24"
+
+[tool.poetry.dev-dependencies]
+bandit = "^1.6.2"
+flake8 = "^3.7.9"
+flake8-import-order = "^0.18.1"
+flake8-bugbear = "*"
+flake8-builtins = "^1.4.1"
+flake8-quotes = "^3.2.0"
+mccabe = "^0.6.1"
+mypy = "^0.782"
+pep8-naming = "^0.11.1"
+pre-commit = "^2.6.0"
+
+[tool.poetry.scripts]
+bot = "cli:run"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"

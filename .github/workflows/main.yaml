@@ -1,6 +1,10 @@
 name: CI/CD
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - master
+  pull_request:
 
 jobs:
   build:
@@ -14,17 +18,17 @@ jobs:
         with:
           python-version: 3.6
 
-      - name: Install pipenv
-        run: pip install pipenv
+      - name: Install poetry
+        run: pip install poetry
 
       - name: Install dependencies
-        run: pipenv install --dev
+        run: poetry install
 
       - name: Lint
-        run: pipenv run flake8
+        run: poetry run flake8
 
       - name: Type check
-        run: pipenv run mypy
+        run: poetry run mypy
 
   deploy:
     needs: build

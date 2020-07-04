@@ -6,16 +6,18 @@ crimsoBOT is a playful and somewhat poorly-coded Discord bot.
 Installing
 ----------
 
-- Python 3.5.3 or higher is required
-- You'll need to have `pipenv installed <https://docs.pipenv.org/en/latest/install/>`_.
+- Python 3.6.1 or higher is required
+- You'll need to have `poetry installed <https://python-poetry.org/docs/>`_.
 
 .. code:: sh
 
-    pipenv install
+    # first-run steps
+    poetry install
     cp config.example.py config.py
     # edit config.py in your favorite editor
+    poetry run python3 cli.py initdb
 
-    pipenv run python3 bot.py
+    poetry run bot
 
 Links
 -----
