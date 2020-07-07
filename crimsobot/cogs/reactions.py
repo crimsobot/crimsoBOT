@@ -88,7 +88,7 @@ class Reactions(commands.Cog):
             await ctx.send(embed=error_embed, delete_after=18)
             return
 
-        if not (fact_subject or fact):
+        if len(fact_subject) < 1 or len(fact) < 1:
             await ctx.send(embed=error_embed, delete_after=18)
             return
 
