@@ -43,7 +43,7 @@ class Reactions(commands.Cog):
             embed = c.crimbed(
                 title='OMAN',
                 descr=f'There are no facts about {subject}!',
-                footer='You can add one by using ">fact about [fact subject]; [some fun fact]"',
+                footer='You can add one by using ">fact add [fact subject]; [some fun fact]"',
                 color_name='yellow',
                 thumb_name='weary',
             )
