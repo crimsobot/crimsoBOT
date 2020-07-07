@@ -167,7 +167,7 @@ class Reactions(commands.Cog):
         """Remove all facts in a server with the same subject. Useful for removing spam."""
         facts_removed = await FunFacts.delete_by_subject(subject, ctx.guild.id)
 
-        if facts_removed != 0:
+        if facts_removed:
             embed = c.crimbed(title=None, descr=f'All {facts_removed} **{subject}** facts removed from this server!')
         else:
             embed = c.crimbed(
