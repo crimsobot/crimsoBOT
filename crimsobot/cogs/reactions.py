@@ -28,11 +28,15 @@ class Reactions(commands.Cog):
     @commands.group(aliases=['facts'])
     async def fact(self, ctx: commands.Context) -> None:
         """Testing out facts."""
+        # TODO: some sort of list of facts, e.g. top 10 subjects
         return
 
-    @fact.command(name='about')
+    @fact.command(name='about', brief='Get a fact about a subject!')
     async def fact_about(self, ctx: commands.Context, *, subject: CleanMentions) -> None:
-        """Write up some HELP"""
+        """Looks up a random fact about the given subject.
+        If you want to look up a specific fact, use >fact inspect.
+        You will need to know that fact's ID """
+
         try:
             fact_object = await FunFacts.get_by_subject(subject.lower().strip(), ctx.guild.id)
         except NoFactsExist:
@@ -44,19 +48,22 @@ class Reactions(commands.Cog):
                 thumb_name='weary',
             )
             await ctx.send(embed=embed, delete_after=18)
-            return
+        else:
+            return_string = ''.join([
+                f'`Fact ID: {fact_object.uuid}` · ',
+                f"**Here's a fact about {fact_object.subject.upper()}**:\n\n",
+                f'{fact_object.funfact}\n\n',
+            ])
 
-        return_string = ''.join([
-            f'`Fact ID: {fact_object.uuid}` · ',
-            f"**Here's a fact about {fact_object.subject.upper()}**:\n\n",
-            f'{fact_object.funfact}\n\n',
-        ])
+            await ctx.send(return_string)
 
-        await ctx.send(return_string)
-
-    @fact.command(name='add')
+    @fact.command(name='add', brief='Add a fact!')
     async def fact_add(self, ctx: commands.Context, *, something: CleanMentions) -> None:
-        """Add a fact"""
+        """Add a fact to your server's database of facts. Anyone can add a fact.
+        Fact subjects can be multiple words separated by spaces. Facts can include uploaded files and media.
+
+        Example usage: >fact add your subject; your fact
+        """
 
         # if there are any errors in user input, use this embed
         error_embed = c.crimbed(
@@ -68,13 +75,8 @@ class Reactions(commands.Cog):
         )
 
         # see if there are uploaded files or media
-        try:
-            link_list = []
-            for link in ctx.message.attachments:
-                link_list.append(link.url)
-            links = '\n'.join(link_list)
-        except IndexError:
-            links = ''
+        link_list = [link.url for link in ctx.message.attachments]
+        links = '\n'.join(link_list)
 
         user_input = something.split(';', 1)
 
@@ -99,8 +101,12 @@ class Reactions(commands.Cog):
             )
             await ctx.send(embed=embed)
 
-    @fact.command(name='inspect')
+    @fact.command(name='inspect', brief='Get more info about a specific fact!')
     async def fact_inspect(self, ctx: commands.Context, fact_id: int) -> None:
+        """Use this command to look up information about any fact on your server.
+        You will need a fact's ID, which is at the beginning of each fact when it shows up in the server.
+        """
+
         # check if owner for server-specific override
         owner = ctx.author.id in ADMIN_USER_IDS
 
@@ -144,6 +150,7 @@ class Reactions(commands.Cog):
     @has_guild_permissions(manage_messages=True)
     async def remove_fact(self, ctx: commands.Context, fact_id: int) -> None:
         """Remove a fact by its ID. To use this command, you must have Manage Messages permission."""
+
         # check if owner for server-specific override
         owner = ctx.author.id in ADMIN_USER_IDS
 
@@ -161,10 +168,12 @@ class Reactions(commands.Cog):
         await ctx.send(embed=embed, delete_after=18)
 
     @fact.command(name='wipe', aliases=['remove_subject', 'delete_subject'],
-                  brief='Remove all facts of a given subject')
+                  brief='Remove all facts of a given subject.')
     @has_guild_permissions(manage_messages=True)
     async def remove_subject(self, ctx: commands.Context, *, subject: CleanMentions) -> None:
-        """Remove all facts in a server with the same subject. Useful for removing spam."""
+        """Remove all facts in a server with the same subject. Useful for removing spam.
+        To use this commands, you must have Manage Messages permission in your server."""
+
         facts_removed = await FunFacts.delete_by_subject(subject, ctx.guild.id)
 
         if facts_removed:
