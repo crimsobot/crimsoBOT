@@ -6,7 +6,7 @@ from tortoise.exceptions import DoesNotExist
 
 from config import ADMIN_USER_IDS
 from crimsobot.bot import CrimsoBOT
-from crimsobot.models.fun_facts import FunFacts, NoFactsExist
+from crimsobot.models.fun_facts import FunFact, NoFactsExist
 from crimsobot.utils import tools as c
 
 log = logging.getLogger(__name__)
@@ -38,7 +38,7 @@ class Reactions(commands.Cog):
         You will need to know that fact's ID """
 
         try:
-            fact_object = await FunFacts.get_by_subject(subject.lower().strip(), ctx.guild.id)
+            fact_object = await FunFact.get_by_subject(subject.lower().strip(), ctx.guild.id)
         except NoFactsExist:
             embed = c.crimbed(
                 title='OMAN',
@@ -48,14 +48,15 @@ class Reactions(commands.Cog):
                 thumb_name='weary',
             )
             await ctx.send(embed=embed, delete_after=18)
-        else:
-            return_string = ''.join([
-                f'`Fact ID: {fact_object.uuid}` · ',
-                f"**Here's a fact about {fact_object.subject.upper()}**:\n\n",
-                f'{fact_object.funfact}\n\n',
-            ])
+            return
 
-            await ctx.send(return_string)
+        return_string = ''.join([
+            f'`Fact ID: {fact_object.uid}` · ',
+            f"**Here's a fact about {fact_object.subject.upper()}**:\n\n",
+            f'{fact_object.body}\n\n',
+        ])
+
+        await ctx.send(return_string)
 
     @fact.command(name='add', brief='Add a fact!')
     async def fact_add(self, ctx: commands.Context, *, something: CleanMentions) -> None:
@@ -91,13 +92,13 @@ class Reactions(commands.Cog):
             await ctx.send(embed=error_embed, delete_after=18)
             return
 
-        new_fact = await FunFacts.create_fact(ctx.author, ctx.guild.id, fact_subject, fact)
+        new_fact = await FunFact.create_fact(ctx.author, ctx.guild.id, fact_subject, fact)
 
         if new_fact:
             embed = c.crimbed(
                 title=None,
                 descr='Fact added!',
-                footer=f'Fact ID: {new_fact.uuid}'
+                footer=f'Fact ID: {new_fact.uid}'
             )
             await ctx.send(embed=embed)
 
@@ -111,7 +112,7 @@ class Reactions(commands.Cog):
         owner = ctx.author.id in ADMIN_USER_IDS
 
         try:
-            fact_object = await FunFacts.get_by_id(fact_id, ctx.guild.id, owner)
+            fact_object = await FunFact.get_by_id(fact_id, ctx.guild.id, owner)
         except DoesNotExist:
             embed = c.crimbed(title=None, descr=f'Fact {fact_id} does not exist (at least not in this server)!')
             await ctx.send(embed=embed, delete_after=18)
@@ -119,25 +120,26 @@ class Reactions(commands.Cog):
 
         fact_adder = self.bot.get_user(fact_object.created_by.discord_user_id)
 
-        guild = self.bot.get_guild(fact_object.created_in)
+        guild = self.bot.get_guild(fact_object.guild_id)
 
         embed = c.crimbed(
-            title=f'FACT INSPECT // ID: {fact_object.uuid}' + ' (admin view)' if owner else '',
+            title=f'FACT INSPECT // ID: {fact_object.uid}' + ' (admin view)' if owner else '',
             descr=None,
-            footer='Users with Manage Messages permission can remove facts using ">fact remove [ID]"',
+            footer='Users with the Manage Messages permission can remove facts using ">fact remove [ID]"',
             thumb_name='think',
             color_name='yellow',
         )
 
         field_list = [
             ('Subject', fact_object.subject),
-            ('Body', fact_object.funfact),
+            ('Body', fact_object.body),
             ('Added by', f'{fact_adder} ({fact_adder.id})'),
             ('Server', f'{guild.name} ({guild.id})'),
             (
                 'Added on',
                 '{d.year}-{d.month:02d}-{d.day:02d} {d.hour:02d}:{d.minute:02d}:{d.second:02d}'.format(
-                    d=fact_object.created_at)
+                    d=fact_object.created_at
+                )
             ),
         ]
 
@@ -149,12 +151,13 @@ class Reactions(commands.Cog):
     @fact.command(name='remove', aliases=['delete'], brief='Remove a fact by ID.')
     @has_guild_permissions(manage_messages=True)
     async def remove_fact(self, ctx: commands.Context, fact_id: int) -> None:
-        """Remove a fact by its ID. To use this command, you must have Manage Messages permission."""
+        """Remove a fact by its ID.
+        To use this command, you must have the Manage Messages permission in your server."""
 
         # check if owner for server-specific override
         owner = ctx.author.id in ADMIN_USER_IDS
 
-        fact_removed = await FunFacts.delete_by_id(fact_id, ctx.guild.id, owner)
+        fact_removed = await FunFact.delete_by_id(fact_id, ctx.guild.id, owner)
 
         if fact_removed != 0:
             embed = c.crimbed(title=None, descr=f'Fact {fact_id} removed!')
@@ -172,9 +175,9 @@ class Reactions(commands.Cog):
     @has_guild_permissions(manage_messages=True)
     async def remove_subject(self, ctx: commands.Context, *, subject: CleanMentions) -> None:
         """Remove all facts in a server with the same subject. Useful for removing spam.
-        To use this commands, you must have Manage Messages permission in your server."""
+        To use this command, you must have the Manage Messages permission in your server."""
 
-        facts_removed = await FunFacts.delete_by_subject(subject, ctx.guild.id)
+        facts_removed = await FunFact.delete_by_subject(subject, ctx.guild.id)
 
         if facts_removed:
             embed = c.crimbed(title=None, descr=f'All {facts_removed} **{subject}** facts removed from this server!')

@@ -22,39 +22,39 @@ class NoFactsExist(Exception):
             return 'There are no facts about this subject'
 
 
-class FunFacts(Model):
-    uuid = fields.IntField(pk=True)
+class FunFact(Model):
+    uid = fields.IntField(pk=True)
     created_by = fields.ForeignKeyField('models.User', related_name='fun_facts', index=True)
-    created_in = fields.BigIntField()
+    guild_id = fields.BigIntField(index=True)
 
     subject = fields.CharField(max_length=255)
-    funfact = fields.CharField(max_length=1800)
+    body = fields.CharField(max_length=1800)
 
     created_at = fields.DatetimeField(null=True, auto_now_add=True)
 
     @classmethod
-    async def create_fact(cls, creator: DiscordUser, guild: int, subject: str, funfact: str) -> 'FunFacts':
+    async def create_fact(cls, creator: DiscordUser, guild: int, subject: str, body: str) -> 'FunFact':
         user = await User.get_by_discord_user(creator)
-        fact = await FunFacts.create(
-            created_by=user, subject=subject, created_in=guild, funfact=funfact)  # type: FunFacts
+        fact = await FunFact.create(
+            created_by=user, subject=subject, guild_id=guild, body=body)  # type: FunFact
 
         return fact
 
     @classmethod
-    async def get_by_id(cls, fact_id: int, guild: int, owner: bool) -> 'FunFacts':
+    async def get_by_id(cls, fact_id: int, guild: int, owner: bool) -> 'FunFact':
         if owner:
-            fact = await FunFacts.get(uuid=fact_id).prefetch_related('created_by')  # type: FunFacts
+            fact = await FunFact.get(uid=fact_id).prefetch_related('created_by')  # type: FunFact
         else:
-            fact = await FunFacts.get(uuid=fact_id, created_in=guild).prefetch_related('created_by')
+            fact = await FunFact.get(uid=fact_id, guild_id=guild).prefetch_related('created_by')
 
         return fact
 
     @classmethod
-    async def get_by_subject(cls, subject: str, guild: int) -> 'FunFacts':
-        all_facts = await FunFacts.filter(subject=subject, created_in=guild).prefetch_related('created_by')
+    async def get_by_subject(cls, subject: str, guild: int) -> 'FunFact':
+        all_facts = await FunFact.filter(subject=subject, guild_id=guild).prefetch_related('created_by')
 
         try:
-            fact = random.sample(all_facts, 1)[0]  # type: FunFacts
+            fact = random.sample(all_facts, 1)[0]  # type: FunFact
         except ValueError:
             raise NoFactsExist
 
@@ -63,15 +63,15 @@ class FunFacts(Model):
     @classmethod
     async def delete_by_id(cls, fact_id: int, guild: int, owner: bool) -> int:
         if owner:
-            removed_int = await FunFacts.filter(uuid=fact_id).delete()  # type: int
+            removed_int = await FunFact.filter(uid=fact_id).delete()  # type: int
         else:
-            removed_int = await FunFacts.filter(uuid=fact_id, created_in=guild).delete()
+            removed_int = await FunFact.filter(uid=fact_id, guild_id=guild).delete()
 
         return removed_int
 
     @classmethod
     async def delete_by_subject(cls, subject: str, guild: int) -> int:
-        removed_int = await FunFacts.filter(subject=subject, created_in=guild).delete()  # type: int
+        removed_int = await FunFact.filter(subject=subject, guild_id=guild).delete()  # type: int
 
         return removed_int
 
