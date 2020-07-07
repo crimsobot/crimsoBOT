@@ -27,6 +27,7 @@ class CrimsoBOT(commands.Bot):
             'crimsobot.cogs.games',
             'crimsobot.cogs.image',
             'crimsobot.cogs.mystery',
+            'crimsobot.cogs.reactions',
             'crimsobot.cogs.text',
             'crimsobot.cogs.utilities',
         ]
