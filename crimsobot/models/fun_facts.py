@@ -27,7 +27,7 @@ class FunFact(Model):
     created_by = fields.ForeignKeyField('models.User', related_name='fun_facts', index=True)
     guild_id = fields.BigIntField(index=True)
 
-    subject = fields.CharField(max_length=255)
+    subject = fields.CharField(max_length=255, index=True)
     body = fields.CharField(max_length=1800)
 
     created_at = fields.DatetimeField(null=True, auto_now_add=True)
