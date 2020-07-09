@@ -77,14 +77,14 @@ class FactLeaderboard:
                     new_subject = ' '.join(words)
 
                 self._embed.add_field(
-                    name='{}. **{}**'.format(place, new_subject if new_subject else leader.subject),
+                    name=f'{place}. **{new_subject if new_subject else leader.subject}**',
                     value=leader.value,
                     inline=False
                 )
 
-        self._embed.set_footer(text='Page {}{}'.format(self.page, self._embed_footer_extra))
+        self._embed.set_footer(text=f'{ctx.guild.name} · Page {self.page}{self._embed_footer_extra}')
 
         return self._embed
 
     def _set_embed_title(self, stat: str) -> None:
-        self._embed.title = 'FACTS! leaderboard: **{}**'.format(stat.upper())
+        self._embed.title = f'FACTS! leaderboard: **{stat.upper()}**'
