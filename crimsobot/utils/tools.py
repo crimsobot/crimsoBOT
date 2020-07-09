@@ -102,6 +102,7 @@ def crimbed(title: Optional[str], descr: Optional[str],
         'weary': 'https://i.imgur.com/VFtApPg.png',
         'moneymouth': 'https://i.imgur.com/lNR8qHe.png',
         'shrug': 'https://i.imgur.com/CmokCt9.png',
+        'nerd': 'https://i.imgur.com/IFqf0X7.png',
     }
 
     # These thumbnails are for specific uses only.

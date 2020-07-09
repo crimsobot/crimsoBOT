@@ -6,8 +6,9 @@ from tortoise.exceptions import DoesNotExist
 
 from config import ADMIN_USER_IDS
 from crimsobot.bot import CrimsoBOT
-from crimsobot.models.fun_facts import FunFact, NoFactsExist
+from crimsobot.models.fun_fact import FunFact, NoFactsExist
 from crimsobot.utils import tools as c
+from crimsobot.utils.fact_leaderboard import FactLeaderboard
 
 log = logging.getLogger(__name__)
 
@@ -25,11 +26,14 @@ class Reactions(commands.Cog):
     def __init__(self, bot: CrimsoBOT):
         self.bot = bot
 
-    @commands.group(aliases=['facts'])
+    @commands.group(aliases=['facts'], invoke_without_command=True, brief='Add and look up facts!')
     async def fact(self, ctx: commands.Context) -> None:
-        """Testing out facts."""
-        # TODO: some sort of list of facts, e.g. top 10 subjects
-        return
+        """Facts is a feature that allows users to add and look up facts in their server.
+        Use >help fact [command] for more info about the subcommands below.
+        """
+
+        # fallback to random fact if no proper arguments are provided
+        await self.fact_random(ctx)
 
     @fact.command(name='about', brief='Get a fact about a subject!')
     async def fact_about(self, ctx: commands.Context, *, subject: CleanMentions) -> None:
@@ -42,7 +46,7 @@ class Reactions(commands.Cog):
         except NoFactsExist:
             embed = c.crimbed(
                 title='OMAN',
-                descr=f'There are no facts about {subject}!',
+                descr=f'There are no facts about **{subject}**!',
                 footer='You can add one by using ">fact add [fact subject]; [some fun fact]"',
                 color_name='yellow',
                 thumb_name='weary',
@@ -52,13 +56,14 @@ class Reactions(commands.Cog):
 
         return_string = ''.join([
             f'`Fact ID: {fact_object.uid}` · ',
-            f"**Here's a fact about {fact_object.subject.upper()}**:\n\n",
-            f'{fact_object.body}\n\n',
+            f"Here's a fact about **{fact_object.subject.upper()}**:\n\n",
+            f'>>> {fact_object.body}',
         ])
 
         await ctx.send(return_string)
 
     @fact.command(name='add', brief='Add a fact!')
+    @commands.cooldown(1, 9, commands.BucketType.user)
     async def fact_add(self, ctx: commands.Context, *, something: CleanMentions) -> None:
         """Add a fact to your server's database of facts. Anyone can add a fact.
         Fact subjects can be multiple words separated by spaces. Facts can include uploaded files and media.
@@ -92,15 +97,15 @@ class Reactions(commands.Cog):
             await ctx.send(embed=error_embed, delete_after=18)
             return
 
-        new_fact = await FunFact.create_fact(ctx.author, ctx.guild.id, fact_subject, fact)
+        fact, is_new = await FunFact.create_fact(ctx.author, ctx.guild.id, fact_subject, fact)
 
-        if new_fact:
-            embed = c.crimbed(
-                title=None,
-                descr='Fact added!',
-                footer=f'Fact ID: {new_fact.uid}'
-            )
-            await ctx.send(embed=embed)
+        embed = c.crimbed(
+            title=None,
+            descr='Fact added!' if is_new else 'That fact already exists!',
+            footer=f'Fact ID: {fact.uid}'
+        )
+
+        await ctx.send(embed=embed)
 
     @fact.command(name='inspect', brief='Get more info about a specific fact!')
     async def fact_inspect(self, ctx: commands.Context, fact_id: int) -> None:
@@ -126,20 +131,19 @@ class Reactions(commands.Cog):
             title=f'FACT INSPECT // ID: {fact_object.uid}' + ' (admin view)' if owner else '',
             descr=None,
             footer='Users with the Manage Messages permission can remove facts using ">fact remove [ID]"',
-            thumb_name='think',
+            thumb_name='nerd',
             color_name='yellow',
         )
 
         field_list = [
             ('Subject', fact_object.subject),
-            ('Body', fact_object.body),
+            ('Body', fact_object.body[:500] + '...' if len(fact_object.body) > 500 else fact_object.body),
             ('Added by', f'{fact_adder} ({fact_adder.id})'),
             ('Server', f'{guild.name} ({guild.id})'),
             (
                 'Added on',
                 '{d.year}-{d.month:02d}-{d.day:02d} {d.hour:02d}:{d.minute:02d}:{d.second:02d}'.format(
-                    d=fact_object.created_at
-                )
+                    d=fact_object.created_at)
             ),
         ]
 
@@ -147,6 +151,32 @@ class Reactions(commands.Cog):
             embed.add_field(name=field[0], value=field[1], inline=False)
 
         await ctx.send(embed=embed)
+
+    @fact.command(name='random', brief='Random fact from this server!')
+    async def fact_random(self, ctx: commands.Context) -> None:
+        """Looks up a random fact in the server.
+        If you want to look up a fact about a specific subject, use >fact about [subject].
+        """
+        try:
+            fact_object = await FunFact.get_random(ctx.guild.id)
+        except NoFactsExist:
+            embed = c.crimbed(
+                title='OMAN',
+                descr='There are no facts in this server!',
+                footer='You can add one by using ">fact add [fact subject]; [some fun fact]"',
+                color_name='orange',
+                thumb_name='weary',
+            )
+            await ctx.send(embed=embed, delete_after=18)
+            return
+
+        return_string = ''.join([
+            f'`Fact ID: {fact_object.uid}` · ',
+            f"**Here's a fact about {fact_object.subject.upper()}**:\n\n",
+            f'{fact_object.body}',
+        ])
+
+        await ctx.send(return_string)
 
     @fact.command(name='remove', aliases=['delete'], brief='Remove a fact by ID.')
     @has_guild_permissions(manage_messages=True)
@@ -189,6 +219,16 @@ class Reactions(commands.Cog):
             )
 
         await ctx.send(embed=embed, delete_after=18)
+
+    @fact.command(name='lb', aliases=['leaderboard'], brief='Facts leaderboard!')
+    async def fact_leaderboard(self, ctx: commands.Context, page: int = 1) -> None:
+        """Leaderboard for most facts by subject (server-specific)."""
+
+        lb = FactLeaderboard(page)
+        await lb.get_subject_leaders(ctx.guild.id)
+        embed = await lb.get_embed(ctx)
+
+        await ctx.send(embed=embed)
 
 
 def setup(bot: CrimsoBOT) -> None:

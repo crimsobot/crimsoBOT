@@ -11,7 +11,7 @@ async def connect() -> None:
             'crimsobot.models.ban',
             'crimsobot.models.currency_account',
             'crimsobot.models.cringo_statistic',
-            'crimsobot.models.fun_facts',
+            'crimsobot.models.fun_fact',
             'crimsobot.models.guess_statistic',
         ]}
     )
