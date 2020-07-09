@@ -131,7 +131,7 @@ class Reactions(commands.Cog):
             title=f'FACT INSPECT // ID: {fact_object.uid}' + ' (admin view)' if owner else '',
             descr=None,
             footer='Users with the Manage Messages permission can remove facts using ">fact remove [ID]"',
-            thumb_name='think',
+            thumb_name='nerd',
             color_name='yellow',
         )
 

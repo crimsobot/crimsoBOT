@@ -17,7 +17,7 @@ class FactLeaderboard:
     def __init__(self, page: int) -> None:
         self._leaders = []  # type: List[Leader]
 
-        self._embed = crimbed(title=None, descr=None, thumb_name='think')
+        self._embed = crimbed(title=None, descr=None, thumb_name='nerd')
         self._embed_footer_extra = ''  # type: str
 
         self.page = page
