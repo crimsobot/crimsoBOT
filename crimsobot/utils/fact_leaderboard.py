@@ -1,7 +1,7 @@
 import collections
 from typing import List
 
-from discord import Embed
+from discord import Embed, NotFound
 from discord.ext import commands
 from tortoise.functions import Count
 
@@ -57,8 +57,27 @@ class FactLeaderboard:
         else:
             for place, leader in enumerate(leaders):
                 place = self._offset + place + 1
+
+                # placeholder if subject needs to be edited; cannot be replaced in tuple
+                new_subject = None
+
+                # turn '<@[userid]>' strings into usernames e.g. @username#1234
+                if '<@' in leader.subject:
+                    words = leader.subject.split(' ')
+                    for idx, word in enumerate(words):
+                        if '<@' in word:
+                            try:
+                                discord_user = await ctx.bot.fetch_user(int(word[2:-1]))
+                                words[idx] = f'@{str(discord_user)}'
+                            except ValueError:
+                                pass  # if a fact contains string '<@' but is not a user, e.g. '<@not_an_integer>`
+                            except NotFound:
+                                pass  # user not found
+
+                    new_subject = ' '.join(words)
+
                 self._embed.add_field(
-                    name='{}. **{}**'.format(place, leader.subject),
+                    name='{}. **{}**'.format(place, new_subject if new_subject else leader.subject),
                     value=leader.value,
                     inline=False
                 )
