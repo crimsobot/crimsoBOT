@@ -10,7 +10,7 @@ repository = "https://github.com/crimsobot/crimsoBOT"
 
 [tool.poetry.dependencies]
 aiofiles = "^0.5.0"
-aiosqlite = "^0.13.0"
+aiosqlite = "^0.15.0"
 aiomysql = "^0.0.20"
 click = "^7.0"
 colormath = "^3.0.0"
