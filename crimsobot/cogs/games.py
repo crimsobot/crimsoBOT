@@ -609,7 +609,7 @@ class Games(commands.Cog):
         There is a per-channel cooldown on this command."""
 
         def choose_random_emoji() -> str:
-            "Choose a random emoji from the emojis used in Emojistory."
+            """Choose a random emoji from the emojis used in Emojistory."""
             # read in lines of emojis
             emojis = open(c.clib_path_join('games', 'emojilist.txt'), encoding='utf8', errors='ignore').read()
             # strip newlines
