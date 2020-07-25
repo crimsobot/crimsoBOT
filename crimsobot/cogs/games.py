@@ -636,7 +636,7 @@ class Games(commands.Cog):
             footer='Please try again!'
         )
 
-        # check the input
+        # check and clean the input
         if bubble is None:
             bubble = choose_random_emoji()
         elif len(bubble) > char_limit:
@@ -647,6 +647,7 @@ class Games(commands.Cog):
             if bubble not in emoji_strings:
                 await ctx.send(embed=error_embed, delete_after=18)
                 return
+        bubble = bubble.replace('\n','').strip()
 
         # build the bubblewrap sheet and send
         line = '\u200B\n' + size * f'||{bubble}||'
