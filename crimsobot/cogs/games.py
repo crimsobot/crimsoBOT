@@ -647,7 +647,9 @@ class Games(commands.Cog):
             if bubble not in emoji_strings:
                 await ctx.send(embed=error_embed, delete_after=18)
                 return
-        bubble = bubble.replace('\n','').strip()
+        bubble = bubble.strip() \
+            .replace('\n', '') \
+            .replace('|', '')
 
         # build the bubblewrap sheet and send
         line = '\u200B\n' + size * f'||{bubble}||'
