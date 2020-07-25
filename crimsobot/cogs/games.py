@@ -609,6 +609,7 @@ class Games(commands.Cog):
         There is a per-channel cooldown on this command."""
 
         def choose_random_emoji() -> str:
+            "Choose a random emoji from the emojis used in Emojistory."
             # read in lines of emojis
             emojis = open(c.clib_path_join('games', 'emojilist.txt'), encoding='utf8', errors='ignore').read()
             # strip newlines
@@ -617,7 +618,7 @@ class Games(commands.Cog):
             return random.choice(emojis)
 
         # configure
-        char_limit = 20
+        char_limit = 10
         size = 6
 
         # send this if there's a whoopsie
@@ -632,13 +633,14 @@ class Games(commands.Cog):
             ]),
             thumb_name='weary',
             color_name='yellow',
-            footer='Pleast try again!'
+            footer='Please try again!'
         )
 
         # check the input
         if bubble is None:
             bubble = choose_random_emoji()
         elif len(bubble) > char_limit:
+            # check if input is a custom emoji from the server
             emoji_strings = []
             for emoji in ctx.guild.emojis:
                 emoji_strings.append(str(emoji))
@@ -646,6 +648,7 @@ class Games(commands.Cog):
                 await ctx.send(embed=error_embed, delete_after=18)
                 return
 
+        # build the bubblewrap sheet and send
         line = '\u200B\n' + size * f'||{bubble}||'
         sheet = size * line
 
