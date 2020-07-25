@@ -626,7 +626,8 @@ class Games(commands.Cog):
             title='**OOPSIE!**',
             descr='\n'.join([
                 'Alright, so either:',
-                '· that emoji is not in this server, or',
+                '· that emoji is not in this server,',
+                '· after cleaning up your input, there are no characters left, or',
                 f'· your input is too long. (Under {char_limit} characters pls!)',
                 '',
                 'Some Discord objects such as mentions have hidden characters that will make the input too long.'
@@ -647,12 +648,21 @@ class Games(commands.Cog):
             if bubble not in emoji_strings:
                 await ctx.send(embed=error_embed, delete_after=18)
                 return
-        bubble = bubble.strip() \
-            .replace('\n', '') \
-            .replace('|', '')
+
+        bubble = bubble.strip()
+
+        chars_to_remove = ['\n', '|', '`', '\u200b', '\u200d']
+
+        for char in chars_to_remove:
+            if char in bubble:
+                bubble = bubble.replace(char, '')
+
+        if len(bubble) == 0:
+            await ctx.send(embed=error_embed, delete_after=18)
+            return
 
         # build the bubblewrap sheet and send
-        line = '\u200B\n' + size * f'||{bubble}||'
+        line = '\u200B\n' + size * f'\u200b||{bubble}||'
         sheet = size * line
 
         await ctx.send(sheet)
