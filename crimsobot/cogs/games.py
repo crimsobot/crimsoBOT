@@ -642,9 +642,7 @@ class Games(commands.Cog):
             bubble = choose_random_emoji()
         elif len(bubble) > char_limit:
             # check if input is a custom emoji from the server
-            emoji_strings = []
-            for emoji in ctx.guild.emojis:
-                emoji_strings.append(str(emoji))
+            emoji_strings = [str(e) for e in ctx.guild.emojis]
             if bubble not in emoji_strings:
                 await ctx.send(embed=error_embed, delete_after=18)
                 return
