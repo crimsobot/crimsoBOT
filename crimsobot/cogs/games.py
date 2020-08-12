@@ -472,7 +472,7 @@ class Games(commands.Cog):
         )
         await ctx.send(embed=embed)
 
-    @commands.command()
+    @commands.command(aliases=["pay"])
     @commands.cooldown(2, 60*30, commands.BucketType.user)
     async def give(self, ctx: commands.Context, recipient: discord.Member, amount: float) -> None:
         """Give a user up to 1/4 of your crimsoCOIN."""
