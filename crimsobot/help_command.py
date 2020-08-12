@@ -39,14 +39,14 @@ class PaginatedHelpCommand(DefaultHelpCommand):
         self.bot_help_invocation = True
         await super().send_bot_help(mapping)
 
-    async def send_pages(self) -> None:
+    async def send_pages(self) -> Any:
         # This method is overriden so that we can use our own pagination approach.
         # While we could use self.context here (instead of this destination mess), it's best to respect the
         # configuration options that we have available - the help command can be configured to DM users depending on
         # page length, and we don't want to break that behavior needlessly.
         destination = self.get_destination()
         if not self.bot_help_invocation:
-            return await super().send_pages()  # Type: ignore
+            return await super().send_pages()
 
         # This was called with a plain >help, so we can run the fancy paginator.
         destination_as_messageable = destination.channel if isinstance(destination, Context) else destination
