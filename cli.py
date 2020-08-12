@@ -2,10 +2,12 @@ import asyncio
 import logging
 
 import click
+from discord.ext.commands import Paginator
 
 from config import LOG_LEVEL, TOKEN
 from crimsobot import db
 from crimsobot.bot import CrimsoBOT
+from crimsobot.help_command import PaginatedHelpCommand
 
 logging.basicConfig(
     format='[%(asctime)s] %(levelname)8s: %(message)s\t(%(name)s)',
@@ -23,7 +25,8 @@ def cli():
 def run():
     """This command runs the bot."""
 
-    bot = CrimsoBOT()
+    paginator = Paginator(max_size=1336)
+    bot = CrimsoBOT(help_command=PaginatedHelpCommand(paginator=paginator))
     bot.load_extensions()
     bot.run(TOKEN)
 
