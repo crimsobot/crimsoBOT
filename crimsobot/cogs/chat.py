@@ -1,6 +1,7 @@
 import os
 import random
 
+import discord
 from discord.ext import commands
 
 from config import ADMIN_USER_IDS, SCRAPER_USER_IDS
@@ -23,18 +24,10 @@ class Chat(commands.Cog):
             if message.author.id != self.bot.user.id:
                 messages.append(message.content)
 
-        # this little piggy cleans pings from messages
-        cleaner = commands.clean_content(use_nicknames=False)
+        output = await m.scatter(messages)
 
-        output = await m.async_wrap(self.bot, m.scatter, messages)
-
-        # no more pings!
-        try:
-            cleaned_output = await cleaner.convert(ctx, output)
-        except commands.errors.BadArgument:
-            cleaned_output = output
-
-        await message.channel.send(cleaned_output)
+        no_pings = discord.AllowedMentions(everyone=False, users=False, roles=False)
+        await ctx.send(output, allowed_mentions=no_pings)
 
     @commands.command()
     async def poem(self, ctx: commands.Context) -> None:
@@ -57,7 +50,7 @@ class Chat(commands.Cog):
 
         choice = random.choice(fake_author)
 
-        generated_poem = await m.async_wrap(self.bot, m.poem, int(random.gauss(5, 1)))
+        generated_poem = await m.poem(ctx, int(random.gauss(5, 1)))
         embed = c.crimbed(
             title='**A poem.**',
             descr=generated_poem.lower(),
@@ -71,7 +64,7 @@ class Chat(commands.Cog):
 
         embed = c.crimbed(
             title='**CRIMSONIC WISDOM**',
-            descr=await m.async_wrap(self.bot, m.wisdom),
+            descr=await m.wisdom(ctx),
             thumb_name='think',
         )
         await ctx.send(embed=embed)
@@ -92,7 +85,7 @@ class Chat(commands.Cog):
 
         embed = c.crimbed(
             title='An excerpt from **THE FIRST NECROMANCER (sort of)**, by Monty Ward',
-            descr=await m.async_wrap(self.bot, m.rovin),
+            descr=await m.rovin(ctx),
             thumb_name='monty',
             footer='{} Sleep tight.'.format(random.choice(footer_text)),
         )

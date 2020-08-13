@@ -1,27 +1,74 @@
+import asyncio
 import functools
 import random as r
-import re
 import time
-from typing import Any, Callable, List
+from typing import Any, Callable, List, Optional, Type, Union
 
 import markovify
-import nltk
-from discord.ext.commands import Bot
+from discord.ext import tasks
+from discord.ext.commands import Bot, Context
 
 from crimsobot.utils import tools as c
 
 
-class POSifiedText(markovify.Text):
-    def word_split(self, sentence: str) -> List[str]:
-        words = re.split(self.word_split_pattern, sentence)
-        words = ['::'.join(tag) for tag in nltk.pos_tag(words)]
+class CachedMarkov:
 
-        return words
+    def __init__(
+        self,
+        path: Union[str, List[str]],
+        model_type: Type[markovify.Text],
+        *args: Any,
+        combine_weights: Optional[List[int]] = None,
+        **kwargs: Any
+    ) -> None:
+        self.stale = True
+        self._combine_weights = combine_weights
+        self._model: Type[markovify.Text]
+        self._model_type = model_type
+        self._model_args = args
+        self._model_kwargs = kwargs
+        self._path = path
 
-    def word_join(self, words: List[str]) -> str:
-        sentence = ' '.join(word.split('::')[0] for word in words)
+    @c.executor_function
+    def build(self) -> None:
+        self.stale = False  # We're updating the model, so it's no longer stale
+        # If path is a single string, then only one model is being constructed - no combination is needed.
+        if isinstance(self._path, str):
+            with open(self._path, encoding='utf-8', errors='ignore') as text_file:
+                text = text_file.read()
 
-        return sentence
+            self._model = self._model_type(text, *self._model_args, **self._model_kwargs)
+            self._model.compile(inplace=True)
+
+            return None
+
+        # Path is a list of strings. Multiple paths = multiple models, which we'll create, combine, and then compile.
+        models = []  # type: List[markovify.Text]
+        for path in self._path:
+            with open(path, encoding='utf-8', errors='ignore') as text_file:
+                models.append(self._model_type(text_file.read(), *self._model_args, **self._model_kwargs))
+
+        self._model = markovify.combine(models, self._combine_weights)
+        self._model.compile(inplace=True)
+
+    @c.executor_function
+    def make_sentence(self, init_state: Optional[Any] = None, **kwargs: Any) -> Any:
+        return self._model.make_sentence(init_state, **kwargs)
+
+    @c.executor_function
+    def make_short_sentence(self,  max_chars: int, min_chars: int = 0, **kwargs: Any) -> Any:
+        return self._model.make_short_sentence(max_chars, min_chars, **kwargs)
+
+    @c.executor_function
+    def make_sentence_with_start(self, beginning: str, strict: bool = True, **kwargs: Any) -> Any:
+        return self._model.make_sentence_with_start(beginning, strict, **kwargs)
+
+
+@tasks.loop(minutes=10)
+async def update_models(bot: Bot) -> None:
+    for model in bot.markov_cache.values():
+        if model.stale:
+            await model.build()
 
 
 def learner(msg: str) -> None:
@@ -34,109 +81,78 @@ def scraper(msg: str) -> None:
         f.write('%s\n' % msg)
 
 
+@c.executor_function
 def scatter(msg_list: List[str]) -> str:
     """Write text file from list of strings."""
 
     one_long_string = '\n'.join(msg_list)
     one_long_string = one_long_string.upper()
 
-    factor = 1
-
-    model = markovify.NewlineText(one_long_string, state_size=factor)
+    model = markovify.NewlineText(one_long_string, state_size=1)
 
     # sometimes this process will fail to make a new sentence if the corpus is too short or lacks variety.
     # so I let it try for 8 seconds to do the thing, but kill it after that.
     now = time.time()
-    out = None
+    out = None  # type: Optional[str]
     while time.time() < now + 5:
-        if out is None:
+        if not out:
             out = model.make_short_sentence(r.randint(40, 400))
-            if out is not None:
+            if out:
                 break
 
-    if out is None:
+    if not out:
         out = 'NO.'
 
     return out
 
 
-def poem(number_lines: int) -> str:
+async def poem(ctx: Context, number_lines: int) -> str:
     """Write a poem."""
-
-    with open(c.clib_path_join('text', 'all.txt'), encoding='utf8', errors='ignore') as f:
-        text1 = f.read()
-
-    with open(c.clib_path_join('text', 'randoms.txt'), encoding='utf8', errors='ignore') as f:
-        text2 = f.read()
-
-    poem_factor = 2
-    crimso_model = markovify.Text(text1, state_size=poem_factor, retain_original=False)
-    other_model = markovify.Text(text2, state_size=poem_factor, retain_original=True)
-    model = markovify.combine([crimso_model, other_model], [1, 2])
 
     output_poem = []  # type: List[str]
     for _ in range(number_lines):
         outline = None
         while outline is None:
-            outline = model.make_short_sentence(80)
+            outline = await ctx.bot.markov_cache['poem'].make_short_sentence(80)
         output_poem.append(outline)
 
     return '\n'.join(output_poem)
 
 
-def wisdom() -> str:
+async def wisdom(ctx: Context) -> str:
     """Wisdom."""
-
-    with open(c.clib_path_join('text', 'wisdom.txt'), encoding='utf8', errors='ignore') as f:
-        text = f.read()
-
-    factor = 3
-    model = markovify.Text(text, state_size=factor)
 
     output = None
     while output is None:
-        output = model.make_short_sentence(300)
+        output = await ctx.bot.markov_cache['wisdom'].make_short_sentence(300)
 
     return output
 
 
-def rovin() -> str:
+async def rovin(ctx: Context) -> str:
     """Wisdom."""
-
-    with open(c.clib_path_join('text', 'rovin.txt'), encoding='utf8', errors='ignore') as f:
-        text = f.read()
-    f.close()
-
-    factor = 3
-    model = markovify.Text(text, state_size=factor)
 
     output = []  # type: List[str]
     while len(output) < 5:
-        output.append(model.make_short_sentence(300))
+        output.append(await ctx.bot.markov_cache['rovin'].make_short_sentence(300))
 
     return ' '.join(output)
 
 
-def crimso() -> str:
+async def crimso(ctx: Context) -> str:
     """Generates crimsonic text."""
-
-    with open(c.clib_path_join('text', 'crimso.txt'), encoding='utf8', errors='ignore') as f:
-        text = f.read()
-
-    factor = 2
-    model = markovify.NewlineText(text, state_size=factor, retain_original=False)
 
     output = None
     while output is None:
-        output = model.make_sentence()
+        output = await ctx.bot.markov_cache['crimso'].make_sentence()
 
     return output
 
 
-async def async_wrap(bot: Bot, func: Callable, *args: Any, **kwargs: Any) -> Any:
+async def async_wrap(func: Callable, *args: Any, **kwargs: Any) -> Any:
     """Wraps a sync function into an asynchronous executor. Useful everywhere but it's here just because."""
 
+    loop = asyncio.get_event_loop()
     func = functools.partial(func, *args, **kwargs)
-    output = await bot.loop.run_in_executor(None, func)
 
-    return output
+    return await loop.run_in_executor(None, func)

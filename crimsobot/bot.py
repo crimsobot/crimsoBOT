@@ -3,6 +3,7 @@ from typing import Any, List, Union
 
 import discord
 from discord.ext import commands
+from markovify import NewlineText, Text
 
 from config import ADMIN_USER_IDS, BANNED_GUILD_IDS, DM_LOG_CHANNEL_ID, LEARNER_CHANNEL_IDS, LEARNER_USER_IDS
 from crimsobot import db
@@ -54,12 +55,41 @@ class CrimsoBOT(commands.Bot):
             flat=True
         )  # type: List[int]
         self.banned_user_ids = banned_user_ids
+        self.markov_cache = {
+            'crimso': m.CachedMarkov(
+                c.clib_path_join('text', 'crimso.txt'),
+                NewlineText,
+                state_size=2,
+                retain_original=False
+            ),
+            'rovin': m.CachedMarkov(
+                c.clib_path_join('text', 'rovin.txt'),
+                Text,
+                state_size=3
+            ),
+            'wisdom': m.CachedMarkov(
+                c.clib_path_join('text', 'wisdom.txt'),
+                Text,
+                state_size=3,
+            ),
+            'poem': m.CachedMarkov(
+                [c.clib_path_join('text', 'all.txt'), c.clib_path_join('text', 'randoms.txt')],
+                Text,
+                combine_weights=[1, 2],
+                state_size=2,
+                retain_original=False
+            ),
+        }
 
+        m.update_models.start(self)
         await super().start(*args, **kwargs)
 
     async def close(self) -> None:
         await super().close()
         await db.close()
+
+        if m.update_models.is_running():
+            m.update_models.cancel()
 
     def is_banned(self, discord_user: Union[discord.User, discord.Member]) -> bool:
         return discord_user.id in self.banned_user_ids
@@ -167,11 +197,15 @@ class CrimsoBOT(commands.Bot):
         # learn from crimso
         if message.author.id in LEARNER_USER_IDS and message.channel.id in LEARNER_CHANNEL_IDS:
             m.learner(message.content)
+            self.markov_cache["crimso"].stale = True  # Model has been updated - we should regenerate it
+
+        # Get context from message for text generation
+        ctx = await self.get_context(message)
 
         # respond to ping with a Markov chain from crimso corpus
         if self.user in message.mentions:
             await message.channel.trigger_typing()
-            crimsonic = await m.async_wrap(self, m.crimso)
+            crimsonic = await m.crimso(ctx)
             # This allows us to keep pings in messages and have them persist visually, but not actually ping any of the
             # affected members. Think of it as better mention scrubbing.
             no_pings = discord.AllowedMentions(everyone=False, users=False, roles=False)
