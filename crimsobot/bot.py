@@ -197,7 +197,7 @@ class CrimsoBOT(commands.Bot):
         # learn from crimso
         if message.author.id in LEARNER_USER_IDS and message.channel.id in LEARNER_CHANNEL_IDS:
             m.learner(message.content)
-            self.markov_cache["crimso"].stale = True  # Model has been updated - we should regenerate it
+            self.markov_cache['crimso'].stale = True  # Model has been updated - we should regenerate it
 
         # Get context from message for text generation
         ctx = await self.get_context(message)
