@@ -168,22 +168,14 @@ class CrimsoBOT(commands.Bot):
         if message.author.id in LEARNER_USER_IDS and message.channel.id in LEARNER_CHANNEL_IDS:
             m.learner(message.content)
 
-        # this little piggy cleans pings from crimsonic messages
-        cleaner = commands.clean_content(use_nicknames=False)
-
         # respond to ping with a Markov chain from crimso corpus
         if self.user in message.mentions:
             await message.channel.trigger_typing()
             crimsonic = await m.async_wrap(self, m.crimso)
-
-            # no more pings!
-            try:
-                ctx = await self.get_context(message)
-                cleaned_output = await cleaner.convert(ctx, crimsonic)
-            except commands.errors.BadArgument:
-                cleaned_output = crimsonic
-
-            await message.channel.send(cleaned_output)
+            # This allows us to keep pings in messages and have them persist visually, but not actually ping any of the
+            # affected members. Think of it as better mention scrubbing.
+            no_pings = discord.AllowedMentions(everyone=False, users=False, roles=False)
+            await message.channel.send(crimsonic, allowed_mentions=no_pings)
 
     async def on_guild_join(self, guild: discord.Guild) -> None:
         """Notify me when added to guild"""
