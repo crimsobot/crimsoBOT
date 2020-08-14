@@ -2,7 +2,7 @@ import asyncio
 import functools
 import random as r
 import time
-from typing import Any, Callable, List, Optional, Type, Union
+from typing import Any, Callable, Dict, List, Optional, Type, Union
 
 import markovify
 from discord.ext import tasks
@@ -156,3 +156,33 @@ async def async_wrap(func: Callable, *args: Any, **kwargs: Any) -> Any:
     func = functools.partial(func, *args, **kwargs)
 
     return await loop.run_in_executor(None, func)
+
+
+async def initialize_markov() -> Dict[str, CachedMarkov]:
+    cache = {
+        'crimso': CachedMarkov(
+            c.clib_path_join('text', 'crimso.txt'),
+            markovify.NewlineText,
+            state_size=2,
+            retain_original=False
+        ),
+        'rovin': CachedMarkov(
+            c.clib_path_join('text', 'rovin.txt'),
+            markovify.Text,
+            state_size=3
+        ),
+        'wisdom': CachedMarkov(
+            c.clib_path_join('text', 'wisdom.txt'),
+            markovify.Text,
+            state_size=3,
+        ),
+        'poem': CachedMarkov(
+            [c.clib_path_join('text', 'all.txt'), c.clib_path_join('text', 'randoms.txt')],
+            markovify.Text,
+            combine_weights=[1, 2],
+            state_size=2,
+            retain_original=False
+        ),
+    }
+
+    return cache

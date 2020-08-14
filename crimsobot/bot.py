@@ -3,7 +3,6 @@ from typing import Any, List, Union
 
 import discord
 from discord.ext import commands
-from markovify import NewlineText, Text
 
 from config import ADMIN_USER_IDS, BANNED_GUILD_IDS, DM_LOG_CHANNEL_ID, LEARNER_CHANNEL_IDS, LEARNER_USER_IDS
 from crimsobot import db
@@ -55,31 +54,7 @@ class CrimsoBOT(commands.Bot):
             flat=True
         )  # type: List[int]
         self.banned_user_ids = banned_user_ids
-        self.markov_cache = {
-            'crimso': m.CachedMarkov(
-                c.clib_path_join('text', 'crimso.txt'),
-                NewlineText,
-                state_size=2,
-                retain_original=False
-            ),
-            'rovin': m.CachedMarkov(
-                c.clib_path_join('text', 'rovin.txt'),
-                Text,
-                state_size=3
-            ),
-            'wisdom': m.CachedMarkov(
-                c.clib_path_join('text', 'wisdom.txt'),
-                Text,
-                state_size=3,
-            ),
-            'poem': m.CachedMarkov(
-                [c.clib_path_join('text', 'all.txt'), c.clib_path_join('text', 'randoms.txt')],
-                Text,
-                combine_weights=[1, 2],
-                state_size=2,
-                retain_original=False
-            ),
-        }
+        self.markov_cache = await m.initialize_markov()
 
         m.update_models.start(self)
         await super().start(*args, **kwargs)
