@@ -6,6 +6,7 @@ from discord.ext import commands
 
 from config import ADMIN_USER_IDS, BANNED_GUILD_IDS, DM_LOG_CHANNEL_ID, LEARNER_CHANNEL_IDS, LEARNER_USER_IDS
 from crimsobot import db
+from crimsobot.exceptions import NoMatchingTarotCard
 from crimsobot.models.ban import Ban
 from crimsobot.utils import markov as m, tools as c
 
@@ -92,6 +93,11 @@ class CrimsoBOT(commands.Bot):
             error_type = 'INVOKE ERROR'
             traceback_needed = True
             msg_to_user = ':poop: `E R R O R` :poop:'
+
+            if isinstance(error.original, NoMatchingTarotCard):
+                error_type = 'CARD NOT FOUND'
+                traceback_needed = False
+                msg_to_user = "It seems like that tarot card doesn't exist! How curious..."
 
         elif isinstance(error, commands.MissingRequiredArgument):
             error_type = 'MISSING ARGUMENT'

@@ -1,14 +1,16 @@
+import difflib
 import io
 import random
 from enum import Enum
 from io import BytesIO
-from typing import List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple
 
 import aiofiles
 import yaml
 from PIL import Image
 from discord.ext import commands
 
+from crimsobot.exceptions import NoMatchingTarotCard
 from crimsobot.utils.image import image_to_buffer
 from crimsobot.utils.tools import clib_path_join
 
@@ -84,11 +86,12 @@ class Card:
 
 
 class Deck:
-    _deck = None  # type: List[Card]
+    _deck = []  # type: List[Card]
+    _deck_as_dict = {}  # type: Dict[str, Card]
 
     @classmethod
     async def get_cards(cls) -> List[Card]:
-        if cls._deck is None:
+        if not cls._deck:  # If this evauluates as false-y, the list is empty
             await cls._load_cards()
 
         return cls._deck
@@ -113,13 +116,22 @@ class Deck:
             if card.suit is suit and card.number == number:
                 return card
 
-        raise Exception('Card does not exist')
+        raise NoMatchingTarotCard('Card does not exist')
+
+    @classmethod
+    async def get_card_by_name(cls, name: str) -> Card:
+        await cls.get_cards()  # Make sure the deck is loaded, as that will also load _deck_as_dict
+        close_matches = difflib.get_close_matches(name.lower(), cls._deck_as_dict.keys(), cutoff=0.85)
+        if close_matches:
+            return cls._deck_as_dict[close_matches[0]]
+
+        raise NoMatchingTarotCard('Card does not exist')
 
     @classmethod
     async def _load_cards(cls) -> None:
         deck_path = clib_path_join('tarot', 'deck.yaml')
 
-        async with aiofiles.open(deck_path) as f:
+        async with aiofiles.open(deck_path, encoding='utf-8', errors='ignore') as f:
             contents = await f.read()
             deck_raw = yaml.safe_load_all(contents)
 
@@ -138,6 +150,7 @@ class Deck:
             deck.append(card)
 
         cls._deck = deck
+        cls._deck_as_dict = {card.name.lower(): card for card in deck}
 
 
 async def reading(spread: str) -> Tuple[Optional[io.BytesIO], List[Tuple[str, str, str]]]:
