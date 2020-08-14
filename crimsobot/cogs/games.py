@@ -114,7 +114,7 @@ class Games(commands.Cog):
 
         response = crimsogames.get_crimsoball_answer(ctx)
         if response == 'random_response':
-            response = await m.async_wrap(self.bot, m.crimso)
+            response = await m.crimso(ctx)
 
         # embed for answer
         embed = c.crimbed(

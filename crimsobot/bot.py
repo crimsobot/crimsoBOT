@@ -54,12 +54,17 @@ class CrimsoBOT(commands.Bot):
             flat=True
         )  # type: List[int]
         self.banned_user_ids = banned_user_ids
+        self.markov_cache = await m.initialize_markov()
 
+        m.update_models.start(self)
         await super().start(*args, **kwargs)
 
     async def close(self) -> None:
         await super().close()
         await db.close()
+
+        if m.update_models.is_running():
+            m.update_models.cancel()
 
     def is_banned(self, discord_user: Union[discord.User, discord.Member]) -> bool:
         return discord_user.id in self.banned_user_ids
@@ -167,11 +172,15 @@ class CrimsoBOT(commands.Bot):
         # learn from crimso
         if message.author.id in LEARNER_USER_IDS and message.channel.id in LEARNER_CHANNEL_IDS:
             m.learner(message.content)
+            self.markov_cache['crimso'].stale = True  # Model has been updated - we should regenerate it
+
+        # Get context from message for text generation
+        ctx = await self.get_context(message)
 
         # respond to ping with a Markov chain from crimso corpus
         if self.user in message.mentions:
             await message.channel.trigger_typing()
-            crimsonic = await m.async_wrap(self, m.crimso)
+            crimsonic = await m.crimso(ctx)
             # This allows us to keep pings in messages and have them persist visually, but not actually ping any of the
             # affected members. Think of it as better mention scrubbing.
             no_pings = discord.AllowedMentions(everyone=False, users=False, roles=False)
