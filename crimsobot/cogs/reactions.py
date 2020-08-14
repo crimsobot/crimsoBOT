@@ -8,18 +8,10 @@ from config import ADMIN_USER_IDS
 from crimsobot.bot import CrimsoBOT
 from crimsobot.models.fun_fact import FunFact, NoFactsExist
 from crimsobot.utils import tools as c
+from crimsobot.utils.converters import CleanMentions
 from crimsobot.utils.fact_leaderboard import FactLeaderboard
 
 log = logging.getLogger(__name__)
-
-
-class CleanMentions(commands.Converter):
-    async def convert(self, ctx: commands.Context, string: str) -> str:
-        """Clean up those silly mention inconsistencies across platforms."""
-        for mention in ctx.message.mentions:
-            string = string.replace(f'<@!{mention.id}>', f'<@{mention.id}>', 1)
-
-        return string
 
 
 class Reactions(commands.Cog):
