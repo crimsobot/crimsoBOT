@@ -4,7 +4,6 @@ import discord
 from discord.ext import commands
 
 from crimsobot.bot import CrimsoBOT
-from crimsobot.exceptions import NoMatchingTarotCard
 from crimsobot.utils import tarot
 from crimsobot.utils import tools as c
 from crimsobot.utils.tarot import Card, Deck, Suit
@@ -47,12 +46,9 @@ class Mystery(commands.Cog):
             msg = await self.bot.wait_for('message', check=suit_check, timeout=45)
         except asyncio.TimeoutError:
             await prompt_suit.delete()
-            raise NoMatchingTarotCard
+            raise
 
         await prompt_suit.delete()
-
-        if msg is None:
-            raise NoMatchingTarotCard
 
         suit_choice = int(msg.content)
         await msg.delete()
@@ -90,12 +86,9 @@ class Mystery(commands.Cog):
             msg = await self.bot.wait_for('message', check=card_check, timeout=20)
         except asyncio.TimeoutError:
             await prompt_card.delete()
-            raise NoMatchingTarotCard
+            raise
 
         await prompt_card.delete()
-
-        if msg is None:
-            raise NoMatchingTarotCard
 
         card_number = int(msg.content)
         await msg.delete()
@@ -198,7 +191,7 @@ class Mystery(commands.Cog):
         else:
             try:
                 card = await self.prompt_for_single_card(ctx)
-            except NoMatchingTarotCard:  # We timed out, no use letting the error propogate here
+            except asyncio.TimeoutError:
                 return
 
         fp = await card.get_image_buff()
