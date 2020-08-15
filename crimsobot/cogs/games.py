@@ -136,7 +136,10 @@ class Games(commands.Cog):
         )
         await ctx.send(embed=embed)
 
-    @commands.command(aliases=['guess', 'guessemoji'], brief='Guess the correct emoji from 2 to 20 choices!')
+    @commands.group(
+        aliases=['guess', 'guessemoji'],
+        invoke_without_command=True,
+        brief='Guess the correct emoji from 2 to 20 choices!')
     @commands.max_concurrency(1, commands.BucketType.channel)
     async def guessmoji(self, ctx: commands.Context, n: int) -> None:
         """
@@ -560,7 +563,7 @@ class Games(commands.Cog):
         embed = await crimsogames.guess_stat_embed(whose)
         await ctx.send(embed=embed)
 
-    @commands.group(aliases=['glb'], invoke_without_command=True)
+    @guessmoji.group(name='lb', aliases=['glb'], invoke_without_command=True)
     async def guess_lb(self, ctx: commands.Context) -> None:
         """GUESSMOJI! leaderboards"""
 
