@@ -274,7 +274,7 @@ class Cringo(commands.Cog):
 
         await ctx.send(embed=embed)
 
-    @commands.group(aliases=['clb'], invoke_without_command=True)
+    @cringo.group(name='lb', aliases=['clb'], invoke_without_command=True)
     async def cringo_lb(self, ctx: commands.Context) -> None:
         """CRINGO! leaderboards!"""
 
