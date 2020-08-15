@@ -3,6 +3,7 @@ import re
 import pendulum
 from timezonefinder import TimezoneFinder
 
+from crimsobot.exceptions import LocationNotFound
 from crimsobot.utils.astronomy import where_are_you
 from crimsobot.utils.tools import clib_path_join
 
@@ -232,7 +233,7 @@ def emojitime(emoji: str, input_location: str) -> str:
     # get the time where they are
     found_location = where_are_you(input_location)
     if not found_location:
-        return '`Invalid location!`'
+        raise LocationNotFound(input_location.upper())  # for consistency
 
     lat = round(found_location.latitude, 4)
     lon = round(found_location.longitude, 4)
