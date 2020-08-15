@@ -7,6 +7,7 @@ import discord
 from discord.ext import commands
 
 from crimsobot.bot import CrimsoBOT
+from crimsobot.exceptions import LocationNotFound
 from crimsobot.utils import astronomy, image as imagetools, tools as c
 
 log = logging.getLogger(__name__)
@@ -232,12 +233,21 @@ class Utilities(commands.Cog):
         """
 
         location = location.upper()
-        lat, lon, passes, url = await astronomy.get_iss_loc(location, 'ha')
-        string_list = c.crimsplit(passes, '\n', limit=1600)
-        for i in range(len(string_list)):
-            header_string = 'Visible ISS passes (local time) for {} ({}°, {}°):\n'.format(location, lat, lon)
-            header_string += 'Source: <{}>\n'.format(url)
-            await ctx.send((header_string if i == 0 else '') + '```{}```'.format(string_list[i]))
+        lat, lon, url, passes = await astronomy.get_iss_loc(location)
+        if not url:
+            raise LocationNotFound(location)
+
+        header_string = (
+            f'Visible ISS passes (local time) for {location} ({lat}°, {lon}°):\n'
+            f'Source: <{url}>\n'
+        )
+
+        formatted_passes = astronomy.format_passes(passes)
+
+        string_list = c.crimsplit(formatted_passes, '\n', limit=1600)
+        for i, string in enumerate(string_list):
+            # if i is falsey it must be 0, which means we can send without the header string
+            await ctx.send(f'```{string}```' if i else f'{header_string}```{string}```')
 
     @commands.command(name='map')
     @commands.cooldown(3, 10, commands.BucketType.channel)
@@ -255,13 +265,7 @@ class Utilities(commands.Cog):
             )
             embed.set_image(url=map_url)
         else:
-            embed = c.crimbed(
-                title='**not good with location**',
-                descr='Location **{}** not found.'.format(location),
-                thumb_name='weary',
-                footer='pls to help',
-                color_name='orange'
-            )
+            raise LocationNotFound(location)
 
         await ctx.send(embed=embed)
 

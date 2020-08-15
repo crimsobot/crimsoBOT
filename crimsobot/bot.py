@@ -6,7 +6,7 @@ from discord.ext import commands
 
 from config import ADMIN_USER_IDS, BANNED_GUILD_IDS, DM_LOG_CHANNEL_ID, LEARNER_CHANNEL_IDS, LEARNER_USER_IDS
 from crimsobot import db
-from crimsobot.exceptions import NoMatchingTarotCard, StrictInputFailed
+from crimsobot.exceptions import LocationNotFound, NoMatchingTarotCard, StrictInputFailed
 from crimsobot.models.ban import Ban
 from crimsobot.utils import markov as m, tools as c
 
@@ -110,6 +110,11 @@ class CrimsoBOT(commands.Bot):
                     '',
                     'Some Discord objects such as mentions have hidden characters that will make the input too long.'
                 ])
+
+            if isinstance(error.original, LocationNotFound):
+                error_type = '**not good with location**'
+                traceback_needed = False
+                msg_to_user = f'Location **{error.original.location}** not found.'
 
         elif isinstance(error, commands.MissingRequiredArgument):
             error_type = 'MISSING ARGUMENT'

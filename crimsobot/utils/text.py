@@ -1,8 +1,11 @@
 import re
-from datetime import datetime
 from typing import Any
 
-from crimsobot.utils.astronomy import swap_tz, where_are_you
+import pendulum
+from timezonefinder import TimezoneFinder
+
+from crimsobot.exceptions import LocationNotFound
+from crimsobot.utils.astronomy import where_are_you
 from crimsobot.utils.tools import clib_path_join
 
 
@@ -216,7 +219,7 @@ def upsidedown(text: str) -> str:
 
 # This any param is a bummer but it's the only way I can see to make make mypy work the way we want.
 # Everything is terrible.
-def emojitime(emoji: Any, location: str) -> str:
+def emojitime(emoji: Any, input_location: str) -> str:
     # add space if regional indicator
     keep_space = False
 
@@ -231,11 +234,15 @@ def emojitime(emoji: Any, location: str) -> str:
             continue
 
     # get the time where they are
-    loc = where_are_you(location)
-    if not loc:
-        return '`Invalid location!`'
+    found_location = where_are_you(input_location)
+    if not found_location:
+        raise LocationNotFound(input_location.upper())  # for consistency
 
-    now = swap_tz(datetime.utcnow(), loc.latitude, loc.longitude)
+    lat = round(found_location.latitude, 4)
+    lon = round(found_location.longitude, 4)
+    timezone = TimezoneFinder().timezone_at(lng=lon, lat=lat)
+
+    now = pendulum.now(tz=timezone)
     hh = str(format(now.hour, '02d'))
     mm = str(format(now.minute, '02d'))
     time_string = '{}:{}'.format(hh, mm)
