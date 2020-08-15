@@ -6,7 +6,7 @@ from discord.ext import commands
 
 from config import ADMIN_USER_IDS, BANNED_GUILD_IDS, DM_LOG_CHANNEL_ID, LEARNER_CHANNEL_IDS, LEARNER_USER_IDS
 from crimsobot import db
-from crimsobot.exceptions import LocationNotFound, NoMatchingTarotCard
+from crimsobot.exceptions import LocationNotFound, NoMatchingTarotCard, StrictInputFailed
 from crimsobot.models.ban import Ban
 from crimsobot.utils import markov as m, tools as c
 
@@ -98,6 +98,18 @@ class CrimsoBOT(commands.Bot):
                 error_type = 'CARD NOT FOUND'
                 traceback_needed = False
                 msg_to_user = "It seems like that tarot card doesn't exist! How curious..."
+
+            if isinstance(error.original, StrictInputFailed):
+                error_type = '**OOPSIE**'
+                traceback_needed = False
+                msg_to_user = '\n'.join([
+                    'Alright, so either:',
+                    '· that emoji is not in this server,',
+                    '· after cleaning up your input, there are no characters left, or',
+                    '· your input is too long. (Under 10 characters pls!)',
+                    '',
+                    'Some Discord objects such as mentions have hidden characters that will make the input too long.'
+                ])
 
             if isinstance(error.original, LocationNotFound):
                 error_type = '**not good with location**'

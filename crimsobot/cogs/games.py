@@ -8,13 +8,15 @@ from discord.ext import commands
 
 from config import ADMIN_USER_IDS
 from crimsobot.bot import CrimsoBOT
+from crimsobot.exceptions import StrictInputFailed
 from crimsobot.utils import games as crimsogames, markov as m, tools as c
+from crimsobot.utils.converters import CleanedTextInput
 from crimsobot.utils.guess_leaderboard import GuessLeaderboard
 from crimsobot.utils.leaderboard import Leaderboard
 
 # crimsoCOIN multiplier for games played in crimsoBOT server
 # simple logical checks for ctx.guild.id in in each game below
-server_bonus = 1.15
+SERVER_BONUS = 1.15
 
 
 class Games(commands.Cog):
@@ -158,7 +160,7 @@ class Games(commands.Cog):
 
         # check if crimsoBOT home server
         if ctx.guild and ctx.guild.id == 552650672965943296:
-            winning_amount = winning_amount * server_bonus
+            winning_amount = winning_amount * SERVER_BONUS
 
         # the candidates
         choices = [
@@ -423,7 +425,7 @@ class Games(commands.Cog):
 
             # check if crimsoBOT home server
             if ctx.guild and ctx.guild.id == 552650672965943296:
-                winning_amount = winning_amount * server_bonus
+                winning_amount = winning_amount * SERVER_BONUS
 
             await crimsogames.win(winner.author, winning_amount)
             ess = 's' if votes_for_winner > 1 else ''
@@ -600,9 +602,14 @@ class Games(commands.Cog):
 
     @commands.command(aliases=['bw'])
     @commands.cooldown(5, 30, commands.BucketType.channel)
-    async def bubblewrap(self, ctx: commands.Context, *, bubble: str = None) -> None:
+    async def bubblewrap(
+        self,
+        ctx: commands.Context,
+        *,
+        bubble: CleanedTextInput = None  # type: ignore
+    ) -> None:
         """Get a little sheet of bubble wrap to pop!
-        Provide any standard emoji or custom emoji from this server to pop!
+        Provide any standard emoji or custom emoji to pop!
         If you use the command by itself, get a random emoji!
         Short text inputs can also be used.
 
@@ -610,54 +617,19 @@ class Games(commands.Cog):
 
         def choose_random_emoji() -> str:
             """Choose a random emoji from the emojis used in Emojistory."""
-            # read in lines of emojis
-            emojis = open(c.clib_path_join('games', 'emojilist.txt'), encoding='utf8', errors='ignore').read()
-            # strip newlines
-            emojis = emojis.replace('\n', '')
-            # choose and return
-            return random.choice(emojis)
+            with open(c.clib_path_join('games', 'emojilist.txt'), encoding='utf8', errors='ignore') as emoji_file:
+                return random.choice(emoji_file.readlines())
 
         # configure
-        char_limit = 10
         size = 6
 
-        # send this if there's a whoopsie
-        error_embed = c.crimbed(
-            title='**OOPSIE!**',
-            descr='\n'.join([
-                'Alright, so either:',
-                '· that emoji is not in this server,',
-                '· after cleaning up your input, there are no characters left, or',
-                f'· your input is too long. (Under {char_limit} characters pls!)',
-                '',
-                'Some Discord objects such as mentions have hidden characters that will make the input too long.'
-            ]),
-            thumb_name='weary',
-            color_name='yellow',
-            footer='Please try again!'
-        )
-
-        # check and clean the input
+        # If bubble is None, there was simply no input.
         if bubble is None:
-            bubble = choose_random_emoji()
-        elif len(bubble) > char_limit:
-            # check if input is a custom emoji from the server
-            emoji_strings = [str(e) for e in ctx.guild.emojis]
-            if bubble not in emoji_strings:
-                await ctx.send(embed=error_embed, delete_after=18)
-                return
+            bubble = choose_random_emoji()  # type: ignore
 
-        bubble = bubble.strip()
-
-        chars_to_remove = ['\n', '|', '`', '\u200b', '\u200d']
-
-        for char in chars_to_remove:
-            if char in bubble:
-                bubble = bubble.replace(char, '')
-
-        if len(bubble) == 0:
-            await ctx.send(embed=error_embed, delete_after=18)
-            return
+        # However, if bubble is false-y (and not None) conversion failed - error.
+        if not bubble:
+            raise StrictInputFailed
 
         # build the bubblewrap sheet and send
         line = '\u200B\n' + size * f'\u200b||{bubble}||'

@@ -11,7 +11,7 @@ from crimsobot.utils.cringo_leaderboard import CringoLeaderboard
 
 # crimsoCOIN multiplier for games played in crimsoBOT server
 # simple logical checks for ctx.guild.id in in each game below
-server_bonus = 1.15
+SERVER_BONUS = 1.15
 
 
 class Cringo(commands.Cog):
@@ -245,7 +245,7 @@ class Cringo(commands.Cog):
 
         # check if crimsoBOT home server
         if ctx.guild and ctx.guild.id == 552650672965943296:
-            nerf = (2 - server_bonus) * nerf
+            nerf = (2 - SERVER_BONUS) * nerf
 
         score_string, winner = await cringo.cringo_scoreboard(list_of_players)
 

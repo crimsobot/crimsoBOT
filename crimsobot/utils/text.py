@@ -1,4 +1,5 @@
 import re
+from typing import Any
 
 import pendulum
 from timezonefinder import TimezoneFinder
@@ -216,7 +217,9 @@ def upsidedown(text: str) -> str:
     return text
 
 
-def emojitime(emoji: str, input_location: str) -> str:
+# This any param is a bummer but it's the only way I can see to make make mypy work the way we want.
+# Everything is terrible.
+def emojitime(emoji: Any, location: str) -> str:
     # add space if regional indicator
     keep_space = False
 
