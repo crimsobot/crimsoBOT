@@ -19,10 +19,15 @@ class Reactions(commands.Cog):
         self.bot = bot
 
     @commands.group(aliases=['facts'], invoke_without_command=True, brief='Add and look up facts!')
-    async def fact(self, ctx: commands.Context) -> None:
+    async def fact(self, ctx: commands.Context, *, subject: CleanMentions = None) -> None:
         """Facts is a feature that allows users to add and look up facts in their server.
         Use >help fact [command] for more info about the subcommands below.
         """
+
+        if subject:
+            await self.fact_about.can_run(ctx)
+            await self.fact_about(ctx, subject=subject)
+            return
 
         # fallback to random fact if no proper arguments are provided
         await self.fact_random(ctx)
@@ -49,7 +54,7 @@ class Reactions(commands.Cog):
         return_string = ''.join([
             f'`Fact ID: {fact_object.uid}` · ',
             f"Here's a fact about **{fact_object.subject.upper()}**:\n\n",
-            f'>>> {fact_object.body}',
+            f'{fact_object.body}',
         ])
 
         await ctx.send(return_string)
@@ -164,7 +169,7 @@ class Reactions(commands.Cog):
 
         return_string = ''.join([
             f'`Fact ID: {fact_object.uid}` · ',
-            f"**Here's a fact about {fact_object.subject.upper()}**:\n\n",
+            f"Here's a fact about **{fact_object.subject.upper()}**:\n\n",
             f'{fact_object.body}',
         ])
 
