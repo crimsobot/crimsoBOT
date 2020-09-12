@@ -1,0 +1,35 @@
+cringo:
+  join_timer: 30
+  emoji: <:crimsoCOIN:588558997238579202>
+  name: 
+    2: mini
+    4:
+    6: MEGA
+  thumb:
+    2: small
+    4: jester
+    6: scared
+  color:
+    2: yellow
+    4: green
+    6: orange
+  minimum_balance: # NOT debited
+    2: 3000
+    4: 0
+    6: 1000
+  timer:
+    2: 12
+    4: 20
+    6: 25
+  turns:
+    2: 7
+    4: 9
+    6: 9
+emojistory:
+  join_timer: 63
+  minimum_length: 5
+  maximum_length: 300
+  vote_timer: 45
+madlibs:
+  prefixes: "&*%" # Should only be 3 characters. These will be used for term prefixes.
+  timer: 60

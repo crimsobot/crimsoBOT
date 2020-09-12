@@ -77,51 +77,6 @@ def winner_list(winners: List[str]) -> str:
     return winners_
 
 
-def get_story() -> str:
-    story = open(
-        c.clib_path_join('games', 'madlibs.txt'),
-        encoding='utf-8',
-        errors='ignore'
-    ).readlines()
-
-    story = [line[:-1] for line in story]
-    story = [line.replace('\\n', '\n') for line in story]
-
-    return random.choice(story)
-
-
-def get_keys(format_string: str) -> List[str]:
-    """format_string is a format string with embedded dictionary keys.
-    Return a set containing all the keys from the format string."""
-
-    keys = []
-    end = 0
-    repetitions = format_string.count('{')
-    for _ in range(repetitions):
-        start = format_string.find('{', end) + 1  # pass the '{'
-        end = format_string.find('}', start)
-        key = format_string[start:end]
-        keys.append(key)  # may add duplicates
-
-    # find indices of marked tags (to be used more than once)
-    ind = [i for i, s in enumerate(keys) if '#' in s]
-
-    # isolate the marked tags and keep one instance each
-    mults = []
-    for ele in ind:
-        mults.append(keys[ele])
-    mults = list(set(mults))
-
-    # delete all marked tags from original list
-    for ele in sorted(ind, reverse=True):
-        del keys[ele]
-
-    # ...and add back one instance each
-    keys = keys + mults
-
-    return keys
-
-
 async def win(discord_user: DiscordUser, amount: float) -> None:
     account = await CurrencyAccount.get_by_discord_user(discord_user)  # type: CurrencyAccount
     account.add_to_balance(amount)

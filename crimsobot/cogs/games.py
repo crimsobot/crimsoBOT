@@ -1,6 +1,6 @@
 import asyncio
+import itertools
 import random
-import time
 from typing import List, Optional
 
 import discord
@@ -8,7 +8,10 @@ from discord.ext import commands
 
 from config import ADMIN_USER_IDS
 from crimsobot.bot import CrimsoBOT
+from crimsobot.context import CrimsoContext
+from crimsobot.data.games import EMOJISTORY_RULES, MADLIBS_RULES, STORIES
 from crimsobot.exceptions import StrictInputFailed
+from crimsobot.handlers.games import EmojistorySubmissionHandler, EmojistoryVotingHandler
 from crimsobot.utils import games as crimsogames, markov as m, tools as c
 from crimsobot.utils.converters import CleanedTextInput
 from crimsobot.utils.guess_leaderboard import GuessLeaderboard
@@ -31,84 +34,67 @@ class Games(commands.Cog):
         The bot will take your answer if it starts with the proper prefix.
         """
 
-        prefix = ['&', '*', '%']
+        prefixes = itertools.cycle(MADLIBS_RULES['prefixes'])
 
         # first embed
         embed = c.crimbed(
             title="Let's play **MADLIBS!**",
             descr='\n'.join([
-                '**Watch out for the prefix: `{0}`, `{1}`, or `{2}`!!!**'.format(*prefix),
+                '**Watch out for the prefix: `{0}`, `{1}`, or `{2}`!!!**'.format(*MADLIBS_RULES['prefixes']),
                 'This facilitates multiplayer when many people are playing.',
                 '•••',
                 'Give answers by typing `[prefix] [part of speech]`'
             ]),
         )
+
         await ctx.send(embed=embed)
 
-        # fetch the story and its keys
-        story = crimsogames.get_story()
-        keys = crimsogames.get_keys(story)
+        # fetch the story and its terms + other init
+        story = random.choice(STORIES)
+        needed_terms = story.get_keys()
+        color_dict = {key: value for key, value in zip(MADLIBS_RULES['prefixes'], ['green', 'yellow', 'orange'])}
+        collected_terms = {}
+        authors = []
 
-        # shuffle to make less obvious which story it is
-        random.shuffle(keys)
-
-        # initialize
-        counter = 0
-        list_of_authors = []  # list of authors
         # iterate through keys, prompting and listening, rotating thru prefixes
-        for key in keys:
-            counter += 1
-            which_prefix = counter % len(prefix)
-            p = prefix[which_prefix]
-            # if a key begins with #, it's meant to be repeated throughout the story
-            # but the "#" needs to be removed, ergo:
-            key_to_print = key
-            if key.startswith('#'):
-                key_to_print = key[1:]
-
-            color_dict = {0: 'green', 1: 'yellow', 2: 'orange'}
-
+        for prefix, (term, display_as) in zip(prefixes, needed_terms.items()):
             embed = c.crimbed(
-                title='PREFIX: {}'.format(p),
-                descr='I need `{}{}`'.format(p, key_to_print),
-                color_name=color_dict[which_prefix],
+                title=f'PREFIX: {prefix}',
+                descr=f'I need `{prefix}{display_as}`',
+                color_name=color_dict[prefix],
             )
+
             await ctx.send(embed=embed)
 
             # check message for author, channel, content
-            def check(msg: discord.Message) -> bool:
-                banned = self.bot.is_banned(msg.author)
-                has_prefix = msg.content.startswith(p)
-                in_channel = msg.channel == ctx.message.channel
+            def check(message: discord.Message) -> bool:
+                banned = self.bot.is_banned(message.author)
+                has_prefix = message.content.startswith(prefix)
+                in_channel = message.channel == ctx.message.channel
                 return not banned and has_prefix and in_channel
 
             try:
-                term = await self.bot.wait_for('message', check=check, timeout=60)
+                message = await self.bot.wait_for('message', check=check, timeout=MADLIBS_RULES['timer'])
             except asyncio.TimeoutError:
                 embed = c.crimbed(
                     title='**MADLIBS** has timed out!',
                     descr=None,
                 )
-                await ctx.send(embed=embed)
-                return
 
-            # end game if timeout
-            if term is not None:
-                # update ALL (if linked) or just first instance with term
-                if key.startswith('#'):
-                    story = story.replace('{' + key + '}', term.content[1:])
-                else:
-                    story = story.replace('{' + key + '}', term.content[1:], 1)
-                # add author of term to list
-                list_of_authors.append(term.author.name)
+                await ctx.send(embed=embed)
+                return None
+
+            if message:
+                collected_terms[term] = message.content[1:]
+                authors.append(message.author.name)
 
         # tell the story (in embed)
-        list_of_authors = list(set(list_of_authors))
-        authors = crimsogames.winner_list(list_of_authors)
+        authors = list(set(authors))
         embed = c.crimbed(
-            title="{}'s madlib!".format(authors),
-            descr=story,
+            title=f"{crimsogames.winner_list(authors)}'s madlib!",
+            descr=story.text.format(**collected_terms),
         )
+
         await ctx.send(embed=embed)
 
     @commands.command(aliases=['cball', 'crimsobot'], brief='Ask crimsoBOT what will be.')
@@ -296,7 +282,7 @@ class Games(commands.Cog):
 
     @commands.command(brief='Make the best story based on the emojis!')
     @commands.max_concurrency(1, commands.BucketType.channel)
-    async def emojistory(self, ctx: commands.Context) -> None:
+    async def emojistory(self, ctx: CrimsoContext) -> None:
         """
         A string of emojis will appear.
         Enter a short story (<300 characters) that corresponds to the emojis, and then vote on the best story!
@@ -309,58 +295,38 @@ class Games(commands.Cog):
         emojis = crimsogames.emojistring()
 
         # first embed: introduction
-        timer = 63  # seconds
         embed = c.crimbed(
             title="Let's play **EMOJI STORY!**",
             descr='\n'.join([
                 'Invent a short story to go with the following set of emojis.',
                 'Begin your story with a dollar sign **$**.',
-                'You have {} seconds!'.format(timer),
+                'You have {} seconds!'.format(EMOJISTORY_RULES['join_timer']),
                 emojis,
             ]),
             thumb_name='random',
         )
+
         await ctx.send(embed=embed)
 
-        # define check for prefix, channel, and if author has already submitted
-        def story_check(msg: discord.Message) -> bool:
-            banned = self.bot.is_banned(msg.author)
-            has_prefix = msg.content.startswith('$')
-            just_right = 5 < len(msg.content) < 300
-            in_channel = msg.channel == ctx.message.channel
-            is_author = msg.author in authors
-            return not banned and has_prefix and just_right and in_channel and not is_author
-
-        # initialize story listener
-        stories = []
-        authors = []
-        end = time.time() + timer
-        while time.time() < end:
-            try:
-                story = await self.bot.wait_for('message', check=story_check, timeout=0.5)
-            except asyncio.TimeoutError:
-                continue
-
-            if story is not None:
-                stories.append(story)
-                authors.append(story.author)
-                await story.delete()
+        # story listener here
+        submission_handler = EmojistorySubmissionHandler(ctx, timeout=EMOJISTORY_RULES['join_timer'])
+        submissions = await ctx.gather_events('on_message', handler=submission_handler)
 
         # strip $ and whitespace from beginning of stories
-        for story in stories:
+        for story in submissions.stories:
             story.content = story.content[1:].lstrip(' ')
 
         # story handler
         voting = False
-        if len(stories) == 0:
+        if not submissions.stories:
             title = '**EMOJI STORY CANCELLED!**'
             descr = 'No submissions!'
-        elif len(stories) == 1:
+        elif len(submissions.stories) == 1:
             title = '**WINNER BY DEFAULT!**'
             descr = '\n\n'.join([
-                'Only one submission by **{}**:'.format(stories[0].author),
+                'Only one submission by **{}**:'.format(submissions.stories[0].author),
                 emojis,
-                stories[0].content,
+                submissions.stories[0].content,
             ])
         else:
             title = '**VOTE NOW** for the best emoji story!'
@@ -368,7 +334,7 @@ class Games(commands.Cog):
                 '_ _',
                 emojis,
                 '_ _',
-                '\n'.join('{}. {}'.format(stories.index(story)+1, story.content) for story in stories)
+                '\n'.join(f'{index + 1}. {story.content}' for index, story in enumerate(submissions.stories))
             ])
             voting = True
 
@@ -376,54 +342,29 @@ class Games(commands.Cog):
         embed = c.crimbed(
             title=title,
             descr=descr,
-            thumb_name='random')
+            thumb_name='random'
+        )
+
         await ctx.send(embed=embed)
 
         # if not voting, end the thing
-        if voting is False:
+        if not voting:
             return
 
-        # define check for prefix, channel, and if author has already submitted
-        def vote_check(msg: discord.Message) -> bool:
-            try:
-                banned = self.bot.is_banned(msg.author)
-                in_channel = msg.channel == ctx.message.channel
-                valid_choice = 0 < int(msg.content) <= len(stories)
-                has_voted = msg.author in voters
-                return not banned and valid_choice and in_channel and not has_voted
-            except ValueError:
-                return False
-
-        # initialize voting listener
-        votes = []
-        voters = []
-        end_voting = time.time() + 45
-        while time.time() < end_voting:
-            try:
-                vote = await self.bot.wait_for('message', check=vote_check, timeout=0.5)
-            except asyncio.TimeoutError:
-                continue
-
-            if vote is not None:
-                await vote.delete()
-                votes.append(vote.content)
-                voters.append(vote.author)
-                embed = c.crimbed(
-                    title=None,
-                    descr='**{}** voted.'.format(vote.author),
-                )
-                user_has_voted_message = await ctx.send(embed=embed)
-                await user_has_voted_message.delete(delay=8)
-
         # vote handler
-        if len(votes) == 0:
+        vote_handler = EmojistoryVotingHandler(ctx, timeout=EMOJISTORY_RULES['vote_timer'])
+        vote_handler.set_arguments(stories=submissions.stories)
+        ballot = await ctx.gather_events('on_message', handler=vote_handler)
+
+        if not ballot.votes:
             winner = None
+            winning_amount = None
             title = '**NO VOTES CAST!**'
             descr = "I'm disappointed."
         else:
             # send to vote counter to get winner
-            ind_plus_1, votes_for_winner = crimsogames.tally(votes)
-            winner = stories[int(ind_plus_1) - 1]
+            ind_plus_1, votes_for_winner = crimsogames.tally(ballot.votes)
+            winner = submissions.stories[int(ind_plus_1) - 1]
             winning_amount = votes_for_winner * 10.0
 
             # check if crimsoBOT home server
@@ -431,12 +372,12 @@ class Games(commands.Cog):
                 winning_amount = winning_amount * SERVER_BONUS
 
             await crimsogames.win(winner.author, winning_amount)
-            ess = 's' if votes_for_winner > 1 else ''
+            s_or_no_s = 's' if votes_for_winner > 1 else ''
 
             # then the embed info
             title = '**EMOJI STORY WINNER!**'
             descr = '\n\n'.join([
-                'The winner is **{}** with {} vote{} for their story:'.format(winner.author, votes_for_winner, ess),
+                f'The winner is **{winner.author}** with {votes_for_winner} vote{s_or_no_s} for their story:',
                 emojis,
                 winner.content,
             ])
@@ -446,8 +387,9 @@ class Games(commands.Cog):
             title=title,
             descr=descr,
             thumb_name='random',
-            footer='{} gets {} crimsoCOIN!'.format(winner.author, winning_amount) if winner else None,
+            footer=f'{winner.author} gets {winning_amount} crimsoCOIN!' if winner else None,
         )
+
         await ctx.send(embed=embed)
 
     @commands.command(aliases=['bal'])
@@ -475,6 +417,7 @@ class Games(commands.Cog):
             descr=random.choice(encourage) if bal > 0 else '=[',
             thumb_name='crimsoCOIN',
         )
+
         await ctx.send(embed=embed)
 
     @commands.command(aliases=['pay'])
@@ -485,20 +428,17 @@ class Games(commands.Cog):
         # firstly, round amount
         amount = round(amount, 2)
 
-        # no negative values
+        # no negative values & make sure they can afford it
         if amount <= 0:
             raise commands.BadArgument('Amount less than 0.')
-        # not if exceeds balance
         elif amount > await crimsogames.check_balance(ctx.message.author) * 0.25:
             embed = c.crimbed(
-                title='\u200B\n{}, you cannot give more than 1/4 of your balance!'.format(ctx.message.author),
+                title=f'\u200B\n{ctx.message.author}, you cannot give more than 1/4 of your balance!',
                 descr='Check your `>balance`.',
                 thumb_name='crimsoCOIN',
             )
             await ctx.send(embed=embed)
             return
-        else:
-            pass
 
         if self.bot.is_banned(recipient):
             return
@@ -523,6 +463,7 @@ class Games(commands.Cog):
             descr=random.choice(encourage),
             thumb_name='crimsoCOIN',
         )
+
         await ctx.send(embed=embed)
 
     @commands.command(hidden=True)
@@ -541,6 +482,7 @@ class Games(commands.Cog):
             descr='Life is inherently unfair.' if amount < 0 else 'Rejoice in your good fortune!',
             thumb_name='crimsoCOIN',
         )
+
         await ctx.send(embed=embed)
 
     @commands.command(aliases=['lb'])

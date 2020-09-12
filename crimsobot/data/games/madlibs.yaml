@@ -1,0 +1,320 @@
+---
+name: It's not shit
+story_text: >
+  It's not {noun}. A half-consumed bottle of {noun_2} fell on that side of the {noun_3} and {verb_past_tense}
+  there for a few weeks. Then there was a string of {adjective} days, which evidently {verb_past_tense_2} up the
+  {noun_4} in the bottle and the bottle {verb_past_tense_3} onto the wall. It's not a {noun_5}print, I guess from the
+  picture it kind of looks to be in the shape of a {noun_5}print.
+keys:
+  noun: ~
+  noun_2: noun
+  noun_3: noun
+  verb_past_tense: ~
+  adjective: ~
+  verb_past_tense_2: verb_past_tense
+  noun_4: noun
+  verb_past_tense_3: verb_past_tense
+  noun_5: noun
+
+---
+name: Know that I can
+story_text: |
+  {adjective} and {adjective_2} just like {noun}
+  You cannot {verb} such {adjective} lust
+  Can you withstand my {adjective_3} musk?
+  {plural_noun} are red, {plural_noun_2} are blue
+  I must eat {noun_2} off of you
+  Know that I can
+keys:
+  adjective: ~
+  adjective_2: adjective
+  noun: ~
+  verb: ~
+  adjective_3: adjective
+  plural_noun: ~
+  plural_noun_2: plural_noun
+  noun_2: noun
+
+---
+name: Hit or miss
+story_text: |
+  {verb} or {verb_2}
+  I guess they never {verb_3}, huh?
+  You got a boyfriend?
+  I bet he doesn't {verb_4} ya!
+  He gon {verb_5} another {noun} and he won't {verb_6} ya!
+  He gon skrrt and hit the {verb_7} like {celebrity}
+keys:
+  verb: ~
+  verb_2: verb
+  verb_3: verb
+  verb_4: verb
+  verb_5: verb
+  noun: ~
+  verb_6: verb
+  verb_7: verb
+  celebrity: ~
+
+---
+name: Frappuccino
+story_text: >
+  Haha this was so funny omg i almost {verb_past_tense} out my venti {flavor} frappuccino with nonfat {food} milk,
+  exactly 2 1/2 cups of {noun} with 4 {adjective} drizzles, 6 1/2 pumps of {noun_2} drizzle, 3 espresso shots mixed in,
+  extra {adjective_2} cream, as well as {adjective_3} cake pop mixed in with a bit of {noun_3} on top, chocolate chips,
+  coconut flakes, one pump of {noun_4}, one pump of hazelnut, 3.6 {food_2} slices mixed in, chocolate shavings
+  {verb_ends_in_ing} the bottom, cinnamon dolce and just a small pinch of {noun_5}
+keys:
+  verb_past_tense: ~
+  flavor: ~
+  food: ~
+  noun: ~
+  adjective: ~
+  noun_2: noun
+  adjective_2: adjective
+  adjective_3: adjective
+  noun_3: noun
+  noun_4: noun
+  food_2: food
+  verb_ends_in_ing: verb_ends_in_'ing'
+  noun_5: noun
+
+---
+name: Voiceoverpete needs your help
+story_text: >
+  Attention all {video_game} gamers: {person} is in great danger and needs your help to {verb} the squads in the {place},
+  but to do this they need a {adjective} {noun} and a couple of {adjective_2} {plural_noun}. To help them, all they need is
+  your credit card number, the three digits on the back, and the expiration month and year. But, you gotta be {adjective_3},
+  so {person} can secure the {noun} and achieve the epic Victory {adjective_4}!
+keys:
+  video_game: ~
+  person: ~
+  verb: ~
+  place: ~
+  adjective: ~
+  adjective_2: adjective
+  plural_noun: ~
+  adjective_3: adjective
+  noun: ~
+  adjective_4: adjective
+
+---
+name: Good morning
+story_text: >
+  One morning, as {person} was waking up from anxious dreams, they discovered that in bed they had been changed into
+  a giant {noun}. They lay on their {adjective} back and saw, as they lifted their head up a little, their {adjective_2}
+  {body_part} divided up into {adjective_3} sections. From this height the blanket, just about ready to {verb} completely,
+  could hardly stay in place. Their numerous {plural_body_part}, pitifully {adjective_4} in comparison to the rest of their
+  circumference, {verb_past_tense} helplessly before their eyes.
+keys:
+  person: ~
+  noun: ~
+  adjective: ~
+  adjective_2: adjective
+  body_part: ~
+  adjective_3: adjective
+  verb: ~
+  plural_body_part: ~
+  adjective_4: adjective
+  verb_past_tense: ~
+
+---
+name: Sonnet 18
+story_text: |
+  Shall I compare thee to a {noun}?
+  Thou art more {adjective} and more {adjective_2}.
+  {adjective_3} winds do shake the {adjective_4} {plural_noun} of May,
+  And summer’s {noun_2} hath all too short a {noun_3}.
+keys:
+  noun: ~
+  adjective: ~
+  adjective_2: adjective
+  adjective_3: adjective
+  adjective_4: adjective
+  plural_noun: ~
+  noun_2: noun
+  noun_3: noun
+
+---
+name: Garfield the cat
+story_text: >
+  When I was a youngster, I made the fatal mistake of telling a few {people} how much I enjoyed {name} the {animal}.
+  Every holiday and birthday after that, I was inundated with {name} books, {plural_noun}, T-shirts, and stuffed
+  {plural_noun_2}. I was positive {name} would eventually be etched onto my tombstone. My love for the {adjective},
+  {food}-loving, Monday-hating {animal} has since abated, leaving even a former {name} fan like me flummoxed as to
+  who the target audience would possibly be for this new venture: BlogTO proudly announces that “Toronto is getting
+  North America’s first {name}-themed restaurant,” a “{adjective_2} {adjective_3} restaurant” called {name}Eats.
+keys:
+  people: ~
+  name: ~
+  animal: ~
+  plural_noun: ~
+  plural_noun_2: plural_noun
+  adjective: ~
+  food: ~
+  adjective_2: adjective
+  adjective_3: adjective
+
+---
+name: Guy Fieri
+story_text: >
+  This {adjective} restaurant features Guy Fieri's signature style of cooking: big on {noun} and short on
+  {plural_noun}. Guy packs classic {adjective_2} cuisine with unexpected flavor; food done {adverb} and sometimes
+  in a way you never thought possible. Simply put, Guy’s {adjective_3} Kitchen & Bar allows {noun_2} favorites and
+  culinary expertise to {verb} the {adjective_4} flavor cravings of guests.
+keys:
+  adjective: ~
+  noun: ~
+  plural_noun: ~
+  adjective_2: adjective
+  adverb: ~
+  adjective_3: adjective
+  noun_2: noun
+  verb: ~
+  adjective_4: adjective
+
+---
+name: Quote maker
+story_text: |
+  Just to be {adjective}, I'm not a professional "{noun} maker". I'm just a {adjective_2} teenager who greatly values his {noun_2} and scientific fact over any silly {noun_3} written 3,500 years ago. That being said, I am open to any and all {verb_ends_in_ing}.
+
+  "In this moment, I am {adjective_3}. Not because of any phony {noun_4}'s blessing. But because, I am englightened by my {noun_2}.\" - Aalewis"
+keys:
+  adjective: ~
+  noun: ~
+  adjective_2: adjective
+  noun_2: noun
+  noun_3: noun
+  verb_ends_in_ing: verb_ends_in_'ing'
+  adjective_3: adjective
+  noun_4: noun
+
+---
+name: Banana slicer
+story_text: >
+  What can I say about the 571B {noun} Slicer that hasn't already been said about the wheel, {noun_2}, or the
+  iPhone.... this is one of the greatest {plural_noun} of all time. My husband and I would {verb} constantly
+  over who had to {verb_2} the day's {noun} slices. It's one of those chores NO ONE wants to do! You know,
+  the old "I spent the entire day {verb_ends_in_ing} OUR children, maybe YOU can {verb_3} a little and cut these
+  {noun}s?" and of course, "You think I have the energy to {verb_4} your damn {noun}s? I {verb_past_tense} a 12
+  hour shift just to come home to THIS?!" These are the things that can destroy an entire {noun_3}. It got to the
+  point where our children could {verb_5} the tension. The minute I heard our 6-year-old girl in her bedroom,
+  re-enacting our daily {noun_4} fight with her Barbie dolls, I knew we had to make a change. That's when I
+  found the 571B {noun} Slicer. Our marriage has never been {noun_5}-ier, AND we've even {verb_past_tense_2} it
+  into our lovemaking. THANKS 571B {noun} SLICER!
+keys:
+  noun: ~
+  noun_2: noun
+  plural_noun: ~
+  verb: ~
+  verb_2: verb
+  verb_ends_in_ing: verb_ends_in_'ing'
+  verb_3: verb
+  verb_4: verb
+  verb_past_tense: ~
+  noun_3: noun
+  verb_5: verb
+  noun_4: noun
+  noun_5: noun
+  verb_past_tense_2: verb_past_tense
+
+
+---
+name: Don't Stop Believin'
+story_text: | 
+  Just a {adjective} town girl
+  Living in a {adjective_2} world
+  She {verb_past_tense} the midnight {noun}
+  Going anywhere
+
+  Just a {noun_2} boy
+  Born and {verb_past_tense_2} in South Detroit
+  He {verb_past_tense} the midnight {noun}
+  Going anywhere
+
+  A singer in a {adjective_3} room
+  A smell of wine and {adjective_4} perfume
+  For a smile they can share the night
+  It {verb}s on and on and on and on
+
+  Strangers {verb_ends_in_ing}
+  Up and down the boulevard
+  Their {plural_noun} searching in the night
+  Streetlights, people
+  {verb_ends_in_ing_2} just to find emotion
+  Hiding somewhere in the {noun_2}
+keys:
+  adjective: ~
+  adjective_2: adjective
+  verb_past_tense: ~
+  noun: ~
+  noun_2: noun
+  verb_past_tense_2: verb_past_tense
+  adjective_3: adjective
+  adjective_4: adjective
+  verb: ~
+  verb_ends_in_ing: verb_ends_in_'ing'
+  plural_noun: plural_noun
+  verb_ends_in_ing_2: verb_ends_in_ing
+  noun_2: noun
+
+
+---
+name: The infamous hacker 4chan
+story_text: >
+  I am the {adjective} {job}. The {adjective_2} deep web. The hidden mastermind of the modern {noun}. I go by
+  many names: illuminati, anonymous, and {noun_2}. With the {verb} of my fingertips the whole {noun} is in my
+  control. I {verb_2} the {noun}, I am {noun_3}. *I am 4chan*. 😎
+keys:
+  adjective: ~
+  adjective_2: adjective
+  job: ~
+  noun: ~
+  noun_2: noun
+  verb: ~
+  verb_2: verb
+  noun_3: noun
+
+---
+name: Premade somethingorothers
+story_text: >
+  Premade {noun}s are for {plural_noun}. If you really want to {verb} the {noun} thing, you have to {verb_2}
+  your own. Personally, I prefer {proper_noun}'s {adjective} {noun}. I worship a giant {adjective_2} statue
+  of {proper_noun} and {verb_3} to it four times a day. I abide by a very strict, very confusing moral/ethical
+  system whereby I strive to foster as much {proper_noun} as possible in myself. I believe that when we die,
+  those of us who have achieved sufficient {proper_noun}ness will ascend and reincarnate as {plural_noun_2} in
+  the next life. Everyone else is doomed to a cycle of birth and rebirth as a {noun_2}. As far as I can tell,
+  it is the only true {adjective} {noun}.
+keys:
+  noun: ~
+  plural_noun: ~
+  verb: ~
+  verb_2: verb
+  adjective: ~
+  proper_noun: ~
+  adjective_2: adjective
+  verb_3: verb
+  plural_noun_2: plural_noun
+  noun_2: noun
+
+
+---
+name: A sense of pride and accomplishment
+story_text: |
+  The intent is to provide players with a sense of {noun} and accomplishment for unlocking different {plural_noun}.
+
+  As for cost, we selected initial values based upon data from the {proper_noun} and other adjustments made to {adjective} rewards before launch. Among other things, we're looking at average per-player {noun_2} earn rates on a daily basis, and we'll be making {adjective_2} adjustments to ensure that players have challenges that are compelling, rewarding, and of course {adjective_3} via gameplay.
+
+  We appreciate the candid feedback, and the passion the community has {verb_past_tense} around the current topics here on Reddit, our forums and across numerous social media outlets.
+
+  Our team will continue to make {plural_noun_2} and monitor community feedback and update everyone as soon and as {adverb} as we can.
+keys:
+  noun: ~
+  plural_noun: ~
+  proper_noun: ~
+  adjective: ~
+  noun_2: noun
+  adjective_2: adjective
+  adjective_3: adjective
+  verb_past_tense: ~
+  plural_noun_2: plural_noun
+  adverb: ~
