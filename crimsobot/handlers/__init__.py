@@ -54,9 +54,9 @@ class AbstractEventGatherer(metaclass=EventGathererMeta):
     _is_coroutine = asyncio.coroutines._is_coroutine  # type: ignore
     _bound_event: Union[None, str, Tuple[str]] = None
 
-    def __init__(self, ctx: Context, *, timeout: float) -> None:
-        self.context = ctx
-        self.bot = ctx.bot  # ease of use
+    def __init__(self, context: Context, *, timeout: float) -> None:
+        self.context = context
+        self.bot = context.bot  # ease of use
         # Mypy loves to lie.
         self._underlying_task = asyncio.create_task(asyncio.sleep(timeout))  # type: ignore
         self._attach_args: Tuple = tuple()
