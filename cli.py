@@ -26,7 +26,7 @@ def run():
     """This command runs the bot."""
 
     paginator = Paginator(max_size=1336)
-    bot = CrimsoBOT(help_command=PaginatedHelpCommand(paginator=paginator))
+    bot = CrimsoBOT(help_command=PaginatedHelpCommand(paginator=paginator), case_insensitive=True)
     bot.load_extensions()
     bot.run(TOKEN)
 
