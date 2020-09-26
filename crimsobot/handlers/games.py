@@ -9,7 +9,7 @@ from crimsobot.utils import cringo, tools as c
 
 @must_be_event('on_reaction_add')
 class CringoJoinHandler(AbstractEventGatherer):
-    def can_join_cringo(
+    def _can_join_cringo(
         self,
         reaction: discord.Reaction,
         join_message: discord.Message,
@@ -28,7 +28,7 @@ class CringoJoinHandler(AbstractEventGatherer):
         self.bounced = []  # type: List[cringo.DiscordUser]
 
     async def on_event(self, reaction: discord.Reaction, user: discord.User) -> None:  # type: ignore
-        if self.can_join_cringo(reaction, self.join_message, user):
+        if self._can_join_cringo(reaction, self.join_message, user):
             embed = await cringo.process_player_joining(
                 self.joined,
                 self.bounced,
@@ -44,7 +44,7 @@ class CringoJoinHandler(AbstractEventGatherer):
 
 @must_be_event('on_message')
 class CringoMessageHandler(AbstractEventGatherer):
-    def is_valid_player_response(self, message: discord.Message) -> bool:
+    def _is_valid_player_response(self, message: discord.Message) -> bool:
         begins_with_period = message.content.startswith('.')
         is_a_player = message.author in [player.user for player in self.active_players]
         is_dm = isinstance(message.channel, discord.DMChannel)
@@ -62,7 +62,7 @@ class CringoMessageHandler(AbstractEventGatherer):
         self.multiplier = multiplier
 
     async def on_event(self, message: discord.Message) -> None:  # type: ignore
-        if self.is_valid_player_response(message):
+        if self._is_valid_player_response(message):
             await cringo.process_player_response(
                 self.context,
                 message,
@@ -74,7 +74,7 @@ class CringoMessageHandler(AbstractEventGatherer):
 
 @must_be_event('on_message')
 class EmojistorySubmissionHandler(AbstractEventGatherer):
-    def story_check(self, message: discord.Message) -> bool:
+    def _story_check(self, message: discord.Message) -> bool:
         banned = self.bot.is_banned(message.author)
         has_prefix = message.content.startswith('$')
         just_right = EMOJISTORY_RULES['minimum_length'] < len(message.content) < EMOJISTORY_RULES['maximum_length']
@@ -87,7 +87,7 @@ class EmojistorySubmissionHandler(AbstractEventGatherer):
         self.authors = []  # type: List[discord.Member]
 
     async def on_event(self, message: discord.Message) -> None:  # type: ignore
-        if self.story_check(message):
+        if self._story_check(message):
             self.stories.append(message)
             self.authors.append(message.author)
             await message.delete()
@@ -102,7 +102,7 @@ class EmojistorySubmissionHandler(AbstractEventGatherer):
 
 @must_be_event('on_message')
 class EmojistoryVotingHandler(AbstractEventGatherer):
-    def vote_check(self, message: discord.Message) -> bool:
+    def _vote_check(self, message: discord.Message) -> bool:
         try:
             choice = int(message.content)
         except ValueError:
@@ -120,7 +120,7 @@ class EmojistoryVotingHandler(AbstractEventGatherer):
         self.voters = []  # type: List[discord.Member]
 
     async def on_event(self, message: discord.Message) -> None:  # type: ignore
-        if self.vote_check(message):
+        if self._vote_check(message):
             await message.delete()
             self.votes.append(message.content)
             self.voters.append(message.author)
