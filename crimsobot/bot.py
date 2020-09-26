@@ -6,6 +6,7 @@ from discord.ext import commands
 
 from config import ADMIN_USER_IDS, BANNED_GUILD_IDS, DM_LOG_CHANNEL_ID, LEARNER_CHANNEL_IDS, LEARNER_USER_IDS
 from crimsobot import db
+from crimsobot.context import CrimsoContext
 from crimsobot.exceptions import LocationNotFound, NoMatchingTarotCard, StrictInputFailed
 from crimsobot.models.ban import Ban
 from crimsobot.utils import markov as m, tools as c
@@ -14,8 +15,9 @@ from crimsobot.utils import markov as m, tools as c
 class CrimsoBOT(commands.Bot):
     def __init__(self, **kwargs: Any) -> None:
         command_prefix = '>'
-        owner_ids = set(ADMIN_USER_IDS)
-        super().__init__(command_prefix, owner_ids=owner_ids, **kwargs)
+        owner_ids = kwargs.pop('owner_ids', set(ADMIN_USER_IDS))
+        case_insensitive = kwargs.pop('case_insensitive', True)
+        super().__init__(command_prefix, owner_ids=owner_ids, case_insensitive=case_insensitive, **kwargs)
 
         self.banned_user_ids = []  # type: List[int]
 
@@ -189,16 +191,16 @@ class CrimsoBOT(commands.Bot):
                 ])
             )
 
+        # Get context from message for command invocation and text generation
+        ctx = await self.get_context(message, cls=CrimsoContext)
+
         # process commands
-        await self.process_commands(message)
+        await self.invoke(ctx)
 
         # learn from crimso
         if message.author.id in LEARNER_USER_IDS and message.channel.id in LEARNER_CHANNEL_IDS:
             m.learner(message.content)
             self.markov_cache['crimso'].stale = True  # Model has been updated - we should regenerate it
-
-        # Get context from message for text generation
-        ctx = await self.get_context(message)
 
         # respond to ping with a Markov chain from crimso corpus
         if self.user in message.mentions:

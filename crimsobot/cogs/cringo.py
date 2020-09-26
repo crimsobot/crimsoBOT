@@ -1,16 +1,18 @@
 import asyncio
-import time
 from typing import List, Optional
 
 import discord
 from discord.ext import commands
 
 from crimsobot.bot import CrimsoBOT
+from crimsobot.context import CrimsoContext
+from crimsobot.data.games import CRINGO_RULES
+from crimsobot.handlers.games import CringoJoinHandler, CringoMessageHandler
 from crimsobot.utils import cringo, games as crimsogames, tools as c
 from crimsobot.utils.cringo_leaderboard import CringoLeaderboard
 
 # crimsoCOIN multiplier for games played in crimsoBOT server
-# simple logical checks for ctx.guild.id in in each game below
+# simple logical checks for ctx.guild.id in each game below
 SERVER_BONUS = 1.15
 
 
@@ -52,91 +54,44 @@ class Cringo(commands.Cog):
     async def mini(self, ctx: commands.Context) -> None:
         await self.cringo_main(ctx, 2)
 
-    async def cringo_main(self, ctx: commands.Context, card_size: int = 4) -> None:
-        # depending on game size: name, thumbnail, color, cost, timer...
-        name = {2: 'mini', 4: '', 6: 'MEGA'}
-        thumb = {2: 'small', 4: 'jester', 6: 'scared'}
-        color = {2: 'yellow', 4: 'green', 6: 'orange'}
-        minimum_balance = {2: 3000, 4: 0, 6: 1000}  # NOT debited.
-        timer = {2: 12, 4: 20, 6: 25}
-        turns = {2: 7, 4: 9, 6: 9}
-
+    async def cringo_main(self, ctx: CrimsoContext, card_size: int = 4) -> None:
         # generate game intro embed
-        join_timer = 30
-        emoji = '<:crimsoCOIN:588558997238579202>'
         embed = c.crimbed(
-            title="Let's play **{}CRINGO!**".format(name[card_size]),
+            title="Let's play **{}CRINGO!**".format(CRINGO_RULES['name'][card_size]),
             descr='\n'.join([
-                'Click {} to join this game. You have {} seconds!'.format(emoji, join_timer),
+                'Click {} to join this game. You have {} seconds!'
+                .format(CRINGO_RULES['emoji'], CRINGO_RULES['join_timer']),
                 'Your card and instructions will be DMed to you.',
                 'Gameplay happens in DM, and the scoreboard will show up here.',
             ]),
-            thumb_name=thumb[card_size],
-            color_name=color[card_size],
-            footer='You must have a crimsoCOIN balance of {} to play!'.format(minimum_balance[card_size]),
+            thumb_name=CRINGO_RULES['thumb'][card_size],
+            color_name=CRINGO_RULES['color'][card_size],
+            footer='You must have a crimsoCOIN balance of {} to play!'.format(
+                CRINGO_RULES['minimum_balance'][card_size]
+            ),
         )
-        join_message = await ctx.send(embed=embed)
-        await join_message.add_reaction(emoji)
 
-        def join_cringo(reaction: discord.reaction, user: discord.user) -> bool:
-            right_game = reaction.message.id == join_message.id
-            banned = self.bot.is_banned(user)
-            is_bot = user.bot
-            correct_reaction = str(reaction.emoji) == emoji
-            already_joined = user in users_already_joined
-            return right_game and not banned and not is_bot and correct_reaction and not already_joined
+        join_message = await ctx.send(embed=embed)
+        await join_message.add_reaction(CRINGO_RULES['emoji'])
 
         # initialize join-message listener
-        users_already_joined = []  # type: List[cringo.CringoPlayer]
-        users_bounced = []  # type: List[cringo.DiscordUser]
-        end = time.time() + join_timer
-        while time.time() < end and len(users_already_joined) < 20:
-            try:
-                join_reaction, user_who_reacted = await self.bot.wait_for(
-                    'reaction_add', check=join_cringo, timeout=join_timer
-                )
-            except asyncio.TimeoutError:
-                continue
-
-            if join_reaction is not None:
-                embed = await cringo.process_player_joining(
-                    users_already_joined,
-                    users_bounced,
-                    user_who_reacted,
-                    minimum_balance[card_size])
-                await ctx.send(embed=embed)
-
-        # sometimes users who click aren't added; catch them here
-        fetched_msg = await ctx.fetch_message(join_message.id)
-        for reaction in fetched_msg.reactions:
-            if str(reaction.emoji) == emoji:
-                users_trying_to_join = await reaction.users().flatten()
-
-        try:
-            for user in users_trying_to_join:
-                if not user.bot and user not in users_already_joined and user not in users_bounced:
-                    embed = await cringo.process_player_joining(
-                        users_already_joined,
-                        users_bounced,
-                        user,
-                        minimum_balance[card_size]
-                    )
-                    await ctx.send(embed=embed)
-        except UnboundLocalError:
-            pass
+        join_handler = CringoJoinHandler(ctx, timeout=CRINGO_RULES['join_timer'])
+        join_handler.set_arguments(emoji=CRINGO_RULES['emoji'], join_message=join_message, card_size=card_size)
+        join_results = await ctx.gather_events('on_reaction_add', handler=join_handler)
 
         # if no one joins, end game
-        if len(users_already_joined) == 0:
+        if not join_results.joined:
             embed = c.crimbed(
                 title=None,
-                descr='No one joined {}CRINGO! Game cancelled.'.format(name[card_size])
+                descr='No one joined {}CRINGO! Game cancelled.'.format(CRINGO_RULES['name'][card_size])
             )
+
             await ctx.send(embed=embed)
             return
 
         # initialize player objects
         list_of_players = []
-        for player in users_already_joined:
+        for player in join_results.joined:
             player_object = cringo.CringoPlayer()
             player_object.user = player
             player_object.card = await cringo.cringo_card(await cringo.cringo_emoji(card_size, card_size))
@@ -151,29 +106,22 @@ class Cringo(commands.Cog):
                 await ctx.send(embed)
 
         # initial game variables
-        turn_timer = timer[card_size]
-
+        turn_timer = CRINGO_RULES['timer'][card_size]
         turn = 1
-        total_turns = turns[card_size]
+        total_turns = CRINGO_RULES['turns'][card_size]
         emojis_already_used: List[str] = []
 
-        # define check
-        def player_response(msg: discord.Message) -> bool:
-            begins_with_period = msg.content.startswith('.')
-            is_a_player = msg.author in users_already_joined
-            is_dm = isinstance(msg.channel, discord.DMChannel)
-            return begins_with_period and is_a_player and is_dm
-
-        while turn <= total_turns and len(list_of_players) > 0:
+        while turn <= total_turns and list_of_players:
             # display initial leaderboard
             score_string, _ = await cringo.cringo_scoreboard(list_of_players)
 
             embed = c.crimbed(
-                title='**{}CRINGO!** scoreboard'.format(name[card_size]),
+                title='**{}CRINGO!** scoreboard'.format(CRINGO_RULES['name'][card_size]),
                 descr=score_string,
-                footer='Round {}/{} coming up!'.format(turn, total_turns),
-                color_name=color[card_size],
+                footer=f'Round {turn}/{total_turns} coming up!',
+                color_name=CRINGO_RULES['color'][card_size],
             )
+
             await ctx.send(embed=embed)
             await asyncio.sleep(7)
 
@@ -184,11 +132,12 @@ class Cringo(commands.Cog):
 
             # send out the emojis for this turn
             embed = c.crimbed(
-                title='**{}CRINGO!** Round {}/{}'.format(name[card_size], turn, total_turns),
+                title='**{}CRINGO!** Round {}/{}'.format(CRINGO_RULES['name'][card_size], turn, total_turns),
                 descr=' '.join(emojis_this_turn[0]),
-                footer='{}x multiplier · {} seconds!'.format(multiplier, turn_timer),
-                color_name=color[card_size],
+                footer=f'{multiplier}x multiplier · {turn_timer} seconds!',
+                color_name=CRINGO_RULES['color'][card_size],
             )
+
             for player in list_of_players:
                 try:
                     await player.user.send(embed=embed)
@@ -197,17 +146,14 @@ class Cringo(commands.Cog):
                     await ctx.send(embed=embed)
 
             # set up "listener" for players scoring their cards
-            turn_end = time.time() + turn_timer
-            while time.time() < turn_end:
-                try:
-                    response = await self.bot.wait_for('message', check=player_response, timeout=turn_timer)
-                except asyncio.TimeoutError:
-                    continue
+            message_handler = CringoMessageHandler(ctx, timeout=turn_timer)
+            message_handler.set_arguments(
+                active_players=list_of_players,
+                already_used=emojis_already_used,
+                multiplier=multiplier
+            )
 
-                if response is not None:
-                    await cringo.process_player_response(ctx, response,
-                                                         list_of_players, emojis_already_used,
-                                                         multiplier)
+            await ctx.gather_events('on_message', handler=message_handler)
 
             # end of turn, time to score matches
             for player in list_of_players:
@@ -217,14 +163,14 @@ class Cringo(commands.Cog):
             if turn > total_turns:
                 embed = c.crimbed(
                     title=None,
-                    descr='Game over! Check the final score in <#{}>!'.format(ctx.channel.id),
-                    color_name=color[card_size],
+                    descr=f'Game over! Check the final score in {ctx.channel.mention}!',
+                    color_name=CRINGO_RULES['color'][card_size],
                 )
             else:
                 embed = c.crimbed(
                     title=None,
-                    descr="Time's up! Round {} incoming.\nCheck the score in <#{}>!".format(turn, ctx.channel.id),
-                    color_name=color[card_size],
+                    descr=f"Time's up! Round {turn} incoming.\nCheck the score in {ctx.channel.mention}!",
+                    color_name=CRINGO_RULES['color'][card_size],
                 )
 
             # remove players with excessive mismatches
@@ -250,11 +196,11 @@ class Cringo(commands.Cog):
         score_string, winner = await cringo.cringo_scoreboard(list_of_players)
 
         embed = c.crimbed(
-            title='**{}CRINGO!** FINAL SCORE'.format(name[card_size]),
+            title='**{}CRINGO!** FINAL SCORE'.format(CRINGO_RULES['name'][card_size]),
             descr=score_string,
-            footer='Your points/{:.1f}=your crimsoCOIN winnings!'.format(nerf),
-            thumb_name=thumb[card_size],
-            color_name=color[card_size],
+            footer=f'Your points/{nerf:.1f}=your crimsoCOIN winnings!',
+            thumb_name=CRINGO_RULES['thumb'][card_size],
+            color_name=CRINGO_RULES['color'][card_size],
         )
 
         # for some reason, a for loop wasn't doing the trick here...
