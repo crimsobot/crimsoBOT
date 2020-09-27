@@ -427,25 +427,24 @@ async def cringo_score(player: CringoPlayer, turn_number: int, multiplier: int) 
             player.full_card = 1
 
 
-async def cringo_scoreboard(players: List[CringoPlayer]) -> Tuple[str, Optional[Any]]:
+async def cringo_scoreboard(
+    players: List[CringoPlayer],
+    nerf: float = 1,
+    cursed: bool = False
+) -> Tuple[str, Optional[Any]]:
     """Unpack the player objects to get something that can be sorted and displayed."""
 
-    scoreboard = []
-    for player in players:
-        scoreboard.append([player.user, player.score])
+    scoreboard = [(player.user, player.score) for player in players]
+    scoreboard.sort(key=lambda item: item[1], reverse=True)
 
-    # sort in place
-    scoreboard.sort(key=lambda inner_index: inner_index[1], reverse=True)
+    leader = None if len(scoreboard) <= 1 else scoreboard[0][0]
 
-    leader = None
-    if len(scoreboard) > 1:
-        leader = scoreboard[0][0]
-
-    scoreboard_list = []
+    scoreboard_rows = []
     for line in scoreboard:
-        scoreboard_list.append('{} · **{}** points'.format(line[0], line[1]))
+        coin_display = 'zero' if cursed else round(line[1] / nerf, 1)  # y'all dumb motherfuckers want a rounding error?
+        scoreboard_rows.append(f'{line[0]} · **{line[1]}** points · **{coin_display}** coin')
 
-    return '\n'.join(scoreboard_list), leader
+    return '\n'.join(scoreboard_rows), leader
 
 
 async def cringo_stats(player: CringoPlayer, coin: float, won: bool) -> None:

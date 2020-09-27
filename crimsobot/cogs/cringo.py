@@ -1,4 +1,5 @@
 import asyncio
+import random
 from typing import List, Optional
 
 import discord
@@ -20,16 +21,6 @@ class Cringo(commands.Cog):
     def __init__(self, bot: CrimsoBOT):
         self.bot = bot
 
-    # @commands.Cog.listener()
-    # async def on_message(self, message: discord.Message) -> None:
-    #     """Dedicated message listener for Cringo! DMs."""
-    #     if self.is_banned(message.author):
-    #         return
-
-    #     is_dm = isinstance(message.channel, discord.DMChannel)
-    #     if is_dm and message.content.startswith(('.')):
-    #         # do a thing
-
     @commands.group(aliases=['suffer'], invoke_without_command=True, brief='A quirky take on bingo.')
     @commands.max_concurrency(1, commands.BucketType.channel)
     async def cringo(self, ctx: commands.Context) -> None:
@@ -37,7 +28,7 @@ class Cringo(commands.Cog):
         Points are awarded for matches [10], lines [100], and full card [1000].
         The earlier you get a match, line, or full card, the higher the multiplier!
         Everyone is awarded a handsome amount of crimsoCOIN for playing.
-        The more players in a game, the more crimsoCOIN everyone wins!
+        The more players in a game, the more crimsoCOIN everyone wins - assuming you don't get unlucky...
         Play regular >cringo, >cringo mega, or >cringo mini!
         """
 
@@ -56,8 +47,10 @@ class Cringo(commands.Cog):
 
     async def cringo_main(self, ctx: CrimsoContext, card_size: int = 4) -> None:
         # generate game intro embed
+        name_prefix = CRINGO_RULES['name'][card_size]
+        name_prefix = 'None' if not name_prefix and random.random() > 0.98 else name_prefix
         embed = c.crimbed(
-            title="Let's play **{}CRINGO!**".format(CRINGO_RULES['name'][card_size]),
+            title=f"Let's play **{name_prefix}CRINGO!**",
             descr='\n'.join([
                 'Click {} to join this game. You have {} seconds!'
                 .format(CRINGO_RULES['emoji'], CRINGO_RULES['join_timer']),
@@ -83,7 +76,7 @@ class Cringo(commands.Cog):
         if not join_results.joined:
             embed = c.crimbed(
                 title=None,
-                descr='No one joined {}CRINGO! Game cancelled.'.format(CRINGO_RULES['name'][card_size])
+                descr=f'No one joined {name_prefix}CRINGO! Game cancelled.'
             )
 
             await ctx.send(embed=embed)
@@ -116,7 +109,7 @@ class Cringo(commands.Cog):
             score_string, _ = await cringo.cringo_scoreboard(list_of_players)
 
             embed = c.crimbed(
-                title='**{}CRINGO!** scoreboard'.format(CRINGO_RULES['name'][card_size]),
+                title=f'**{name_prefix}CRINGO!** scoreboard',
                 descr=score_string,
                 footer=f'Round {turn}/{total_turns} coming up!',
                 color_name=CRINGO_RULES['color'][card_size],
@@ -132,7 +125,7 @@ class Cringo(commands.Cog):
 
             # send out the emojis for this turn
             embed = c.crimbed(
-                title='**{}CRINGO!** Round {}/{}'.format(CRINGO_RULES['name'][card_size], turn, total_turns),
+                title=f'**{name_prefix}CRINGO!** Round {turn}/{total_turns}',
                 descr=' '.join(emojis_this_turn[0]),
                 footer=f'{multiplier}x multiplier · {turn_timer} seconds!',
                 color_name=CRINGO_RULES['color'][card_size],
@@ -193,30 +186,23 @@ class Cringo(commands.Cog):
         if ctx.guild and ctx.guild.id == 552650672965943296:
             nerf = (2 - SERVER_BONUS) * nerf
 
-        score_string, winner = await cringo.cringo_scoreboard(list_of_players)
+        game_is_cursed = name_prefix == 'None'
+        score_string, winner = await cringo.cringo_scoreboard(list_of_players, nerf, game_is_cursed)
 
         embed = c.crimbed(
             title='**{}CRINGO!** FINAL SCORE'.format(CRINGO_RULES['name'][card_size]),
             descr=score_string,
-            footer=f'Your points/{nerf:.1f}=your crimsoCOIN winnings!',
             thumb_name=CRINGO_RULES['thumb'][card_size],
             color_name=CRINGO_RULES['color'][card_size],
         )
 
-        # for some reason, a for loop wasn't doing the trick here...
-        while len(list_of_players) != 0:
-            # pull a player...
-            player = list_of_players[0]
-            # ...trip this is they are the winner...
-            win = player.user == winner
-            # ...calcuilate and give out winnings
-            winning_amount = player.score/nerf
+        for player in list_of_players:
+            # calculate and give out winnings, but give nothing to the cursed
+            winning_amount = 0 if game_is_cursed else player.score / nerf
             await crimsogames.win(player.user, winning_amount)
-            # ...do stats but only if regular cringo...
+            # do stats but only if regular cringo...
             if card_size == 4:
-                await cringo.cringo_stats(player, winning_amount, win)
-            # ...and finally remove them from list
-            await cringo.player_remove(list_of_players, player)
+                await cringo.cringo_stats(player, winning_amount, player.user == winner)
 
         await ctx.send(embed=embed)
 
