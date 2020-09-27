@@ -1,5 +1,6 @@
+import dataclasses
 import random
-from typing import Any, List, Optional, Set, Tuple, Union
+from typing import List, Set, Union
 
 import discord
 from discord import Embed
@@ -12,15 +13,17 @@ from crimsobot.utils import tools as c
 DiscordUser = Union[discord.User, discord.Member]
 
 
+# See https://stackoverflow.com/questions/53632152 for info on usage of field
+@dataclasses.dataclass
 class CringoPlayer:
-    def __init__(self) -> None:
-        self.user: discord.Member = None
-        self.card: List[List[str]] = []
-        self.score: int = 0
-        self.matches: int = 0
-        self.lines: Set[str] = set()
-        self.full_card: int = 0
-        self.mismatch_count: int = 0
+    user: discord.Member = None
+    card: List[List[str]] = dataclasses.field(default_factory=list)
+    score: int = 0
+    matches: int = 0
+    lines: Set[str] = dataclasses.field(default_factory=set)
+    full_card: int = 0
+    mismatch_count: int = 0
+    winnings: float = 0
 
 
 # no clue where to put this, so here goes
@@ -427,27 +430,23 @@ async def cringo_score(player: CringoPlayer, turn_number: int, multiplier: int) 
             player.full_card = 1
 
 
-async def cringo_scoreboard(
-    players: List[CringoPlayer],
-    nerf: float = 1,
-    cursed: bool = False
-) -> Tuple[str, Optional[Any]]:
+async def cringo_scoreboard(players: List[CringoPlayer], cursed: bool = False, game_finished: bool = False) -> str:
     """Unpack the player objects to get something that can be sorted and displayed."""
 
-    scoreboard = [(player.user, player.score) for player in players]
-    scoreboard.sort(key=lambda item: item[1], reverse=True)
-
-    leader = None if len(scoreboard) <= 1 else scoreboard[0][0]
-
     scoreboard_rows = []
-    for line in scoreboard:
-        coin_display = 'zero' if cursed else round(line[1] / nerf, 1)  # y'all dumb motherfuckers want a rounding error?
-        scoreboard_rows.append(f'{line[0]} · **{line[1]}** points · **{coin_display}** coin')
+    for player in players:
+        coin_display = 'zero' if cursed else player.winnings  # y'all dumb motherfuckers want a rounding error?
+        if game_finished:
+            row = f'{player.user} · **{player.score}** points · **{coin_display}** coin'
+        else:
+            row = f'{player.user} · **{player.score}** points'
 
-    return '\n'.join(scoreboard_rows), leader
+        scoreboard_rows.append(row)
+
+    return '\n'.join(scoreboard_rows)
 
 
-async def cringo_stats(player: CringoPlayer, coin: float, won: bool) -> None:
+async def cringo_stats(player: CringoPlayer, won: bool) -> None:
     stats = await CringoStatistic.get_by_discord_user(player.user)  # type: CringoStatistic
 
     # do not count stats if player did not "truly" play
@@ -460,7 +459,7 @@ async def cringo_stats(player: CringoPlayer, coin: float, won: bool) -> None:
     if won:
         stats.wins += 1
 
-    stats.coin_won += coin
+    stats.coin_won += player.winnings
 
     if player.score > stats.high_score:
         stats.high_score = player.score
