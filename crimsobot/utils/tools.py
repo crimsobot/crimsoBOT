@@ -3,27 +3,11 @@ import functools
 import logging
 import os
 import random
-from typing import Any, Awaitable, Callable, List, Optional, Union
+from typing import Any, Awaitable, Callable, List, Optional
 
-from discord import ChannelType, DMChannel, Embed, GroupChannel, Guild, Member, TextChannel, User
+from discord import ChannelType, Embed, Guild
 
 log = logging.getLogger(__name__)
-
-Messageables = Union[DMChannel, GroupChannel, Member, TextChannel, User]
-
-
-class MessageableAlreadyJoined(Exception):
-    def __init__(self, *args: Any):
-        if args:
-            self.message = args[0]
-        else:
-            self.message = None
-
-    def __str__(self) -> str:
-        if self.message:
-            return 'MessageableAlreadyJoined, {0} '.format(self.message)
-        else:
-            return 'MessagableAlreadyJoined: channel/direct message/user already using function'
 
 
 class ImageAlreadySet(Exception):
@@ -48,26 +32,6 @@ def executor_function(sync_function: Callable) -> Callable:
         return await loop.run_in_executor(None, reconstructed_function)
 
     return sync_wrapper
-
-
-def checkin(messageable: Messageables, running_list: List[int]) -> bool:
-    """Add a messageable to a running list of messageables using a function."""
-
-    if messageable.id in running_list:
-        raise MessageableAlreadyJoined
-
-    # the list passed is edited in place
-    running_list.append(messageable.id)
-    return True
-
-
-def checkout(messageable: Messageables, running_list: List[int]) -> None:
-    """Remove messageable from running list of messageables using a function."""
-
-    try:
-        running_list.remove(messageable.id)
-    except ValueError:
-        return
 
 
 def crimbed(title: Optional[str], descr: Optional[str],

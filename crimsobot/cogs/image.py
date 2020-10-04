@@ -2,7 +2,7 @@ import asyncio
 import logging
 import random
 from datetime import datetime
-from typing import List, Optional
+from typing import Callable, Optional
 
 import discord
 from discord.ext import commands
@@ -12,8 +12,17 @@ from crimsobot.utils import image as imagetools, tools as c
 
 log = logging.getLogger(__name__)
 
-# lists for games in progress
-emoji_channels = []  # type: List[int]
+eface_bucket = commands.MaxConcurrency(1, per=commands.BucketType.user, wait=False)
+
+
+def shared_max_concurrency(bucket: commands.MaxConcurrency) -> Callable[[Callable], Callable]:
+    def decorator(func: Callable) -> Callable:
+        if isinstance(func, commands.Command):
+            func._max_concurrency = bucket
+        else:
+            func.__commands_max_concurrency__ = bucket  # type: ignore
+        return func
+    return decorator
 
 
 class Image(commands.Cog):
@@ -43,6 +52,7 @@ class Image(commands.Cog):
 
     @commands.command(aliases=['acidify'])
     @commands.cooldown(2, 10, commands.BucketType.guild)
+    @shared_max_concurrency(eface_bucket)
     async def acid(self, ctx: commands.Context, number_of_hits: int, image: Optional[str] = None) -> None:
         """1-3 hits only. Can use image link, attachment, mention, or emoji."""
 
@@ -76,17 +86,12 @@ class Image(commands.Cog):
 
     @commands.command(hidden=True)
     @commands.cooldown(1, 4 * 60 * 60, commands.BucketType.user)
+    @shared_max_concurrency(eface_bucket)
     async def bless(self, ctx: commands.Context) -> None:
         """bless bless"""
 
         # read in lines of emojis
         line_list = open(c.clib_path_join('img', 'bless.txt'), encoding='utf8', errors='ignore').readlines()
-
-        # check-in
-        chk = c.checkin(ctx.message.author, emoji_channels)
-        if chk is False:
-            await ctx.send('`no!`')
-            return
 
         # strip newlines
         line_list = [line.replace('\n', '') for line in line_list]
@@ -95,8 +100,6 @@ class Image(commands.Cog):
         for line in line_list:
             await ctx.message.author.send(line)
             await asyncio.sleep(1)
-
-        c.checkout(ctx.message.author, emoji_channels)
 
     @commands.command(brief='Boop the snoot! Must mention someone to boop.')
     async def boop(self, ctx: commands.Context, mention: discord.Member) -> None:
@@ -116,13 +119,9 @@ class Image(commands.Cog):
 
     @commands.command(hidden=True)
     @commands.cooldown(1, 8 * 60 * 60, commands.BucketType.user)
+    @shared_max_concurrency(eface_bucket)
     async def eface(self, ctx: commands.Context) -> None:
         """crimsoBOT avatar as emojis!"""
-
-        chk = c.checkin(ctx.message.author, emoji_channels)
-        if chk is False:
-            await ctx.send('`no!`')
-            return
 
         # read in lines of emojis
         line_list = open(c.clib_path_join('text', 'emojiface.txt'), encoding='utf8', errors='ignore').readlines()
@@ -132,8 +131,6 @@ class Image(commands.Cog):
         for line in line_list:
             await ctx.message.author.send(line)
             await asyncio.sleep(1)
-
-        c.checkout(ctx.message.author, emoji_channels)
 
     @commands.command(hidden=True)
     @commands.is_owner()
@@ -156,6 +153,7 @@ class Image(commands.Cog):
 
     @commands.command(aliases=['emojimage', 'eimg2'])
     @commands.cooldown(1, 60, commands.BucketType.user)
+    @shared_max_concurrency(eface_bucket)
     async def eimg(self, ctx: commands.Context, image: Optional[str] = None) -> None:
         """
         Convert image to emojis with a bit more detail!
@@ -165,17 +163,11 @@ class Image(commands.Cog):
         """
 
         line_list = await imagetools.make_emoji_image(ctx, image)
-        chk = c.checkin(ctx.message.author, emoji_channels)
-        if chk is False:
-            await ctx.send('`no!`')
-            return
 
         # send line-by-line as DM
         for line in line_list:
             await ctx.message.author.send(line)
             await asyncio.sleep(0.72)
-
-        c.checkout(ctx.message.author, emoji_channels)
 
     @commands.command(hidden=True)
     @commands.is_owner()
