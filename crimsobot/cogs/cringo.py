@@ -21,8 +21,9 @@ CringoScoreboard = collections.namedtuple('CringoScoreboard', 'string winner')
 
 
 class CringoGame():
+    all_players: Set[CringoPlayer] = set()
 
-    def __init__(self, *, card_size: int = 4) -> None:
+    def __init__(self, ctx: commands.Context, *, card_size: int = 4) -> None:
         self.cursed = False
         self.name_prefix = CRINGO_RULES['name'][card_size] or ''
         if card_size == 4 and random.random() > 0.98:
@@ -33,8 +34,8 @@ class CringoGame():
         self.joined: List[discord.User] = []
         self.bounced: List[discord.User] = []
         # these are used throghout the game
+        self.context = ctx
         self.card_size = card_size
-        self.context: commands.Context
         self.players: List[CringoPlayer] = []
         self.turn_timer = CRINGO_RULES['timer'][card_size]
         self.turn = 1
@@ -42,7 +43,6 @@ class CringoGame():
         self.minimum_balance = CRINGO_RULES['minimum_balance'][self.card_size]
         self.used_emoji: List[str] = []
         self.multiplier: int
-        self.cog: 'Cringo'
 
     def generate_intro_embed(self) -> discord.Embed:
         embed = c.crimbed(
@@ -170,6 +170,7 @@ class CringoGame():
         return embed
 
     def remove_from_game(self, user: discord.User) -> discord.Embed:
+        CringoGame.all_players.discard(user)
         embed = c.crimbed(
             title=None,
             descr=f'{user} has left the game.',
@@ -204,7 +205,7 @@ class CringoGame():
                 await player.user.send(pretty_card)
             except discord.errors.Forbidden:
                 self.players.remove(player)
-                self.cog.all_players.discard(player.user.id)
+                CringoGame.all_players.discard(player.user.id)
                 embed = c.crimbed(
                     title=None,
                     descr=f'{player.user} has left the game.',
@@ -226,7 +227,7 @@ class CringoGame():
                 await player.user.send(embed=embed)
             except discord.errors.Forbidden:
                 self.players.remove(player)
-                self.cog.all_players.discard(player.user.id)
+                CringoGame.all_players.discard(player.user.id)
 
                 await self.context.send(embed)
 
@@ -240,7 +241,7 @@ class CringoGame():
             return self.generate_join_low_balance_embed(player)
 
         # they're already playing!
-        if player.id in self.cog.all_players:
+        if player.id in CringoGame.all_players:
             self.bounced.append(player)
             return self.generate_join_already_playing_embed(player)
 
@@ -249,7 +250,7 @@ class CringoGame():
             embed = self.generate_join_test_message_embed()
             await player.send(embed=embed)
             self.joined.append(player)
-            self.cog.all_players.add(player.id)
+            CringoGame.all_players.add(player.id)
             return self.generate_join_success_embed(player)
         except discord.errors.Forbidden:
             self.bounced.append(player)
@@ -268,7 +269,7 @@ class CringoGame():
         mismatch_detected = False
         for position in positions:
             if position == 'leave':  # evict them if they ask
-                embed = self.remove_from_game(player.user.id)
+                embed = self.remove_from_game(player.user)
                 await self.context.send(embed=embed)
                 return
 
@@ -286,18 +287,15 @@ class CringoGame():
         await response.author.send(self.prettify_card(player.card))
 
     # this is where the majority of game logic is
-    async def start(self, ctx: commands.Context) -> None:
-        self.context = ctx
-        self.cog = self.context.bot.get_cog('Cringo')
-
+    async def start(self) -> None:
         join_embed = self.generate_intro_embed()
-        join_message = await ctx.send(embed=join_embed)
+        join_message = await self.context.send(embed=join_embed)
         await join_message.add_reaction(CRINGO_RULES['emoji'])
 
         # initialize listener for join messages
-        join_handler = CringoJoinHandler(ctx, timeout=CRINGO_RULES['join_timer'])
+        join_handler = CringoJoinHandler(self.context, timeout=CRINGO_RULES['join_timer'])
         join_handler.set_arguments(emoji=CRINGO_RULES['emoji'], join_message=join_message, game=self)
-        await ctx.gather_events('on_reaction_add', handler=join_handler)
+        await self.context.gather_events('on_reaction_add', handler=join_handler)
 
         # if nobody joins, end game
         if not self.joined:
@@ -306,7 +304,7 @@ class CringoGame():
                 descr=f'No one joined {self.name_prefix}CRINGO! Game cancelled.'
             )
 
-            await ctx.send(embed=embed)
+            await self.context.send(embed=embed)
             return
 
         # prepare player list
@@ -318,7 +316,7 @@ class CringoGame():
             )
 
             self.players.append(new_player)
-            # we don't need to manipulate self.cog.all_players here as it's done inside of the join handler
+            # we don't need to manipulate CringoGame.all_players here as it's done inside of the join handler
 
         # send everyone their cards
         await self.send_cards()
@@ -326,7 +324,7 @@ class CringoGame():
         while self.turn <= self.total_turns and self.players:
             scoreboard = self.get_scoreboard()
             scoreboard_embed = self.generate_scoreboard_embed(scoreboard)
-            await ctx.send(embed=scoreboard_embed)
+            await self.context.send(embed=scoreboard_embed)
             await asyncio.sleep(7)
 
             emojis_this_turn = await cringo.cringo_emoji(1, self.card_size, self.used_emoji)
@@ -335,10 +333,10 @@ class CringoGame():
             await self.send_emojis(emojis_this_turn)
 
             # set up listener for players scoring their cards
-            message_handler = CringoMessageHandler(ctx, timeout=self.turn_timer)
+            message_handler = CringoMessageHandler(self.context, timeout=self.turn_timer)
             message_handler.set_arguments(game=self)
 
-            await ctx.gather_events('on_message', handler=message_handler)
+            await self.context.gather_events('on_message', handler=message_handler)
 
             # end of turn, time to score everything
             for player in self.players:
@@ -350,8 +348,8 @@ class CringoGame():
             turn_embed = self.generate_end_of_turn_embed()
             for player in self.players.copy():
                 if player.mismatch_count >= 8:
-                    left_game_embed = self.remove_from_game(player.user.id)
-                    await ctx.send(embed=left_game_embed)
+                    left_game_embed = self.remove_from_game(player.user)
+                    await self.context.send(embed=left_game_embed)
                     continue
 
                 # tell players what happens at the end of this turn
@@ -366,14 +364,14 @@ class CringoGame():
         nerf = 0.05*x**2 - 2.05*x + 52  # (points / nerf = coin)
 
         # check if crimsoBOT home server
-        if ctx.guild and ctx.guild.id == 552650672965943296:
+        if self.context.guild and self.context.guild.id == 552650672965943296:
             nerf = (2 - SERVER_BONUS) * nerf
 
         # process all scores & winnings
         for player in self.players:
             player.winnings = 0 if self.cursed else player.score / nerf
             await crimsogames.win(player.user, player.winnings)
-            self.cog.all_players.discard(player.user.id)  # some final cleanup
+            CringoGame.all_players.discard(player.user.id)  # some final cleanup
 
         # now that we have our winnings calculated, generate a scoreboard with winnings and run through players again
         # to record stats for them
@@ -383,13 +381,12 @@ class CringoGame():
                 await cringo.cringo_stats(player, player == final_scoreboard.winner)
 
         embed = self.generate_game_over_embed(final_scoreboard)
-        await ctx.send(embed=embed)
+        await self.context.send(embed=embed)
 
 
 class Cringo(commands.Cog):
     def __init__(self, bot: CrimsoBOT):
         self.bot = bot
-        self.all_players: Set[CringoPlayer] = set()
 
     @commands.group(aliases=['suffer'], invoke_without_command=True, brief='A quirky take on bingo.')
     @commands.max_concurrency(1, commands.BucketType.channel)
@@ -403,20 +400,17 @@ class Cringo(commands.Cog):
         """
 
         # Fallback to regular four-line Cringo! if no command is provided, retains prior functionality
-        game = CringoGame()
-        await game.start(ctx)
+        await CringoGame(ctx).start()
 
     @cringo.command(name='mega')
     @commands.max_concurrency(1, commands.BucketType.channel)
     async def mega(self, ctx: commands.Context) -> None:
-        game = CringoGame(card_size=6)
-        await game.start(ctx)
+        await CringoGame(ctx, card_size=6).start()
 
     @cringo.command(name='mini')
     @commands.max_concurrency(1, commands.BucketType.channel)
     async def mini(self, ctx: commands.Context) -> None:
-        game = CringoGame(card_size=2)
-        await game.start(ctx)
+        await CringoGame(ctx, card_size=2).start()
 
     @cringo.group(name='lb', aliases=['clb'], invoke_without_command=True)
     async def cringo_lb(self, ctx: commands.Context) -> None:
