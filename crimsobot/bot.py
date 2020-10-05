@@ -17,7 +17,24 @@ class CrimsoBOT(commands.Bot):
         command_prefix = '>'
         owner_ids = kwargs.pop('owner_ids', set(ADMIN_USER_IDS))
         case_insensitive = kwargs.pop('case_insensitive', True)
-        super().__init__(command_prefix, owner_ids=owner_ids, case_insensitive=case_insensitive, **kwargs)
+
+        default_intents = discord.Intents(
+            members=True,  # privileged intent, enable Members in dashbaord
+            guilds=True,
+            emojis=True,  # for guild emoji cache, used in get_guild_info_embed
+            messages=True,
+            reactions=True,
+        )
+
+        intents = kwargs.pop('intents', default_intents)
+
+        super().__init__(
+            command_prefix,
+            owner_ids=owner_ids,
+            case_insensitive=case_insensitive,
+            intents=intents,
+            **kwargs
+        )
 
         self.banned_user_ids = []  # type: List[int]
 

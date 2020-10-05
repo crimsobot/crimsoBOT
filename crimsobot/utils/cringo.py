@@ -1,26 +1,27 @@
+import dataclasses
 import random
-from typing import Any, List, Optional, Set, Tuple, Union
+from typing import List, Set, Union
 
 import discord
 from discord import Embed
-from discord.ext.commands import Context
 
 from crimsobot.models.cringo_statistic import CringoStatistic
-from crimsobot.utils import games as crimsogames
 from crimsobot.utils import tools as c
 
 DiscordUser = Union[discord.User, discord.Member]
 
 
+# See https://stackoverflow.com/questions/53632152 for info on usage of field
+@dataclasses.dataclass
 class CringoPlayer:
-    def __init__(self) -> None:
-        self.user: discord.Member = None
-        self.card: List[List[str]] = []
-        self.score: int = 0
-        self.matches: int = 0
-        self.lines: Set[str] = set()
-        self.full_card: int = 0
-        self.mismatch_count: int = 0
+    user: discord.Member = None
+    card: List[List[str]] = dataclasses.field(default_factory=list)
+    score: int = 0
+    matches: int = 0
+    lines: Set[str] = dataclasses.field(default_factory=set)
+    full_card: int = 0
+    mismatch_count: int = 0
+    winnings: float = 0
 
 
 # no clue where to put this, so here goes
@@ -56,113 +57,6 @@ raw_cringo_emojis = [
         '<:cringo_35:693934629027184650>', '<:cringo_36:693934629060870194>'
     ]
 ]
-
-
-# tools.checkin() used to prevent users from playing multiple cringo games at once
-cringo_users = []  # type: List[int]
-
-
-# first, a few helper functions to deal with players joining and leaving
-async def player_remove(player_list: List[CringoPlayer], player_object: CringoPlayer) -> Embed:
-    """Remove a user from list of players."""
-
-    # remove from both the list of players for this game...
-    player_list.remove(player_object)
-
-    # ...as well as "global" list of messageables playing the game
-    c.checkout(player_object.user, cringo_users)
-
-    embed = c.crimbed(
-        title=None,
-        descr='{} has left the game.'.format(player_object.user),
-        color_name='yellow',
-    )
-    return embed
-
-
-async def process_player_joining(
-        player_list: List[CringoPlayer], bounced_list: List[DiscordUser], user_to_join: DiscordUser,
-        min_bal: int = 0) -> Embed:
-    """Processes player joining game and returns embed to send to game channel."""
-
-    # first, check balance. cost is NOT debited.
-    current_bal = await crimsogames.check_balance(user_to_join)
-    not_enough_coin = current_bal < (min_bal if min_bal != 0 else float('-inf'))
-    # ...this should let people with negative balance play regular CRINGO!
-
-    bounced = False
-
-    if not_enough_coin:
-        # these are passed to the embed_to_channel which is returned from this function
-        title = 'Uh oh, **{} CANNOT** join the game!'.format(user_to_join)
-        descr = '\n'.join([
-            '· You must have a balance of \u20A2{:.2f} to play this game!'.format(min_bal),
-            "· Don't fret; regular CRINGO! can be played by anyone!",
-        ])
-        color = 'orange'
-        thumb = 'moneymouth'
-
-        bounced = True
-
-    else:
-        try:
-            # if checkin fails, c.MessageableAlreadyJoined is raised
-            c.checkin(user_to_join, cringo_users)
-
-            # embed to DM to user to test if Forbidden
-            embed_to_user = c.crimbed(
-                title='Welcome to **CRINGO!**',
-                descr='\n'.join([
-                    'Match the emojis called to the emojis on your card.',
-                    'If you see a match, type the column and row of the match!',
-                    'Type `.<letter><number>` or `. <letter><number>`.',
-                    'You can put in multiple matches separated by a space!',
-                    'For example: `.a1 b2 c4` or `. b4 c3`. Only use one period!',
-                    'Missed a match on a previous turn? No problem! Put it in anyway.',
-                    "You'll still get your points (but with a lower multiplier).",
-                    'Need to leave the game? Type `.leave` during a round.',
-                ]),
-                thumb_name='jester'
-            )
-            await user_to_join.send(embed=embed_to_user)
-
-            # if neither raise an error, then player is added
-            player_list.append(user_to_join)
-
-            # these are passed to the embed_to_channel which is returned from this function
-            title = ''
-            descr = '**{}** has joined the game!'.format(user_to_join)
-            color = 'green'
-            thumb = ''
-
-        except discord.errors.Forbidden:
-            # user was checked in, so gotta check them out
-            c.checkout(user_to_join, cringo_users)
-
-            # these are passed to the embed_to_channel which is returned from this function
-            title = 'Uh oh, **{} CANNOT** join the game!'.format(user_to_join)
-            descr = 'You have to be able to receive DMs from crimsoBOT to play!'
-            color = 'orange'
-            thumb = 'weary'
-
-            bounced = True
-
-        except c.MessageableAlreadyJoined:
-            # these are passed to the embed_to_channel which is returned from this function
-            title = 'Uh oh, **{} CANNOT** join the game!'.format(user_to_join)
-            descr = "You're already playing another game of CRINGO! aren't you?"
-            color = 'orange'
-            thumb = 'think'
-
-            bounced = True
-
-    # this list keeps users from being notified twice that they cannot join
-    if bounced is True:
-        bounced_list.append(user_to_join)
-
-    embed_to_channel = c.crimbed(title=title, descr=descr, color_name=color, thumb_name=thumb)
-
-    return embed_to_channel
 
 
 async def cringo_emoji(number_of_rows: int, number_of_columns: int, already_used: List[str] = None) -> List[List[str]]:
@@ -232,13 +126,14 @@ def marker(cardsize: int, row: int, column: int) -> str:
 
     # if card size = 2, only use the one marker: cringo_36
     if cardsize == 2:
-        marker_emoji = raw_cringo_emojis[row + 1][column + 1]
-    if cardsize == 4:
-        marker_emoji = raw_cringo_emojis[row][column]
-    if cardsize == 6:
-        marker_emoji = raw_cringo_emojis[row - 1][column - 1]
+        return raw_cringo_emojis[row + 1][column + 1]
+    elif cardsize == 4:
+        return raw_cringo_emojis[row][column]
+    elif cardsize == 6:
+        return raw_cringo_emojis[row - 1][column - 1]
 
-    return marker_emoji
+    # no clue how we got here! but let's use cringo_36 just to be safe
+    return raw_cringo_emojis[row + 1][column + 1]
 
 
 async def mark_card(player: CringoPlayer, position: str, emojis_to_check: List[str], multiplier: int) -> bool:
@@ -288,52 +183,6 @@ async def mark_card(player: CringoPlayer, position: str, emojis_to_check: List[s
 
     # this bool used later to give feedback to user
     return match
-
-
-async def process_player_response(
-        ctx: Context, response: discord.Message,
-        list_of_players: List[CringoPlayer], emojis_already_used: List[str],
-        multiplier: int
-) -> None:
-    """Process player response"""
-
-    # find player object in list of players; if not a player, then return out of this
-    user_object = None
-    for player in list_of_players:
-        if player.user == response.author:
-            user_object = player
-            break
-
-    if user_object is None:
-        return
-
-    # determine if user's reponse is a match
-    # matches missed in previous rounds are OK (they only lose the earlier round multiplier)
-    positions: List[str] = response.content.replace('.', '').strip().split(' ')
-    mismatch_detected = False
-    for position in positions:
-        # if 'leave' is detected, end
-        if position == 'leave':
-            embed = await player_remove(list_of_players, user_object)
-            await ctx.send(embed=embed)
-            return
-
-        # if they're still in the game, then check for matches
-        match = await mark_card(user_object, position, emojis_already_used, multiplier)
-
-        if match is False:
-            embed = c.crimbed(
-                title=None,
-                descr='Mismatch(es) detected. You lose points for that!',
-                color_name='orange',
-            )
-            mismatch_detected = True
-
-    # this is after the end of the for loop, so that the mismatch message is sent only once
-    if mismatch_detected:
-        await response.author.send(embed=embed)
-
-    await response.author.send(await deliver_card(user_object.card))
 
 
 async def cringo_score(player: CringoPlayer, turn_number: int, multiplier: int) -> None:
@@ -427,28 +276,23 @@ async def cringo_score(player: CringoPlayer, turn_number: int, multiplier: int) 
             player.full_card = 1
 
 
-async def cringo_scoreboard(players: List[CringoPlayer]) -> Tuple[str, Optional[Any]]:
+async def cringo_scoreboard(players: List[CringoPlayer], cursed: bool = False, game_finished: bool = False) -> str:
     """Unpack the player objects to get something that can be sorted and displayed."""
 
-    scoreboard = []
+    scoreboard_rows = []
     for player in players:
-        scoreboard.append([player.user, player.score])
+        coin_display = 'zero' if cursed else player.winnings  # y'all dumb motherfuckers want a rounding error?
+        if game_finished:
+            row = f'{player.user} · **{player.score}** points · **{coin_display}** coin'
+        else:
+            row = f'{player.user} · **{player.score}** points'
 
-    # sort in place
-    scoreboard.sort(key=lambda inner_index: inner_index[1], reverse=True)
+        scoreboard_rows.append(row)
 
-    leader = None
-    if len(scoreboard) > 1:
-        leader = scoreboard[0][0]
-
-    scoreboard_list = []
-    for line in scoreboard:
-        scoreboard_list.append('{} · **{}** points'.format(line[0], line[1]))
-
-    return '\n'.join(scoreboard_list), leader
+    return '\n'.join(scoreboard_rows)
 
 
-async def cringo_stats(player: CringoPlayer, coin: float, won: bool) -> None:
+async def cringo_stats(player: CringoPlayer, won: bool) -> None:
     stats = await CringoStatistic.get_by_discord_user(player.user)  # type: CringoStatistic
 
     # do not count stats if player did not "truly" play
@@ -461,7 +305,7 @@ async def cringo_stats(player: CringoPlayer, coin: float, won: bool) -> None:
     if won:
         stats.wins += 1
 
-    stats.coin_won += coin
+    stats.coin_won += player.winnings
 
     if player.score > stats.high_score:
         stats.high_score = player.score

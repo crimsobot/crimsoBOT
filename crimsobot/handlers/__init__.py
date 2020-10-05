@@ -86,12 +86,14 @@ class AbstractEventGatherer(metaclass=EventGathererMeta):
         with the event, i.e if we are listening for on_message, this function will receive a message argument, but
         if we are listening for on_reaction_add, this function will receive both a reaction and user argument.
         If need be, an AbstractEventGatherer subclass can be decorated with the @must_be_event() decorator to
-        ensure that it only receives certain event types."""
+        ensure that it only receives certain event types.
+        """
 
         pass
 
     async def on_detach(self) -> None:
         """Called when the gatherer is removed as a listener. Receives no arguments. Intended to be used as
-        asynchronous cleanup."""
+        asynchronous cleanup.
+        """
 
         pass

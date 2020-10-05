@@ -1,10 +1,14 @@
-from typing import List
+from typing import List, TYPE_CHECKING
 
 import discord
 
-from crimsobot.data.games import CRINGO_RULES, EMOJISTORY_RULES
+from crimsobot.data.games import EMOJISTORY_RULES
 from crimsobot.handlers import AbstractEventGatherer, StopHandler, must_be_event
 from crimsobot.utils import cringo, tools as c
+
+# prevents a circular import
+if TYPE_CHECKING:
+    from crimsobot.cogs.cringo import CringoGame
 
 
 @must_be_event('on_reaction_add')
@@ -17,28 +21,21 @@ class CringoJoinHandler(AbstractEventGatherer):
     ) -> bool:
         right_game = reaction.message.id == join_message.id
         correct_reaction = str(reaction.emoji) == self.emoji
-        already_joined = user in self.joined
+        already_joined = user in self.game.joined or user in self.game.bounced
         return right_game and not self.bot.is_banned(user) and not user.bot and correct_reaction and not already_joined
 
-    async def on_attach(self, *, emoji: str, join_message: discord.Message, card_size: int) -> None:  # type: ignore
+    async def on_attach(self, *, emoji: str, join_message: discord.Message, game: 'CringoGame') -> None:  # type: ignore
         self.emoji = emoji
-        self.card_size = card_size
+        self.game = game
+        self.card_size = game.card_size
         self.join_message = join_message
-        self.joined = []  # type: List[cringo.CringoPlayer]
-        self.bounced = []  # type: List[cringo.DiscordUser]
 
     async def on_event(self, reaction: discord.Reaction, user: discord.User) -> None:  # type: ignore
         if self._can_join_cringo(reaction, self.join_message, user):
-            embed = await cringo.process_player_joining(
-                self.joined,
-                self.bounced,
-                user,
-                CRINGO_RULES['minimum_balance'][self.card_size]
-            )
-
+            embed = await self.game.process_player_joining(user)
             await self.context.send(embed=embed)
 
-        if len(self.joined) >= 20:
+        if len(self.game.joined) >= 20:
             raise StopHandler
 
 
@@ -46,30 +43,16 @@ class CringoJoinHandler(AbstractEventGatherer):
 class CringoMessageHandler(AbstractEventGatherer):
     def _is_valid_player_response(self, message: discord.Message) -> bool:
         begins_with_period = message.content.startswith('.')
-        is_a_player = message.author in [player.user for player in self.active_players]
+        is_a_player = message.author in [player.user for player in self.game.players]
         is_dm = isinstance(message.channel, discord.DMChannel)
         return begins_with_period and is_a_player and is_dm
 
-    async def on_attach(  # type: ignore
-        self,
-        *,
-        active_players: List[cringo.DiscordUser],
-        already_used: List[discord.Emoji],
-        multiplier: int
-    ) -> None:
-        self.active_players = active_players
-        self.already_used = already_used
-        self.multiplier = multiplier
+    async def on_attach(self, *, game: 'CringoGame') -> None:  # type: ignore
+        self.game = game
 
     async def on_event(self, message: discord.Message) -> None:  # type: ignore
         if self._is_valid_player_response(message):
-            await cringo.process_player_response(
-                self.context,
-                message,
-                self.active_players,
-                self.already_used,
-                self.multiplier
-            )
+            await self.game.process_player_response(message)
 
 
 @must_be_event('on_message')
