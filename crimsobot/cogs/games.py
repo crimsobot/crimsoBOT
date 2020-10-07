@@ -413,7 +413,7 @@ class Games(commands.Cog):
         bal = await crimsogames.check_balance(whose)
 
         embed = c.crimbed(
-            title='\u200B\n{} has **\u20A2{:.2f}**.'.format(whose, bal),
+            title=f'\u200B\n{whose} has **\u20A2{bal:.2f}**.',
             descr=random.choice(encourage) if bal > 0 else '=[',
             thumb_name='crimsoCOIN',
         )
