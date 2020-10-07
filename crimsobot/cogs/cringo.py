@@ -55,7 +55,7 @@ class CringoGame():
             ]),
             thumb_name=CRINGO_RULES['thumb'][self.card_size],
             color_name=CRINGO_RULES['color'][self.card_size],
-            footer='You must have a crimsoCOIN balance of {} to play!'.format(
+            footer='You must have a crimsoCOIN balance of \u20A2{:.2f} to play!'.format(
                 CRINGO_RULES['minimum_balance'][self.card_size]
             ),
         )
@@ -170,6 +170,10 @@ class CringoGame():
         return embed
 
     def remove_from_game(self, user: discord.User) -> discord.Embed:
+        player = [player for player in self.players if player.user == user]
+        if player:
+            self.players.remove(player[0])
+
         CringoGame.all_players.discard(user)
         embed = c.crimbed(
             title=None,
@@ -183,15 +187,24 @@ class CringoGame():
         scoreboard_rows = []
         sorted_players = sorted(self.players, key=lambda item: item.score, reverse=True)
         for player in sorted_players:
-            coin_display = 'zero' if self.cursed else round(player.winnings, 1)
+            coin_display = 'zero' if self.cursed else round(player.winnings, 2)
             if game_finished:
-                row = f'{player.user} · **{player.score}** points · **{coin_display}** coin'
+                row = f'{player.user} · **{player.score}** points · **\u20A2{coin_display}**'
             else:
                 row = f'{player.user} · **{player.score}** points'
 
             scoreboard_rows.append(row)
 
-        return CringoScoreboard('\n'.join(scoreboard_rows), sorted_players[0])
+        if sorted_players:
+            winner: Optional[CringoPlayer] = sorted_players[0]
+        else:
+            winner = None
+            scoreboard_rows = [
+                f'It looks like everybody has left this {self.name_prefix}CRINGO! game!',
+                'Finish the game next time you cowards.'
+            ]
+
+        return CringoScoreboard('\n'.join(scoreboard_rows), winner)
 
     def prettify_card(self, card: List[List[str]]) -> str:
         # we add the blank emoji to the first line to accommodate compact mode w/o resizing emojis
