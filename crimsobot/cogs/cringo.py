@@ -21,7 +21,7 @@ CringoScoreboard = collections.namedtuple('CringoScoreboard', 'string winner')
 
 
 class CringoGame():
-    all_players: Set[CringoPlayer] = set()
+    all_players: Set[int] = set()
 
     def __init__(self, ctx: commands.Context, *, card_size: int = 4) -> None:
         self.cursed = False
@@ -174,7 +174,7 @@ class CringoGame():
         if player:
             self.players.remove(player[0])
 
-        CringoGame.all_players.discard(user)
+        CringoGame.all_players.discard(user.id)
         embed = c.crimbed(
             title=None,
             descr=f'{user} has left the game.',
@@ -245,29 +245,29 @@ class CringoGame():
                 await self.context.send(embed)
 
     # this function is called by the join handler
-    async def process_player_joining(self, player: discord.User) -> discord.Embed:
-        current_balance = await crimsogames.check_balance(player)  # cost is NOT debited.
+    async def process_player_joining(self, user: discord.User) -> discord.Embed:
+        current_balance = await crimsogames.check_balance(user)  # cost is NOT debited.
         not_enough_coin = current_balance < (self.minimum_balance if self.minimum_balance != 0 else float('-inf'))
 
         # deny the poor of any opportunities
         if not_enough_coin:
-            return self.generate_join_low_balance_embed(player)
+            return self.generate_join_low_balance_embed(user)
 
         # they're already playing!
-        if player.id in CringoGame.all_players:
-            self.bounced.append(player)
-            return self.generate_join_already_playing_embed(player)
+        if user.id in CringoGame.all_players:
+            self.bounced.append(user)
+            return self.generate_join_already_playing_embed(user)
 
         # see if we can send them messages, and if so, add them to the game
         try:
             embed = self.generate_join_test_message_embed()
-            await player.send(embed=embed)
-            self.joined.append(player)
-            CringoGame.all_players.add(player.id)
-            return self.generate_join_success_embed(player)
+            await user.send(embed=embed)
+            self.joined.append(user)
+            CringoGame.all_players.add(user.id)
+            return self.generate_join_success_embed(user)
         except discord.errors.Forbidden:
-            self.bounced.append(player)
-            return self.generate_join_no_dms_embed(player)
+            self.bounced.append(user)
+            return self.generate_join_no_dms_embed(user)
 
     # this function is called by the response handler
     async def process_player_response(self, response: discord.Message) -> None:
