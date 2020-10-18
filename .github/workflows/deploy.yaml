@@ -1,0 +1,19 @@
+---
+name: Deploy
+on:
+  push:
+    branches:
+      - master
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to server
+        uses: appleboy/ssh-action@v0.0.9
+        with:
+          host: ${{ secrets.CICD_SSH_HOST }}
+          port: ${{ secrets.CICD_SSH_PORT }}
+          username: ${{ secrets.CICD_SSH_USERNAME }}
+          key: ${{ secrets.CICD_SSH_KEY }}
+          script: sudo /usr/local/sbin/bot-deploy
