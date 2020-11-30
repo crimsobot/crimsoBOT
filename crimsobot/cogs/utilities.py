@@ -103,7 +103,7 @@ class Utilities(commands.Cog):
                     descr = message.embeds[0].description
                     reactions = message.reactions
 
-                    if not message.embeds[0].image:
+                    if message.embeds[0].image:
                         image_url = message.embeds[0].image.url  # this looks kind of yucky
 
                     url = message.jump_url
