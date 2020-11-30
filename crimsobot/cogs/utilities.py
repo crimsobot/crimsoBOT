@@ -36,10 +36,15 @@ class Utilities(commands.Cog):
 
         choices = poll_input.split(';')
         question = choices.pop(0).strip()
+        attachment = None
 
         # some tests to ensure there's a question and at least two choices
         if len(question) == 0:
             question = 'QUICK POLL!'
+
+        # message attachment if it exists
+        if len(ctx.message.attachments) > 0:
+            attachment = ctx.message.attachments[0]
 
         choices = [choice.strip() for choice in choices if len(choice.strip()) != 0]
 
@@ -57,6 +62,9 @@ class Utilities(commands.Cog):
             thumb_name='think',
             footer='\u200dPoll ID: {d.month}{d.day}{d.hour}{d.minute}{d.second}'.format(d=datetime.utcnow())
         )
+
+        if attachment:
+            embed.set_image(url=attachment.url)
 
         msg = await ctx.send(embed=embed)
 
@@ -95,6 +103,10 @@ class Utilities(commands.Cog):
                     poll_found = True
                     descr = message.embeds[0].description
                     reactions = message.reactions
+                    
+                    if message.embeds[0].image is not discord.Embed.Empty:
+                        imageurl = message.embeds[0].image.url
+
                     url = message.jump_url
                     break
 
@@ -132,6 +144,10 @@ class Utilities(commands.Cog):
             thumb_name='think',
             footer='Tally as of {} UTC'.format(datetime.utcnow().strftime('%Y %b %d %H:%M:%S'))
         )
+        
+        if imageurl:
+            embed.set_thumbnail(url=imageurl)
+        
 
         embed.add_field(
             name='Poll ID: {}'.format(poll_id_from_embed),
