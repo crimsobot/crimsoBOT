@@ -36,14 +36,13 @@ class Utilities(commands.Cog):
 
         choices = poll_input.split(';')
         question = choices.pop(0).strip()
-        attachment = None
 
         # some tests to ensure there's a question and at least two choices
         if len(question) == 0:
             question = 'QUICK POLL!'
 
         # message attachment if it exists
-        if len(ctx.message.attachments) > 0:
+        if ctx.message.attachments:
             attachment = ctx.message.attachments[0]
 
         choices = [choice.strip() for choice in choices if len(choice.strip()) != 0]
@@ -104,8 +103,8 @@ class Utilities(commands.Cog):
                     descr = message.embeds[0].description
                     reactions = message.reactions
 
-                    if message.embeds[0].image is not discord.Embed.Empty:
-                        imageurl = message.embeds[0].image.url  # this looks kind of yucky
+                    if not message.embeds[0].image:
+                        image_url = message.embeds[0].image.url  # this looks kind of yucky
 
                     url = message.jump_url
                     break
@@ -145,8 +144,8 @@ class Utilities(commands.Cog):
             footer='Tally as of {} UTC'.format(datetime.utcnow().strftime('%Y %b %d %H:%M:%S'))
         )
 
-        if imageurl:
-            embed.set_thumbnail(url=imageurl)
+        if image_url:
+            embed.set_thumbnail(url=image_url)
 
         embed.add_field(
             name='Poll ID: {}'.format(poll_id_from_embed),
