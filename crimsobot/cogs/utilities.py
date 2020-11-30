@@ -103,7 +103,7 @@ class Utilities(commands.Cog):
                     poll_found = True
                     descr = message.embeds[0].description
                     reactions = message.reactions
-                    
+
                     if message.embeds[0].image is not discord.Embed.Empty:
                         imageurl = message.embeds[0].image.url  # this looks kind of yucky
 
@@ -144,10 +144,9 @@ class Utilities(commands.Cog):
             thumb_name='think',
             footer='Tally as of {} UTC'.format(datetime.utcnow().strftime('%Y %b %d %H:%M:%S'))
         )
-        
-        if imageurl:  
+
+        if imageurl:
             embed.set_thumbnail(url=imageurl)
-        
 
         embed.add_field(
             name='Poll ID: {}'.format(poll_id_from_embed),
