@@ -105,7 +105,7 @@ class Utilities(commands.Cog):
                     reactions = message.reactions
                     
                     if message.embeds[0].image is not discord.Embed.Empty:
-                        imageurl = message.embeds[0].image.url
+                        imageurl = message.embeds[0].image.url  # this looks kind of yucky
 
                     url = message.jump_url
                     break
@@ -145,7 +145,7 @@ class Utilities(commands.Cog):
             footer='Tally as of {} UTC'.format(datetime.utcnow().strftime('%Y %b %d %H:%M:%S'))
         )
         
-        if imageurl:
+        if imageurl:  
             embed.set_thumbnail(url=imageurl)
         
 
