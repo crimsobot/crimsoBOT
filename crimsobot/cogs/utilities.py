@@ -41,6 +41,10 @@ class Utilities(commands.Cog):
         if len(question) == 0:
             question = 'QUICK POLL!'
 
+        # message attachment if it exists
+        if ctx.message.attachments:
+            attachment = ctx.message.attachments[0]
+
         choices = [choice.strip() for choice in choices if len(choice.strip()) != 0]
 
         if len(choices) < 2:
@@ -57,6 +61,9 @@ class Utilities(commands.Cog):
             thumb_name='think',
             footer='\u200dPoll ID: {d.month}{d.day}{d.hour}{d.minute}{d.second}'.format(d=datetime.utcnow())
         )
+
+        if attachment:
+            embed.set_image(url=attachment.url)
 
         msg = await ctx.send(embed=embed)
 
@@ -95,6 +102,10 @@ class Utilities(commands.Cog):
                     poll_found = True
                     descr = message.embeds[0].description
                     reactions = message.reactions
+
+                    if message.embeds[0].image:
+                        image_url = message.embeds[0].image.url  # this looks kind of yucky
+
                     url = message.jump_url
                     break
 
@@ -132,6 +143,9 @@ class Utilities(commands.Cog):
             thumb_name='think',
             footer='Tally as of {} UTC'.format(datetime.utcnow().strftime('%Y %b %d %H:%M:%S'))
         )
+
+        if image_url:
+            embed.set_thumbnail(url=image_url)
 
         embed.add_field(
             name='Poll ID: {}'.format(poll_id_from_embed),
