@@ -41,6 +41,8 @@ class Utilities(commands.Cog):
         if len(question) == 0:
             question = 'QUICK POLL!'
 
+        attachment = None  # prevent unbound local var error
+            
         # message attachment if it exists
         if ctx.message.attachments:
             attachment = ctx.message.attachments[0]
