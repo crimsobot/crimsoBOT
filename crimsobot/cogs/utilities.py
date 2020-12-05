@@ -42,6 +42,8 @@ class Utilities(commands.Cog):
             question = 'QUICK POLL!'
 
         # message attachment if it exists
+        attachment = None
+
         if ctx.message.attachments:
             attachment = ctx.message.attachments[0]
 
