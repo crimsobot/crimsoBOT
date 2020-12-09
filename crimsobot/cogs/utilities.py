@@ -41,7 +41,7 @@ class Utilities(commands.Cog):
         if len(question) == 0:
             question = 'QUICK POLL!'
 
-        # message attachment if it exists
+        # message attachment if it exists, and ward off unbound local var errors
         attachment = None
 
         if ctx.message.attachments:
@@ -104,7 +104,7 @@ class Utilities(commands.Cog):
                     poll_found = True
                     descr = message.embeds[0].description
                     reactions = message.reactions
-
+                    image_url = None
                     if message.embeds[0].image:
                         image_url = message.embeds[0].image.url  # this looks kind of yucky
 
