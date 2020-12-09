@@ -42,7 +42,7 @@ class Utilities(commands.Cog):
             question = 'QUICK POLL!'
 
         attachment = None  # prevent unbound local var error
-            
+
         # message attachment if it exists
         attachment = None
 
