@@ -44,6 +44,8 @@ class Utilities(commands.Cog):
         attachment = None  # prevent unbound local var error
             
         # message attachment if it exists
+        attachment = None
+
         if ctx.message.attachments:
             attachment = ctx.message.attachments[0]
 
