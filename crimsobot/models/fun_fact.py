@@ -1,5 +1,5 @@
 import random
-from typing import Any, List, Tuple
+from typing import Any, Tuple
 
 from tortoise import fields
 from tortoise.models import Model
@@ -69,7 +69,7 @@ class FunFact(Model):
         return fact
 
     @classmethod
-    async def get_all_by_subject(cls, subject: str, guild: int) -> List['FunFact']:
+    async def get_all_by_subject(cls, subject: str, guild: int) -> Any:  # TODO: why Any and not List['FunFact']?
         all_facts = await FunFact.filter(subject=subject, guild_id=guild).prefetch_related('created_by')
 
         return all_facts
