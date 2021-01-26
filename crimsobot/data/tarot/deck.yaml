@@ -937,9 +937,9 @@ description_long: >-
   the heart and emotions, the Ace of Cups is the Holy Grail of feeling and intuition. It flows with utterly pure love
   and intimacy unsullied by suspicion or self-interest.
 description_long_reversed: >-
-  One perspective on this card in the reverse is how one might see a cup right before drinking. WHy have they paused to
+  One perspective on this card in the reverse is how one might see a cup right before drinking. Why have they paused to
   peer down at its contents? Apprehension? Fear? Though it's not advisable to rush into any endeavor, especially one in
-  the realm of emotion, there does come a dink to drink. Take the time you need to process feelings, but pay attention
+  the realm of emotion, there does come a time to drink. Take the time you need to process feelings, but pay attention
   to the line between processing and putting off.
 ---
 name: Two of Cups
@@ -1011,247 +1011,414 @@ description_long: >-
   turmoil reign in the Five of Cups, spilling everywhere.
 description_long_reversed: >-
   
-# ---
-# name: Six of Cups
-# suit: CUPS
-# number: 6
-# image_filename: cups-06.jpg
-# description_upright: Innocence and joy; nostalgia and simplicity. Cooperation and an open heart are needed.
-# description_reversed: You cling to the past, or perhaps the past clings to you, obscuring the blessings of the present.
-# element: Water
-# description_long: >
-#   Two children play happily together, surrounded by six chalices full of blossoms. The high walls behind them and the sentry in the distance suggest that they are utterly secure—this is the world of a child's mind where everything is beautiful and nothing hurts. The realm of Six generally depicts the suits and their elements at their best, and the best of the Cups is love, pure and innocent. Within the harmony and security of Six, a utopian world of unassailable vulnerability and unbroken trust prevails.
-# ---
-# name: Seven of Cups
-# suit: CUPS
-# number: 7
-# image_filename: cups-07.jpg
-# description_upright: Not everything is as it seems. Tread carefully and wisely.
-# description_reversed: Trust in your inner wisdom to show you the way.
-# element: Water
-# description_long: >
-#   A bewildered figure finds themselves before a dreamlike tableau. Seven chalices float before them, full of treasures, honors, pleasures—but also serpents, dragons, and veiled mysteries. Sevens are the realm of instinct, emotion, and the unconscious mind. They can be both creative and chaotic. In Seven, the water of the suit of Cups is beautiful but treacherous, reflecting fantastic shapes that may or may not be real. Water is a master illusionist and is nowhere more mischievous or clever than the Seven of Cups.
-# description_long_reversed: >
-#   Sometimes we create mystery or uncertainty where there is none. Perhaps we do not trust ourselves to make the correct decision to move forward, and instead of coping with that lack of trust, we prefer to believe that the way forward is not so clear. But we often we know what we should do before we do it. Trust yourself, listen to yourself, and take the next step.
-# ---
-# name: Eight of Cups
-# suit: CUPS
-# number: 8
-# image_filename: cups-08.jpg
-# description_upright: Turning your back on your emotions will not make them go away or make them more manageable.
-# description_reversed: Second chances, perseverance; what you were looking for was perhaps here all along.
-# element: Water
-# description_long: >
-#   Beneath a sad-faced moon, a bent figure walks toward a forbidding mountain range, leaving behind eight empty cups. Eights are the intellectual and logical manifestations of their suits, and this spells nothing but disillusionment for the dreamy Cups who become frustrated when their every utopian vision is not realized. It is time to be realistic and face the facts just as the figure faces the hard, sharp mountains.
-# description_long_reversed: >
-#   We are sometimes tempted to leave behind our emotions. 
-# ---
-# name: Nine of Cups
-# suit: CUPS
-# number: 9
-# image_filename: cups-09.jpg
-# description_upright: Contentment, satisfaction, and gratitude. The Cups are full and refreshing.
-# description_reversed: Self-indulgence and stagnation. What you want is not necessarily what you need.
-# element: Water
-# description_long: >
-#   A well-contented noble sits beneath their collection of nine cups, looking very pleased with themselves indeed. Nine is the number of wisdom and integration; so far the watery Cups have learned emotional maturity, freedom from codependence, self-love, and how to be happy with what they have to be happy with. Water flows abundantly, but with healthy boundaries.
-
-# ---
-# name: Ten of Cups
-# suit: CUPS
-# number: 10
-# image_filename: cups-10.jpg
-# description_upright: Inner and outer worlds are in harmony and in sync.
-# description_reversed: Relationships may be suffering. Disconnection, misalignment, struggle.
-# element: Water
-# description_long: >
-#   The happy couple from the Two of Cups gaze up at the sky, a blazing rainbow of ten chalices arcing over them as their children dance beside them. The scene is full of domestic bliss, and the rainbow speaks to the promise of even more future happiness. Through emotional intelligence, enduring love, and honesty, the couple has built an idyllic life together. Tens represent completion and the ultimate manifestation of the elements of their suits, with all the lessons they've learned along the way. Watery cups has flowed through a roller coaster of emotional experiences, but has learned from and been enriched by all of them, leading to lasting contentment.
-# ---
-# name: Page of Cups
-# suit: CUPS
-# number: 11
-# image_filename: cups-11.jpg
-# description_upright: A quirky and creative fellow, the Page is full of surprises—and more than a little weirdness. Roll with it.
-# description_reversed: Emotional immaturity & stuffiness. Get out of your comfort zone.
-# element: Earth in Water
-# description_long: >
-#   A fellow in a funny, fishy hat stands on the shore of the sea holding a chalice out of which pops an actual fish—which appears to be talking to them. They don't seem the least bit surprised or concerned. In fact they seem amused by this quirky turn of events. No wonder—their lotus-adorned tunic speaks to their open-mindedness and keen insight. Pages in all suits indicate communication and potential messages—whether to or from actual people or one's own subconscious. And whatever the Page of Cups has to say, who as Earth in Water knows the dangers of being too serious, you can bet it will get your attention.
-# ---
-# name: Knight of Cups
-# suit: CUPS
-# number: 12
-# image_filename: cups-12.jpg
-# description_upright: Intuition and emotion are needed more than brute force or stoicism. Think poetry, not prose.
-# description_reversed: Emotions are not weapons to be used against others or yourself.
-# element: Air in Water
-# description_long: >
-#   A Knight rides through an arid desert through which runs a precious, thirst-quenching river. Perhaps they hope to fill their empty chalice there. Their mantle of fishes symbolize the water of the Cups, but their winged helm and boots remind us that they are an airy being, more intellectual than emotional. The scarcity of water in their surroundings suggests they would be wise to use more of their heart along with their head.  Knights suggest travel, movement, and the coming and going of circumstances. With the Knight of Cups movement may be more of a meandering flow than a linear trip from point A to point B.
-
-# ---
-# name: Queen of Cups
-# suit: CUPS
-# number: 13
-# image_filename: cups-13.jpg
-# description_upright: The Queen is full of compassion and sensitivity, easily perceiving the needs of others.
-# description_reversed: Co-dependency and emotional exhaustion. Too much is being given and too little received.
-# element: Water in Water
-# description_long: >
-#   Beautiful and gentle, the Queen of Cups sits on a throne of shells and sea-nymphs at the edge of a placid sea, a chalice with handles in the form of cherubim in their hand. Their chalice is unlike any in the entire suit of Cups. It is closed, symbolizing both their deep subconscious as well as their wise discretion in how they share their emotions, and who with. The bowl of the chalice sits between two cherubim-shaped handles, signifying that although one's subconscious is a dark place, it is also a holy place. It is life and strength, not knowledge and words that one finds there. The Queen's feet do not touch the water, showing that they have learned how to relate positively to their emotions without being overwhelmed by them.
-# ---
-# name: King of Cups
-# suit: CUPS
-# number: 14
-# image_filename: cups-14.jpg
-# description_upright: Diplomacy, emotional availability, and empathy. The King knows that true power comes when one is emotionally engaged with the self and others.
-# description_reversed: Self-involvement, myopia, and paranoia. Emotions are not always facts.
-# element: Fire in Water
-# description_long: >
-#   The King sits calmly and securely enthroned amid a turbulent sea. In one hand they hold a chalice, symbolizing their emotions and creativity, and in the other a scepter, symbolizing their mastery of themselves. A ship sails on steadily behind them in spite of the waves. Though a hurricane may blow, the King has learned how to stay steady in the face of the storm. Kings are the motivators of their suits, the charismatic leaders who draw up plans and strategize. The King of Cups urges us to see our emotions and subconscious minds as sources of strength and assets in the quest for spiritual enlightenment.
-
-# ---
-# name: Ace of Swords
-# suit: SWORDS
-# number: 1
-# image_filename: swords-01.jpg
-# description_upright: The great Sword slices the air, cutting a path to mental clarity.
-# description_reversed: Dark clouds gather in the mind, muddling thought and tangling the tongue.
-# element: Air
-# description_long: >
-#   A hand holds a crowned, double-edged sword in the air beneath a mountainous landscape. The Aces are the primordial seeds of their suits, and being both the suit of air and the mind, the Ace of Swords is all about ideas. Their infinite potential, their power to shape the world, their limitless possibilities.
-
-# ---
-# name: Two of Swords
-# suit: SWORDS
-# number: 2
-# image_filename: swords-02.jpg
-# description_upright: Two swords, two paths. Make your choice, or perish.
-# description_reversed: If you sit on the path without making a decision, you will be cut down. Avoidance is not an option.
-# element: Air
-# description_long: >
-#   A person sits with the sea at their back, blindfolded, holding two swords pointing in opposite directions. Though they are blindfolded, their calm and centered demeanor suggests they have voluntarily placed the blindfold upon themselves in order to more deeply meditate upon the choice before them, symbolized by the swords. The sea and the moon in the background represent the unconscious mind, the deeper realm that must be called upon to make important decisions. Twos are power conduits of their suits—the initial focusing of the raw power of the Ace. Here the immaterial intellect is called upon to effect change in the material world.
-
-# ---
-# name: Three of Swords
-# suit: SWORDS
-# number: 3
-# image_filename: swords-03.jpg
-# description_upright: Pain and sorrow pierce the heart, an unavoidable human experience.
-# description_reversed: Be soft and gentle, not hard and sharp, with yourself.
-# element: Air
-# description_long: >
-#   Suspended in the midst of a gloomy, rainy sky, a heart is pierced by three crossed swords. Threes represent the potential energy of their suits becoming crystalized in material form, and unfortunately the old adage holds true for the Three of Swords: “he who increases wisdom increases sorrow.” The cerebral Swords, like the emotional Cups, are easily disillusioned but lack the Cups' propensity for hope. They cannot easily un-see or un-know.
-# ---
-# name: Four of Swords
-# suit: SWORDS
-# number: 4
-# image_filename: swords-04.jpg
-# description_upright: Rest the mind in meditation and contemplation. Recuperation and withdrawal are needed.
-# description_reversed: Exhaustion, burn-out, stagnation. Overthinking only leads to futility.
-# element: Air
-# description_long: >
-#   A knight in full armor lies in meditation upon a tomb, their hands in a position of prayer. One sword lies beneath them and three point downward above them, bespeaking the knight's mental focus. Fours are the stabilization of their elements, and the Four of Swords calls the mind to rest and contemplation. Neither overthinking nor completely asleep, the intellect is at peace.
-# ---
-# name: Five of Swords
-# suit: SWORDS
-# number: 5
-# image_filename: swords-05.jpg
-# description_upright: The battle is won, but at what cost?
-# description_reversed: The pen is not the only thing mightier than the sword. Forge alternative solutions to conflict.
-# element: Air
-# description_long: >
-#   Two defeated and humiliated figures move into the distance while their smug conqueror collects their discarded swords. Fives are the inevitable destabilization of their suits, and uncontrolled air blows fiercely in the realm Five. With no boundaries or restraint, the airy intellect turns itself into a weapon, desiring only to get the better of others, to come out on top, to win the debate at all costs and emerge superior.
-
-# ---
-# name: Six of Swords
-# suit: SWORDS
-# number: 6
-# image_filename: swords-06.jpg
-# description_upright: There is no going back. Face the horizon bravely and accept what is.
-# description_reversed: Discomfort is not always your enemy. Lean into it for unexpected rewards.
-# element: Air
-# description_long: >
-#   A boatman ferries two somber passengers across a river, six swords adorning the prow of the boat before them. Ahead the water is placid, but behind them the current is turbulent. This suggests the two passengers are leaving an unhappy situation for a new future—but the swords at the prow speak to the possibility that it still weighs heavily on their minds. Sixes generally depict the suits at their best, and for the more serious Swords that doesn't mean the utopian happiness of the Cups or free-flowing abundance of the Pentacles, but sobriety of mind and clarity of thought. The air of the Swords pushes one on from what no longer serves into the possibility of the future.
-# ---
-# name: Seven of Swords
-# suit: SWORDS
-# number: 7
-# image_filename: swords-07.jpg
-# description_upright: The thief creeps about, their mind full of nothing but treachery and betrayal.
-# description_reversed: You may tell yourself that everything is well and good—but is it?
-# element: Air
-# description_long: >
-#   Unnoticed,  thief has stolen into a military camp and made off with five of their swords. The thief looks behind at two swords they have dropped, seeming proud of their ability to sneak in and out without raising the alarm. But they must be careful—the way they are carrying those swords, they risk being cut to ribbons. Sevens are the realm of instinct, emotion, and the unconscious mind. They can be both creative and chaotic. In the realm of Seven, air manifests as cunning and manipulation, seeking its own advantage and how it can use its intelligence to its own benefit. Care must be taken, however, for the element not to fall victim to its own cleverness and become caught up in its own convoluted plots.
-
-# ---
-# name: Eight of Swords
-# suit: SWORDS
-# number: 8
-# image_filename: swords-08.jpg
-# description_upright: A ring of Swords surrounds, imprisoning the mind in fear and uncertainty.
-# description_reversed: The mind must be refreshed time to time by new and unfamiliar ideas.
-# element: Air
-# description_long: >
-#   A figure stands in a ring of eight swords, blindfolded and bound round the torso, but not tightly. The water at their feet suggests that their subconscious mind might know a solution to the predicament their eyes cannot see. This is ultimately a scene of self-limitation—this person could easily shake off their loosely-tied bonds, remove the blindfold, and step out of the open ring of swords without a scratch. Eights are the intellectual and logical manifestations of their suits, and with air this becomes a dangerous excess of reason. Overthinking and overanalyzing leaves the Swords trapped in a prison of their own making.
-
-# ---
-# name: Nine of Swords
-# suit: SWORDS
-# number: 9
-# image_filename: swords-09.jpg
-# description_upright: Anxiety, fear, and worry turn the mind into a living nightmare. It is time to wake up.
-# description_reversed: The sun is quickly rising upon fear and delusion—the nightmare is almost over.
-# element: Air
-# description_long: >
-#   In a pitch-black room, a figure sits up in bed, their head in their hands, as though woken from a nightmare they cannot shake. Nine swords brood over their anguish. Nine is the number of wisdom and integration—for the Swords and the element of air, this wisdom is often an awakening from mental confusion and even intoxication. The piercing insight of the Swords is like a cold shower or cup of black coffee after a night of debauchery—unpleasant maybe, but it brings one to one's senses.
-# ---
-# name: Ten of Swords
-# suit: SWORDS
-# number: 10
-# image_filename: swords-10.jpg
-# description_upright: The Swords have reaped the consequences of their violence—they cannot give life, only destroy it.
-# description_reversed: Redemption, recovery, & regeneration. Destruction is avoidable.
-# element: Air
-# description_long: >
-#   The scene of a brutal murder: a victim with not one but ten swords driven into their back, pinning them to the shore of the sea beneath a dark and brooding sky. In the distance, the sun rises. Tens represent completion and the ultimate manifestation of the elements of their suits, with all the lessons they've learned along the way. Unfortunately the ultimate lesson of the Swords is: “live by the sword, die by the sword.” Without the emotional depth of the Cups, the willpower of the Wands, or the stability of the Pentacles, the airy Swords can only destroy. Without the heart to guide it, the mind conceives and perpetrates monstrous things.
-# ---
-# name: Page of Swords
-# suit: SWORDS
-# number: 11
-# image_filename: swords-11.jpg
-# description_upright: The Page expresses themselves with confidence and intelligence. They are curious and thirsty for knowledge.
-# description_reversed: All talk and no action. Haphazardness, miscommunication.
-# element: Earth in Air
-# description_long: >
-#   Full of enthusiasm, a young page stands atop a windy mountain swinging a sword. Pages represent communication and new ideas, and no one is bursting with either of these more than the Page of Swords. They are full of new ideas, new perspectives, keenly curious, and want to share their knowledge with the world. They are masters not only of conceiving new ideas, but also communicating them clearly to others. Being the element of earth, the Page of Swords brings common sense and relatability to the often lofty and elitist air.
-
-# ---
-# name: Knight of Swords
-# suit: SWORDS
-# number: 12
-# image_filename: swords-12.jpg
-# description_upright: Rushing with the wind, the ambitious Knight is quick-thinking and driven to see their ideas become reality.
-# description_reversed: Restlessness, hyperactivity, and lack of focus befuddle the thoughts.
-# element: Air in Air
-# description_long: >
-#   A fierce Knight clad in armor rides a leaping white horse, sword drawn, cape and mantle flying in the wild winds that blow around them. The landscape is bare but for a handful of trees in the process of having their leaves torn off in the gale. Knights represent movement and the coming and going of circumstances, and this Knight is all about the going. Being Air of Air, they are all swiftness and impatience. The Knight of Swords wants his fertile ideas to be manifested NOW and will not accept delays.
-
-# ---
-# name: Queen of Swords
-# suit: SWORDS
-# number: 13
-# image_filename: swords-13.jpg
-# description_upright: The fierce and independent Queen is forthright to the point of bluntness. Their clear eyes see all.
-# description_reversed: The heart and the head must be balanced; neither can function properly without the other.
-# element: Water in Air
-# description_long: >
-#   Enthroned among the clouds, a stern Queen sits with sword raised. Queens are agents of growth and centers of emotion in their suits, and the Queen of Swords' dire message is this: grow or die. She demands that the mind be open, that beliefs are investigated and interrogated, that biases and prejudices are stripped away. Though this can seem harsh, it is for our own good, and will lead to the head and the heart being in greater harmony.
-# ---
-# name: King of Swords
-# suit: SWORDS
-# number: 14
-# image_filename: swords-14.jpg
-# description_upright: Authority and truth reign. Be honest with yourself and others.
-# description_reversed: Those who use their intelligence to manipulate others may find themselves caught in their own snares.
-# element: Fire in Air
-# description_long: >
-#   A solemn-faced King sits upon their throne in high, rocky place, his sword raised—not as a threat, but as a reminder of their power. Kings are the motivators of their suits, the charismatic leaders who draw up plans and strategize, and the King of Swords is a natural strategist. They are not a warrior but they excel in maneuvering, planning, and attaining their goal through working smarter, not harder.
+---
+name: Six of Cups
+suit: CUPS
+number: 6
+image_filename: cups-06.jpg
+description_upright: Innocence and joy; nostalgia and simplicity. Cooperation and an open heart are needed.
+description_reversed: You cling to the past, or perhaps the past clings to you, obscuring the blessings of the present.
+element: Water
+description_long: >-
+  Two children play happily together, surrounded by six chalices full of blossoms. The high walls behind them and the
+  sentry in the distance suggest that they are utterly secure—this is the world of a child's mind where everything is
+  beautiful and nothing hurts. The realm of Six generally depicts the suits and their elements at their best, and the
+  best of the Cups is love, pure and innocent. Within the harmony and security of Six, a utopian world of unassailable
+  vulnerability and unbroken trust prevails.
+description_long_reversed: >-
+  Quite often the reversed Six of Cups can be a warning against nostalgia, or perhaps an invitation to let go of things
+  that, though they once brought you joy, no longer deserve space in your garden. But there may be a deeper undercurrent
+  to this card. While upright this card may conjure in in the querent an image of euphoria. But euphoria is a facade;
+  the root of the word "euphoria" is "a feeling of well-being in a sick person caused by drugs." Euphoria is an
+  impermenent escape, a separate feeling entirely from happiness and peace of mind depsite the superficial similarities
+  between the two.
+---
+name: Seven of Cups
+suit: CUPS
+number: 7
+image_filename: cups-07.jpg
+description_upright: Not everything is as it seems. Tread carefully and wisely.
+description_reversed: Trust in your inner wisdom to show you the way.
+element: Water
+description_long: >-
+  A bewildered figure finds themselves before a dreamlike tableau. Seven chalices float before them, full of treasures,
+  honors, pleasures—but also serpents, dragons, and veiled mysteries. Sevens are the realm of instinct, emotion, and the
+  unconscious mind. They can be both creative and chaotic. In Seven, the water of the suit of Cups is beautiful but
+  treacherous, reflecting fantastic shapes that may or may not be real. Water is a master illusionist and is nowhere
+  more mischievous or clever than the Seven of Cups.
+description_long_reversed: >-
+  Sometimes we create mystery or uncertainty where there is none. Perhaps we do not trust ourselves to make the correct
+  decision to move forward, and instead of coping with that lack of trust, we prefer to believe that the way forward is
+  not so clear. But we often we know what we should do before we do it. Trust yourself, listen to yourself, and take the
+  next step.
+---
+name: Eight of Cups
+suit: CUPS
+number: 8
+image_filename: cups-08.jpg
+description_upright: Turning your back on your emotions will not make them go away or make them more manageable.
+description_reversed: Second chances, perseverance; what you were looking for was perhaps here all along.
+element: Water
+description_long: >-
+  Beneath a sad-faced moon, a bent figure walks toward a forbidding mountain range, leaving behind eight empty cups.
+  Eights are the intellectual and logical manifestations of their suits, and this spells nothing but disillusionment for
+  the dreamy Cups who become frustrated when their every utopian vision is not realized. It is time to be realistic and
+  face the facts just as the figure faces the hard, sharp mountains.
+description_long_reversed: >-
+  We are sometimes tempted to leave behind our emotions. Maybe it is the falsehood promoted in our post-Enlightenment
+  society that rationality must prevail over all that causes us to discount the validity of our emotions. (This is a
+  vicious cycle: We are raised to devalue our emotions, thus we are less familiar with ourselves emotionally, and this
+  lack of emotional maturity causes us to rely too heavily on rationality.) Turn back toward your feelings and you may
+  find the hope and strength you need.
+---
+name: Nine of Cups
+suit: CUPS
+number: 9
+image_filename: cups-09.jpg
+description_upright: Contentment, satisfaction, and gratitude. The Cups are full and refreshing.
+description_reversed: Self-indulgence and stagnation. What you want is not necessarily what you need.
+element: Water
+description_long: >-
+  A well-contented noble sits beneath their collection of nine cups, looking very pleased with themselves indeed. Nine
+  is the number of wisdom and integration; so far the watery Cups have learned emotional maturity, freedom from
+  codependence, self-love, and how to be happy with what they have to be happy with. Water flows abundantly, but with
+  healthy boundaries.
+description_long_reversed: >-
+  There is a healthy stasis that comes with wisdom. But there is a difference between stasis and stagnation. Even still
+  waters require flow to remain clear and not become stale. Look inside your nine cups and ponder: do I have what I
+  want, or have what I need? Wants and needs are not mutually exclusive, of course, but neither are they the same. Take
+  care not to slip into the unflowing pool of hedonism; that water will fester and leave you thirsty.
+---
+name: Ten of Cups
+suit: CUPS
+number: 10
+image_filename: cups-10.jpg
+description_upright: Inner and outer worlds are in harmony and in sync.
+description_reversed: Relationships may be suffering. Disconnection, misalignment, struggle.
+element: Water
+description_long: >-
+  The happy couple from the Two of Cups gaze up at the sky, a blazing rainbow of ten chalices arcing over them as their
+  children dance beside them. The scene is full of domestic bliss, and the rainbow speaks to the promise of even more
+  future happiness. Through emotional intelligence, enduring love, and honesty, the couple has built an idyllic life
+  together. Tens represent completion and the ultimate manifestation of the elements of their suits, with all the
+  lessons they've learned along the way. Watery cups has flowed through a roller coaster of emotional experiences, but
+  has learned from and been enriched by all of them, leading to lasting contentment.
+description_long_reversed: >-
+  It is healthy to recall from time to time that the business of tarot is not omens. Just as an upright Ten of Cups does
+  not predict emotional fulfillment (it may, for example reflect your desire to attain it), a reversed Ten of Cups does
+  not mean your emotional life is falling apart. The element of Cups is water, and healthy water must flow. A reversed
+  Ten of Cups may simply be an invitation to reflect on tensions in your relationship, and to give them attention before
+  they dam your flow.
+---
+name: Page of Cups
+suit: CUPS
+number: 11
+image_filename: cups-11.jpg
+description_upright: >-
+  A quirky and creative fellow, the Page is full of surprises—and more than a little weirdness. Roll with it.
+description_reversed: Emotional immaturity & stuffiness. Get out of your comfort zone.
+element: Earth in Water
+description_long: >-
+  A fellow in a funny, fishy hat stands on the shore of the sea holding a chalice out of which pops an actual fish—which
+  appears to be talking to them. They don't seem the least bit surprised or concerned. In fact they seem amused by this
+  quirky turn of events. No wonder—their lotus-adorned tunic speaks to their open-mindedness and keen insight. Pages in
+  all suits indicate communication and potential messages—whether to or from actual people or one's own subconscious.
+  And whatever the Page of Cups has to say, who as Earth in Water knows the dangers of being too serious, you can bet it
+  will get your attention.
+description_long_reversed: >-
+  The Page symbolizes the beginning of proficiency as you manifest a suit's energy in the world. A Page learns from the
+  Knight through the handling of the Knight's worldly affairs, such as communication and research. The Page is young but
+  learning. In the reverse, a Page might suggest immaturity, arrested development, or a stubborn closed-mindedness. In
+  the suit of Cups, the reversed Page warns of not devoting the proper energy of learning how to practice emotional
+  well-being in the real world. Learning to live an emotionally heatlhy life requires risk, namely vulnerability.
+---
+name: Knight of Cups
+suit: CUPS
+number: 12
+image_filename: cups-12.jpg
+description_upright: Intuition and emotion are needed more than brute force or stoicism. Think poetry, not prose.
+description_reversed: Emotions are not weapons to be used against others or yourself.
+element: Air in Water
+description_long: >-
+  A Knight rides through an arid desert through which runs a precious, thirst-quenching river. Perhaps they hope to fill
+  their empty chalice there. Their mantle of fishes symbolize the water of the Cups, but their winged helm and boots
+  remind us that they are an airy being, more intellectual than emotional. The scarcity of water in their surroundings
+  suggests they would be wise to use more of their heart along with their head. Knights suggest travel, movement, and
+  the coming and going of circumstances. With the Knight of Cups movement may be more of a meandering flow than a linear
+  trip from point A to point B.
+description_long_reversed: >-
+  Recall that Air is the element of Swords, a useful but dangerous weapon. There is a time to arm and armor oneself,
+  even in the open and flowing realm of emotions, but a reversed Knight of Cups is a stern warning to the querent to
+  take great care in decerning the difference between what it means to fortify oneself, and what it means to become
+  stubborn, stagnant, deflecting, and defensive to resist emotional growth.
+---
+name: Queen of Cups
+suit: CUPS
+number: 13
+image_filename: cups-13.jpg
+description_upright: The Queen is full of compassion and sensitivity, easily perceiving the needs of others.
+description_reversed: Co-dependency and emotional exhaustion. Too much is being given and too little received.
+element: Water in Water
+description_long: >-
+  Beautiful and gentle, the Queen of Cups sits on a throne of shells and sea-nymphs at the edge of a placid sea, a
+  chalice with handles in the form of cherubim in their hand. Their chalice is unlike any in the entire suit of Cups. It
+  is closed, symbolizing both their deep subconscious as well as their wise discretion in how they share their emotions,
+  and who with. The bowl of the chalice sits between two cherubim-shaped handles, signifying that although one's
+  subconscious is a dark place, it is also a holy place. It is life and strength, not knowledge and words that one finds
+  there. The Queen's feet do not touch the water, showing that they have learned how to relate positively to their
+  emotions without being overwhelmed by them.
+description_long_reversed: >-
+  Take the reversed Queen of Cups as a call to examine your emotional relationships. Is there a healthy flow between you
+  and the other? In absence of a balanced sharing of two cups' contents, one will eventually run dry. The Queen is wise
+  to this, and thus not quick to anger when they find such an imbalance in a relationship. Be the embodiment of Water:
+  with grace, intuition, and perception, seek out what must be done to restore the balance, even if the culprit is you.
+---
+name: King of Cups
+suit: CUPS
+number: 14
+image_filename: cups-14.jpg
+description_upright: >-
+  Diplomacy, emotional availability, and empathy. The King knows that true power comes when one is emotionally engaged
+  with the self and others.
+description_reversed: Self-involvement, myopia, and paranoia. Emotions are not always facts.
+element: Fire in Water
+description_long: >-
+  The King sits calmly and securely enthroned amid a turbulent sea. In one hand they hold a chalice, symbolizing their
+  emotions and creativity, and in the other a scepter, symbolizing their mastery of themselves. A ship sails on steadily
+  behind them in spite of the waves. Though a hurricane may blow, the King has learned how to stay steady in the face of
+  the storm. Kings are the motivators of their suits, the charismatic leaders who draw up plans and strategize. The King
+  of Cups urges us to see our emotions and subconscious minds as sources of strength and assets in the quest for
+  spiritual enlightenment.
+description_long_reversed: >-
+  At least for this Magi, tarot is a means toward learning how to interpret and trust emotions, and how to do the work
+  of living an emotionally healthy life. And while the upright King of Cups invites one to tap into their emotions as a
+  source of stength, in the reverse this card reminds us of a hard truth: emotions are not facts. Emotion alone is not
+  enough to safely navigate life. Emotions are not effortlessly magic. Healthy emotions require flow between the self
+  and the outside world, lest the waters stagnante and fester.
+---
+name: Ace of Swords
+suit: SWORDS
+number: 1
+image_filename: swords-01.jpg
+description_upright: The great Sword slices the air, cutting a path to mental clarity.
+description_reversed: Dark clouds gather in the mind, muddling thought and tangling the tongue.
+element: Air
+description_long: >-
+  A hand holds a crowned, double-edged sword in the air beneath a mountainous landscape. The Aces are the primordial
+  seeds of their suits, and being both the suit of air and the mind, the Ace of Swords is all about ideas. Their
+  infinite potential, their power to shape the world, their limitless possibilities.
+description_long_reversed: >-
+  
+---
+name: Two of Swords
+suit: SWORDS
+number: 2
+image_filename: swords-02.jpg
+description_upright: Two swords, two paths. Make your choice, or perish.
+description_reversed: >-
+  If you sit on the path without making a decision, you will be cut down. Avoidance is not an option.
+element: Air
+description_long: >-
+  A person sits with the sea at their back, blindfolded, holding two swords pointing in opposite directions. Though they
+  are blindfolded, their calm and centered demeanor suggests they have voluntarily placed the blindfold upon themselves
+  in order to more deeply meditate upon the choice before them, symbolized by the swords. The sea and the moon in the
+  background represent the unconscious mind, the deeper realm that must be called upon to make important decisions. Twos
+  are power conduits of their suits—the initial focusing of the raw power of the Ace. Here the immaterial intellect is
+  called upon to effect change in the material world.
+description_long_reversed: >-
+  
+---
+name: Three of Swords
+suit: SWORDS
+number: 3
+image_filename: swords-03.jpg
+description_upright: Pain and sorrow pierce the heart, an unavoidable human experience.
+description_reversed: Be soft and gentle, not hard and sharp, with yourself.
+element: Air
+description_long: >-
+  Suspended in the midst of a gloomy, rainy sky, a heart is pierced by three crossed swords. Threes represent the
+  potential energy of their suits becoming crystalized in material form, and unfortunately the old adage holds true for
+  the Three of Swords: “he who increases wisdom increases sorrow.” The cerebral Swords, like the emotional Cups, are
+  easily disillusioned but lack the Cups' propensity for hope. They cannot easily un-see or un-know.
+description_long_reversed: >-
+  
+---
+name: Four of Swords
+suit: SWORDS
+number: 4
+image_filename: swords-04.jpg
+description_upright: Rest the mind in meditation and contemplation. Recuperation and withdrawal are needed.
+description_reversed: Exhaustion, burn-out, stagnation. Overthinking only leads to futility.
+element: Air
+description_long: >-
+  A knight in full armor lies in meditation upon a tomb, their hands in a position of prayer. One sword lies beneath
+  them and three point downward above them, bespeaking the knight's mental focus. Fours are the stabilization of their
+  elements, and the Four of Swords calls the mind to rest and contemplation. Neither overthinking nor completely asleep,
+  the intellect is at peace.
+description_long_reversed: >-
+  
+---
+name: Five of Swords
+suit: SWORDS
+number: 5
+image_filename: swords-05.jpg
+description_upright: The battle is won, but at what cost?
+description_reversed: The pen is not the only thing mightier than the sword. Forge alternative solutions to conflict.
+element: Air
+description_long: >-
+  Two defeated and humiliated figures move into the distance while their smug conqueror collects their discarded swords.
+  Fives are the inevitable destabilization of their suits, and uncontrolled air blows fiercely in the realm Five. With
+  no boundaries or restraint, the airy intellect turns itself into a weapon, desiring only to get the better of others,
+  to come out on top, to win the debate at all costs and emerge superior.
+description_long_reversed: >-
+  
+---
+name: Six of Swords
+suit: SWORDS
+number: 6
+image_filename: swords-06.jpg
+description_upright: There is no going back. Face the horizon bravely and accept what is.
+description_reversed: Discomfort is not always your enemy. Lean into it for unexpected rewards.
+element: Air
+description_long: >-
+  A boatman ferries two somber passengers across a river, six swords adorning the prow of the boat before them. Ahead
+  the water is placid, but behind them the current is turbulent. This suggests the two passengers are leaving an unhappy
+  situation for a new future—but the swords at the prow speak to the possibility that it still weighs heavily on their
+  minds. Sixes generally depict the suits at their best, and for the more serious Swords that doesn't mean the utopian
+  happiness of the Cups or free-flowing abundance of the Pentacles, but sobriety of mind and clarity of thought. The air
+  of the Swords pushes one on from what no longer serves into the possibility of the future.
+description_long_reversed: >-
+  
+---
+name: Seven of Swords
+suit: SWORDS
+number: 7
+image_filename: swords-07.jpg
+description_upright: The thief creeps about, their mind full of nothing but treachery and betrayal.
+description_reversed: You may tell yourself that everything is well and good—but is it?
+element: Air
+description_long: >-
+  Unnoticed,  thief has stolen into a military camp and made off with five of their swords. The thief looks behind at
+  two swords they have dropped, seeming proud of their ability to sneak in and out without raising the alarm. But they
+  must be careful—the way they are carrying those swords, they risk being cut to ribbons. Sevens are the realm of
+  instinct, emotion, and the unconscious mind. They can be both creative and chaotic. In the realm of Seven, air
+  manifests as cunning and manipulation, seeking its own advantage and how it can use its intelligence to its own
+  benefit. Care must be taken, however, for the element not to fall victim to its own cleverness and become caught up in
+  its own convoluted plots.
+description_long_reversed: >-
+  
+---
+name: Eight of Swords
+suit: SWORDS
+number: 8
+image_filename: swords-08.jpg
+description_upright: A ring of Swords surrounds, imprisoning the mind in fear and uncertainty.
+description_reversed: The mind must be refreshed time to time by new and unfamiliar ideas.
+element: Air
+description_long: >-
+  A figure stands in a ring of eight swords, blindfolded and bound round the torso, but not tightly. The water at their
+  feet suggests that their subconscious mind might know a solution to the predicament their eyes cannot see. This is
+  ultimately a scene of self-limitation—this person could easily shake off their loosely-tied bonds, remove the
+  blindfold, and step out of the open ring of swords without a scratch. Eights are the intellectual and logical
+  manifestations of their suits, and with air this becomes a dangerous excess of reason. Overthinking and overanalyzing
+  leaves the Swords trapped in a prison of their own making.
+description_long_reversed: >-
+  
+---
+name: Nine of Swords
+suit: SWORDS
+number: 9
+image_filename: swords-09.jpg
+description_upright: Anxiety, fear, and worry turn the mind into a living nightmare. It is time to wake up.
+description_reversed: The sun is quickly rising upon fear and delusion—the nightmare is almost over.
+element: Air
+description_long: >-
+  In a pitch-black room, a figure sits up in bed, their head in their hands, as though woken from a nightmare they
+  cannot shake. Nine swords brood over their anguish. Nine is the number of wisdom and integration—for the Swords and
+  the element of air, this wisdom is often an awakening from mental confusion and even intoxication. The piercing
+  insight of the Swords is like a cold shower or cup of black coffee after a night of debauchery—unpleasant maybe, but
+  it brings one to one's senses.
+description_long_reversed: >-
+  
+---
+name: Ten of Swords
+suit: SWORDS
+number: 10
+image_filename: swords-10.jpg
+description_upright: The Swords have reaped the consequences of their violence—they cannot give life, only destroy it.
+description_reversed: Redemption, recovery, & regeneration. Destruction is avoidable.
+element: Air
+description_long: >-
+  The scene of a brutal murder: a victim with not one but ten swords driven into their back, pinning them to the shore
+  of the sea beneath a dark and brooding sky. In the distance, the sun rises. Tens represent completion and the ultimate
+  manifestation of the elements of their suits, with all the lessons they've learned along the way. Unfortunately the
+  ultimate lesson of the Swords is: “live by the sword, die by the sword.” Without the emotional depth of the Cups, the
+  willpower of the Wands, or the stability of the Pentacles, the airy Swords can only destroy. Without the heart to
+  guide it, the mind conceives and perpetrates monstrous things.
+description_long_reversed: >-
+  
+---
+name: Page of Swords
+suit: SWORDS
+number: 11
+image_filename: swords-11.jpg
+description_upright: >-
+  The Page expresses themselves with confidence and intelligence. They are curious and thirsty for knowledge.
+description_reversed: All talk and no action. Haphazardness, miscommunication.
+element: Earth in Air
+description_long: >-
+  Full of enthusiasm, a young page stands atop a windy mountain swinging a sword. Pages represent communication and new
+  ideas, and no one is bursting with either of these more than the Page of Swords. They are full of new ideas, new
+  perspectives, keenly curious, and want to share their knowledge with the world. They are masters not only of
+  conceiving new ideas, but also communicating them clearly to others. Being the element of earth, the Page of Swords
+  brings common sense and relatability to the often lofty and elitist air.
+description_long_reversed: >-
+  
+---
+name: Knight of Swords
+suit: SWORDS
+number: 12
+image_filename: swords-12.jpg
+description_upright: >-
+  Rushing with the wind, the ambitious Knight is quick-thinking and driven to see their ideas become reality.
+description_reversed: Restlessness, hyperactivity, and lack of focus befuddle the thoughts.
+element: Air in Air
+description_long: >-
+  A fierce Knight clad in armor rides a leaping white horse, sword drawn, cape and mantle flying in the wild winds that
+  blow around them. The landscape is bare but for a handful of trees in the process of having their leaves torn off in
+  the gale. Knights represent movement and the coming and going of circumstances, and this Knight is all about the
+  going. Being Air of Air, they are all swiftness and impatience. The Knight of Swords wants his fertile ideas to be
+  manifested **now** and will not accept delays.
+description_long_reversed: >-
+  
+---
+name: Queen of Swords
+suit: SWORDS
+number: 13
+image_filename: swords-13.jpg
+description_upright: The fierce and independent Queen is forthright to the point of bluntness. Their clear eyes see all.
+description_reversed: The heart and the head must be balanced; neither can function properly without the other.
+element: Water in Air
+description_long: >-
+  Enthroned among the clouds, a stern Queen sits with sword raised. Queens are agents of growth and centers of emotion
+  in their suits, and the Queen of Swords' dire message is this: grow or die. She demands that the mind be open, that
+  beliefs are investigated and interrogated, that biases and prejudices are stripped away. Though this can seem harsh,
+  it is for our own good, and will lead to the head and the heart being in greater harmony.
+description_long_reversed: >-
+  
+---
+name: King of Swords
+suit: SWORDS
+number: 14
+image_filename: swords-14.jpg
+description_upright: Authority and truth reign. Be honest with yourself and others.
+description_reversed: >-
+  Those who use their intelligence to manipulate others may find themselves caught in their own snares.
+element: Fire in Air
+description_long: >-
+  A solemn-faced King sits upon their throne in high, rocky place, his sword raised—not as a threat, but as a reminder
+  of their power. Kings are the motivators of their suits, the charismatic leaders who draw up plans and strategize,
+  and the King of Swords is a natural strategist. They are not a warrior but they excel in maneuvering, planning, and
+  attaining their goal through working smarter, not harder.
+description_long_reversed: >-
+  
