@@ -129,7 +129,7 @@ class Admin(commands.Cog):
         )
         embed.add_field(
             name='Buy stickers and more *a la carte*!',
-            value='https://crimsobot.weebly.com/',
+            value='https://crimsobot-store.square.site/',
             inline=False
         )
 
