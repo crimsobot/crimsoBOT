@@ -1,5 +1,5 @@
-# This file previously had 4-space indentation, but was changed to 2-space for consistency and because of the fact
-# that the YAML spec recommends 2-space identation.
+# This file previously had 4-space indentation, but was changed to 2-space for consistency and because of the fact that
+# the YAML spec recommends 2-space indentation.
 ---
 name: The Fool
 suit: MAJOR_ARCANA
@@ -105,8 +105,8 @@ description_long: >-
   sit between the two pillars of Law and Liberty with the keys to Heaven beneath their feet. It is their duty to be the
   Teacher of Wisdom, to uphold tradition, and to mediate between humanity and God.
 description_long_reversed: >-
-  Note the pyramidal (i.e., heirarchical) structure of the people in the card: two friars at the base, the Hierophant at
-  the pinnacle. A reverseal signifies that an appeal to a central authority should yield to an appeal to the masses. In
+  Note the pyramidal (i.e., hierarchical) structure of the people in the card: two friars at the base, the Hierophant at
+  the pinnacle. A reversal signifies that an appeal to a central authority should yield to an appeal to the masses. In
   this appeal to society at large, however, you could risk overextending yourself by giving too much of yourself, or
   attemtpting to please too many disparate parties at once.
 ---
@@ -133,7 +133,7 @@ suit: MAJOR_ARCANA
 number: 7
 image_filename: chariot.jpg
 description_upright: A prince traverses the bridge between two. Unity, aid, victory.
-description_reversed: Discord, litigation, quabbles, communication breakdown.
+description_reversed: Discord, litigation, squabbles, communication breakdown.
 element: Water
 planet: MOON
 description_long: >-
@@ -181,7 +181,7 @@ description_long: >-
 description_long_reversed: >-
   When presented this card in the reverse, examine whether the isolation in question is a fruitful (or willful) one.
   Many cards with a potentially negative meaning can be an invitation to "right the ship" and examine your innerspace in
-  a new light. The Hermit is a prime opportunity to do this. Examine the isolation from a tempered, wisened perspective.
+  a new light. The Hermit is a prime opportunity to do this. Examine the isolation from a tempered, wizened perspective.
 ---
 name: Wheel of Fortune
 suit: MAJOR_ARCANA
@@ -209,7 +209,7 @@ suit: MAJOR_ARCANA
 number: 11
 image_filename: justice.jpg
 description_upright: >-
-  The truth does not care about our needs or wants. It does not care about our idelogies or religions. It will lie in
+  The truth does not care about our needs or wants. It does not care about our ideologies or religions. It will lie in
   wait for all time.
 description_reversed: You know what you've done. How long can you hide it?
 element: Air
@@ -221,7 +221,7 @@ description_long: >-
   but fair.
 description_long_reversed: >-
   Note the parallels between Strength and Justice; those parallels hold in the reverse as well. Reversed justice usually
-  does not denote a complete lack of justice, but rather its misapplication, forexample excessive severity or bias.
+  does not denote a complete lack of justice, but rather its misapplication, for example excessive severity or bias.
   Meditate on whether you are the perpetrator, the victim, or a witness to this.
 ---
 name: The Hanged Man
@@ -297,7 +297,7 @@ description_long: >-
   afraid of within ourselves, and must confront in order to achieve peace.
 description_long_reversed: >-
   Much like Death, the Devil is another unjustly feared card in the Tarot deck. Your soul is not damned by its presence.
-  A reversed Devil, however, does serve as a dire warning. The struggles it indicates—axniety, pettiness, ignornace, or
+  A reversed Devil, however, does serve as a dire warning. The struggles it indicates—anxiety, pettiness, ignorance, or
   even addiction—are all notoriously self-replicating, creating a vicious cycle from which it becomes more difficult to
   escape with every passing hour.
 ---
@@ -334,7 +334,7 @@ description_long: >-
   sensibilities and their intuition. Their nakedness is a token of their spiritual vulnerability and openness, the stars
   in the sky behind them symbols of spiritual awakening and hope.
 description_long_reversed: >-
-  While the reverse of the Star—an atrophied sense of wonder, a loss of purpose, intellectual stagntation—do not be
+  While the reverse of the Star—an atrophied sense of wonder, a loss of purpose, intellectual stagnation—do not be
   dismayed. No one card or one reading is a sentence, but rather a revelation. Reflect on the disconnect or the cause of
   the stagnation and open yourself to new opportunities to rediscover wonder.
 ---
@@ -391,7 +391,7 @@ description_long: >-
 description_long_reversed: >-
   Much of the Judeo-Christian symbolism does not carry the weight with most querents today as it once did, but the
   messages these symbols convey in the Tarot are still applicable. Though the converse of Judgment may imply damnation,
-  that your soul was not ready for salvation when the trumpt sounded, once agian be cautioned not to interpret any one
+  that your soul was not ready for salvation when the trumpet sounded, once again be cautioned not to interpret any one
   card so ominously. Perhaps you have missed the call to renewal this time, or perhaps the call is coming soon and you
   need to focus now on your inner work to ensure your pneuma is prepared for the new world to come.
 ---
@@ -428,7 +428,7 @@ description_long: >-
   be harnessed if it is to be of any use—uncontrolled it will only be a short-lived flash in the pan.
 description_long_reversed: >-
   Whereas in the upright the Ace is an invitation to seize the powers of will and desire, the reverse is a warning of
-  misfocused energies and unforseen delays. Reflect on what must be done to revive the new growth.
+  misfocused energies and unforeseen delays. Reflect on what must be done to revive the new growth.
 ---
 name: Two of Wands
 suit: WANDS
@@ -667,12 +667,12 @@ element: Earth
 description_long: >-
   Amid a lush landscape, a hand appears from the clouds to offer a huge gold coin. The entire scene speaks of abundance:
   the garden, the grass, the flowers, and the riches freely offered. Yet the mountains in the distance remind that hard
-  work and determination is required to bring such abundance to fruition. The Aces are the primordial seeds of their
+  work and determination are required to bring such abundance to fruition. The Aces are the primordial seeds of their
   suits, and being of earth, the Pentacles are all about germination. The Ace of Pentacles is all about opportunity:
   economic, social, practical. It is the seed from which a great harvest will grow—but it needs nurturing.
 description_long_reversed: >-
   In the reverse, the Ace of Pentacles could be viewed as your (the querent's) hand holding the coin to your chest,
-  hiding it. Hoarding a wealth—be it a possession, a talent, anything of wordly value—is not sustainable in the long
+  hiding it. Hoarding a wealth—be it a possession, a talent, anything of worldly value—is not sustainable in the long
   term, but it may be wise to hold it close for the time being.
 ---
 name: Two of Pentacles
@@ -708,7 +708,7 @@ description_long: >-
   activity must be done for the element of earth bear fruit: rain, changes in soil chemistry, photosynthesis,
   pollination, and more. Hard-working Pentacles are very happy in the realm of Three.
 description_long_reversed: >-
-  A reversed card offers a new persective intended to challenge your assumptions. You see this temple wall now as upside
+  A reversed card offers a new perspective intended to challenge your assumptions. You see this temple wall now as upside
   down; but does that mean it is tumbling down? Do not be so quick to jump to dire conclusions. Perhaps you are working
   from the top down instead of building a solid foundation first. Always key in tarot but doubly key for reversals is
   introspect.
@@ -730,7 +730,7 @@ description_long_reversed: >-
   Some situations do call for conserving resources, for example saving money. But the Pentacles (sometimes even called
   Coins) are not necessarily only about money, but also can allude to any material resource. Perhaps in this Magus'
   opinion, it is typically more fruitful than not to share one's resources when one has the ability to do so. This is
-  ultimately your own decision, of course, but take the reversed Four as an invitation to look toward thte city and
+  ultimately your own decision, of course, but take the reversed Four as an invitation to look toward the city and
   contemplate what or how you may share what you have with others.
 ---
 name: Five of Pentacles
@@ -860,7 +860,7 @@ description_long: >-
   the point of being blunt and unimaginative. (Careful of that!) Whatever message they give will be clear, and to the
   point.
 description_long_reversed: >-
-  Oftentimes in our endeavors, even in spritual or creative ones, there comes a time to just "get it done." The Page is
+  Oftentimes in our endeavors, even in spiritual or creative ones, there comes a time to just "get it done." The Page is
   the apprentice of the Knight, learning of the world through communication and research. Theirs is not the realm of new
   ideas; it is of learning how to bring ideas into the world. This requires labor and focus. A reversed Page of
   Pentacles is a reminder of this.
@@ -880,8 +880,8 @@ description_long: >-
 description_long_reversed: >-
   The Knight is the intersection of learned wisdom and action, with great range to bring forth the energy of their
   element into the world. Where the Air of the Knight may represent ideas and cunning, the Earth of this suit represents
-  logistics, the "how" of it all. There coems a time in planning to trust your skills and your knowledge and to begin
-  the work; do not get lost in over-meticulous planning, or even worse, idel fretting.
+  logistics, the "how" of it all. There comes a time in planning to trust your skills and your knowledge and to begin
+  the work; do not get lost in over-meticulous planning, or even worse, idle fretting.
 ---
 name: Queen of Pentacles
 suit: PENTACLES
@@ -1030,7 +1030,7 @@ description_long_reversed: >-
   that, though they once brought you joy, no longer deserve space in your garden. But there may be a deeper undercurrent
   to this card. While upright this card may conjure in in the querent an image of euphoria. But euphoria is a facade;
   the root of the word "euphoria" is "a feeling of well-being in a sick person caused by drugs." Euphoria is an
-  impermenent escape, a separate feeling entirely from happiness and peace of mind depsite the superficial similarities
+  impermenent escape, a separate feeling entirely from happiness and peace of mind despite the superficial similarities
   between the two.
 ---
 name: Seven of Cups
@@ -1087,7 +1087,7 @@ description_long_reversed: >-
   There is a healthy stasis that comes with wisdom. But there is a difference between stasis and stagnation. Even still
   waters require flow to remain clear and not become stale. Look inside your nine cups and ponder: do I have what I
   want, or have what I need? Wants and needs are not mutually exclusive, of course, but neither are they the same. Take
-  care not to slip into the unflowing pool of hedonism; that water will fester and leave you thirsty.
+  care not to slip into the un-flowing pool of hedonism; that water will fester and leave you thirsty.
 ---
 name: Ten of Cups
 suit: CUPS
@@ -1130,7 +1130,7 @@ description_long_reversed: >-
   Knight through the handling of the Knight's worldly affairs, such as communication and research. The Page is young but
   learning. In the reverse, a Page might suggest immaturity, arrested development, or a stubborn closed-mindedness. In
   the suit of Cups, the reversed Page warns of not devoting the proper energy of learning how to practice emotional
-  well-being in the real world. Learning to live an emotionally heatlhy life requires risk, namely vulnerability.
+  well-being in the real world. Learning to live an emotionally healthy life requires risk, namely vulnerability.
 ---
 name: Knight of Cups
 suit: CUPS
@@ -1194,7 +1194,7 @@ description_long_reversed: >-
   of living an emotionally healthy life. And while the upright King of Cups invites one to tap into their emotions as a
   source of stength, in the reverse this card reminds us of a hard truth: emotions are not facts. Emotion alone is not
   enough to safely navigate life. Emotions are not effortlessly magic. Healthy emotions require flow between the self
-  and the outside world, lest the waters stagnante and fester.
+  and the outside world, lest the waters stagnate and fester.
 ---
 name: Ace of Swords
 suit: SWORDS
@@ -1208,7 +1208,9 @@ description_long: >-
   seeds of their suits, and being both the suit of air and the mind, the Ace of Swords is all about ideas. Their
   infinite potential, their power to shape the world, their limitless possibilities.
 description_long_reversed: >-
-  
+  Upright, the Air of Swords cuts through the fog covering one's mind, clearing it. Reversed, the Air is the fog,
+  covering the mind, obstructing thought, and causing frustration because you cannot see the way ahead. Air is a
+  potent element, but it must be handled with finesse. Apply a lighter touch; avoid overthinking or straining.
 ---
 name: Two of Swords
 suit: SWORDS
@@ -1226,7 +1228,9 @@ description_long: >-
   are power conduits of their suits—the initial focusing of the raw power of the Ace. Here the immaterial intellect is
   called upon to effect change in the material world.
 description_long_reversed: >-
-  
+  Recall the imagery of The Moon card: a liminal space, a perilous, moonlit path. One of the takeaways from The Moon
+  deals with indecision or fear of the unknown. With the Two of Swords reversed, the moon is nearest you now, a sign
+  that you should face the root cuases of your anxiety or uncertainty instead of being frozen by them.
 ---
 name: Three of Swords
 suit: SWORDS
@@ -1390,12 +1394,10 @@ description_long: >-
   going. Being Air of Air, they are all swiftness and impatience. The Knight of Swords wants his fertile ideas to be
   manifested **now** and will not accept delays.
 description_long_reversed: >-
-  The rushing winds embodied by the Knight have betrayed the Swords' element of Air. The wind never allows the
-  intellect the element of Air embodies to consider its situation and analyze its surroundings. The swords become
-  ineffective because they are being used to deal many imprecise blows, when a single focused cut would be vastly
-  more effective. Slow down, take a deep breath, and reflect on your situation; not everything needs to happen 
-  immediately.
-  
+  The rushing winds embodied by the Knight have betrayed the Swords' element of Air. This wind never allows the
+  intellect to consider its situation and analyze its surroundings. The swords become ineffective because they are being
+  used to deal many imprecise blows, when a single, focused cut would be vastly more effective. Slow down, take a deep
+  breath, and reflect on your situation; not everything needs to happen immediately.
 ---
 name: Queen of Swords
 suit: SWORDS
@@ -1426,4 +1428,8 @@ description_long: >-
   and the King of Swords is a natural strategist. They are not a warrior but they excel in maneuvering, planning, and
   attaining their goal through working smarter, not harder.
 description_long_reversed: >-
-  
+  Intellect, like air, is most hospitable when handled with care. When it is handled with force it can bludgeon and cut,
+  like a deathly wind. Such is the suit of Swords and its realm of intellect, and perhaps there is no better symbol of
+  this suit than its King (even though it is the Knight whose element is Air as well). Fire and Air together are
+  volatile; the intellect used too passionately, especially when used against others, is a fire that will surely engulf
+  the person who lights it. Save your schemes.

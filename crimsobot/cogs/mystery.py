@@ -116,7 +116,7 @@ class Mystery(commands.Cog):
         await self.ppf.can_run(ctx)
         await self.ppf(ctx)
 
-    @tarot.command(name='one', brief='Get a single reading.')
+    @tarot.command(name='one', aliases=['1'], brief='Get a single reading.')
     @commands.cooldown(3, 300, commands.BucketType.user)
     async def one(self, ctx: commands.Context, spread: str = 'one') -> None:
         """This single-card reading is your answer to any question you may have."""
@@ -133,14 +133,11 @@ class Mystery(commands.Cog):
         )
 
         card_tuple = descriptions[0]
-        embed.add_field(
-            name=card_tuple[0],
-            value=f'**{card_tuple[1]}**\n{card_tuple[2]}',
-        )
+        embed.description = f'**{card_tuple[1]}**\n{card_tuple[2]}'
 
         await ctx.send(file=f, embed=embed)
 
-    @tarot.command(name='ppf', brief='Past, present, and future.')
+    @tarot.command(name='ppf', aliases=['3', 'three'], brief='Past, present, and future.')
     @commands.cooldown(3, 300, commands.BucketType.user)
     async def ppf(self, ctx: commands.Context, spread: str = 'ppf') -> None:
         """This three-card spread is read from left to right to explore your past, present, and future."""
@@ -164,7 +161,7 @@ class Mystery(commands.Cog):
 
         await ctx.send(file=f, embed=embed)
 
-    @tarot.command(name='five', brief='Look deeper into your Reason and Potential.')
+    @tarot.command(name='cross', aliases=['5', 'five'], brief='Look deeper into your Reason and Potential.')
     @commands.cooldown(3, 300, commands.BucketType.user)
     async def five(self, ctx: commands.Context, spread: str = 'five') -> None:
         """This spread delves deeper into the present, exploring your Reason for seeking guidance.
@@ -208,9 +205,8 @@ class Mystery(commands.Cog):
         f = discord.File(fp, filename)
 
         embed = c.crimbed(
-            title=f'**{card.name.upper()}**',
+            title=f'**{card.name.upper()}** · {card.element}',
             descr='\n\n'.join([
-                f'**Element:** {card.element}',
                 f'**Upright:** *{card.description_upright}*',
                 card.description_long,
                 f'**Reversed:** *{card.description_reversed}*',
