@@ -17,7 +17,7 @@ class Utilities(commands.Cog):
     def __init__(self, bot: CrimsoBOT):
         self.bot = bot
 
-    @commands.command(brief='Create a poll!')
+    @commands.command(aliases=['vote'], brief='Create a poll!')
     @commands.cooldown(1, 20, commands.BucketType.guild)
     async def poll(self, ctx: commands.Context, *, poll_input: str) -> None:
         """Make a poll! Use the form of some question;option 1;option 2;etc.
@@ -78,7 +78,7 @@ class Utilities(commands.Cog):
                 await ctx.send('**Someone added emojis!** Wait for me to add them, then choose. `Poll crashed.`')
                 return
 
-    @commands.command(aliases=['tally'], brief='Tally results of a poll!')
+    @commands.command(aliases=['tally', 'votetally'], brief='Tally results of a poll!')
     @commands.cooldown(1, 20, commands.BucketType.guild)
     async def polltally(self, ctx: commands.Context, poll_id: Optional[str] = None) -> None:
         """Tally the results of the most recent poll in a channel, or of a previous poll if you give the poll's ID.
