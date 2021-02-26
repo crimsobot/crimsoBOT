@@ -211,8 +211,9 @@ class CrimsoBOT(commands.Bot):
         # Get context from message for command invocation and text generation
         ctx = await self.get_context(message, cls=CrimsoContext)
 
-        # process commands
-        await self.invoke(ctx)
+        # Only invoke commands if we can send messages.
+        if ctx.channel.permissions_for(ctx.bot.user).send_messages:
+            await self.invoke(ctx)
 
         # learn from crimso
         if message.author.id in LEARNER_USER_IDS and message.channel.id in LEARNER_CHANNEL_IDS:
