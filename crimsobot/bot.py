@@ -211,8 +211,9 @@ class CrimsoBOT(commands.Bot):
         # Get context from message for command invocation and text generation
         ctx = await self.get_context(message, cls=CrimsoContext)
 
-        # Only invoke commands if we can send messages.
-        if ctx.channel.permissions_for(ctx.bot.user).send_messages:
+        # Only invoke commands if we can send messages. We can always send messages in DMs.
+        can_invoke = ctx.guild.me.permissions_in(ctx.channel).send_messages if ctx.guild else True
+        if can_invoke:
             await self.invoke(ctx)
 
         # learn from crimso
