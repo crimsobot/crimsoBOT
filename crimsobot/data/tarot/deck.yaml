@@ -143,9 +143,9 @@ description_long: >-
   being.
 description_long_reversed: >-
   The harmony and balance of The Chariot in reverse is thrust into disharmony and imbalance. The prince, instead of
-  presiding over the passion and intellect, are now instead ruled by them. This may often have deleterious effects—
-  tending toward impulsive or rash decisions, for example—but sometimes this upheaval of order can be refreshing and
-  even necessary.
+  presiding over the passion and intellect, are now instead ruled by them. This may often have deleterious
+  effects—tending toward impulsive or rash decisions, for example—but sometimes this upheaval of order can be refreshing
+  and even necessary.
 ---
 name: Strength
 suit: MAJOR_ARCANA
@@ -655,7 +655,7 @@ description_long_reversed: >-
   A King could be interpreted as, if not completion, then at least one who has reached a pinnacle and now sits in a
   position of power. A leader of experience and charisma, a King's passions become the passions of others. This power,
   like all power, is subject to be misused and abused, both knowingly and unknowingly. The King of Wands in reverse
-  looks toward you, the querent, to ask if the power of passion is being wielded wisely.
+  looks toward you, the Querent, to ask if the power of passion is being wielded wisely.
 ---
 name: Ace of Pentacles
 suit: PENTACLES
@@ -671,7 +671,7 @@ description_long: >-
   suits, and being of earth, the Pentacles are all about germination. The Ace of Pentacles is all about opportunity:
   economic, social, practical. It is the seed from which a great harvest will grow—but it needs nurturing.
 description_long_reversed: >-
-  In the reverse, the Ace of Pentacles could be viewed as your (the querent's) hand holding the coin to your chest,
+  In the reverse, the Ace of Pentacles could be viewed as your (the Querent's) hand holding the coin to your chest,
   hiding it. Hoarding a wealth—be it a possession, a talent, anything of worldly value—is not sustainable in the long
   term, but it may be wise to hold it close for the time being.
 ---
@@ -896,7 +896,7 @@ description_long: >-
   often lacks. The Queen of Pentacles knows that material stability is just a means to an end—the foundation of the
   hierarchy of needs that allows deeper desires like love, belonging, and self actualization to be realized.
 description_long_reversed: >-
-  This card in reverse invites the querent to examine what they may be taking for granted. We sometimes find ourselves
+  This card in reverse invites the Querent to examine what they may be taking for granted. We sometimes find ourselves
   devoting most of our attention to higher needs, such as love or self-actualization, and fail to examine whether our
   foundations are strong enough to allow us to pursue these higher goals. Examine your domestic life—home, work,
   perhaps also relationships—under this lens. Are these realms of your life conducive to your higher pursuits?
@@ -955,7 +955,7 @@ description_long: >-
   conduits of their suits—the initial focusing of the raw power of the Ace. In the Ace of Cups, formless, flowing water
   is given boundaries and direction—things it desperately needs to avoid becoming a flood.
 description_long_reversed: >-
-  A reversed card many times asks the querent to turn a card's meaning and energy back unto themselves. This holds true
+  A reversed card many times asks the Querent to turn a card's meaning and energy back unto themselves. This holds true
   with the Two of Cups. The common saying, "You cannot love another unless you love yourself," is heavy-handed in its
   absoluteness. Love is a process that requires labor, and doing the work of loving another requires one to also do the
   work of loving themselves. This card in the reverse may be a reminder that you are falling behind in that work.
@@ -1028,7 +1028,7 @@ description_long: >-
 description_long_reversed: >-
   Quite often the reversed Six of Cups can be a warning against nostalgia, or perhaps an invitation to let go of things
   that, though they once brought you joy, no longer deserve space in your garden. But there may be a deeper undercurrent
-  to this card. While upright this card may conjure in in the querent an image of euphoria. But euphoria is a facade;
+  to this card. While upright this card may conjure in in the Querent an image of euphoria. But euphoria is a facade;
   the root of the word "euphoria" is "a feeling of well-being in a sick person caused by drugs." Euphoria is an
   impermenent escape, a separate feeling entirely from happiness and peace of mind despite the superficial similarities
   between the two.
@@ -1148,7 +1148,7 @@ description_long: >-
   trip from point A to point B.
 description_long_reversed: >-
   Recall that Air is the element of Swords, a useful but dangerous weapon. There is a time to arm and armor oneself,
-  even in the open and flowing realm of emotions, but a reversed Knight of Cups is a stern warning to the querent to
+  even in the open and flowing realm of emotions, but a reversed Knight of Cups is a stern warning to the Querent to
   take great care in decerning the difference between what it means to fortify oneself, and what it means to become
   stubborn, stagnant, deflecting, and defensive to resist emotional growth.
 ---
@@ -1443,7 +1443,12 @@ description_long: >-
   beliefs are investigated and interrogated, that biases and prejudices are stripped away. Though this can seem harsh,
   it is for our own good, and will lead to the head and the heart being in greater harmony.
 description_long_reversed: >-
-  
+  The head-heart dichotomy is not a universal truth. Our thoughts and our emotions are not truly separate. But for
+  better or for worse, this simplification is what we are collectively taught, and despite its flaws it remains a useful
+  guide to understanding our inner world, especially in this case. A reversed Queen of Swords may signal to the Querent
+  that they are thinking too much with the heart and not enough with the head, which can lead to toxic or codependent
+  relationships or rash decisions with severe consequences. Resdicover the balance between your "want-nows" and
+  "want-laters," between your impulses and your long-term goals.
 ---
 name: King of Swords
 suit: SWORDS
