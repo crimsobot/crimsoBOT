@@ -1245,7 +1245,9 @@ description_long: >-
   the Three of Swords: “he who increases wisdom increases sorrow.” The cerebral Swords, like the emotional Cups, are
   easily disillusioned but lack the Cups' propensity for hope. They cannot easily un-see or un-know.
 description_long_reversed: >-
-  
+  In the reverse, the handles of the swords are toward you. The intellect has the potential to overanalyze the self, and
+  this more often than not leads to harming one's heart. Be careful where you wield the great potential that lies within
+  the honing of the intellect; hyperfocus cares not what it cuts.
 ---
 name: Four of Swords
 suit: SWORDS
@@ -1260,7 +1262,10 @@ description_long: >-
   elements, and the Four of Swords calls the mind to rest and contemplation. Neither overthinking nor completely asleep,
   the intellect is at peace.
 description_long_reversed: >-
-  
+  Just as they lie in the reversed Three of Swords, here three swords lie with their handle toward you, the Querent.
+  Where in the reversed Three it is implied that the Querent is not allowing themselves emotional space and safety, in
+  the reversed Four the implication is that the Querent is not allowing themselves rest. Make the time for rest, to
+  allow yourself to exist without constraint or purpose. Don't wait until you're in the tomb.  
 ---
 name: Five of Swords
 suit: SWORDS
@@ -1275,14 +1280,18 @@ description_long: >-
   no boundaries or restraint, the airy intellect turns itself into a weapon, desiring only to get the better of others,
   to come out on top, to win the debate at all costs and emerge superior.
 description_long_reversed: >-
-  
+  The person making away with the swords is not armed. Their ill-gotten gains are not the result of battle. Was it
+  theft? Was it a trick, a bad deal? Why does one man need so many swords anyhow? Regardless, think about the position
+  in which this person now places themselves. What will happen should a hostile force make its way to those shores? Our
+  scoundrel has made away with the swords. If they are wise, they will look back and mend the damage their words have
+  done.
 ---
 name: Six of Swords
 suit: SWORDS
 number: 6
 image_filename: swords-06.jpg
 description_upright: There is no going back. Face the horizon bravely and accept what is.
-description_reversed: Discomfort is not always your enemy. Lean into it for unexpected rewards.
+description_reversed: Discomfort is not always your enemy. Let go and lean into it for unexpected rewards.
 element: Air
 description_long: >-
   A boatman ferries two somber passengers across a river, six swords adorning the prow of the boat before them. Ahead
@@ -1292,7 +1301,9 @@ description_long: >-
   happiness of the Cups or free-flowing abundance of the Pentacles, but sobriety of mind and clarity of thought. The air
   of the Swords pushes one on from what no longer serves into the possibility of the future.
 description_long_reversed: >-
-  
+  The reverse of this uncomfortable journey may speak to the Querent's hesitancy to embark on the journey. Perhaps they
+  hesitate to let go of the past; perhaps anxiety is keeping them from taking the first step of solving a difficult
+  problem. But this journey is inevitable; this card is an invitation to take the first step sooner than later.
 ---
 name: Seven of Swords
 suit: SWORDS
@@ -1305,12 +1316,16 @@ description_long: >-
   Unnoticed,  thief has stolen into a military camp and made off with five of their swords. The thief looks behind at
   two swords they have dropped, seeming proud of their ability to sneak in and out without raising the alarm. But they
   must be careful—the way they are carrying those swords, they risk being cut to ribbons. Sevens are the realm of
-  instinct, emotion, and the unconscious mind. They can be both creative and chaotic. In the realm of Seven, air
+  instinct, emotion, and the subconscious mind. They can be both creative and chaotic. In the realm of Seven, air
   manifests as cunning and manipulation, seeking its own advantage and how it can use its intelligence to its own
   benefit. Care must be taken, however, for the element not to fall victim to its own cleverness and become caught up in
   its own convoluted plots.
 description_long_reversed: >-
-  
+  The treachery of the Five of Swords is outdone by the Seven. Five is an unstable realm, and Seven a chaotic one, and
+  both are catalysts for disaster with the fragile yet powerful Air. These realms of Five and Seven in the reverse,
+  particularly in the element of Air, are a call to empathize with the victims of malicious cunning and deceit. It is
+  wholly dependent on the Querent's question and the place of the card in the spread whether the Querent is the culprit
+  or the victim of the deceit, but chances are the deceit remains unexposed or known to few.
 ---
 name: Eight of Swords
 suit: SWORDS
@@ -1327,7 +1342,10 @@ description_long: >-
   manifestations of their suits, and with air this becomes a dangerous excess of reason. Overthinking and overanalyzing
   leaves the Swords trapped in a prison of their own making.
 description_long_reversed: >-
-  
+  Instead of allowing yourself to be imprisoned by illusion, look for ways to make the illusion less real. Instead of
+  using the sword of intellect to cut into your self image, use it to cut away at the anxiety and doubt that bind you.
+  This is a simple task, but not an easy one. Just as the anxiety that binds you did not grow oevernight, neither will
+  it be slayed in a single strike. Under the blindfold, it is dark still, but realize there is light beyond.
 ---
 name: Nine of Swords
 suit: SWORDS
@@ -1343,7 +1361,11 @@ description_long: >-
   insight of the Swords is like a cold shower or cup of black coffee after a night of debauchery—unpleasant maybe, but
   it brings one to one's senses.
 description_long_reversed: >-
-  
+  Just as the reversed Eight of Swords incites the Querent to undo the anxieties that imprison them, the reversed Nine
+  relays hope that the curse is soon to be lifted. No longer dreaming of being bound, the figure in the card is awake
+  and coming to their senses. Morning is near. The resolution of anxiety is not necessarily that what one fears is not
+  true; it very well could be. But in such a case, with all doubt removed, one may face the challenge with mental
+  clarity.
 ---
 name: Ten of Swords
 suit: SWORDS
@@ -1356,11 +1378,15 @@ description_long: >-
   The scene of a brutal murder: a victim with not one but ten swords driven into their back, pinning them to the shore
   of the sea beneath a dark and brooding sky. In the distance, the sun rises. Tens represent completion and the ultimate
   manifestation of the elements of their suits, with all the lessons they've learned along the way. Unfortunately the
-  ultimate lesson of the Swords is: “live by the sword, die by the sword.” Without the emotional depth of the Cups, the
+  ultimate lesson of the Swords is: “Live by the sword, die by the sword.” Without the emotional depth of the Cups, the
   willpower of the Wands, or the stability of the Pentacles, the airy Swords can only destroy. Without the heart to
   guide it, the mind conceives and perpetrates monstrous things.
 description_long_reversed: >-
-  
+  The Ten of Swords—not Death, not Judgment, not the Devil—may be the most forboding of all the cards. The defeat
+  present in the upright Ten is still here in the reverse. But just as death brings new life, so too does defeat promise
+  a new beginning, and a chance for victory. Weigh this card against your question or situation, of course, but: a
+  fitting analogy might be that of someone hitting rock bottom. Instead of digging further, the poor soul realizes where
+  they are, and with this clarity of mind they may begin the journey of healing and recovery. Morning is here.
 ---
 name: Page of Swords
 suit: SWORDS
@@ -1368,7 +1394,7 @@ number: 11
 image_filename: swords-11.jpg
 description_upright: >-
   The Page expresses themselves with confidence and intelligence. They are curious and thirsty for knowledge.
-description_reversed: All talk and no action. Haphazardness, miscommunication.
+description_reversed: All talk and no action. Haphazardness, miscommunication, even deception.
 element: Earth in Air
 description_long: >-
   Full of enthusiasm, a young page stands atop a windy mountain swinging a sword. Pages represent communication and new
@@ -1377,7 +1403,12 @@ description_long: >-
   conceiving new ideas, but also communicating them clearly to others. Being the element of earth, the Page of Swords
   brings common sense and relatability to the often lofty and elitist air.
 description_long_reversed: >-
-  
+  The Page's office is one of entering the world by action, learning its ways in hopes of becoming an embodiment of the
+  energy of its suit. A reversed Page is at best a misstep into this role; in Air, the realm of intellect, this could
+  signify a lazy student, learning just enough to "sound smart" but gaining no true understanding. More dangerously,
+  a reversed Page of Swords could signify harmful or even malicious application of the intellect: defensiveness,
+  arguing or quarreling, perhaps even the beginning of becoming a charlatan. Our intellectual lives are to be taken
+  seriously; if one is not inspired to be diligent in their intellectual affairs, perhaps they are in the wrong place.
 ---
 name: Knight of Swords
 suit: SWORDS
