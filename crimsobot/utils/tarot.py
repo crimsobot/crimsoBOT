@@ -59,7 +59,8 @@ class Card:
     def __init__(self, name: str, suit: Suit, number: int,
                  image_filename: str,
                  description_upright: str, description_reversed: str,
-                 element: str, description_long: str
+                 element: str, description_long: str,
+                 description_long_reversed: str,
                  ) -> None:
         self.name = name
         self.suit = suit
@@ -69,6 +70,7 @@ class Card:
         self.description_reversed = description_reversed
         self.element = element
         self.description_long = description_long
+        self.description_long_reversed = description_long_reversed
 
     async def get_image(self, reverse: bool = False) -> Image.Image:
         filename = clib_path_join('tarot', 'deck', self.image_filename)
@@ -144,7 +146,8 @@ class Deck:
                 card_raw['name'], suit, card_raw['number'],
                 card_raw['image_filename'],
                 card_raw['description_upright'], card_raw['description_reversed'],
-                card_raw['element'], card_raw['description_long']
+                card_raw['element'], card_raw['description_long'],
+                card_raw['description_long_reversed'],
             )
 
             deck.append(card)

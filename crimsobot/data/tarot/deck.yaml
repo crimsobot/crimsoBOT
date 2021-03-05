@@ -1,5 +1,5 @@
-# This file previously had 4-space indentation, but was changed to 2-space for consistency and because of the fact
-# that the YAML spec recommends 2-space identation.
+# This file previously had 4-space indentation, but was changed to 2-space for consistency and because of the fact that
+# the YAML spec recommends 2-space indentation.
 ---
 name: The Fool
 suit: MAJOR_ARCANA
@@ -9,9 +9,14 @@ description_upright: Sell your cleverness and buy bewilderment. -Rumi
 description_reversed: Bliss is ignorance.
 element: Air
 planet: Uranus
-description_long: >
-  A carefree young person steps out onto a sheer cliff, joyfully—and naively—plunging into the wild unknown. They bring with them only a few possessions in a little sack and carry a white rose, signifying their innocence. The dog at their feet is a protector, encouraging them to bravely embark on their journey.
-
+description_long: >-
+  A carefree young person steps out onto a sheer cliff, joyfully—and naively—plunging into the wild unknown. They bring
+  with them only a few possessions in a little sack and carry a white rose, signifying their innocence. The dog at their
+  feet is a protector, encouraging them to bravely embark on their journey.
+description_long_reversed: >-
+  Innocence becomes willful ignorance, carefree becomes careless, when they are achieved by turning one's back on
+  empathy. An apathetic fool is far from innocent: they are negligent, even complicit. It may be time to focus on
+  important work.
 ---
 name: The Magician
 suit: MAJOR_ARCANA
@@ -21,9 +26,16 @@ description_upright: Everything has come together, as if by magic...
 description_reversed: Taken by an illusion, perhaps of one's own doing.
 element: Air
 planet: Mercury
-description_long: >
-  A commanding magician stands in a blossoming garden, ready to work their will. On the table before them are symbols of their great elemental power: a saber for air, a chalice for water, a pentacle for earth and a wand for fire. The Magician holds a magic scroll and points to both heaven and earth, signifying the Magician’s transcendent role as a bridge between the two.
-
+description_long: >-
+  A commanding magician stands in a blossoming garden, ready to work their will. On the table before them are symbols of
+  their great elemental power: a saber for air, a chalice for water, a pentacle for earth and a wand for fire. The
+  Magician holds a magic scroll and points to both heaven and earth, signifying the Magician's transcendent role as a
+  bridge between the two.
+description_long_reversed: >-
+  All four suits (and thus, all four elements) are depicted in The Magician; in an unsettled situation, all the pieces
+  may be present, but not coming together. Imagine the unrest in your own mind when you can see all facets of a problem
+  but you cannot arrive at the solution. Your intuition may need guidance from a place of trust: a friend, a healer, or
+  a scholar.
 ---
 name: The High Priestess
 suit: MAJOR_ARCANA
@@ -33,9 +45,16 @@ description_upright: The High Priestess presides over the Hidden. They know the 
 description_reversed: That which is Hidden remains hidden. Now is not the time.
 element: Water
 planet: MOON
-description_long: >
-  Solemn and stately, a figure sits between two columns and in front of a veil, the moon at their feet and a lunar crown on their brow. In their lap they hold the scroll of divine secrets. The columns uphold the mystic Temple of Solomon and in their respective colors symbolize the journey from spiritual blindness to illumination. The veil behind the Priestess is the veil all initiates must pass through to behold the Mysteries and become enlightened.
-
+description_long: >-
+  Solemn and stately, a figure sits between two columns and in front of a veil, the moon at their feet and a lunar crown
+  on their brow. In their lap they hold the scroll of divine secrets. The columns uphold the mystic Temple of Solomon
+  and in their respective colors symbolize the journey from spiritual blindness to illumination. The veil behind the
+  Priestess is the veil all initiates must pass through to behold the Mysteries and become enlightened.
+description_long_reversed: >-
+  In the reverse, this card may indicate arrested emotional or spiritual development. This may also point toward
+  intellectual vainglory, the holding of only surface knowledge of deeper mysteries. The element at play is still Water,
+  indicating emotion, relationships, and intuition; how does this immix with the intellect (typically the realm of Air)?
+  Perhaps what is holding you back from the fertile depths is emotional: fear, trauma, or even perfectionism.
 ---
 name: The Empress
 suit: MAJOR_ARCANA
@@ -45,9 +64,16 @@ description_upright: The Empress, subtle and gentle, like water carves her will 
 description_reversed: Indecision, imbalance, undoing of fragile bonds.
 element: Earth
 planet: Venus
-description_long: >
-  A kind-faced Empress sits upon their throne amid the beauty and bounty of Nature, with which they exist in deep harmony. Their starry crown speaks to their title of Queen of Heaven and in their scepter is the power of life. They are the very Soul of the natural world, the power that makes all things grow and flourish. The Empress is all-loving, all-forgiving, and all-benevolent.
-
+description_long: >-
+  A kind-faced Empress sits upon their throne amid the beauty and bounty of Nature, with which they exist in deep
+  harmony. Their starry crown speaks to their title of Queen of Heaven and in their scepter is the power of life. They
+  are the very Soul of the natural world, the power that makes all things grow and flourish. The Empress is all-loving,
+  all-forgiving, and all-benevolent.
+description_long_reversed: >-
+  Just as an upright Empress presides over the fruitful growth of new ideas or ventures, a reversed Empress may 
+  represent vacillation or even stagnation. However, as with other cards in the reverse, this is not necessarily an
+  omen. For exmaple, perhaps it is best to stick to your original plan, or pore through old notes instead of struggling
+  for new inspirations.
 ---
 name: The Emperor
 suit: MAJOR_ARCANA
@@ -57,9 +83,14 @@ description_upright: The Emperor is a great power. Bend the knee or suffer.
 description_reversed: Mercy, benevolence, perhaps confusion and misdirection.
 element: Fire
 planet: Mars
-description_long: >
-  The absolute and unquestioned ruler of the world, The Emperor sits enthroned before a craggy mountain that echoes their unyielding nature. They hold an ankh scepter and a globe, both symbols of the Emperor’s dominion over all life, and their beard indicates their great wisdom. They are as severe as the Empress is kind, but just.
-
+description_long: >-
+  The absolute and unquestioned ruler of the world, The Emperor sits enthroned before a craggy mountain that echoes
+  their unyielding nature. They hold an ankh scepter and a globe, both symbols of the Emperor's dominion over all life,
+  and their beard indicates their great wisdom. They are as severe as the Empress is kind, but just.
+description_long_reversed: >-
+  It is crucial to frame the context of a card against the question you have asked and its position in the spread. The
+  powerful Emperor card in the reverse can be interpreted as the Emperor yielding, choosing not to impose their power.
+  Is this the world giving way to your passions, or are you failing to assert your desires to yourself or a loved one?
 ---
 name: The Hierophant
 suit: MAJOR_ARCANA
@@ -69,33 +100,52 @@ description_upright: Those who Seek may find guidance in the Office of the Hiero
 description_reversed: Society, community, organic expression; irreverence, weakness.
 element: Earth
 planet: Venus
-description_long: >
-  The Hierophant is the bridge between the human and the divine, and raises their hand in a gesture of blessing. They sit between the two pillars of Law and Liberty with the keys to Heaven beneath their feet. It is their duty to be the Teacher of Wisdom, to uphold tradition, and to mediate between humanity and God.
-
+description_long: >-
+  The Hierophant is the bridge between the human and the divine, and raises their hand in a gesture of blessing. They
+  sit between the two pillars of Law and Liberty with the keys to Heaven beneath their feet. It is their duty to be the
+  Teacher of Wisdom, to uphold tradition, and to mediate between humanity and God.
+description_long_reversed: >-
+  Note the pyramidal (i.e., hierarchical) structure of the people in the card: two friars at the base, the Hierophant at
+  the pinnacle. A reversal signifies that an appeal to a central authority should yield to an appeal to the masses. In
+  this appeal to society at large, however, you could risk overextending yourself by giving too much of yourself, or
+  attemtpting to please too many disparate parties at once.
 ---
 name: The Lovers
 suit: MAJOR_ARCANA
 number: 6
 image_filename: lovers.jpg
 description_upright: Love and beauty reign—pure, if not innocent.
-description_reversed: Frustration, failure, communication breakdown.
+description_reversed: Frustration, disharmony, vanity or narcissism.
 element: Air
 planet: Mercury
-description_long: >
-  Two figures stand naked before the Tree of Life and the Tree of Knowledge. An angel hovers above them in a gesture of blessing and consecration. These two have nothing to hide from one another, and with the blessing of the angel and fertile space between them, are able to communicate clearly and honestly about their desires.
-
+description_long: >-
+  Two figures stand naked before the Tree of Life and the Tree of Knowledge. An angel hovers above them in a gesture of
+  blessing and consecration. These two have nothing to hide from one another, and with the blessing of the angel and
+  fertile space between them, are able to communicate clearly and honestly about their desires.
+description_long_reversed: >-
+  It is too easy (and incorrect) to assume this card only appears when a romantic relationship is at the heart of a
+  query; take care to apply it appropriately to your question. That said, one cannot ignore the reverse's imagery of the
+  lovers being expelled from the Garden. This speaks to an end of innocence, or perhaps a disharmony within the Self or
+  between two parties of a relationship.
 ---
 name: The Chariot
 suit: MAJOR_ARCANA
 number: 7
 image_filename: chariot.jpg
 description_upright: A prince traverses the bridge between two. Unity, aid, victory.
-description_reversed: Discord, litigation, quabbles, communication breakdown.
+description_reversed: Discord, litigation, squabbles, communication breakdown.
 element: Water
 planet: MOON
-description_long: >
-  A warrior stands proud and strong in a star-canopied chariot pulled by two sphinxes. The mallet on the chariot’s coat of arms represents self-control and the sphinxes symbolize passion and intellect—both must be in harmony for the chariot to move forward to victory. The warrior’s armor, adorned with crescent moons, speaks of things coming into being.
-
+description_long: >-
+  A warrior stands proud and strong in a star-canopied chariot pulled by two sphinxes. The mallet on the chariot's coat
+  of arms represents self-control and the sphinxes symbolize passion and intellect—both must be in harmony for the
+  chariot to move forward to victory. The warrior's armor, adorned with crescent moons, speaks of things coming into
+  being.
+description_long_reversed: >-
+  The harmony and balance of The Chariot in reverse is thrust into disharmony and imbalance. The prince, instead of
+  presiding over the passion and intellect, are now instead ruled by them. This may often have deleterious
+  effects—tending toward impulsive or rash decisions, for example—but sometimes this upheaval of order can be refreshing
+  and even necessary.
 ---
 name: Strength
 suit: MAJOR_ARCANA
@@ -105,9 +155,15 @@ description_upright: True strength is not brutish but clever, and wielded with c
 description_reversed: Pride, abuse of power. Perilously forcing open the jaws of a lion.
 element: Fire
 planet: SUN
-description_long: >
-  On an open plain, a figure subdues a fierce lion with ease and calm. They fearlessly and easily control the beast without harming it or using excessive force. The eternity symbol hovering over their head suggests enlightenment, with the figure symbolizing spirit and the lion representing animal instincts.
-
+description_long: >-
+  On an open plain, a figure subdues a fierce lion with ease and calm. They fearlessly and easily control the beast
+  without harming it or using excessive force. The eternity symbol hovering over their head suggests enlightenment, with
+  the figure symbolizing spirit and the lion representing animal instincts.
+description_long_reversed: >-
+  A reversal of strength is not weakness, but rather an abuse of strength. Note the card's element of fire—passion,
+  will, motivation. True Strength is the harnessing of fire's energy, and its reversal signifies the perils. One may
+  expect short-term gains from such a misuse of power, but eventually the fire will take that which was carelessly
+  gained.
 ---
 name: The Hermit
 suit: MAJOR_ARCANA
@@ -117,9 +173,15 @@ description_upright: A light shines in the darkness. Those who would gain wisdom
 description_reversed: A thousand miles from nowhere. Loneliness, isolation, and bitterness.
 element: Earth
 planet: Mercury
-description_long: >
-  The Hermit stands upon a lonely mountain peak, guided through the darkness only by the Lamp of Truth and their trusty staff. They are the Fool all grown up—through hard-won wisdom and experience, the Fool has transformed into the wise Hermit. But the journey is far from over. The Hermit presses on in their search for enlightenment, alone perhaps, but undaunted.
-
+description_long: >-
+  The Hermit stands upon a lonely mountain peak, guided through the darkness only by the Lamp of Truth and their trusty
+  staff. They are the Fool all grown up—through hard-won wisdom and experience, the Fool has transformed into the wise
+  Hermit. But the journey is far from over. The Hermit presses on in their search for enlightenment, alone perhaps, but
+  undaunted.
+description_long_reversed: >-
+  When presented this card in the reverse, examine whether the isolation in question is a fruitful (or willful) one.
+  Many cards with a potentially negative meaning can be an invitation to "right the ship" and examine your innerspace in
+  a new light. The Hermit is a prime opportunity to do this. Examine the isolation from a tempered, wizened perspective.
 ---
 name: Wheel of Fortune
 suit: MAJOR_ARCANA
@@ -129,21 +191,38 @@ description_upright: The Wheel spins, spins, spins. Today it favors you. Tomorro
 description_reversed: The world is maintained by change. Do not resist.
 element: Fire
 planet: Jupiter
-description_long: >
-  The Wheel is thick with symbolism. Upon its hub are inscribed the alchemical symbols of the elements, signifying the Wheel’s cosmic unity. The four creatures in each corner represent the four fixed signs of the zodiac. Anubis, the jackal god of fate, ascends on one side of the wheel while Apophis, the serpent of chaos descends on the other, showing that order and chaos are neither good nor evil but natural functions of our universe. A sphinx surmounts the Wheel, reminding us that our fate and the universe itself is a great riddle—one that is worthy to be explored but might never be solved.
-
+description_long: >-
+  The Wheel is thick with symbolism. Upon its hub are inscribed the alchemical symbols of the elements, signifying the
+  Wheel's cosmic unity. The four creatures in each corner represent the four fixed signs of the zodiac. Anubis, the
+  jackal god of fate, ascends on one side of the wheel while Apophis, the serpent of chaos descends on the other,
+  showing that order and chaos are neither good nor evil but natural functions of our universe. A sphinx surmounts the
+  Wheel, reminding us that our fate and the universe itself is a great riddle—one that is worthy to be explored but
+  might never be solved.
+description_long_reversed: >-
+  A wheel upside-down is still just that. Be careful not to let yourself become too fixated on interpreting this card as
+  good fortune or bad fortune. Meditate, rather, on how the dynamic forces of fortune may be working in your situation.
+  A reversed Fortune may indicate that such fortune may be more chaotic, complex, or simply quicker. New opportunities
+  may require swifter action.
 ---
 name: Justice
 suit: MAJOR_ARCANA
 number: 11
 image_filename: justice.jpg
-description_upright: The truth does not care about our needs or wants. It does not care about our idealogies or religions. It will lie in wait for all time.
+description_upright: >-
+  The truth does not care about our needs or wants. It does not care about our ideologies or religions. It will lie in
+  wait for all time.
 description_reversed: You know what you've done. How long can you hide it?
 element: Air
 planet: Venus
-description_long: >
-  Justice sits between two pillars representing Law and Order, and behind them is hung the purple tapestry of Mercy. In one hand Justice lifts the sword of logic that cuts through deceptions and equivocations and in the other holds the scales of fairness and impartiality. Their square crown bespeaks their well-ordered mind. Justice is stern and firm, but fair.
-
+description_long: >-
+  Justice sits between two pillars representing Law and Order, and behind them is hung the purple tapestry of Mercy. In
+  one hand Justice lifts the sword of logic that cuts through deceptions and equivocations and in the other holds the
+  scales of fairness and impartiality. Their square crown bespeaks their well-ordered mind. Justice is stern and firm,
+  but fair.
+description_long_reversed: >-
+  Note the parallels between Strength and Justice; those parallels hold in the reverse as well. Reversed justice usually
+  does not denote a complete lack of justice, but rather its misapplication, for example excessive severity or bias.
+  Meditate on whether you are the perpetrator, the victim, or a witness to this.
 ---
 name: The Hanged Man
 suit: MAJOR_ARCANA
@@ -153,9 +232,17 @@ description_upright: A new perspective is needed to see clearly. Pause and surre
 description_reversed: Delays, resistance; indecision and muddled thoughts.
 element: Water
 planet: Neptune
-description_long: >
-  The Hanged Man is depicted suspended upside down from a living tree. This is not a punishment, however: their serene face suggests they are here of their own accord, and the halo around their head suggests the reason is to attain enlightenment. The Hanged Man is seeking a new perspective in a radical way—they long to literally stand the world on its head and thereby see something they might have missed while right side up. The Hanged Man is willing to endure great pain for what they seek.
-
+description_long: >-
+  The Hanged Man is depicted suspended upside down from a living tree. This is not a punishment, however: their serene
+  face suggests they are here of their own accord, and the halo around their head suggests the reason is to attain
+  enlightenment. The Hanged Man is seeking a new perspective in a radical way—they long to literally stand the world on
+  its head and thereby see something they might have missed while right side up. The Hanged Man is willing to endure
+  great pain for what they seek.
+description_long_reversed: >-
+  The Hanged Man in reverse appears to be simply standing upright on one leg. Instead of gaining a new perspective, the
+  upright man on one leg is either struggling to gain the new perspective they seek, or delaying the work needed to gain
+  it. One could even go so far as to presume the man on one leg to be vain, giving only a half-measure toward the work
+  of renewal and clarity.
 ---
 name: Death
 suit: MAJOR_ARCANA
@@ -165,21 +252,34 @@ description_upright: The Death of the old comes to clear the way for the new.
 description_reversed: Fear of change leaves one trapped in limbo, neither living nor dead.
 element: Water
 planet: Pluto
-description_long: >
-  Death, in its invincible armor, rides a pale horse and carries a banner depicting a white rose, both symbols of Death’s power of purification. Kings, peasants, and clergy are all laid low before Death—it respects neither wealth nor power but comes to all equally. And yet in the distance, the sun rises. Death may be the end, but it is necessary for rebirth.
-
+description_long: >-
+  Death, in its invincible armor, rides a pale horse and carries a banner depicting a white rose, both symbols of
+  Death's power of purification. Kings, peasants, and clergy are all laid low before Death—it respects neither wealth
+  nor power but comes to all equally. And yet in the distance, the sun rises. Death may be the end, but it is necessary
+  for rebirth.
+description_long_reversed: >-
+  Tarot is often misinterpreted as a means of divination, each card capable of predicting the future. Death is perhaps
+  the card most responsible for this misconception. Just as upright Death does not portend one's demise, neither does
+  reversed Death mean one will cheat death. This card reversed often indicates lethargy, refusing to accept the end, and
+  thus perpetually delaying renewal.
 ---
 name: Temperance
 suit: MAJOR_ARCANA
 number: 14
 image_filename: temperance.jpg
 description_upright: Balance, moderation, and patience obtain all things.
-description_reversed: Dissipation, imbalance. The cup runneth over, and soon will run out.
+description_reversed: Dissipation, imbalance. The cup runneth over, and may soon run out.
 element: Fire
 planet: Jupiter
-description_long: >
-  A winged figure stands in a shallow pool, one foot in the water and one foot on land, symbolizing unity of body and spirit. In their hands they are pouring a mixture from one chalice to another, creating something new from the mingling of two separate substances. Temperance is an alchemist, seeking unity from dissolution of separateness. They must be moderate and precise in their measurements, or their experiment will be ruined.
-
+description_long: >-
+  A winged figure stands in a shallow pool, one foot in the water and one foot on land, symbolizing unity of body and
+  spirit. In their hands they are pouring a mixture from one chalice to another, creating something new from the
+  mingling of two separate substances. Temperance is an alchemist, seeking unity from dissolution of separateness. They
+  must be moderate and precise in their measurements, or their experiment will be ruined.
+description_long_reversed: >-
+  Note the elemental symbol for Fire, the upright triangle, on the winged figure's robe. Temperance is the balance of
+  fiery will and passion with fluid emotion and intuition. In the reverse, this balance falters. Reflect upon competing
+  forces to determine if this imbalance a necessary shift or a brewing dissonance.
 ---
 name: The Devil
 suit: MAJOR_ARCANA
@@ -189,69 +289,111 @@ description_upright: Your Shadow Self is weary of being in chains. Set it free.
 description_reversed: Addiction, shame; self-limiting beliefs and anxieties.
 element: Earth
 planet: Saturn
-description_long: >
-  The Devil sits perched in a dark place with two hapless beings—the Lovers—in his thrall. The Devil is a figure of contradictions: his appearance is unsettling and loathsome, yet his open hand is raised in a gesture of peace and blessing. His brow is crowned with the inverted pentagram of materiality, yet he holds a torch of enlightenment. He has his prisoners chained, yet the chains are clearly quite loose. In the end, the Devil is only that which we are afraid of within ourselves, and must confront in order to achieve peace.
-
+description_long: >-
+  The Devil sits perched in a dark place with two hapless beings—the Lovers—in his thrall. The Devil is a figure of
+  contradictions: his appearance is unsettling and loathsome, yet his open hand is raised in a gesture of peace and
+  blessing. His brow is crowned with the inverted pentagram of materiality, yet he holds a torch of enlightenment. He
+  has his prisoners chained, yet the chains are clearly quite loose. In the end, the Devil is only that which we are
+  afraid of within ourselves, and must confront in order to achieve peace.
+description_long_reversed: >-
+  Much like Death, the Devil is another unjustly feared card in the Tarot deck. Your soul is not damned by its presence.
+  A reversed Devil, however, does serve as a dire warning. The struggles it indicates—anxiety, pettiness, ignorance, or
+  even addiction—are all notoriously self-replicating, creating a vicious cycle from which it becomes more difficult to
+  escape with every passing hour.
 ---
 name: The Tower
 suit: MAJOR_ARCANA
 number: 16
 image_filename: tower.jpg
 description_upright: The Tower is struck, bringing chaos, upheaval, and the end of the illusion of control.
-description_reversed: Disaster has been averted, perhaps narrowly. Rejoice--for now.
+description_reversed: Disaster has been averted, perhaps narrowly. Rejoice—for now.
 element: Fire
 planet: Mars
-description_long: >
-  Lightning splits the air and strikes The Tower, setting it ablaze and hurling its occupants into the darkness. A crown falls from the top of The Tower, the ultimate symbol of the loss of control. For that is what the destruction of The Tower represents: the loss of security, control, and the status quo. Things must be shaken up—even violently—or else the world will fall into stagnation and rot.
-
+description_long: >-
+  Lightning splits the air and strikes The Tower, setting it ablaze and hurling its occupants into the darkness. A crown
+  falls from the top of The Tower, the ultimate symbol of the loss of control. For that is what the destruction of The
+  Tower represents: the loss of security, control, and the status quo. Things must be shaken up—even violently—or else
+  the world will fall into stagnation and rot.
+description_long_reversed: >-
+  This is perhaps too literal of a reading of the card's imagery, but: Imagine yourself trapped in an inverted tower,
+  imprisoned below the surface of the sea. If that tower were destroyed, you would escape and float back to the surface
+  toward freedom and fresh air. Though you are ultimately in a better situation than before, you are still lost at sea.
 ---
 name: The Star
 suit: MAJOR_ARCANA
 number: 17
 image_filename: star.jpg
 description_upright: The Stars sing with their light, a shining chorus of hope and renewal.
-description_reversed: Disconnection, lack of purpose, stagnation. The Universe holds no wonder, only the cold light of unreachable worlds.
+description_reversed: >-
+  Disconnection, lack of purpose, stagnation. The Universe holds no wonder, only the cold light of unreachable worlds.
 element: Air
 planet: Uranus
-description_long: >
-  Surrounded by a lush landscape, the Star pours water from two containers (the conscious and the subconscious) to further nourish the earth. With one foot in the water and one on dry land, the Star is balanced in their practical sensibilities and their intuition. Their nakedness is a token of their spiritual vulnerability and openness, the stars in the sky behind them symbols of spiritual awakening and hope.
-
+description_long: >-
+  Surrounded by a lush landscape, the Star pours water from two containers (the conscious and the subconscious) to
+  further nourish the earth. With one foot in the water and one on dry land, the Star is balanced in their practical
+  sensibilities and their intuition. Their nakedness is a token of their spiritual vulnerability and openness, the stars
+  in the sky behind them symbols of spiritual awakening and hope.
+description_long_reversed: >-
+  While the reverse of the Star—an atrophied sense of wonder, a loss of purpose, intellectual stagnation—do not be
+  dismayed. No one card or one reading is a sentence, but rather a revelation. Reflect on the disconnect or the cause of
+  the stagnation and open yourself to new opportunities to rediscover wonder.
 ---
 name: The Moon
 suit: MAJOR_ARCANA
 number: 18
 image_filename: moon.jpg
-description_upright: Monsters and demons come out to play in the moonlit night--but are they real?
+description_upright: Monsters and demons come out to play in the moonlit night—but are they real?
 description_reversed: The Moon lights the night, leading the way out of fear, confusion, and repressed emotions.
 element: Water
 planet: Neptune
-description_long: >
-  The Moon broods over a gloomy and uncanny landscape, shedding fertilizing dew. A crawfish crawls out of a pool, symbolizing the subconscious mind, towards a wild wolf and a dog, representing our fears and our illusions. Two pillars rise in the distance, the doors of our perception, the portals to our turbulent unconscious minds full of both creativity and nightmares. The only way out of this strange, dreamlike place is through it.
-
+description_long: >-
+  The Moon broods over a gloomy and uncanny landscape, shedding fertilizing dew. A crawfish crawls out of a pool,
+  symbolizing the subconscious mind, towards a wild wolf and a dog, representing our fears and our illusions. Two
+  pillars rise in the distance, the doors of our perception, the portals to our turbulent unconscious minds full of both
+  creativity and nightmares. The only way out of this strange, dreamlike place is through it.
+description_long_reversed: >-
+  This card shows a moonlit path, and though this path is perilous in a way, it can be traversed. A reversed Moon may
+  indicate that you have already found the path and the key to handling the phantoms that dare haunt you along the way.
 ---
 name: The Sun
 suit: MAJOR_ARCANA
 number: 19
 image_filename: sun.jpg
 description_upright: Light, warmth, and vitality. The Sun radiates over all, bringing abundance and cheer.
-description_reversed: Do not fly too close to the sun, lest your wings turn to ash. Keep your feet firmly planted on the ground.
+description_reversed: >-
+  Do not fly too close to the sun, lest your wings turn to ash. Keep your feet firmly planted on the ground.
 element: Fire
 planet: SUN
-description_long: >
-  The Sun smiles down approvingly upon an innocent child riding a horse, holding aloft a red banner of life and vitality. All is well. Flowers bloom, innocence prevails, and life is renewed by The Sun’s bright glow. The Sun’s illumination is a cause of joy for those who are blameless and have nothing to hide, but those who harbor secrets must be wary.
-
+description_long: >-
+  The Sun smiles down approvingly upon an innocent child riding a horse, holding aloft a red banner of life and
+  vitality. All is well. Flowers bloom, innocence prevails, and life is renewed by The Sun's bright glow. The Sun's
+  illumination is a cause of joy for those who are blameless and have nothing to hide, but those who harbor secrets must
+  be wary.
+description_long_reversed: >-
+  Above all others, the Sun's power and majesty reign. We must live in accordance with it; too little and we must seek
+  more, too much and we must seek shelter. A reverse Sun could be warning you to reassess your relationship with your
+  central passion, the fire that burns greatest in your life. You must remain innocent in its light, taking care not to
+  be greedy for more than your share.
 ---
 name: Judgement
 suit: MAJOR_ARCANA
 number: 20
 image_filename: judgement.jpg
 description_upright: The trumpet sounds, calling you to rise from the grave into new life, into greatness. Arise!
-description_reversed: Self-doubt and negative self-talk abound. Extend to yourself the hand of mercy, not the fist of retribution.
+description_reversed: >-
+  Self-doubt and negative self-talk abound. Extend to yourself the hand of mercy, not the fist of retribution.
 element: Fire
 planet: Pluto
-description_long: >
-  An angel blows their great trumpet, calling the dead to arise from their tombs at the end of time. The mountains in the distance are high and insurmountable—none will escape this final and cosmic judgement. This is not only an end but The End, of Time, of the World As We Know It. After this will come renewal. The world will never be the same.
-
+description_long: >-
+  An angel blows their great trumpet, calling the dead to arise from their tombs at the end of time. The mountains in
+  the distance are high and insurmountable—none will escape this final and cosmic judgement. This is not only an end but
+  The End, of Time, of the World As We Know It. After this will come renewal. The world will never be the same.
+description_long_reversed: >-
+  Much of the Judeo-Christian symbolism does not carry the weight with most querents today as it once did, but the
+  messages these symbols convey in the Tarot are still applicable. Though the converse of Judgment may imply damnation,
+  that your soul was not ready for salvation when the trumpet sounded, once again be cautioned not to interpret any one
+  card so ominously. Perhaps you have missed the call to renewal this time, or perhaps the call is coming soon and you
+  need to focus now on your inner work to ensure your pneuma is prepared for the new world to come.
 ---
 name: The World
 suit: MAJOR_ARCANA
@@ -261,9 +403,16 @@ description_upright: All shall be well, all shall be well; all manner of things 
 description_reversed: The quickest path does not always bring success. Learning the hard way is often the best way.
 element: Earth
 planet: Saturn
-description_long: >
-  A triumphant figure dances in the ether, amid the final completion and enlightenment of the cosmos. They step fearlessly through a wreath of victory, watched over by four creatures who represent the four elements. All is well now, and all will be well. The universe is whole, all is in harmony…until the cycle of time begins again.
-
+description_long: >-
+  A triumphant figure dances in the ether, amid the final completion and enlightenment of the cosmos. They step
+  fearlessly through a wreath of victory, watched over by four creatures who represent the four elements. All is well
+  now, and all will be well. The universe is whole, all is in harmony…until the cycle of time begins again.
+description_long_reversed: >-
+  The World reversed is not so much a manner of saying that all will not be well, but rather that the ultimate
+  resolution it signifies is not yet yours. You likely see the culmination of your efforts coming to a head, and you can
+  practically smell the fruits of your labor, but be patient. You may be tempted to take shortcuts; be wary though of
+  ill-gotten gains. In an extreme case you might be denied those fruits and unwilling to accept the loss, when the
+  reward is so close. Be like water: carve your will patiently into the Earth.
 ---
 name: Ace of Wands
 suit: WANDS
@@ -272,9 +421,14 @@ image_filename: wands-01.jpg
 description_upright: The new green shoots of spring are emerging, unfurling with pure potential.
 description_reversed: Delays, distractions, and lack of direction cause new growth to wither on the vine.
 element: Fire
-description_long: >
-  A godlike hand extends from the clouds, bearing a wand sprouting with fresh growth. The Aces are the primordial seeds of their suits, and being in the element of fire, the potential energy of the Ace of Wands is tremendous. It is the raw, unfocused power of the will to manifest one’s highest goals and deepest desires. This wild, untamed energy must be harnessed if it is to be of any use—uncontrolled it will only be a short-lived flash in the pan.
-
+description_long: >-
+  A godlike hand extends from the clouds, bearing a wand sprouting with fresh growth. The Aces are the primordial seeds
+  of their suits, and being in the element of fire, the potential energy of the Ace of Wands is tremendous. It is the
+  raw, unfocused power of the will to manifest one's highest goals and deepest desires. This wild, untamed energy must
+  be harnessed if it is to be of any use—uncontrolled it will only be a short-lived flash in the pan.
+description_long_reversed: >-
+  Whereas in the upright the Ace is an invitation to seize the powers of will and desire, the reverse is a warning of
+  misfocused energies and unforeseen delays. Reflect on what must be done to revive the new growth.
 ---
 name: Two of Wands
 suit: WANDS
@@ -283,9 +437,15 @@ image_filename: wands-02.jpg
 description_upright: A plan of action is needed to bring inspiration to fruition.
 description_reversed: Fear of the unknown, poor planning; inner alignment is thrown off and must be righted.
 element: Fire
-description_long: >
-  A person gazes out towards the horizon from a city wall, flanked by two wands, a globe in their hands. Twos are power conduits of their suits—the initial focusing of the raw power of the Ace. As the fiery power of the Wands is harnessed, it opens up a world of possibility. Like the figure gazing out at the sea, the world is literally in one’s hands. Anything is possible.
-
+description_long: >-
+  A person gazes out towards the horizon from a city wall, flanked by two wands, a globe in their hands. Twos are power
+  conduits of their suits—the initial focusing of the raw power of the Ace. As the fiery power of the Wands is
+  harnessed, it opens up a world of possibility. Like the figure gazing out at the sea, the world is literally in one's
+  hands. Anything is possible.
+description_long_reversed: >-
+  The interpretation of any reversed Two is straightforward enough: a lack of focus of the energies of that suit's
+  element. The Two of Wands reversed is the lack of focused passion, which can manifest as anything from idle fidgeting
+  to a visceral anxiety.
 ---
 name: Three of Wands
 suit: WANDS
@@ -294,20 +454,32 @@ image_filename: wands-03.jpg
 description_upright: Progress, expansion, and opportunity. The horizon is yours.
 description_reversed: Playing it safe will get you nowhere. Do not dare not to dare.
 element: Fire
-description_long: >
-  Very similar to the Two of Wands, a lone figure gazes out at the horizon to the mountains over the sea, flanked now by three wands. Threes represent the potential energy of their suits becoming crystalized in material form. This is why, unlike in the Two of Wands, the figure is now outside the city walls and the horizon is a little closer. They are no longer planning and dreaming of their goal, but have taken the first act of will towards attaining it.
-
+description_long: >-
+  Very similar to the Two of Wands, a lone figure gazes out at the horizon to the mountains over the sea, flanked now by
+  three wands. Threes represent the potential energy of their suits becoming crystalized in material form. This is why,
+  unlike in the Two of Wands, the figure is now outside the city walls and the horizon is a little closer. They are no
+  longer planning and dreaming of their goal, but have taken the first act of will towards attaining it.
+description_long_reversed: >-
+  The upright, resolute figure in this card, when reversed, can be seen as wavering or doubtful. Meditate on how this
+  card makes you feel in the spread. Is the doubt due diligence or self-defeating?
 ---
 name: Four of Wands
 suit: WANDS
 number: 4
 image_filename: wands-04.jpg
 description_upright: Celebration, joy, and harmony are the order of the day. Savor them.
-description_reversed: Can you trust those closest to you?
+description_reversed: Do you trust those closest to you?
 element: Fire
-description_long: >
-  A wedding canopy of four wands stands straight and tall, covered with fruitful greenery, while revelers in the background walk towards it, joyfully raising bouquets in their hands. Fours are the stabilization of their elements, and this makes the Wands’ fire bright, joyful, and a beacon of union. The Four of Wands is the harmonizing of one’s actions with one’s inner will.
-
+description_long: >-
+  A wedding canopy of four wands stands straight and tall, covered with fruitful greenery, while revelers in the
+  background walk towards it, joyfully raising bouquets in their hands. Fours are the stabilization of their elements,
+  and this makes the Wands' fire bright, joyful, and a beacon of union. The Four of Wands is the harmonizing of one's
+  actions with one's inner will.
+description_long_reversed: >-
+  When you feel wavering passion in a stable or stabilizing relationship, take the opportunity to examine the reasons
+  why. From where does this faltering trust flow? The reasons could be numerous; a couple of extreme examples are fear
+  of commitment or codependency. (Remember not to automatically default to the most dire conclusions when presented a
+  reversed card—or any card, for that matter.)
 ---
 name: Five of Wands
 suit: WANDS
@@ -316,9 +488,14 @@ image_filename: wands-05.jpg
 description_upright: Discord is sown, to no discernible end. Gridlock, tension, and futility.
 description_reversed: Inner turmoil stews. It is best to reckon with it sooner rather than later.
 element: Fire
-description_long: >
-  Five figures appear in a scene of struggle, their weapons locked in a jumbled mess. No one can win in this scenario, all they can do is push vainly against each other. This is the state of the Wands’ fire in the realm of Five—Fives are the inevitable destabilization of their suits, and while Four was able to control fire for a time, fire resents being suppressed and threatens to break into an inferno. Five of Wands is all toxic, pent-up energy.
-
+description_long: >-
+  Five figures appear in a scene of struggle, their weapons locked in a jumbled mess. No one can win in this scenario,
+  all they can do is push vainly against each other. This is the state of the Wands' fire in the realm of Five—Fives are
+  the inevitable destabilization of their suits, and while Four was able to control fire for a time, fire resents being
+  suppressed and threatens to break into an inferno. Five of Wands is all pent-up (and potentially toxic) energy.
+description_long_reversed: >-
+  Turmoil is a given in life. You might be wise to find a way to use this discord to your advantage. Instead of
+  rebelling against this seemingly negative energy, accept it, and perhaps then you will find a clever way forward.
 ---
 name: Six of Wands
 suit: WANDS
@@ -327,9 +504,15 @@ image_filename: wands-06.jpg
 description_upright: Victory is at hand.
 description_reversed: Hubris, arrogance, and the resulting fall.
 element: Fire
-description_long: >
-  Figures march in a victory procession with the laurel-crowed victor in the foreground, proudly displaying their trophy for all to see. The realm of Six generally depicts the suits and their elements at their best, and the best of Wands is successfully harnessing the will to attain a great desire. The battle has been won, victory has been declared, and the spoils are enjoyed. The fiery power of the will has done its work.
-
+description_long: >-
+  Figures march in a victory procession with the laurel-crowed victor in the foreground, proudly displaying their trophy
+  for all to see. The realm of Six generally depicts the suits and their elements at their best, and the best of Wands
+  is successfully harnessing the will to attain a great desire. The battle has been won, victory has been declared, and
+  the spoils are enjoyed. The fiery power of the will has done its work.
+description_long_reversed: >-
+  This is a good moment to look at the progression of a suit: Fours represent stability, Fives an inevitable
+  destabilization, and Sixes depict the suits (and their elements) at their best. Imagine this sequence, except ending
+  with a six in the Reverse; a recent trial may show signs of relenting, but be wary of celebrating too soon. 
 ---
 name: Seven of Wands
 suit: WANDS
@@ -338,9 +521,16 @@ image_filename: wands-07.jpg
 description_upright: Hold your ground and let none take what you have fought hard to earn.
 description_reversed: The battle has been lost, but not the war.
 element: Fire
-description_long: >
-  A grim-faced person stands atop a hill, vigorously fighting to defend what was won in Six from the wands thrusting upward—and they appear determined to succeed, no matter the cost. Sevens are the realm of instinct, emotion, and the unconscious mind. They can be both creative and chaotic. In Seven, the fire of Wands manifests as aggressiveness, dogged determination to survive, and the stubborn refusal to give in.
-
+description_long: >-
+  A grim-faced person stands atop a hill, vigorously fighting to defend what was won in Six from the wands thrusting
+  upward—and they appear determined to succeed, no matter the cost. Sevens are the realm of instinct, emotion, and the
+  unconscious mind. They can be both creative and chaotic. In Seven, the fire of Wands manifests as aggressiveness,
+  dogged determination to survive, and the stubborn refusal to give in.
+description_long_reversed: >-
+  The numbered cards can be viewed as a sequence, or a story. What may have been won in the Six is now subject to the
+  chaos of the unconscious mind represented in the Seven. Chaos is not inherently bad, but it is certainly unwieldy. The
+  Seven of Wands in reverse can signify or warn of a setback due to letting your passion or aggression get the best of
+  you, and is an invitation to reflect on how this happened.
 ---
 name: Eight of Wands
 suit: WANDS
@@ -349,9 +539,14 @@ image_filename: wands-08.jpg
 description_upright: Forward motion, dynamism, propulsion. Things are in motion that cannot be stopped.
 description_reversed: What's the rush? Planning and patience is needed, not haste.
 element: Fire
-description_long: >
-  Eight wands fly through the air, as though thrown or launched with great force. Eights are the intellectual and logical manifestations of their suits, and when the fire of Wands meets the mind the result is a spectacular burst of creative energy.
-
+description_long: >-
+  Eight wands fly through the air, as though thrown or launched with great force. Eights are the intellectual and
+  logical manifestations of their suits, and when the fire of Wands meets the mind the result is a spectacular burst of
+  creative energy.
+description_long_reversed: >-
+  You feel that you are about to embark upon an idea, project, or another significant undertaking, but that undertaking
+  might not be ready to manifest into reality. Be sure that your aim is true before you send these wands flying—do not
+  be rash or impatient.
 ---
 name: Nine of Wands
 suit: WANDS
@@ -360,20 +555,35 @@ image_filename: wands-09.jpg
 description_upright: Resilience in the face of adversity. The finish line is near.
 description_reversed: Resources and energy are exhausted. What can be done to replenish them?
 element: Fire
-description_long: >
-  Standing before eight wands, a lone figure holds a ninth in their hand. They appear a little worse for wear, but vigilant and ready to defend their turf. Nine is the number of wisdom and integration; so far the fiery Wands have learned to harness, regulate, and use their energy for the good. They can now stand down for the moment and enjoy a rest in between conquests.
-
+description_long: >-
+  Standing before eight wands, a lone figure holds a ninth in their hand. They appear a little worse for wear, but
+  vigilant and ready to defend their turf. Nine is the number of wisdom and integration; so far the fiery Wands have
+  learned to harness, regulate, and use their energy for the good. They can now stand down for the moment and enjoy a
+  rest in between conquests.
+description_long_reversed: >-
+  Recall the Eight of Wands's imagery of eight wands flying through the air. Imagine that those eight wands let loose
+  did not fly true; misguided passion has landed you in a place you did not want to be. The wand-holder in the reversed
+  Nine of Wands is less wise and more weary, knowing how much work must be done to realign their passions with their
+  reality.
 ---
 name: Ten of Wands
 suit: WANDS
 number: 10
 image_filename: wands-10.jpg
 description_upright: The burden is great, but the rewards are rich.
-description_reversed: A stick in a bundle cannot be broken--you don't have to go it alone.
+description_reversed: A stick in a bundle cannot be broken—you don't have to go it alone.
 element: Fire
-description_long: >
-  Burdened beneath a seemingly impossible bundle of wands much larger than themselves, a person struggles onward to a house in the distance. Tens represent completion and the penultimate manifestation of the elements of their suits, with all the lessons they’ve learned along the way. The explosive energy of Wands has channeled itself into a multitude outlets—at the risk of overextending and diluting itself. As with the person hauling all ten Wands, regulation and conservation of energy is key.
-
+description_long: >-
+  Burdened beneath a seemingly impossible bundle of wands much larger than themselves, a person struggles onward to a
+  house in the distance. Tens represent completion and the ultimate manifestation of the elements of their suits, with
+  all the lessons they've learned along the way. The explosive energy of Wands has channeled itself into a multitude of
+  outlets—at the risk of overextending and diluting itself. As with the person hauling all ten Wands, regulation and
+  conservation of energy is key.
+description_long_reversed: >-
+  You may think of a card in the reverse not as upside-down, but rather facing you. The person in the Ten of Wands is
+  not walking away now, but toward you. How do you interpret the image of someone coming to you with a heavy load?
+  Perhaps this person needs help (and perhaps this person is you). This person could be looking to unload their burden
+  onto you. As always, pay close attention to where your mind goes when presented with the imagery.
 ---
 name: Page of Wands
 suit: WANDS
@@ -382,9 +592,15 @@ image_filename: wands-11.jpg
 description_upright: Inspiration, discovery, free-spiritedness. Embracing whatever may come.
 description_reversed: A new seed is sprouting. How will you call it into the light?
 element: Earth in Fire
-description_long: >
-  A youth stands amid desert dunes, staff planted and head raised high as though they are about to declare an important message. Indeed the Pages in all suits indicate communication and potential messages—whether to or from actual people or one’s own subconscious. The Page of Wands is Earth in Fire, communicating fire’s sometimes inscrutable and flickering will with earthy common sense.
-
+description_long: >-
+  A youth stands amid desert dunes, staff planted and head raised high as though they are about to declare an important
+  message. Indeed the Pages in all suits indicate communication and potential messages—whether to or from actual people
+  or one's own subconscious. The Page of Wands is Earth in Fire, communicating fire's sometimes inscrutable and
+  flickering will with earthy common sense.
+description_long_reversed: >-
+  A strong analogy for the Page of Wands is a person who is beginning a project of passion. In other words, the Page is
+  embarking on an inner journey of passion made manifest in the community at large. The reversed Page of Wands invites
+  you to ask of yourself: why hasn't your journey begun yet? What delays you manifesting your passion?
 ---
 name: Knight of Wands
 suit: WANDS
@@ -393,9 +609,16 @@ image_filename: wands-12.jpg
 description_upright: The Knight charges forth with energy and passion, a bold explorer of the unknown.
 description_reversed: Energy is building and must find an outlet.
 element: Air in Fire
-description_long: >
-  An armored knight, visor raised, charges heedlessly through a desert landscape, flames seeming to stream from their helm. Their bright mantle is decorated with salamanders, creatures of the element of fire. Knights suggest travel, movement, and the coming and going of circumstances. With the Knight of Wands that movement happens at lightning pace for they are the element of air within the suit of fire, fuel to the flames.
-
+description_long: >-
+  An armored knight, visor raised, charges heedlessly through a desert landscape, flames seeming to stream from their
+  helm. Their bright mantle is decorated with salamanders, creatures of the element of fire. Knights suggest travel,
+  movement, and the coming and going of circumstances. With the Knight of Wands that movement happens at lightning pace
+  for they are the element of air within the suit of fire, fuel to the flames.
+description_long_reversed: >-
+  Where the Knight may usually be interpreted as equal parts competent and confident, a Knight in the reverse indicates
+  a lacking in one (or both!) of these areas. As the Knight is the element of Air (the realm of the intellect) within
+  its suit, a reversed Knight in this suit of fire could be looking to you to ask: are you overthinking this and keeping
+  your passion at bay? Or, possibly: is the throttle on your passion from an external source, turning back the Knight?
 ---
 name: Queen of Wands
 suit: WANDS
@@ -404,9 +627,15 @@ image_filename: wands-13.jpg
 description_upright: In their garden, the Queen sits enthroned among flowers, showing their power for all to see.
 description_reversed: Introversion, observation, and renewal of energy.
 element: Water in Fire
-description_long: >
-  The brightly-robed Queen sits on their flowery throne, seemingly all sunlight and warmth—but the black cat at their feet bespeaks a more than passing acquaintance with magic and the Shadow self. This Queen, being water in fire, is the emotional center of the suit of Wands. They balance the dominating energy of fire with compassion, generosity, and humor.
-
+description_long: >-
+  The brightly-robed Queen sits on their flowery throne, seemingly all sunlight and warmth—but the black cat at their
+  feet bespeaks a more than passing acquaintance with magic and the Shadow self. This Queen, being water in fire, is the
+  emotional center of the suit of Wands. They balance the dominating energy of fire with compassion, generosity, and
+  humor.
+description_long_reversed: >-
+  A Water card in reverse is always an invitation to reflect upon your emotions. The Queen of Wands in reverse invites
+  you to devote some of the energy you typically use to manifest your passions outward toward the inner work of
+  witnessing yourself and reflecting upon your emotional state.
 ---
 name: King of Wands
 suit: WANDS
@@ -415,9 +644,18 @@ image_filename: wands-14.jpg
 description_upright: Leadership & vision. The King unites their people towards a noble goal.
 description_reversed: Are you using your power, or abusing it?
 element: Fire in Fire
-description_long: >
-  Enthroned in an arid landscape, the King of Wands gazes outward and rules their realm not with an iron fist but a blossoming staff. Kings are the motivators of their suits, the charismatic leaders who draw up plans and strategize. The King of Wands is especially adept at this with their abundance of fiery energy. They rouse one to press onward towards one’s goal, to blow on the spark of one’s will and fan it into a dazzling flame.
-
+description_long: >-
+  Enthroned in an arid landscape, the King of Wands gazes outward and rules their realm not with an iron fist but a
+  blossoming staff. Kings are the motivators of their suits, the charismatic leaders who draw up plans and strategize.
+  The King of Wands is especially adept at this with their abundance of fiery energy. They rouse one to press onward
+  towards one's goal, to blow on the spark of one's will and fan it into a dazzling flame. (The intended symbolism of
+  the salamander at the king's foot is not entirely clear. One possibility is the Talmudic take on the fantastical
+  traits of the creature, in which any person smeared with the salamander's blood is immune to being harmed by fire.)
+description_long_reversed: >-
+  A King could be interpreted as, if not completion, then at least one who has reached a pinnacle and now sits in a
+  position of power. A leader of experience and charisma, a King's passions become the passions of others. This power,
+  like all power, is subject to be misused and abused, both knowingly and unknowingly. The King of Wands in reverse
+  looks toward you, the Querent, to ask if the power of passion is being wielded wisely.
 ---
 name: Ace of Pentacles
 suit: PENTACLES
@@ -426,9 +664,16 @@ image_filename: pentacles-01.jpg
 description_upright: Abundance, manifestation, and opportunity. Invest wisely.
 description_reversed: Hold tightly to what you have and do not take it for granted.
 element: Earth
-description_long: >
-  Amid a lush landscape, a hand appears from the clouds to offer a huge gold coin. The entire scene speaks of abundance: the garden, the grass, the flowers, and the riches freely offered. Yet the mountains in the distance remind that hard work and determination is required to bring such abundance to fruition. The Aces are the primordial seeds of their suits, and being of earth, the Pentacles are all about germination. The Ace of Pentacles is all about opportunity: economic, social, practical. It is the seed from which a great harvest will grow—but it needs nurturing.
-
+description_long: >-
+  Amid a lush landscape, a hand appears from the clouds to offer a huge gold coin. The entire scene speaks of abundance:
+  the garden, the grass, the flowers, and the riches freely offered. Yet the mountains in the distance remind that hard
+  work and determination are required to bring such abundance to fruition. The Aces are the primordial seeds of their
+  suits, and being of earth, the Pentacles are all about germination. The Ace of Pentacles is all about opportunity:
+  economic, social, practical. It is the seed from which a great harvest will grow—but it needs nurturing.
+description_long_reversed: >-
+  In the reverse, the Ace of Pentacles could be viewed as your (the Querent's) hand holding the coin to your chest,
+  hiding it. Hoarding a wealth—be it a possession, a talent, anything of worldly value—is not sustainable in the long
+  term, but it may be wise to hold it close for the time being.
 ---
 name: Two of Pentacles
 suit: PENTACLES
@@ -437,9 +682,17 @@ image_filename: pentacles-02.jpg
 description_upright: If resources are not managed carefully, they may fall right out of your hands.
 description_reversed: The limit is in danger of being exceeded. How much longer can you hold on?
 element: Earth
-description_long: >
-  A youth appears to dance while balancing two large coins linked by an infinity symbol. Behind him two ships ride the great waves of the ocean. The infinity symbol implies the youth can handle this up and down dance forever if they must; the ships on the sea speak to the same. Life has its little everyday ups and downs but they are manageable—if one is wise. Twos are power conduits of their suits—the initial focusing of the raw power of the Ace. Earthy Pentacles don’t like two much movement, but the earth is also maintained by constant changes every moment. In the realm of Two, the Pentacles slowly begin to make the transition from seed to sprout.
-
+description_long: >-
+  A youth appears to dance while balancing two large coins linked by an infinity symbol. Behind him two ships ride the
+  great waves of the ocean. The infinity symbol implies the youth can handle this up and down dance forever if they
+  must; the ships on the sea speak to the same. Life has its little everyday ups and downs but they are manageable—if
+  one is wise. Twos are power conduits of their suits—the initial focusing of the raw power of the Ace. Earthy Pentacles
+  don't like too much movement, but the earth is also maintained by constant changes every moment. In the realm of Two,
+  the Pentacles slowly begin to make the transition from seed to sprout.
+description_long_reversed: >-
+  The tumult of the sea behind our coin-juggler comes into sharp focus in the reverse. The element of Earth thrives on
+  patience, something that we all may lack in the beginnings of an earthly endeavor. Do not be like the juggler; put
+  both feet on the ground and handle new beginnings with patient hands.
 ---
 name: Three of Pentacles
 suit: PENTACLES
@@ -448,20 +701,37 @@ image_filename: pentacles-03.jpg
 description_upright: Brick by brick the temple is built. Keep building.
 description_reversed: A shoddy job with corners cut will cause the temple to collapse. Beware.
 element: Earth
-description_long: >
-  Chiseling away, a young stonemason works at constructing a wall while two architects hold their plans and instruct. All three appear to be discussing how to proceed, valuing each others’ opinion and knowledge of their crafts. Threes represent the potential energy of their suits becoming crystalized in material form. Much interconnected work and activity must be done for the element of earth bear fruit: rain, changes in soil chemistry, photosynthesis, pollination, and more. Hard-working Pentacles are very happy in the realm of Three.
-
+description_long: >-
+  Chiseling away, a young stonemason works at constructing a wall while two architects hold their plans and instruct.
+  All three appear to be discussing how to proceed, valuing each others' opinion and knowledge of their crafts. Threes
+  represent the potential energy of their suits becoming crystalized in material form. Much interconnected work and
+  activity must be done for the element of earth bear fruit: rain, changes in soil chemistry, photosynthesis,
+  pollination, and more. Hard-working Pentacles are very happy in the realm of Three.
+description_long_reversed: >-
+  A reversed card offers a new perspective intended to challenge your assumptions. You see this temple wall now as upside
+  down; but does that mean it is tumbling down? Do not be so quick to jump to dire conclusions. Perhaps you are working
+  from the top down instead of building a solid foundation first. Always key in tarot but doubly key for reversals is
+  introspect.
 ---
 name: Four of Pentacles
 suit: PENTACLES
 number: 4
 image_filename: pentacles-04.jpg
 description_upright: The fruits of labor are meant to be enjoyed, not hoarded away.
-description_reversed: More, more, more--but at what cost?
+description_reversed: More, more, more—but at what cost?
 element: Earth
-description_long: >
-  What appears to be a richly-mantled noble clutches a coin to their chest. One is balanced on their head and two more are secured under the noble’s feet. The distant city looms. Fours are the stabilization of their elements, and the element of earth is very comfortable here—too comfortable. The risk of earth’s stagnation and inflexibility comes to fruition in this scene: the figure must be utterly still and withdrawn to hold onto their coins, or at least they believe they must. It does not occur to them that there might be a better way. They are uninterested in trying anything new.
-
+description_long: >-
+  What appears to be a richly-mantled noble clutches a coin to their chest. One is balanced on their head and two more
+  are secured under the noble's feet. The distant city looms. Fours are the stabilization of their elements, and the
+  element of earth is very comfortable here—perhaps too comfortable? The risk of earth's stagnation and inflexibility
+  comes to fruition in this scene: the figure must be utterly still and withdrawn to hold onto their coins, or at least
+  they believe they must.
+description_long_reversed: >-
+  Some situations do call for conserving resources, for example saving money. But the Pentacles (sometimes even called
+  Coins) are not necessarily only about money, but also can allude to any material resource. Perhaps in this Magus'
+  opinion, it is typically more fruitful than not to share one's resources when one has the ability to do so. This is
+  ultimately your own decision, of course, but take the reversed Four as an invitation to look toward the city and
+  contemplate what or how you may share what you have with others.
 ---
 name: Five of Pentacles
 suit: PENTACLES
@@ -470,9 +740,16 @@ image_filename: pentacles-05.jpg
 description_upright: Isolation, poverty, loss. Wandering the trackless wastes.
 description_reversed: There is a way out. Be vigilant.
 element: Earth
-description_long: >
-  Two destitute figures trudge through the snow, cold and dejected. Behind them a large window depicting five coins glows with cheerful light. For whatever reason, the two are not welcome inside. Fives are the inevitable destabilization of their suits, and earth does not like being moved even under the best of circumstances. In the realm of Five, the earthy Pentacles tend to panic and interpret this natural destabilization as a catastrophe. So while the frozen wanderers may think their situation will never change, it is only a temporary setback.
-
+description_long: >-
+  Two destitute figures trudge through the snow, cold and dejected. Behind them a large window depicting five coins
+  glows with cheerful light. For whatever reason, the two are not welcome inside. Fives are the inevitable
+  destabilization of their suits, and earth does not like being moved even under the best of circumstances. In the realm
+  of Five, the earthy Pentacles tend to panic and interpret this natural destabilization as a catastrophe. So while the
+  frozen wanderers may think their situation will never change, it is only a temporary setback.
+description_long_reversed: >-
+  From the reversed perspective, one could interpret this card as though they are inside, looking out the window at the
+  poor souls outside. Reflect on whose suffering to which you bear witness—perhaps your own—and take the steps necessary
+  to alleviate that suffering, even if it is to remind yourself to be vigilant.
 ---
 name: Six of Pentacles
 suit: PENTACLES
@@ -481,20 +758,37 @@ image_filename: pentacles-06.jpg
 description_upright: Wealth is meant to be shared and redistributed.
 description_reversed: Bleeding out, giving all for nothing.
 element: Earth
-description_long: >
-  A wealthy benefactor freely drops coins into the hands of the dejected pair last seen in the Five of Pentacles. The generous giver holds a pair of scales in their other hand, symbolizing a fair and equitable society, as well as redistribution of wealth. The realm of Six generally depicts the suits and their elements at their best, and the best of Pentacles is the generous sharing of material abundance for the good of all. Practical earth understands that fairness, equality, and justice aren’t just lofty ideas—they require that all are ensured access to material resources.
-
+description_long: >-
+  A wealthy benefactor freely drops coins into the hands of the dejected pair last seen in the Five of Pentacles. The
+  generous giver holds a pair of scales in their other hand, symbolizing a fair and equitable society, as well as
+  redistribution of wealth. The realm of Six generally depicts the suits and their elements at their best, and the best
+  of Pentacles is the generous sharing of material abundance for the good of all. Practical earth understands that
+  fairness, equality, and justice aren't just lofty ideas—they require that all are ensured access to material
+  resources.
+description_long_reversed: >-
+  There is bounty in sharing, just as there is wealth in not wasting. There are dangers to giving too much of your
+  resources, however. Take care not to fall victim to the perils of overextending yourself: vanity, codependency, and
+  currying favor come to mind.
 ---
 name: Seven of Pentacles
 suit: PENTACLES
 number: 7
 image_filename: pentacles-07.jpg
 description_upright: The farmer surveys the fruits of their labor. Perseverance has obtained a rich harvest.
-description_reversed: You can't get blood from a stone, or much of anything besides stone for that matter. Expend energy elsewhere.
+description_reversed: >-
+  You can't get blood from a stone, or much of anything besides stone for that matter. Expend energy elsewhere.
 element: Earth
-description_long: >
-  Resting their head on the handle of their hoe, a farmer surveys their growing harvest (symbolized by seven coins) almost balefully. Their hard work is paying off, but has left them quite exhausted. Sevens are the realm of instinct, emotion, and the unconscious mind. They can be both creative and chaotic. In the realm of Seven, the earth of Pentacles manifests as fretting over the future—whether hard work will pay off, what the results will eventually be, whether the long-term goal is really worth it.
-
+description_long: >-
+  Resting their head on the handle of their hoe, a farmer surveys their growing harvest (symbolized by seven coins)
+  almost balefully. Their hard work is paying off, but has left them quite exhausted. Sevens are the realm of instinct,
+  emotion, and the unconscious mind. They can be both creative and chaotic. In the realm of Seven, the earth of
+  Pentacles manifests as fretting over the future—whether hard work will pay off, what the results will eventually be,
+  whether the long-term goal is really worth it.
+description_long_reversed: >-
+  The sunk cost fallacy comes to mind. We become personally invested in what we do, and when we do not see the results
+  we want, we are tempted to blame bad luck, poor conditions, or even ourselves for not trying hard enough. We convince
+  ourselves that luck can change or we can work harder, and we continue to sink more effort into a losing battle. Let
+  bygones be bygones.
 ---
 name: Eight of Pentacles
 suit: PENTACLES
@@ -503,20 +797,35 @@ image_filename: pentacles-08.jpg
 description_upright: A master craftsperson does not become so overnight. Hone your skills patiently.
 description_reversed: Take care not to sharpen the knife away to nothing.
 element: Earth
-description_long: >
-  A laborer sits before a tower of six pentacles. This is clearly a work in progress as the laborer is chiseling a new addition to the tower and another uncompleted disk lays at their feet. They appear content and caught up in the flow of their work. Eights are the intellectual and logical manifestations of their suits, and in the earth of Pentacles this manifest as steady, uninterrupted, hands-on work that gets the job done right.
-
+description_long: >-
+  A laborer sits before a tower of six pentacles. This is clearly a work in progress as the laborer is chiseling a new
+  addition to the tower and another uncompleted disk lays at their feet. They appear content and caught up in the flow
+  of their work. Eights are the intellectual and logical manifestations of their suits, and in the earth of Pentacles
+  this manifest as steady, uninterrupted, hands-on work that gets the job done right.
+description_long_reversed: >-
+  As is the case with other reversals in this suit, we are once again cautioned by the reversed Eight to be economical
+  with our resources. Time, money, energy, and concentration are finite, and we must be mindful to invest it wisely.
+  Small acts can accomplish in this regard. For example, the simple act of allowing yourself to break focus for a glass
+  of water and a few moments of stretching can be enough to keep your whittling knife from cutting into your hand.
 ---
 name: Nine of Pentacles
 suit: PENTACLES
 number: 9
 image_filename: pentacles-09.jpg
 description_upright: There are few joys greater than well-deserved success.
-description_reversed: Overwork & lack of self-worth. Your worth lies beyond your ability to produce.
+description_reversed: Lack of self-worth. Your worth lies beyond your ability to produce.
 element: Earth
-description_long: >
-  An aristocratic figure stands in the midst of a beautiful lush garden overflowing with fruit and flowers. The flowers on their robe and the hooded falcon on their arm all attest to the person’s refinement. The expression on their face is ambivalent—they are neither overjoyed nor dismayed at their surroundings; all of this rich abundance is theirs by right and they are simply used to it. Nine is the number of wisdom and integration; so far the earthy Pentacles have learned to work hard for material gain, and to be content with the results of their labor.
-
+description_long: >-
+  An aristocratic figure stands in the midst of a beautiful lush garden overflowing with fruit and flowers. The flowers
+  on their robe and the hooded falcon on their arm all attest to the person's refinement. The expression on their face
+  is ambivalent—they are neither overjoyed nor dismayed at their surroundings; all of this rich abundance is theirs by
+  right and they are simply used to it. Nine is the number of wisdom and integration; so far the earthy Pentacles have
+  learned to work hard for material gain, and to be content with the results of their labor.
+description_long_reversed: >-
+  Perhaps the more idealistic among you may overlook the Pentacles because of a negative association you hold with money
+  and wealth. But do not fool yourself; we all need resources to survive, and even more to thrive. Refresh your
+  perspective on what it means to achieve security in this realm. Acknowledge yourself for your skills and your
+  potential, and honor your right to rest and leisure. Only in this balance can we find a life worth living.
 ---
 name: Ten of Pentacles
 suit: PENTACLES
@@ -525,9 +834,17 @@ image_filename: pentacles-10.jpg
 description_upright: Completion, accomplishment; the work is done and it is time to let it rest.
 description_reversed: Stability and security have a price. Be sure you are willing to pay it.
 element: Earth
-description_long: >
-  In an arched courtyard an elder sits surrounded by their wealth and family. The coins that dot the scene are arranged in the form of the Kabbalistic Tree of Life, signifying completion, wholeness, and harmony. Tens represent completion and the penultimate manifestation of the elements of their suits, with all the lessons they’ve learned along the way. The earth of the Pentacles ultimately manifests as material security, domestic stability, and long-term harmony in all practical matters.
-
+description_long: >-
+  In an arched courtyard an elder sits surrounded by their wealth and family. The coins that dot the scene are arranged
+  in the form of the Kabbalistic Tree of Life, signifying completion, wholeness, and harmony. Tens represent completion
+  and the ultimate manifestation of the elements of their suits, with all the lessons they've learned along the way. The
+  earth of the Pentacles ultimately manifests as material security, domestic stability, and long-term harmony in all
+  practical matters.
+description_long_reversed: >-
+  Life is a journey. I would call it an adventure, but it's not always enjoyable. We encounter pain and suffering, both
+  our own and others'. The security and stability represented by the Ten of Pentacles is the tonic for life's struggles,
+  at least most of the time. There are times when "settling down" may keep us from the opportunities or stimulation we
+  need or desire. Contemplate whether this stasis is what you want or if now is the right time for it.
 ---
 name: Page of Pentacles
 suit: PENTACLES
@@ -536,20 +853,35 @@ image_filename: pentacles-11.jpg
 description_upright: Development, creativity, motivation. It is time for dreams and goals to be realized.
 description_reversed: Do not lose sight of your original inspiration; minimize distractions.
 element: Earth in Earth
-description_long: >
-  On an open plain with trees and mountains in the background, a young Page stands tall and gazes at the coin in their hands. The Pages in all suits indicate communication and potential messages—whether to or from actual people or one’s own subconscious. Being earth in earth, the Page of Pentacles has perhaps the most common sense of all the Pages, to the point of being blunt and unimaginative. Whatever message they give will be clear, and to the point.
-
+description_long: >-
+  On an open plain with trees and mountains in the background, a young Page stands tall and gazes at the coin in their
+  hands. The Pages in all suits indicate communication and potential messages—whether to or from actual people or one's
+  own subconscious. Being earth in earth, the Page of Pentacles has perhaps the most common sense of all the Pages, to
+  the point of being blunt and unimaginative. (Careful of that!) Whatever message they give will be clear, and to the
+  point.
+description_long_reversed: >-
+  Oftentimes in our endeavors, even in spiritual or creative ones, there comes a time to just "get it done." The Page is
+  the apprentice of the Knight, learning of the world through communication and research. Theirs is not the realm of new
+  ideas; it is of learning how to bring ideas into the world. This requires labor and focus. A reversed Page of
+  Pentacles is a reminder of this.
 ---
 name: Knight of Pentacles
 suit: PENTACLES
 number: 12
 image_filename: pentacles-12.jpg
 description_upright: The Knight wisely looks before they leap, and knows the value of hard work and perseverance.
-description_reversed: Boredom, perfectionism. Forward motion has come to a complete standstill and progress is lost in the weeds.
+description_reversed: Boredom, perfectionism. Forward motion has come to a standstill and progress is lost in the weeds.
 element: Air in Earth
-description_long: >
-  A knight on horseback gazes out over bare fields that will soon sprout with crops, a single coin in their hand. Knights suggest travel, movement, and the coming and going of circumstances. With the Knight of Pentacles, this movement is bound to be cautious and well-thought-out. The swiftness of their native air is slowed and stabilized by the earth of Pentacles, and they counsel patience in all things.
-
+description_long: >-
+  A knight on horseback gazes out over bare fields that will soon sprout with crops, a single coin in their hand.
+  Knights suggest travel, movement, and the coming and going of circumstances. With the Knight of Pentacles, this
+  movement is bound to be cautious and well-thought-out. The swiftness of their native air is slowed and stabilized by
+  the earth of Pentacles, and they counsel patience in all things.
+description_long_reversed: >-
+  The Knight is the intersection of learned wisdom and action, with great range to bring forth the energy of their
+  element into the world. Where the Air of the Knight may represent ideas and cunning, the Earth of this suit represents
+  logistics, the "how" of it all. There comes a time in planning to trust your skills and your knowledge and to begin
+  the work; do not get lost in over-meticulous planning, or even worse, idle fretting.
 ---
 name: Queen of Pentacles
 suit: PENTACLES
@@ -558,9 +890,16 @@ image_filename: pentacles-13.jpg
 description_upright: Work-life balance is in perfect harmony, and domestic bliss ensues.
 description_reversed: Take care that the current path remains sustainable in the long-term.
 element: Water in Earth
-description_long: >
-  The Queen sits enthroned amid a lush landscape full of flowers, fruits, and vines, gazing at the coin in their hands. Being water in earth, they are the emotional center of the Suit of Pentacles, something the material-minded Pentacles often lacks. The Queen of Pentacles knows that material stability is just a means to an end—the foundation of the hierarchy of needs that allows deeper desires like love, belonging, and self actualization to be realized.
-
+description_long: >-
+  The Queen sits enthroned amid a lush landscape full of flowers, fruits, and vines, gazing at the coin in their hands.
+  Being water in earth, they are the emotional center of the Suit of Pentacles, something the material-minded Pentacles
+  often lacks. The Queen of Pentacles knows that material stability is just a means to an end—the foundation of the
+  hierarchy of needs that allows deeper desires like love, belonging, and self actualization to be realized.
+description_long_reversed: >-
+  This card in reverse invites the Querent to examine what they may be taking for granted. We sometimes find ourselves
+  devoting most of our attention to higher needs, such as love or self-actualization, and fail to examine whether our
+  foundations are strong enough to allow us to pursue these higher goals. Examine your domestic life—home, work,
+  perhaps also relationships—under this lens. Are these realms of your life conducive to your higher pursuits?
 ---
 name: King of Pentacles
 suit: PENTACLES
@@ -569,9 +908,20 @@ image_filename: pentacles-14.jpg
 description_upright: Self-discipline and the safety of routine create fertile soil for abundance.
 description_reversed: What does it profit someone to gain the world yet lose their soul?
 element: Fire in Earth
-description_long: >
-  The King of Pentacles is a jolly, good-natured soul. Their throne is decorated with bulls, symbols of vitality and virility, as well as the vegetation god Dionysus whom the King takes after in appearance and demeanor. The King’s cloak bears further Dionysian imagery, being covered in a design of grapes. Kings are the motivators of their suits, the charismatic leaders who draw up plans and strategize. This King, the vital fire of ever-practical earth, is not concerned with grand battles or playing four-dimensional chess, but with ensuring that their people flourish and are provided for.
-
+description_long: >-
+  The King of Pentacles is a jolly, good-natured soul. Their throne is decorated with bulls, symbols of vitality and
+  virility, as well as the vegetation god Dionysus whom the King takes after in appearance and demeanor. The King's
+  cloak bears further Dionysian imagery, being covered in a design of grapes. Kings are the motivators of their suits,
+  the charismatic leaders who draw up plans and strategize. This King, the vital fire of ever-practical earth, is not
+  concerned with grand battles or playing four-dimensional chess, but with ensuring that their people flourish and are
+  provided for.
+description_long_reversed: >-
+  The strict adherence to gender roles in tarot is often exhausting. The queens are emotional centers of their suits and
+  the kings are the charismatic leaders. The arcane aside, the two together make a great duo as heads of state (or heads
+  of suit). The king in reverse is an invitation to check one's power, whether that power comes from a leadership
+  position, a place of privilege, or one's command over some pursuit. In the suit of Coins, this invitation steers one
+  to examine the earthly, material pursuits. Power and privilege are inevitably abused by all of us; we are only human,
+  after all. It takes constant work to keep our power in check.
 ---
 name: Ace of Cups
 suit: CUPS
@@ -580,9 +930,17 @@ image_filename: cups-01.jpg
 description_upright: The Cup is a deep wellspring of love, compassion, and harmony.
 description_reversed: Do not be afraid to engage with your emotions, however strong or overflowing they may be.
 element: Water
-description_long: >
-  A hand holds out an abundantly flowing chalice above a sea of lotuses while a white dove hovers over all. The chalice is the subconscious mind, its five streams the five senses, the lotuses below harbingers of spiritual awakening, the diving dove a symbol of divine love. The Aces are the wellsprings of their suits, and as the entire suit of Cups rules the heart and emotions, the Ace of Cups is the Holy Grail of feeling and intuition. It flows with utterly pure love and intimacy unsullied by suspicion or self-interest.
-
+description_long: >-
+  A hand holds out an abundantly flowing chalice above a sea of lotuses while a white dove hovers over all. The chalice
+  is the subconscious mind, its five streams the five senses, the lotuses below harbingers of spiritual awakening, the
+  diving dove a symbol of divine love. The Aces are the wellsprings of their suits, and as the entire suit of Cups rules
+  the heart and emotions, the Ace of Cups is the Holy Grail of feeling and intuition. It flows with utterly pure love
+  and intimacy unsullied by suspicion or self-interest.
+description_long_reversed: >-
+  One perspective on this card in the reverse is how one might see a cup right before drinking. Why have they paused to
+  peer down at its contents? Apprehension? Fear? Though it's not advisable to rush into any endeavor, especially one in
+  the realm of emotion, there does come a time to drink. Take the time you need to process feelings, but pay attention
+  to the line between processing and putting off.
 ---
 name: Two of Cups
 suit: CUPS
@@ -591,9 +949,16 @@ image_filename: cups-02.jpg
 description_upright: Love flows between two people, nourishing a relationship of compassion and mutual respect.
 description_reversed: Give love to yourself before giving it away to others.
 element: Water
-description_long: >
-  Two figures gaze intently at each other while passing two cups between them. Above them hovers a serpent-wand and the winged head of a chimera, symbols of the dynamic, almost alchemical, connection between the two. Twos are power conduits of their suits—the initial focusing of the raw power of the Ace. In the Ace of Cups, formless, flowing water is given boundaries and direction—things it desperately needs to avoid becoming a flood.
-
+description_long: >-
+  Two figures gaze intently at each other while passing two cups between them. Above them hovers a serpent-wand and the
+  winged head of a chimera, symbols of the dynamic, almost alchemical, connection between the two. Twos are power
+  conduits of their suits—the initial focusing of the raw power of the Ace. In the Ace of Cups, formless, flowing water
+  is given boundaries and direction—things it desperately needs to avoid becoming a flood.
+description_long_reversed: >-
+  A reversed card many times asks the Querent to turn a card's meaning and energy back unto themselves. This holds true
+  with the Two of Cups. The common saying, "You cannot love another unless you love yourself," is heavy-handed in its
+  absoluteness. Love is a process that requires labor, and doing the work of loving another requires one to also do the
+  work of loving themselves. This card in the reverse may be a reminder that you are falling behind in that work.
 ---
 name: Three of Cups
 suit: CUPS
@@ -602,31 +967,50 @@ image_filename: cups-03.jpg
 description_upright: Celebration, friendship, joy. What do you have to celebrate, and with whom?
 description_reversed: Exclusion and isolation. You are on the outside looking in.
 element: Water
-description_long: >
-  Three jubilant revelers dance together in perfect harmony amid a fruitful garden, their cups held high. The water element of the suit of Cups is very happy in the realm of Three. Threes represent the potential energy of their suits becoming crystalized in material form and shared. And the big-hearted, emotional Cups want nothing more than to share their love with all.
-
+description_long: >-
+  Three jubilant revelers dance together in perfect harmony amid a fruitful garden, their cups held high. The water
+  element of the suit of Cups is very happy in the realm of Three. Threes represent the potential energy of their suits
+  becoming crystalized in material form and shared. And the big-hearted, emotional Cups want nothing more than to share
+  their love with all.
+description_long_reversed: >-
+  In the reverse, the potential of Threes is in disarray. Ponder the exclusion and isolation this reversed card
+  represents, and pay close attention to where in the spread this card has landed. Past isolation may require your
+  attention for healing. Present, future, or potential isolation may represent anxiety and not necessarily an omen of
+  isolation to come.
 ---
 name: Four of Cups
 suit: CUPS
 number: 4
 image_filename: cups-04.jpg
-description_upright: The Cup is freely offered--will you take it or refuse?
+description_upright: The Cup is freely offered—will you take it or refuse?
 description_reversed: Guard and honor your boundaries; create your own space to be comfortable.
 element: Water
-description_long: >
-  A sullen figure sits with crossed legs and crossed arms against a tree, three cups in front of them and one offered to them from a divinely-appearing hand. The figure appears to want nothing to do with any of them. Fours are the stabilization of their elements, and this makes the watery Cups very unhappy. Like the figure beneath the tree, being dammed up makes water sullen and stagnant.
-
+description_long: >-
+  A sullen figure sits with crossed legs and crossed arms against a tree, three cups in front of them and one offered to
+  them from a divinely-appearing hand. The figure appears to want nothing to do with any of them. Fours are the
+  stabilization of their elements, and this makes the watery Cups very unhappy. Like the figure beneath the tree, being
+  dammed up makes water sullen and stagnant.
+description_long_reversed: >-
+  Where in the upright position this card warns you against a stagnant flow of emotion, in the reverse this card serves
+  as a reminder that sometimes we would be wise to pause or redirect our emotional flow. With this card take a moment to
+  reaffirm your boundaries and tidy up your emotional space. Who and what deserves your emotional energy?
 ---
 name: Five of Cups
 suit: CUPS
 number: 5
 image_filename: cups-05.jpg
-description_upright: The Cups have run dry, leaving behind only regret and disappointment. They've been drained to the dregs but have failed to satisfy.
+description_upright: >-
+  The Cups have run dry, leaving behind only regret and disappointment. They've been drained to the dregs but have
+  failed to satisfy.
 description_reversed: The finite Cups are left behind in favor of other sources that will not run dry so quickly.
 element: Water
-description_long: >
-  Cloaked and downcast, a person stands before three spilt cups with two upright cups behind them. They face a distant flowing river and the bridge that crosses it. Fives are the inevitable destabilization of their suits, and while water doesn’t like to be dammed up, its emotional nature craves some level of structure and security. Doubt and emotional turmoil reign in the Five of Cups, spilling everywhere.
-
+description_long: >-
+  Cloaked and downcast, a person stands before three spilt cups with two upright cups behind them. They face a distant
+  flowing river and the bridge that crosses it. Fives are the inevitable destabilization of their suits, and while water
+  doesn't like to be dammed up, its emotional nature craves some level of structure and security. Doubt and emotional
+  turmoil reign in the Five of Cups, spilling everywhere.
+description_long_reversed: >-
+  
 ---
 name: Six of Cups
 suit: CUPS
@@ -635,9 +1019,19 @@ image_filename: cups-06.jpg
 description_upright: Innocence and joy; nostalgia and simplicity. Cooperation and an open heart are needed.
 description_reversed: You cling to the past, or perhaps the past clings to you, obscuring the blessings of the present.
 element: Water
-description_long: >
-  Two children play happily together, surrounded by six chalices full of blossoms. The high walls behind them and the sentry in the distance suggest that they are utterly secure—this is the world of a child’s mind where everything is beautiful and nothing hurts. The realm of Six generally depicts the suits and their elements at their best, and the best of the Cups is love, pure and innocent. Within the harmony and security of Six, a utopian world of unassailable vulnerability and unbroken trust prevails.
-
+description_long: >-
+  Two children play happily together, surrounded by six chalices full of blossoms. The high walls behind them and the
+  sentry in the distance suggest that they are utterly secure—this is the world of a child's mind where everything is
+  beautiful and nothing hurts. The realm of Six generally depicts the suits and their elements at their best, and the
+  best of the Cups is love, pure and innocent. Within the harmony and security of Six, a utopian world of unassailable
+  vulnerability and unbroken trust prevails.
+description_long_reversed: >-
+  Quite often the reversed Six of Cups can be a warning against nostalgia, or perhaps an invitation to let go of things
+  that, though they once brought you joy, no longer deserve space in your garden. But there may be a deeper undercurrent
+  to this card. While upright this card may conjure in in the Querent an image of euphoria. But euphoria is a facade;
+  the root of the word "euphoria" is "a feeling of well-being in a sick person caused by drugs." Euphoria is an
+  impermenent escape, a separate feeling entirely from happiness and peace of mind despite the superficial similarities
+  between the two.
 ---
 name: Seven of Cups
 suit: CUPS
@@ -646,9 +1040,17 @@ image_filename: cups-07.jpg
 description_upright: Not everything is as it seems. Tread carefully and wisely.
 description_reversed: Trust in your inner wisdom to show you the way.
 element: Water
-description_long: >
-  A bewildered figure finds themselves before a dreamlike tableau.  Seven chalices float before them, full of treasures, honors, pleasures—but also serpents, dragons, and veiled mysteries. Sevens are the realm of instinct, emotion, and the unconscious mind. They can be both creative and chaotic. In Seven, the water of the suit of Cups is beautiful but treacherous, reflecting fantastic shapes that may or may not be real. Water is a master illusionist and is nowhere more mischievous or clever than the Seven of Cups.
-
+description_long: >-
+  A bewildered figure finds themselves before a dreamlike tableau. Seven chalices float before them, full of treasures,
+  honors, pleasures—but also serpents, dragons, and veiled mysteries. Sevens are the realm of instinct, emotion, and the
+  unconscious mind. They can be both creative and chaotic. In Seven, the water of the suit of Cups is beautiful but
+  treacherous, reflecting fantastic shapes that may or may not be real. Water is a master illusionist and is nowhere
+  more mischievous or clever than the Seven of Cups.
+description_long_reversed: >-
+  Sometimes we create mystery or uncertainty where there is none. Perhaps we do not trust ourselves to make the correct
+  decision to move forward, and instead of coping with that lack of trust, we prefer to believe that the way forward is
+  not so clear. But we often we know what we should do before we do it. Trust yourself, listen to yourself, and take the
+  next step.
 ---
 name: Eight of Cups
 suit: CUPS
@@ -657,9 +1059,17 @@ image_filename: cups-08.jpg
 description_upright: Turning your back on your emotions will not make them go away or make them more manageable.
 description_reversed: Second chances, perseverance; what you were looking for was perhaps here all along.
 element: Water
-description_long: >
-  Beneath a sad-faced moon, a bent figure walks toward a forbidding mountain range, leaving behind eight empty cups. Eights are the intellectual and logical manifestations of their suits, and this spells nothing but disillusionment for the dreamy Cups who become frustrated when their every utopian vision is not realized. It is time to be realistic and face the facts just as the figure faces the hard, sharp mountains.
-
+description_long: >-
+  Beneath a sad-faced moon, a bent figure walks toward a forbidding mountain range, leaving behind eight empty cups.
+  Eights are the intellectual and logical manifestations of their suits, and this spells nothing but disillusionment for
+  the dreamy Cups who become frustrated when their every utopian vision is not realized. It is time to be realistic and
+  face the facts just as the figure faces the hard, sharp mountains.
+description_long_reversed: >-
+  We are sometimes tempted to leave behind our emotions. Maybe it is the falsehood promoted in our post-Enlightenment
+  society that rationality must prevail over all that causes us to discount the validity of our emotions. (This is a
+  vicious cycle: We are raised to devalue our emotions, thus we are less familiar with ourselves emotionally, and this
+  lack of emotional maturity causes us to rely too heavily on rationality.) Turn back toward your feelings and you may
+  find the hope and strength you need.
 ---
 name: Nine of Cups
 suit: CUPS
@@ -668,9 +1078,16 @@ image_filename: cups-09.jpg
 description_upright: Contentment, satisfaction, and gratitude. The Cups are full and refreshing.
 description_reversed: Self-indulgence and stagnation. What you want is not necessarily what you need.
 element: Water
-description_long: >
-  A well-contented noble sits beneath their collection of nine cups, looking very pleased with themselves indeed. Nine is the number of wisdom and integration; so far the watery Cups have learned emotional maturity, freedom from codependence, self-love, and how to be happy with what they have to be happy with. Water flows abundantly, but with healthy boundaries.
-
+description_long: >-
+  A well-contented noble sits beneath their collection of nine cups, looking very pleased with themselves indeed. Nine
+  is the number of wisdom and integration; so far the watery Cups have learned emotional maturity, freedom from
+  codependence, self-love, and how to be happy with what they have to be happy with. Water flows abundantly, but with
+  healthy boundaries.
+description_long_reversed: >-
+  There is a healthy stasis that comes with wisdom. But there is a difference between stasis and stagnation. Even still
+  waters require flow to remain clear and not become stale. Look inside your nine cups and ponder: do I have what I
+  want, or have what I need? Wants and needs are not mutually exclusive, of course, but neither are they the same. Take
+  care not to slip into the un-flowing pool of hedonism; that water will fester and leave you thirsty.
 ---
 name: Ten of Cups
 suit: CUPS
@@ -679,20 +1096,41 @@ image_filename: cups-10.jpg
 description_upright: Inner and outer worlds are in harmony and in sync.
 description_reversed: Relationships may be suffering. Disconnection, misalignment, struggle.
 element: Water
-description_long: >
-  The happy couple from the Two of Cups gaze up at the sky, a blazing rainbow of ten chalices arcing over them as their children dance beside them. The scene is full of domestic bliss, and the rainbow speaks to the promise of even more future happiness. Through emotional intelligence, enduring love, and honesty, the couple has built an idyllic life together. Tens represent completion and the penultimate manifestation of the elements of their suits, with all the lessons they’ve learned along the way. Watery cups has flowed through a roller coaster of emotional experiences, but has learned from and been enriched by all of them, leading to lasting contentment.
-
+description_long: >-
+  The happy couple from the Two of Cups gaze up at the sky, a blazing rainbow of ten chalices arcing over them as their
+  children dance beside them. The scene is full of domestic bliss, and the rainbow speaks to the promise of even more
+  future happiness. Through emotional intelligence, enduring love, and honesty, the couple has built an idyllic life
+  together. Tens represent completion and the ultimate manifestation of the elements of their suits, with all the
+  lessons they've learned along the way. Watery cups has flowed through a roller coaster of emotional experiences, but
+  has learned from and been enriched by all of them, leading to lasting contentment.
+description_long_reversed: >-
+  It is healthy to recall from time to time that the business of tarot is not omens. Just as an upright Ten of Cups does
+  not predict emotional fulfillment (it may, for example reflect your desire to attain it), a reversed Ten of Cups does
+  not mean your emotional life is falling apart. The element of Cups is water, and healthy water must flow. A reversed
+  Ten of Cups may simply be an invitation to reflect on tensions in your relationship, and to give them attention before
+  they dam your flow.
 ---
 name: Page of Cups
 suit: CUPS
 number: 11
 image_filename: cups-11.jpg
-description_upright: A quirky and creative fellow, the Page is full of surprises--and more than a little weirdness. Roll with it.
+description_upright: >-
+  A quirky and creative fellow, the Page is full of surprises—and more than a little weirdness. Roll with it.
 description_reversed: Emotional immaturity & stuffiness. Get out of your comfort zone.
 element: Earth in Water
-description_long: >
-  A fellow in a funny fishy hat stands on the shore of the sea holding a chalice out of which pops an actual fish—which appears to be talking to them. They don’t seem the least bit surprised or concerned. In fact they seem amused by this quirky turn of events. No wonder—their lotus-adorned tunic speaks to their open-mindedness and keen insight. Pages in all suits indicate communication and potential messages—whether to or from actual people or one’s own subconscious. And whatever the Page of Cups has to say, who as Earth in Water knows the dangers of being too serious, you can bet it will get your attention.
-
+description_long: >-
+  A fellow in a funny, fishy hat stands on the shore of the sea holding a chalice out of which pops an actual fish—which
+  appears to be talking to them. They don't seem the least bit surprised or concerned. In fact they seem amused by this
+  quirky turn of events. No wonder—their lotus-adorned tunic speaks to their open-mindedness and keen insight. Pages in
+  all suits indicate communication and potential messages—whether to or from actual people or one's own subconscious.
+  And whatever the Page of Cups has to say, who as Earth in Water knows the dangers of being too serious, you can bet it
+  will get your attention.
+description_long_reversed: >-
+  The Page symbolizes the beginning of proficiency as you manifest a suit's energy in the world. A Page learns from the
+  Knight through the handling of the Knight's worldly affairs, such as communication and research. The Page is young but
+  learning. In the reverse, a Page might suggest immaturity, arrested development, or a stubborn closed-mindedness. In
+  the suit of Cups, the reversed Page warns of not devoting the proper energy of learning how to practice emotional
+  well-being in the real world. Learning to live an emotionally healthy life requires risk, namely vulnerability.
 ---
 name: Knight of Cups
 suit: CUPS
@@ -701,9 +1139,18 @@ image_filename: cups-12.jpg
 description_upright: Intuition and emotion are needed more than brute force or stoicism. Think poetry, not prose.
 description_reversed: Emotions are not weapons to be used against others or yourself.
 element: Air in Water
-description_long: >
-  A Knight rides through an arid desert through which runs a precious, thirst-quenching river. Perhaps they hope to fill their empty chalice there. Their mantle of fishes symbolize the water of the Cups, but their winged helm and boots remind us that they are an airy being, more intellectual than emotional. The scarcity of water in their surroundings suggests they would be wise to use more of their heart along with their head.  Knights suggest travel, movement, and the coming and going of circumstances. With the Knight of Cups movement may be more of a meandering flow than a linear trip from point A to point B.
-
+description_long: >-
+  A Knight rides through an arid desert through which runs a precious, thirst-quenching river. Perhaps they hope to fill
+  their empty chalice there. Their mantle of fishes symbolize the water of the Cups, but their winged helm and boots
+  remind us that they are an airy being, more intellectual than emotional. The scarcity of water in their surroundings
+  suggests they would be wise to use more of their heart along with their head. Knights suggest travel, movement, and
+  the coming and going of circumstances. With the Knight of Cups movement may be more of a meandering flow than a linear
+  trip from point A to point B.
+description_long_reversed: >-
+  Recall that Air is the element of Swords, a useful but dangerous weapon. There is a time to arm and armor oneself,
+  even in the open and flowing realm of emotions, but a reversed Knight of Cups is a stern warning to the Querent to
+  take great care in decerning the difference between what it means to fortify oneself, and what it means to become
+  stubborn, stagnant, deflecting, and defensive to resist emotional growth.
 ---
 name: Queen of Cups
 suit: CUPS
@@ -712,20 +1159,42 @@ image_filename: cups-13.jpg
 description_upright: The Queen is full of compassion and sensitivity, easily perceiving the needs of others.
 description_reversed: Co-dependency and emotional exhaustion. Too much is being given and too little received.
 element: Water in Water
-description_long: >
-  Beautiful and gentle, the Queen of Cups sits on a throne of shells and sea-nymphs at the edge of a placid sea, a chalice with handles in the form of cherubim in their hand. Their chalice is unlike any in the entire suit of Cups. It is closed, symbolizing both their deep subconscious as well as their wise discretion in how they share their emotions, and who with. The bowl of the chalice sits between two cherubim-shaped handles, signifying that although one’s subconscious is a dark place, it is also a holy place. It is life and strength, not knowledge and words that one finds there. The Queen’s feet do not touch the water, showing that they have learned how to relate positively to their emotions without being overwhelmed by them.
-
+description_long: >-
+  Beautiful and gentle, the Queen of Cups sits on a throne of shells and sea-nymphs at the edge of a placid sea, a
+  chalice with handles in the form of cherubim in their hand. Their chalice is unlike any in the entire suit of Cups. It
+  is closed, symbolizing both their deep subconscious as well as their wise discretion in how they share their emotions,
+  and who with. The bowl of the chalice sits between two cherubim-shaped handles, signifying that although one's
+  subconscious is a dark place, it is also a holy place. It is life and strength, not knowledge and words that one finds
+  there. The Queen's feet do not touch the water, showing that they have learned how to relate positively to their
+  emotions without being overwhelmed by them.
+description_long_reversed: >-
+  Take the reversed Queen of Cups as a call to examine your emotional relationships. Is there a healthy flow between you
+  and the other? In absence of a balanced sharing of two cups' contents, one will eventually run dry. The Queen is wise
+  to this, and thus not quick to anger when they find such an imbalance in a relationship. Be the embodiment of Water:
+  with grace, intuition, and perception, seek out what must be done to restore the balance, even if the culprit is you.
 ---
 name: King of Cups
 suit: CUPS
 number: 14
 image_filename: cups-14.jpg
-description_upright: Diplomacy, emotional availability, and empathy. The King knows that true power comes when one is emotionally engaged with the self and others.
+description_upright: >-
+  Diplomacy, emotional availability, and empathy. The King knows that true power comes when one is emotionally engaged
+  with the self and others.
 description_reversed: Self-involvement, myopia, and paranoia. Emotions are not always facts.
 element: Fire in Water
-description_long: >
-  The King sits calmly and securely enthroned amid a turbulent sea. In one hand they hold a chalice, symbolizing their emotions and creativity, and in the other a scepter, symbolizing their mastery of themselves. A ship sails on steadily behind them in spite of the waves. Though a hurricane may blow, the King has learned how to stay steady in the face of the storm. Kings are the motivators of their suits, the charismatic leaders who draw up plans and strategize. The King of Cups urges us to see our emotions and subconscious minds as sources of strength and assets in the quest for spiritual enlightenment.
-
+description_long: >-
+  The King sits calmly and securely enthroned amid a turbulent sea. In one hand they hold a chalice, symbolizing their
+  emotions and creativity, and in the other a scepter, symbolizing their mastery of themselves. A ship sails on steadily
+  behind them in spite of the waves. Though a hurricane may blow, the King has learned how to stay steady in the face of
+  the storm. Kings are the motivators of their suits, the charismatic leaders who draw up plans and strategize. The King
+  of Cups urges us to see our emotions and subconscious minds as sources of strength and assets in the quest for
+  spiritual enlightenment.
+description_long_reversed: >-
+  At least for this Magi, tarot is a means toward learning how to interpret and trust emotions, and how to do the work
+  of living an emotionally healthy life. And while the upright King of Cups invites one to tap into their emotions as a
+  source of stength, in the reverse this card reminds us of a hard truth: emotions are not facts. Emotion alone is not
+  enough to safely navigate life. Emotions are not effortlessly magic. Healthy emotions require flow between the self
+  and the outside world, lest the waters stagnate and fester.
 ---
 name: Ace of Swords
 suit: SWORDS
@@ -734,20 +1203,34 @@ image_filename: swords-01.jpg
 description_upright: The great Sword slices the air, cutting a path to mental clarity.
 description_reversed: Dark clouds gather in the mind, muddling thought and tangling the tongue.
 element: Air
-description_long: >
-  A hand holds a crowned, double-edged sword in the air beneath a mountainous landscape. The Aces are the primordial seeds of their suits, and being both the suit of air and the mind, the Ace of Swords is all about ideas. Their infinite potential, their power to shape the world, their limitless possibilities.
-
+description_long: >-
+  A hand holds a crowned, double-edged sword in the air beneath a mountainous landscape. The Aces are the primordial
+  seeds of their suits, and being both the suit of air and the mind, the Ace of Swords is all about ideas. Their
+  infinite potential, their power to shape the world, their limitless possibilities.
+description_long_reversed: >-
+  Upright, the Air of Swords cuts through the fog covering one's mind, clearing it. Reversed, the Air is the fog,
+  covering the mind, obstructing thought, and causing frustration because you cannot see the way ahead. Air is a
+  potent element, but it must be handled with finesse. Apply a lighter touch; avoid overthinking or straining.
 ---
 name: Two of Swords
 suit: SWORDS
 number: 2
 image_filename: swords-02.jpg
 description_upright: Two swords, two paths. Make your choice, or perish.
-description_reversed: If you sit on the path without making a decision, you will be cut down. Avoidance is not an option.
+description_reversed: >-
+  If you sit on the path without making a decision, you will be cut down. Avoidance is not an option.
 element: Air
-description_long: >
-  A person sits with the sea at their back, blindfolded, holding two swords pointing in opposite directions. Though they are blindfolded, their calm and centered demeanor suggests they have voluntarily placed the blindfold upon themselves in order to more deeply meditate upon the choice before them, symbolized by the swords. The sea and the moon in the background represent the unconscious mind, the deeper realm that must be called upon to make important decisions. Twos are power conduits of their suits—the initial focusing of the raw power of the Ace. Here the immaterial intellect is called upon to effect change in the material world.
-
+description_long: >-
+  A person sits with the sea at their back, blindfolded, holding two swords pointing in opposite directions. Though they
+  are blindfolded, their calm and centered demeanor suggests they have voluntarily placed the blindfold upon themselves
+  in order to more deeply meditate upon the choice before them, symbolized by the swords. The sea and the moon in the
+  background represent the unconscious mind, the deeper realm that must be called upon to make important decisions. Twos
+  are power conduits of their suits—the initial focusing of the raw power of the Ace. Here the immaterial intellect is
+  called upon to effect change in the material world.
+description_long_reversed: >-
+  Recall the imagery of The Moon card: a liminal space, a perilous, moonlit path. One of the takeaways from The Moon
+  deals with indecision or fear of the unknown. With the Two of Swords reversed, the moon is nearest you now, a sign
+  that you should face the root cuases of your anxiety or uncertainty instead of being frozen by them.
 ---
 name: Three of Swords
 suit: SWORDS
@@ -756,9 +1239,15 @@ image_filename: swords-03.jpg
 description_upright: Pain and sorrow pierce the heart, an unavoidable human experience.
 description_reversed: Be soft and gentle, not hard and sharp, with yourself.
 element: Air
-description_long: >
-  Suspended in the midst of a gloomy, rainy sky, a heart is pierced by three crossed swords. Threes represent the potential energy of their suits becoming crystalized in material form, and unfortunately the old adage holds true for the Three of Swords: “he who increases wisdom increases sorrow.” The cerebral Swords, like the emotional Cups, are easily disillusioned but lack the Cups’ propensity for hope. They cannot easily un-see or un-know.
-
+description_long: >-
+  Suspended in the midst of a gloomy, rainy sky, a heart is pierced by three crossed swords. Threes represent the
+  potential energy of their suits becoming crystalized in material form, and unfortunately the old adage holds true for
+  the Three of Swords: “he who increases wisdom increases sorrow.” The cerebral Swords, like the emotional Cups, are
+  easily disillusioned but lack the Cups' propensity for hope. They cannot easily un-see or un-know.
+description_long_reversed: >-
+  In the reverse, the handles of the swords are toward you. The intellect has the potential to overanalyze the self, and
+  this more often than not leads to harming one's heart. Be careful where you wield the great potential that lies within
+  the honing of the intellect; hyperfocus cares not what it cuts.
 ---
 name: Four of Swords
 suit: SWORDS
@@ -767,9 +1256,16 @@ image_filename: swords-04.jpg
 description_upright: Rest the mind in meditation and contemplation. Recuperation and withdrawal are needed.
 description_reversed: Exhaustion, burn-out, stagnation. Overthinking only leads to futility.
 element: Air
-description_long: >
-  A knight in full armor lies in meditation upon a tomb, their hands in a position of prayer. One sword lies beneath them and three point downward above them, bespeaking the knight’s mental focus. Fours are the stabilization of their elements, and the Four of Swords calls the mind to rest and contemplation. Neither overthinking nor completely asleep, the intellect is at peace.
-
+description_long: >-
+  A knight in full armor lies in meditation upon a tomb, their hands in a position of prayer. One sword lies beneath
+  them and three point downward above them, bespeaking the knight's mental focus. Fours are the stabilization of their
+  elements, and the Four of Swords calls the mind to rest and contemplation. Neither overthinking nor completely asleep,
+  the intellect is at peace.
+description_long_reversed: >-
+  Just as they lie in the reversed Three of Swords, here three swords lie with their handle toward you, the Querent.
+  Where in the reversed Three it is implied that the Querent is not allowing themselves emotional space and safety, in
+  the reversed Four the implication is that the Querent is not allowing themselves rest. Make the time for rest, to
+  allow yourself to exist without constraint or purpose. Don't wait until you're in the tomb.  
 ---
 name: Five of Swords
 suit: SWORDS
@@ -778,31 +1274,58 @@ image_filename: swords-05.jpg
 description_upright: The battle is won, but at what cost?
 description_reversed: The pen is not the only thing mightier than the sword. Forge alternative solutions to conflict.
 element: Air
-description_long: >
-  Two defeated and humiliated figures move into the distance while their smug conqueror collects their discarded swords. Fives are the inevitable destabilization of their suits, and uncontrolled air blows fiercely in the realm Five. With no boundaries or restraint, the airy intellect turns itself into a weapon, desiring only to get the better of others, to come out on top, to win the debate at all costs and emerge superior.
-
+description_long: >-
+  Two defeated and humiliated figures move into the distance while their smug conqueror collects their discarded swords.
+  Fives are the inevitable destabilization of their suits, and uncontrolled air blows fiercely in the realm Five. With
+  no boundaries or restraint, the airy intellect turns itself into a weapon, desiring only to get the better of others,
+  to come out on top, to win the debate at all costs and emerge superior.
+description_long_reversed: >-
+  The person making away with the swords is not armed. Their ill-gotten gains are not the result of battle. Was it
+  theft? Was it a trick, a bad deal? Why does one man need so many swords anyhow? Regardless, think about the position
+  in which this person now places themselves. What will happen should a hostile force make its way to those shores? Our
+  scoundrel has made away with the swords. If they are wise, they will look back and mend the damage their words have
+  done.
 ---
 name: Six of Swords
 suit: SWORDS
 number: 6
 image_filename: swords-06.jpg
 description_upright: There is no going back. Face the horizon bravely and accept what is.
-description_reversed: Discomfort is not always your enemy. Lean into it for unexpected rewards.
+description_reversed: Discomfort is not always your enemy. Let go and lean into it for unexpected rewards.
 element: Air
-description_long: >
-  A boatman ferries two somber passengers across a river, six swords adorning the prow of the boat before them. Ahead the water is placid, but behind them the current is turbulent. This suggests the two passengers are leaving an unhappy situation for a new future—but the swords at the prow speak to the possibility that it still weighs heavily on their minds. Sixes general depict the suits at their best, and for the more serious Swords that doesn’t mean the utopian happiness of the Cups or free-flowing abundance of the Pentacles, but sobriety of mind and clarity of thought. The air of the Swords pushes one on from what no longer serves into the possibility of the future.
-
+description_long: >-
+  A boatman ferries two somber passengers across a river, six swords adorning the prow of the boat before them. Ahead
+  the water is placid, but behind them the current is turbulent. This suggests the two passengers are leaving an unhappy
+  situation for a new future—but the swords at the prow speak to the possibility that it still weighs heavily on their
+  minds. Sixes generally depict the suits at their best, and for the more serious Swords that doesn't mean the utopian
+  happiness of the Cups or free-flowing abundance of the Pentacles, but sobriety of mind and clarity of thought. The air
+  of the Swords pushes one on from what no longer serves into the possibility of the future.
+description_long_reversed: >-
+  The reverse of this uncomfortable journey may speak to the Querent's hesitancy to embark on the journey. Perhaps they
+  hesitate to let go of the past; perhaps anxiety is keeping them from taking the first step of solving a difficult
+  problem. But this journey is inevitable; this card is an invitation to take the first step sooner than later.
 ---
 name: Seven of Swords
 suit: SWORDS
 number: 7
 image_filename: swords-07.jpg
 description_upright: The thief creeps about, their mind full of nothing but treachery and betrayal.
-description_reversed: You may tell yourself that everything is well and good--but is it?
+description_reversed: You may tell yourself that everything is well and good—but is it?
 element: Air
-description_long: >
-  Unnoticed,  thief has stolen into a military camp and made off with five of their swords. The thief looks behind at two swords they have dropped, seeming proud of their ability to sneak in and out without raising the alarm. But they must be careful—the way they are carrying those swords, they risk being cut to ribbons. Sevens are the realm of instinct, emotion, and the unconscious mind. They can be both creative and chaotic. In the realm of Seven, air manifests as cunning and manipulation, seeking its own advantage and how it can use its intelligence to its own benefit. Care must be taken, however, for the element not to fall victim to its own cleverness and become caught up in its own convoluted plots.
-
+description_long: >-
+  Unnoticed,  thief has stolen into a military camp and made off with five of their swords. The thief looks behind at
+  two swords they have dropped, seeming proud of their ability to sneak in and out without raising the alarm. But they
+  must be careful—the way they are carrying those swords, they risk being cut to ribbons. Sevens are the realm of
+  instinct, emotion, and the subconscious mind. They can be both creative and chaotic. In the realm of Seven, air
+  manifests as cunning and manipulation, seeking its own advantage and how it can use its intelligence to its own
+  benefit. Care must be taken, however, for the element not to fall victim to its own cleverness and become caught up in
+  its own convoluted plots.
+description_long_reversed: >-
+  The treachery of the Five of Swords is outdone by the Seven. Five is an unstable realm, and Seven a chaotic one, and
+  both are catalysts for disaster with the fragile yet powerful Air. These realms of Five and Seven in the reverse,
+  particularly in the element of Air, are a call to empathize with the victims of malicious cunning and deceit. It is
+  wholly dependent on the Querent's question and the place of the card in the spread whether the Querent is the culprit
+  or the victim of the deceit, but chances are the deceit remains unexposed or known to few.
 ---
 name: Eight of Swords
 suit: SWORDS
@@ -811,53 +1334,101 @@ image_filename: swords-08.jpg
 description_upright: A ring of Swords surrounds, imprisoning the mind in fear and uncertainty.
 description_reversed: The mind must be refreshed time to time by new and unfamiliar ideas.
 element: Air
-description_long: >
-  A figure stands in a ring of eight swords, blindfolded and bound round the torso, but not tightly. The water at their feet suggests that their subconscious mind might know a solution to the predicament their eyes cannot see. This is ultimately a scene of self-limitation—this person could easily shake off their loosely-tied bonds, remove the blindfold, and step out of the open ring of swords without a scratch. Eights are the intellectual and logical manifestations of their suits, and with air this becomes a dangerous excess of reason. Overthinking and overanalyzing leaves the Swords trapped in a prison of their own making.
-
+description_long: >-
+  A figure stands in a ring of eight swords, blindfolded and bound round the torso, but not tightly. The water at their
+  feet suggests that their subconscious mind might know a solution to the predicament their eyes cannot see. This is
+  ultimately a scene of self-limitation—this person could easily shake off their loosely-tied bonds, remove the
+  blindfold, and step out of the open ring of swords without a scratch. Eights are the intellectual and logical
+  manifestations of their suits, and with air this becomes a dangerous excess of reason. Overthinking and overanalyzing
+  leaves the Swords trapped in a prison of their own making.
+description_long_reversed: >-
+  Instead of allowing yourself to be imprisoned by illusion, look for ways to make the illusion less real. Instead of
+  using the sword of intellect to cut into your self image, use it to cut away at the anxiety and doubt that bind you.
+  This is a simple task, but not an easy one. Just as the anxiety that binds you did not grow oevernight, neither will
+  it be slayed in a single strike. Under the blindfold, it is dark still, but realize there is light beyond.
 ---
 name: Nine of Swords
 suit: SWORDS
 number: 9
 image_filename: swords-09.jpg
 description_upright: Anxiety, fear, and worry turn the mind into a living nightmare. It is time to wake up.
-description_reversed: The sun is quickly rising upon fear and delusion--the nightmare is almost over.
+description_reversed: The sun is quickly rising upon fear and delusion—the nightmare is almost over.
 element: Air
-description_long: >
-  In a pitch-black room, a figure sits up in bed, their head in their hands, as though woken from a nightmare they cannot shake. Nine swords brood over their anguish. Nine is the number of wisdom and integration—for the Swords and the element of air, this wisdom is often an awakening from mental confusion and even intoxication. The piercing insight of the Swords is like a cold shower or cup of black coffee after a night of debauchery—unpleasant maybe, but it brings one to one’s senses.
-
+description_long: >-
+  In a pitch-black room, a figure sits up in bed, their head in their hands, as though woken from a nightmare they
+  cannot shake. Nine swords brood over their anguish. Nine is the number of wisdom and integration—for the Swords and
+  the element of air, this wisdom is often an awakening from mental confusion and even intoxication. The piercing
+  insight of the Swords is like a cold shower or cup of black coffee after a night of debauchery—unpleasant maybe, but
+  it brings one to one's senses.
+description_long_reversed: >-
+  Just as the reversed Eight of Swords incites the Querent to undo the anxieties that imprison them, the reversed Nine
+  relays hope that the curse is soon to be lifted. No longer dreaming of being bound, the figure in the card is awake
+  and coming to their senses. Morning is near. The resolution of anxiety is not necessarily that what one fears is not
+  true; it very well could be. But in such a case, with all doubt removed, one may face the challenge with mental
+  clarity.
 ---
 name: Ten of Swords
 suit: SWORDS
 number: 10
 image_filename: swords-10.jpg
-description_upright: The Swords have reaped the consequences of their violence--they cannot give life, only destroy it.
+description_upright: The Swords have reaped the consequences of their violence—they cannot give life, only destroy it.
 description_reversed: Redemption, recovery, & regeneration. Destruction is avoidable.
 element: Air
-description_long: >
-  The scene of a brutal murder: a victim with not one but ten swords driven into their back, pinning them to the shore of the sea beneath a dark and brooding sky. In the distance, the sun rises. Tens represent completion and the penultimate manifestation of the elements of their suits, with all the lessons they’ve learned along the way. Unfortunately the ultimate lesson of the Swords is: “live by the sword, die by the sword.” Without the emotional depth of the Cups, the willpower of the Wands, or the stability of the Pentacles, the airy Swords can only destroy. Without the heart to guide it, the mind conceives and perpetrates monstrous things.
-
+description_long: >-
+  The scene of a brutal murder: a victim with not one but ten swords driven into their back, pinning them to the shore
+  of the sea beneath a dark and brooding sky. In the distance, the sun rises. Tens represent completion and the ultimate
+  manifestation of the elements of their suits, with all the lessons they've learned along the way. Unfortunately the
+  ultimate lesson of the Swords is: “Live by the sword, die by the sword.” Without the emotional depth of the Cups, the
+  willpower of the Wands, or the stability of the Pentacles, the airy Swords can only destroy. Without the heart to
+  guide it, the mind conceives and perpetrates monstrous things.
+description_long_reversed: >-
+  The Ten of Swords—not Death, not Judgment, not the Devil—may be the most forboding of all the cards. The defeat
+  present in the upright Ten is still here in the reverse. But just as death brings new life, so too does defeat promise
+  a new beginning, and a chance for victory. Weigh this card against your question or situation, of course, but: a
+  fitting analogy might be that of someone hitting rock bottom. Instead of digging further, the poor soul realizes where
+  they are, and with this clarity of mind they may begin the journey of healing and recovery. Morning is here.
 ---
 name: Page of Swords
 suit: SWORDS
 number: 11
 image_filename: swords-11.jpg
-description_upright: The Page expresses themselves with confidence and intelligence. They are curious and thirsty for knowledge.
-description_reversed: All talk and no action. Haphazardness, miscommunication.
+description_upright: >-
+  The Page expresses themselves with confidence and intelligence. They are curious and thirsty for knowledge.
+description_reversed: All talk and no action. Haphazardness, miscommunication, even deception.
 element: Earth in Air
-description_long: >
-  Full of enthusiasm, a young page stands atop a windy mountain swinging a sword. Pages represent communication and new ideas, and no one is bursting with either of these more than the Page of Swords. They are full of new ideas, new perspectives, keenly curious, and want to share their knowledge with the world. They are masters not only of conceiving new ideas, but also communicating them clearly to others. Being the element of earth, the Page of Swords brings common sense and relatability to the often lofty and elitist air.
-
+description_long: >-
+  Full of enthusiasm, a young page stands atop a windy mountain swinging a sword. Pages represent communication and new
+  ideas, and no one is bursting with either of these more than the Page of Swords. They are full of new ideas, new
+  perspectives, keenly curious, and want to share their knowledge with the world. They are masters not only of
+  conceiving new ideas, but also communicating them clearly to others. Being the element of earth, the Page of Swords
+  brings common sense and relatability to the often lofty and elitist air.
+description_long_reversed: >-
+  The Page's office is one of entering the world by action, learning its ways in hopes of becoming an embodiment of the
+  energy of its suit. A reversed Page is at best a misstep into this role; in Air, the realm of intellect, this could
+  signify a lazy student, learning just enough to "sound smart" but gaining no true understanding. More dangerously,
+  a reversed Page of Swords could signify harmful or even malicious application of the intellect: defensiveness,
+  arguing or quarreling, perhaps even the beginning of becoming a charlatan. Our intellectual lives are to be taken
+  seriously; if one is not inspired to be diligent in their intellectual affairs, perhaps they are in the wrong place.
 ---
 name: Knight of Swords
 suit: SWORDS
 number: 12
 image_filename: swords-12.jpg
-description_upright: Rushing with the wind, the ambitious Knight is quick-thinking and driven to see their ideas become reality.
+description_upright: >-
+  Rushing with the wind, the ambitious Knight is quick-thinking and driven to see their ideas become reality.
 description_reversed: Restlessness, hyperactivity, and lack of focus befuddle the thoughts.
 element: Air in Air
-description_long: >
-  A fierce Knight clad in armor rides a leaping white horse, sword drawn, cape and mantle flying in the wild winds that blow around them. The landscape is bare but for a handful of trees in the process of having their leaves torn off in the gale. Knights represent movement and the coming and going of circumstances, and this Knight is all about the going. Being Air of Air, they are all swiftness and impatience. The Knight of Swords wants his fertile ideas to be manifested NOW and will not accept delays.
-
+description_long: >-
+  A fierce Knight clad in armor rides a leaping white horse, sword drawn, cape and mantle flying in the wild winds that
+  blow around them. The landscape is bare but for a handful of trees in the process of having their leaves torn off in
+  the gale. Knights represent movement and the coming and going of circumstances, and this Knight is all about the
+  going. Being Air of Air, they are all swiftness and impatience. The Knight of Swords wants his fertile ideas to be
+  manifested **now** and will not accept delays.
+description_long_reversed: >-
+  The rushing winds embodied by the Knight have betrayed the Swords' element of Air. This wind never allows the
+  intellect to consider its situation and analyze its surroundings. The swords become ineffective because they are being
+  used to deal many imprecise blows, when a single, focused cut would be vastly more effective. Slow down, take a deep
+  breath, and reflect on your situation; not everything needs to happen immediately.
 ---
 name: Queen of Swords
 suit: SWORDS
@@ -866,16 +1437,35 @@ image_filename: swords-13.jpg
 description_upright: The fierce and independent Queen is forthright to the point of bluntness. Their clear eyes see all.
 description_reversed: The heart and the head must be balanced; neither can function properly without the other.
 element: Water in Air
-description_long: >
-  Enthroned among the clouds, a stern Queen sits with sword raised. Queens are agents of growth and centers of emotion in their suits, and the Queen of Swords’ dire message is this: grow or die. She demands that the mind be open, that beliefs are investigated and interrogated, that biases and prejudices are stripped away. Though this can seem harsh, it is for our own good, and will lead to the head and the heart being in greater harmony.
-
+description_long: >-
+  Enthroned among the clouds, a stern Queen sits with sword raised. Queens are agents of growth and centers of emotion
+  in their suits, and the Queen of Swords' dire message is this: grow or die. She demands that the mind be open, that
+  beliefs are investigated and interrogated, that biases and prejudices are stripped away. Though this can seem harsh,
+  it is for our own good, and will lead to the head and the heart being in greater harmony.
+description_long_reversed: >-
+  The head-heart dichotomy is not a universal truth. Our thoughts and our emotions are not truly separate. But for
+  better or for worse, this simplification is what we are collectively taught, and despite its flaws it remains a useful
+  guide to understanding our inner world, especially in this case. A reversed Queen of Swords may signal to the Querent
+  that they are thinking too much with the heart and not enough with the head, which can lead to toxic or codependent
+  relationships or rash decisions with severe consequences. Resdicover the balance between your "want-nows" and
+  "want-laters," between your impulses and your long-term goals.
 ---
 name: King of Swords
 suit: SWORDS
 number: 14
 image_filename: swords-14.jpg
 description_upright: Authority and truth reign. Be honest with yourself and others.
-description_reversed: Those who use their intelligence to manipulate others may find themselves caught in their own snares.
+description_reversed: >-
+  Those who use their intelligence to manipulate others may find themselves caught in their own snares.
 element: Fire in Air
-description_long: >
-  A solemn-faced King sits upon their throne in high, rocky place, his sword raised—not as a threat, but as a reminder of their power. Kings are the motivators of their suits, the charismatic leaders who draw up plans and strategize, and the King of Swords is a natural strategist. They are not a warrior but they excel in maneuvering, planning, and attaining their goal through working smarter, not harder.
+description_long: >-
+  A solemn-faced King sits upon their throne in high, rocky place, his sword raised—not as a threat, but as a reminder
+  of their power. Kings are the motivators of their suits, the charismatic leaders who draw up plans and strategize,
+  and the King of Swords is a natural strategist. They are not a warrior but they excel in maneuvering, planning, and
+  attaining their goal through working smarter, not harder.
+description_long_reversed: >-
+  Intellect, like air, is most hospitable when handled with care. When it is handled with force it can bludgeon and cut,
+  like a deathly wind. Such is the suit of Swords and its realm of intellect, and perhaps there is no better symbol of
+  this suit than its King (even though it is the Knight whose element is Air as well). Fire and Air together are
+  volatile; the intellect used too passionately, especially when used against others, is a fire that will surely engulf
+  the person who lights it. Save your schemes.
