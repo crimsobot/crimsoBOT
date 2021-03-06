@@ -193,7 +193,7 @@ class Image(commands.Cog):
         title = random.choice([
             'Saturn ascends', 'Clutch it like a cornerstone', 'Wear the grudge like a crown',
             "But I'm still right here", 'Gonna wait it out', 'I must keep reminding myself of this',
-            'I know the pieces fit' 'Finding beauty in the dissonance', 'Between supposed lovers',
+            'I know the pieces fit', 'Finding beauty in the dissonance', 'Between supposed lovers',
             'So familiar and overwhelmingly warm', 'Embrancing you, this reality here', 'So wide eyed and hopeful',
             'This holy reality', 'All this pain is an illusion', 'Recoginize this as a holy gift',
             'Fat little parasite', 'Suck me dry', 'I hope you choke on this',
