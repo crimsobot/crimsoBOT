@@ -369,7 +369,7 @@ class CringoGame():
                 try:
                     await player.user.send(embed=turn_embed)
                 except discord.errors.Forbidden:
-                    self.remove_from_game(player.user.id)
+                    self.remove_from_game(player.user)
 
         # final score + awards time!
         # nerf calculated such that division by zero never attained within player limit
