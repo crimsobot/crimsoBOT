@@ -563,7 +563,7 @@ class Games(commands.Cog):
         def choose_random_emoji() -> str:
             """Choose a random emoji from the emojis used in Emojistory."""
             with open(c.clib_path_join('games', 'emojilist.txt'), encoding='utf8', errors='ignore') as emoji_file:
-                return random.choice(emoji_file.readlines())
+                return random.choice(''.join(emoji_file.readlines()).strip('\n'))
 
         # configure
         size = 6
