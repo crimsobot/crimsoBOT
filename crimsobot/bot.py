@@ -196,11 +196,8 @@ class CrimsoBOT(commands.Bot):
         if is_dm and not message.content.startswith(('>', '.')):
             # grab any attachments in message to send as links
             links = []
-            try:
-                for attachment in message.attachments:
-                    links.append(attachment.url)
-            except IndexError:
-                pass
+            for attachment in message.attachments:
+                links.append(attachment.url)
 
             dms_channel = self.get_channel(DM_LOG_CHANNEL_ID)
             await dms_channel.send(
