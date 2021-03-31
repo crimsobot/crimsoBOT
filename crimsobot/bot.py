@@ -148,7 +148,8 @@ class CrimsoBOT(commands.Bot):
             msg_to_user = ':rotating_light: not crimso! :rotating_light:'
 
         elif isinstance(error, commands.CommandNotFound):
-            error_type = 'NOT FOUND'
+            # too many of these make it to logs, and it's never useful info
+            return
 
         else:
             error_type = 'UNCAUGHT EXCEPTION'
@@ -190,13 +191,13 @@ class CrimsoBOT(commands.Bot):
         if self.is_banned(message.author) or message.author.bot:
             return
 
-        # send DMs to the bot that are not bot commands to the specified channel
-        is_dm = isinstance(message.channel, discord.DMChannel)
+        # send DMs to the bot (that are not bot commands) to the specified channel
+        is_dm = message.channel.type == discord.ChannelType.private
         if is_dm and not message.content.startswith(('>', '.')):
-            try:
-                link = message.attachments[0].url
-            except IndexError:
-                link = ''
+            # grab any attachments in message to send as links
+            links = []
+            for attachment in message.attachments:
+                links.append(attachment.url)
 
             dms_channel = self.get_channel(DM_LOG_CHANNEL_ID)
             await dms_channel.send(
@@ -204,7 +205,7 @@ class CrimsoBOT(commands.Bot):
                     f'`{message.channel}`',  # e.g. 'Direct message with username#1234'
                     f'`uid:{message.author.id}`',
                     f'`cid:{message.channel.id}`',
-                    f'{message.content} {link}',
+                    f'{message.content} {" ".join(links)}',
                 ])
             )
 
