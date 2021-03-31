@@ -82,9 +82,9 @@ class CringoGame():
 
         return embed
 
-    def generate_end_of_turn_embed(self, ctx: discord.ext.commands.Context) -> discord.Embed:
+    def generate_end_of_turn_embed(self) -> discord.Embed:
         # if gameplay is in a direct message, some elements need to be handled differently
-        if ctx.message.channel.type == discord.ChannelType.private:
+        if self.context.channel.type == discord.ChannelType.private:
             check_score_string = ''
         else:
             check_score_string = f'\nCheck the score in {self.context.channel.mention}!'
@@ -364,7 +364,7 @@ class CringoGame():
             self.turn += 1
 
             # remove players who have too many mismatches
-            turn_embed = self.generate_end_of_turn_embed(self.context)
+            turn_embed = self.generate_end_of_turn_embed()
             for player in self.players.copy():
                 if player.mismatch_count >= 8:
                     left_game_embed = self.remove_from_game(player.user)
