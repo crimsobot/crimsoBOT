@@ -72,6 +72,8 @@ async def cringo_emoji(number_of_rows: int, number_of_columns: int, already_used
         ['🔭', '🌖', '☄️', '🪐', '🌌', '👩‍🚀', '🛸', '👾', '🚀', '🛰️'],
     ]
 
+    april_fools = [['💩'], ['💩'], ['💩'], ['💩']]
+
     # remove all emojis that have already been used
     if already_used is not None:
         # go through each list to eliminate already-used emojis
@@ -88,7 +90,10 @@ async def cringo_emoji(number_of_rows: int, number_of_columns: int, already_used
     # reshape list of lists into the columns of the card/turn using zip
     selected_emojis = [list(x) for x in zip(*selected_emojis)]
 
-    return selected_emojis
+    if number_of_rows == 1:
+        return [list(x) for x in zip(*april_fools)]
+    else:
+        return selected_emojis
 
 
 async def cringo_card(list_of_emojis: List[List[str]]) -> List[List[str]]:
