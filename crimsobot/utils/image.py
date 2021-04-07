@@ -268,12 +268,31 @@ async def make_emoji_image(ctx: Context, user_input: Optional[str]) -> List[str]
         # replace all instances in the numpy image
         numpy_image[numpy_image == str(key)] = [emoji]
 
-    # numpy_image now needs to be "stringed" out, row by row
-    string_list = []
-    for row in numpy_image:
-        string_list.append(''.join(row))
+    # numpy_image now written into a mosaic
+    tile_size = 10
 
-    return string_list
+    rows = numpy_image.shape[0]
+    cols = numpy_image.shape[1]
+
+    emoji_mosaic = Image.new('RGB', (width, height))
+
+    for j in range(0, cols):
+        for i in range(0, rows):
+            # get_emoji_image
+            emoji_path, _ = find_emoji_img(numpy_image[i, j])
+            emoji_image = Image.open(emoji_path)
+            # resize to 10x10
+            emoji_image.resize((tile_size, tile_size), resample=Image.BICUBIC)
+            # paste into place
+            emoji_mosaic.paste(emoji_image, (i * tile_size, j * tile_size))
+
+    # # numpy_image now needs to be "stringed" out, row by row
+    # string_list = []
+    # for row in numpy_image:
+    #     string_list.append(''.join(row))
+
+    fp = image_to_buffer([emoji_mosaic])
+    return fp
 
 
 def make_mosaic(colors: List[int]) -> BytesIO:

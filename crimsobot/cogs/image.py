@@ -162,12 +162,15 @@ class Image(commands.Cog):
         A one-pixel-wide line is likely not going to show up in the final product.
         """
 
-        line_list = await imagetools.make_emoji_image(ctx, image)
+        eimg = await imagetools.make_emoji_image(ctx, image)
+        # line_list = await imagetools.make_emoji_image(ctx, image)
 
-        # send line-by-line as DM
-        for line in line_list:
-            await ctx.message.author.send(line)
-            await asyncio.sleep(0.72)
+        # # send line-by-line as DM
+        # for line in line_list:
+        #     await ctx.message.author.send(line)
+        #     await asyncio.sleep(0.72)
+
+        await ctx.message.author.send(file=discord.File(eimg, 'eimg.png'))
 
     @commands.command(hidden=True)
     @commands.is_owner()
