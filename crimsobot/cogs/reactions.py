@@ -84,7 +84,7 @@ class Reactions(commands.Cog):
         user_input = something.split(';', 1)
 
         fact_subject = user_input[0].strip().lower()
-        
+
         # if the user entered a subject body, use it
         # and add any attachments
         try:
