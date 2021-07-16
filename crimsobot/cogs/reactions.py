@@ -83,12 +83,20 @@ class Reactions(commands.Cog):
 
         user_input = something.split(';', 1)
 
-        fact_subject = user_input.pop(0).strip().lower()
+        fact_subject = user_input[0].strip().lower()
+
+        # if the user entered a subject body, use it
+        # and add any attachments
         try:
-            fact = f'{user_input[0].strip()} {links}'
+            fact = f'{user_input[1].strip()} {links}'
         except IndexError:
-            await ctx.send(embed=error_embed, delete_after=18)
-            return
+            # if there is no body but there are still attachments,
+            # use just the attachments as the body
+            if links:
+                fact = links
+            else:
+                await ctx.send(embed=error_embed, delete_after=18)
+                return
 
         if len(fact_subject) < 1 or len(fact) < 2:
             await ctx.send(embed=error_embed, delete_after=18)
