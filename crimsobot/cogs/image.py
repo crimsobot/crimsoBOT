@@ -103,7 +103,7 @@ class Image(commands.Cog):
 
     @commands.command(brief='Boop the snoot! Must mention someone to boop.')
     async def boop(self, ctx: commands.Context, mention: discord.Member) -> None:
-        fp = imagetools.make_boop_img(ctx.author.display_name, mention.display_name)
+        fp = await imagetools.make_boop_img(ctx.author.display_name, mention.display_name)
 
         # filename and file
         filename = '{}{}.png'.format('boop', datetime.utcnow().strftime('%Y%m%d%H%M%S'))

@@ -168,9 +168,12 @@ def make_color_img(hex_str: str) -> BytesIO:
     return fp
 
 
-def make_boop_img(the_booper: str, the_booped: str) -> BytesIO:
+async def make_boop_img(the_booper: str, the_booped: str) -> BytesIO:
     # font selection
-    f = ImageFont.truetype(c.clib_path_join('img', 'Roboto-BlackItalic.ttf'), 36)
+    filename = c.clib_path_join('img', 'Roboto-BlackItalic.ttf')
+    async with aiofiles.open(filename, 'rb') as f:
+        font_bytes = await f.read()
+    font = ImageFont.truetype(BytesIO(font_bytes), 36)
 
     # add line breaks if needed to inputs
     def add_line_breaks(text: str) -> str:
@@ -195,20 +198,24 @@ def make_boop_img(the_booper: str, the_booped: str) -> BytesIO:
     the_booped = add_line_breaks(the_booped)
 
     # open original image
-    img = Image.open(c.clib_path_join('img', 'boop.jpg'))
+    filename = c.clib_path_join('img', 'boop.jpg')
+    async with aiofiles.open(filename, 'rb') as f:
+        img_bytes = await f.read()
+    img = Image.open(BytesIO(img_bytes))
 
     # temp image made to rotate 'the_booped" text'
     txt = Image.new('L', (500, 100))
     d = ImageDraw.Draw(txt)
     draw = ImageDraw.Draw(img)
-    d.text((0, 0), the_booped, font=f, fill=255)
+    d.text((0, 0), the_booped, font=font, fill=255)
     w = txt.rotate(45, expand=1)
 
     # draw on original image
-    draw.text((10, 450), the_booper, font=f, fill=(255, 255, 255))
+    draw.text((10, 450), the_booper, font=font, fill=(255, 255, 255))
     img.paste(ImageOps.colorize(w, (0, 0, 0), (255, 255, 255)), (370, 0), w)
 
     fp = image_to_buffer([img])
+
     return fp
 
 
@@ -389,8 +396,8 @@ def make_aenima_img(img: Image.Image, arg: None) -> Image.Image:
     bg.paste(img, (163, position), img)
 
     # 3. paste cover over result
-    cover = Image.open(c.clib_path_join('img', 'aenima_cover.png'))
-    bg.alpha_composite(cover, (0, 0))
+    with Image.open(c.clib_path_join('img', 'aenima_cover.png')) as cover:
+        bg.alpha_composite(cover, (0, 0))
 
     return bg
 
@@ -402,16 +409,16 @@ def make_lateralus_img(img: Image.Image, arg: None) -> Image.Image:
     width, height = img.size
     ratio = width / 333
     img = img.resize((int(width / ratio), int(height / ratio)), resample=Image.BICUBIC)
-    # get new size
-    width, height = img.size
+
+    with Image.open(c.clib_path_join('img', 'lateralus_back.png')) as back:
+        back.load()
 
     # 2. paste into cover back (462 x 462 pixels)
-    back = Image.open(c.clib_path_join('img', 'lateralus_back.png'))
     back.paste(img, (65, 129), img)
 
     # 3. paste wordmark over result
-    wordmark = Image.open(c.clib_path_join('img', 'lateralus_wordmark.png'))
-    back.paste(wordmark, (0, 0), wordmark)
+    with Image.open(c.clib_path_join('img', 'lateralus_wordmark.png')) as wordmark:
+        back.paste(wordmark, (0, 0), wordmark)
 
     return back
 
@@ -425,10 +432,9 @@ def make_needban_img(img: Image.Image, arg: None) -> Image.Image:
         img = img.resize((int(width / ratio), int(height / ratio)), resample=Image.BICUBIC)
 
     width, height = img.size
-    ban = Image.open(c.clib_path_join('img', 'ban.png'))
-    ban = ban.resize((width, height), resample=Image.BICUBIC)
-
-    img.paste(ban, (0, 0), ban)
+    with Image.open(c.clib_path_join('img', 'ban.png')) as ban:
+        ban = ban.resize((width, height), resample=Image.BICUBIC)
+        img.paste(ban, (0, 0), ban)
 
     return img
 
@@ -437,7 +443,9 @@ def make_needping_img(img: Image.Image, arg: None) -> Image.Image:
     img = img.convert('RGBA')
     img = img.resize((71, 105), resample=Image.BICUBIC)
 
-    base = Image.open(c.clib_path_join('img', 'fishe_on_head.png'))
+    with Image.open(c.clib_path_join('img', 'fishe_on_head.png')) as base:
+        base.load()
+
     base.paste(img, (7, 4))
 
     return base
@@ -454,8 +462,6 @@ def make_pingbadge_img(img: Image.Image, position: int) -> Image.Image:
 
     width, height = img.size
     size = int(width / 3)
-    badge = Image.open(c.clib_path_join('img', 'roundping.png'))
-    badge = badge.resize((size, size), resample=Image.BICUBIC)
 
     if position == 1:
         corner = (0, 0)
@@ -468,7 +474,9 @@ def make_pingbadge_img(img: Image.Image, position: int) -> Image.Image:
     else:
         raise BadArgument('Invalid position.')
 
-    img.paste(badge, corner, badge)
+    with Image.open(c.clib_path_join('img', 'roundping.png')) as badge:
+        badge = badge.resize((size, size), resample=Image.BICUBIC)
+        img.paste(badge, corner, badge)
 
     return img
 
@@ -480,8 +488,10 @@ def make_xokked_img(img: Image.Image, arg: None) -> Image.Image:
     ratio = width / 120
     img = img.resize((int(width / ratio), int(height / ratio)), resample=Image.BICUBIC)
 
-    width, height = img.size
-    base = Image.open(c.clib_path_join('img', 'xokked_base.png'))
+    with Image.open(c.clib_path_join('img', 'xokked_base.png')) as base:
+        base.load()
+
+    _, height = img.size
     base.paste(img, (30, 118 - int(height / 2)))
 
     return base
@@ -545,7 +555,7 @@ async def process_image(ctx: Context, image: Optional[str], effect: str, arg: Op
     frame_limit = 200
     cost_per_frame = 0.06
 
-    if (getattr(img, 'is_animated', False)):
+    if getattr(img, 'is_animated', False):
         if img.n_frames > frame_limit:
             embed = c.crimbed(
                 title=None,
