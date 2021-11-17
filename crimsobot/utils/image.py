@@ -240,19 +240,19 @@ async def make_emoji_image(ctx: Context, user_input: Optional[str]) -> List[str]
 
     # create dict to match palette number with actual color (for later step)
     # keys = palette integers; values = RGB tuples
-    color_list = input_image_p.getcolors()
-    color_list_p = sorted(color_list, key=lambda tup: tup[0], reverse=True)
+    color_list_p = input_image_p.getcolors()  # type: List[Tuple[int, int]]
+    color_list_p = sorted(color_list_p, key=lambda tup: tup[0], reverse=True)
     color_keys = []
-    for color in color_list_p:
-        color_keys.append(color[1])
+    for color_p in color_list_p:
+        color_keys.append(color_p[1])
 
     # now for the value tuples
     input_image_rgb = input_image_p.convert('RGB')
-    color_list = input_image_rgb.getcolors()
-    color_list_rgb = sorted(color_list, key=lambda tup: tup[0], reverse=True)
+    color_list_rgb = input_image_rgb.getcolors()  # type: List[Tuple[int, Tuple[int, int, int]]]
+    color_list_rgb = sorted(color_list_rgb, key=lambda tup: tup[0], reverse=True)
     color_values = []
-    for color in color_list_rgb:
-        color_values.append(color[1])
+    for color_rgb in color_list_rgb:
+        color_values.append(color_rgb[1])
 
     # and finally, the dict
     image_dict = dict(zip(color_keys, color_values))
@@ -276,7 +276,7 @@ async def make_emoji_image(ctx: Context, user_input: Optional[str]) -> List[str]
     return string_list
 
 
-def make_mosaic(colors: List[int]) -> BytesIO:
+def make_mosaic(colors: List[Tuple[int, int, int]]) -> BytesIO:
     """Make a mosaic!"""
     # first, some stuff
     width = 50
@@ -324,7 +324,7 @@ async def get_image_palette(ctx: Context, n: int, user_input: Optional[str]) -> 
     img = background.quantize(colors=n, method=1, kmeans=n)
     resample = image_to_buffer([img])
 
-    img_colors = img.convert('RGB').getcolors()
+    img_colors = img.convert('RGB').getcolors()  # type: List[Tuple[int, Tuple[int, int, int]]]
     img_colors = sorted(img_colors, key=lambda tup: tup[0], reverse=True)
     colors = []
     hex_colors = []
@@ -363,9 +363,9 @@ def make_acid_img(img: Image.Image, window: int) -> Image.Image:
     for channel in range(depth):
         acid_channel = convolve2d(raster[:, :, channel], kernel, mode='same', boundary='symm')
         acid_raster.append(acid_channel)
-    acid_raster = np.stack(acid_raster, axis=2).astype('uint8')
+    acid_raster_np = np.stack(acid_raster, axis=2).astype('uint8')
     acid_raster_fp = BytesIO()
-    plt.imsave(acid_raster_fp, acid_raster)
+    plt.imsave(acid_raster_fp, acid_raster_np)
     acid_raster_fp.seek(0)
 
     # open as PIL image to apply alpha mask

@@ -25,7 +25,7 @@ def hex_to_lab(base: str) -> LabColor:
 def get_nearest_color(lab_colors: Sequence[LabColor], rgb_color: str) -> str:
     lab_color = hex_to_lab(rgb_color)
 
-    nearest = min(lab_colors, key=lambda fc: delta_e_cie2000(lab_color, fc))
+    nearest = min(lab_colors, key=lambda fc: int(delta_e_cie2000(lab_color, fc)))
     nearest = convert_color(nearest, sRGBColor)
 
     nearest_hex = nearest.get_rgb_hex()  # type: str
