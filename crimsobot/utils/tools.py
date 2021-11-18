@@ -156,7 +156,7 @@ def get_guild_info_embed(guild: Guild) -> Embed:
     )
 
     # number of channels to show, which to show
-    channel_list = [x for x in sorted(guild.channels, key=lambda c: c.position) if x.type == ChannelType.text]
+    channel_list = [x for x in sorted(guild.channels, key=lambda c: int(c.position)) if x.type == ChannelType.text]
     show = min(10, len(guild.channels))
     channel_text = '\n'.join([('· {channel.name}'.format(channel=channel)) for channel in channel_list[:show]])
     embed.add_field(
