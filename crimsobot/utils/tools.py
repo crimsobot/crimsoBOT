@@ -53,6 +53,11 @@ def crimbed(title: Optional[str], descr: Optional[str],
     else:
         hex_int = color_dict['green']
 
+    if title is None:
+        title = Embed.Empty
+    if descr is None:
+        descr = Embed.Empty
+
     embed = Embed(title=title, description=descr, color=hex_int)
 
     # Give these one-word names, no spaces.
