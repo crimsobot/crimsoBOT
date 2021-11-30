@@ -172,8 +172,8 @@ class Utilities(commands.Cog):
     async def color(self, ctx: commands.Context, hex_value: discord.Colour) -> None:
         """Get color sample from hex value."""
 
-        if hex_value[0] != "#":
-            hex_value = "#" + hex_value
+        if hex_value[0] != '#':
+            hex_value = '#' + hex_value
         fp = imagetools.make_color_img(str(hex_value))
         await ctx.send(
             '**' + str(hex_value) + '**',
