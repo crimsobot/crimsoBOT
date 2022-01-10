@@ -11,5 +11,9 @@ class LocationNotFound(Exception):
         self.location = location
 
 
+class NotDirectMessage(Exception):
+    pass
+
+
 class StopHandler(Exception):
     pass

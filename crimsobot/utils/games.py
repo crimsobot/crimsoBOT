@@ -1,3 +1,4 @@
+import mmap
 import random
 from collections import Counter
 from datetime import datetime
@@ -246,3 +247,124 @@ def guesslist() -> str:
         output.append('{}{:>d}  ·  \u20A2{:>5.2f}  ·  \u20A2{:>6.2f}'.format(spc, i, c, w))
 
     return '\n'.join(output)
+
+
+# -----Wordle-----
+
+# emoji match indicators
+no_match = '❌'
+in_word = '🟨'
+exact_match = '🟩'
+
+# the possible solutions
+wordfile_path = c.clib_path_join('games', 'five-letter-words.txt')
+
+
+async def choose_solution() -> str:
+    """Choose a random five-letter word from the plaintext file.
+
+    Word list: https://www-cs-faculty.stanford.edu/~knuth/sgb-words.txt
+
+    Approach used: https://stackoverflow.com/a/35579149"""
+
+    line_num = 0
+    selected_line = ''
+
+    with open(wordfile_path, encoding='utf-8', errors='ignore') as f:
+        while True:
+            line = f.readline()
+            if not line:
+                break
+            line_num += 1
+            if random.uniform(0, line_num) < 1:
+                selected_line = line
+
+    word = selected_line.strip()
+
+    return word
+
+
+async def input_checker(user_guess: str) -> bool:
+    """Check if the user's input is actually a word.
+
+    Method for checking if input is in text file: https://stackoverflow.com/a/4944929"""
+
+    if len(user_guess) != 5:
+        valid = False
+    else:
+        with open(wordfile_path, encoding='utf-8', errors='ignore') as f, \
+                mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ) as s:
+            if s.find(str.encode(user_guess)) != -1:
+                valid = True
+            else:
+                valid = False
+
+    return valid
+
+
+async def match_checker(user_guess: str, solution: str) -> Tuple[List[str], str, str]:
+    """Check user input against solution"""
+
+    user_matches = [no_match] * 5  # start fresh
+    in_solution = ''
+
+    def remove_letter(guess_or_solution: str, letter: str, replace_with: str) -> str:
+        """Remove a letter to exclude from further matching"""
+        temp_list = list(guess_or_solution)  # str to list to make assignment possible
+        temp_list[idx_sol] = replace_with  # some non-letter symbol
+        guess_or_solution = ''.join(temp_list)
+
+        return guess_or_solution
+
+    # check first exclusively for exact matches...
+    for idx_in, letter_in in enumerate(user_guess):
+        for idx_sol, letter_sol in enumerate(solution):
+            if letter_in == letter_sol:
+                if idx_in == idx_sol:
+                    user_matches[idx_in] = exact_match
+                    in_solution += letter_in
+
+                    # remove from both
+                    user_guess = remove_letter(user_guess, letter_in, '*')
+                    solution = remove_letter(solution, letter_sol, '&')
+
+    # ...then for partial matches
+    for idx_in, letter_in in enumerate(user_guess):
+        for _, letter_sol in enumerate(solution):
+            if letter_in == letter_sol:
+                user_matches[idx_in] = in_word
+                in_solution += letter_in
+
+                # remove from both
+                user_guess = remove_letter(user_guess, letter_in, '*')
+                solution = remove_letter(solution, letter_sol, '&')
+
+    # get a string of letters not in solution
+    not_in_solution = user_guess
+
+    for letter in in_solution:
+        not_in_solution = not_in_solution.replace(letter, '')
+
+    return user_matches, in_solution, not_in_solution
+
+
+async def remaining_letters(right_guesses: str, wrong_guesses: str) -> List[str]:
+    """Return a list of letters that are still available."""
+
+    alphabet = 'abcdefghi\njklmnopqr\nstuvwxyz'
+
+    remaining_alphabet = []  # list of strings to be represented as emojis
+
+    for letter in alphabet:
+        if letter in right_guesses:
+            char_to_append = f'[{letter}]'
+        elif letter in wrong_guesses:
+            char_to_append = ' · '
+        elif letter == '\n':
+            char_to_append = letter
+        else:
+            char_to_append = f' {letter} '
+
+        remaining_alphabet.append(char_to_append)
+
+    return remaining_alphabet
