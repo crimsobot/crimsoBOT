@@ -10,6 +10,7 @@ from discord.ext import commands
 
 from crimsobot.models.currency_account import CurrencyAccount
 from crimsobot.models.guess_statistic import GuessStatistic
+from crimsobot.models.wordle_results import WordleResults
 from crimsobot.utils import tools as c
 
 DiscordUser = Union[discord.User, discord.Member]
@@ -368,3 +369,12 @@ async def remaining_letters(right_guesses: str, wrong_guesses: str) -> List[str]
         remaining_alphabet.append(char_to_append)
 
     return remaining_alphabet
+
+
+async def wordle_stats(discord_user: DiscordUser, guesses: int, word: str) -> None:
+    stats = await WordleResults.create_result(discord_user)  # type: WordleResults
+
+    stats.guesses = guesses
+    stats.word = word
+
+    await stats.save()

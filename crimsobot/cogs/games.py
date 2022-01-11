@@ -608,7 +608,7 @@ class Games(commands.Cog):
                 'To see available letters, type `.letters`',
                 'To end the game, type `.quit`',
             ]),
-            footer='Gameplay is unlimited; you have to either win or `.quit`!',
+            footer='Gameplay is unlimited; you have to either win or ".quit"!',
         )
 
         await ctx.send(embed=embed)
@@ -623,6 +623,7 @@ class Games(commands.Cog):
 
         # user input loop
         solved = False
+        turns_taken = 0
 
         # begin game embed
         embed = c.crimbed(
@@ -639,6 +640,7 @@ class Games(commands.Cog):
                 message = await self.bot.wait_for('message', check=check)
                 user_input = message.content[1:].lower().strip()
                 if user_input == 'quit':
+                    turns_taken = 0  # set turns to 0 (0 = quit in DB)
                     embed = c.crimbed(
                         title='**OOF!**',
                         descr=f'The word was **{solution}**!',
@@ -647,6 +649,9 @@ class Games(commands.Cog):
                     )
 
                     await ctx.send(embed=embed)
+
+                    # store stats
+                    await crimsogames.wordle_stats(ctx.message.author, turns_taken, solution)
 
                     return  # game over, end function
 
@@ -666,14 +671,14 @@ class Games(commands.Cog):
                 if not input_valid:
                     embed = c.crimbed(
                         title=None,
-                        descr='That is not in the word list.',
-                        footer='Guesses must be five letters long and be in the Scrabble (US) dictionary.',
+                        descr='Your guess is not in the word list.',
                         color_name='yellow',
                     )
 
                     await ctx.send(embed=embed)
 
             match_emojis, matches, misses = await crimsogames.match_checker(user_input, solution)
+            turns_taken += 1
 
             # make the emoji string to graph guesses
             match_emoji_str = ''.join(match_emojis)
@@ -682,22 +687,26 @@ class Games(commands.Cog):
             solved = user_input == solution
 
             # add results to tracking variables
-            matches_history.append(match_emoji_str)
+            matches_history.append(f'{match_emoji_str} - `{user_input}`')
             matched_letters += matches
             missed_letters += misses
 
             if not solved:
                 embed = c.crimbed(
-                    title=f'Your guess: **{user_input}**',
+                    title=f'Guess #{turns_taken}: **{user_input}**',
                     descr=match_emoji_str,
                 )
 
                 await ctx.send(embed=embed)
 
+        # store stats
+        await crimsogames.wordle_stats(ctx.message.author, turns_taken, solution)
+
         # print results on solve
         embed = c.crimbed(
             title='**WINNER!**',
             descr='\n'.join(matches_history),
+            footer=f'Guesses: {turns_taken}',
         )
 
         await ctx.send(embed=embed)
