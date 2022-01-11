@@ -121,7 +121,7 @@ class CrimsoBOT(commands.Bot):
             if isinstance(error.original, NotDirectMessage):
                 error_type = 'SLIDE INTO MY DMS'
                 traceback_needed = False
-                msg_to_user = "This command can only be used in a direct message with the bot."
+                msg_to_user = 'This command can only be used in a direct message with the bot.'
 
             if isinstance(error.original, StrictInputFailed):
                 error_type = '**OOPSIE**'
