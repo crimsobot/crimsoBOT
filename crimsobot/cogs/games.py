@@ -609,10 +609,11 @@ class Games(commands.Cog):
                 'To end the game, type `.quit`',
             ]),
             footer='Gameplay is unlimited; you have to either win or ".quit"!',
+            thumb_name='wordle',
         )
 
         await ctx.send(embed=embed)
-        await asyncio.sleep(3)
+        await asyncio.sleep(1.8)
 
         # check message for author, channel, content
         def check(message: discord.Message) -> bool:
@@ -646,6 +647,7 @@ class Games(commands.Cog):
                         descr=f'The word was **{solution}**!',
                         footer='Better luck next time!',
                         color_name='orange',
+                        thumb_name='weary',
                     )
 
                     await ctx.send(embed=embed)
@@ -660,6 +662,7 @@ class Games(commands.Cog):
                     embed = c.crimbed(
                         title='**LETTERS**',
                         descr=f'`{"".join(remaining)}`',
+                        thumb_name='shrug',
                     )
 
                     await ctx.send(embed=embed)
@@ -707,6 +710,7 @@ class Games(commands.Cog):
             title='**WINNER!**',
             descr='\n'.join(matches_history),
             footer=f'Guesses: {turns_taken}',
+            thumb_name='party',
         )
 
         await ctx.send(embed=embed)

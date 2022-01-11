@@ -84,6 +84,8 @@ def crimbed(title: Optional[str], descr: Optional[str],
         'small': 'https://i.imgur.com/IrjA6zq.png',
         'clock': 'https://i.imgur.com/2eAdhsW.png',
         'wizard': 'https://i.imgur.com/anaCs7G.png',
+        'wordle': 'https://i.imgur.com/aCzjZYn.png',
+        'party': 'https://i.imgur.com/fFiHP24.png',
     }
 
     if thumb_name:
