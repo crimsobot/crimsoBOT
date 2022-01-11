@@ -328,10 +328,6 @@ async def match_checker(user_guess: str, solution: str) -> Tuple[List[str], str,
                     user_guess = remove_letter(user_guess, idx_in, '*')
                     solution = remove_letter(solution, idx_sol, '&')
 
-                    print('--EXACT--')
-                    print(user_guess)
-                    print(solution)
-
     # ...then for partial matches
     for idx_in, letter_in in enumerate(user_guess):
         for idx_sol, letter_sol in enumerate(solution):
@@ -342,10 +338,6 @@ async def match_checker(user_guess: str, solution: str) -> Tuple[List[str], str,
                 # remove from both
                 user_guess = remove_letter(user_guess, idx_in, '*')
                 solution = remove_letter(solution, idx_sol, '&')
-
-                print('--IN--')
-                print(user_guess)
-                print(solution)
 
     # get a string of letters not in solution
     not_in_solution = user_guess

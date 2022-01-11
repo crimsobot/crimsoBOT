@@ -598,8 +598,6 @@ class Games(commands.Cog):
 
         solution = await crimsogames.choose_solution()
 
-        solution = 'arose'
-
         # welcome message
         embed = c.crimbed(
             title="Let's play **WORDLE!**",
