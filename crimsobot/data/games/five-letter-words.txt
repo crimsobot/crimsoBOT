@@ -3524,7 +3524,6 @@ aloes
 louis
 quint
 clunk
-raped
 salvo
 diode
 matey
@@ -3906,7 +3905,6 @@ gibes
 aural
 tempi
 hooch
-rapes
 snuck
 harts
 techs
@@ -4237,7 +4235,6 @@ sully
 sooth
 gelds
 ahold
-raper
 pager
 fixer
 infix
@@ -5755,3 +5752,4 @@ roble
 rumba
 biffy
 pupal
+trope

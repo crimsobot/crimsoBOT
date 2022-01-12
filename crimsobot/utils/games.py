@@ -352,7 +352,7 @@ async def match_checker(user_guess: str, solution: str) -> Tuple[List[str], str,
 async def remaining_letters(right_guesses: str, wrong_guesses: str) -> List[str]:
     """Return a list of letters that are still available."""
 
-    alphabet = 'abcdefghi\njklmnopqr\nstuvwxyz'
+    alphabet = 'abcdefg\nhijklmn\nopqrstu\nvwxyz'  # line break every 7 chars + padding best for mobile
 
     remaining_alphabet = []  # list of strings to be represented as emojis
 

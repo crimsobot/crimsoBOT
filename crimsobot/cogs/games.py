@@ -604,7 +604,8 @@ class Games(commands.Cog):
             descr='\n'.join([
                 'Try to guess the five-letter word!',
                 'Begin your guess with a period (for example, `.bread`).',
-                'Letter in word: 🟨 // Letter in correct spot: 🟩',
+                'Letter is somewhere in word: 🟨',
+                'Letter is in the correct spot: 🟩',
                 'To see available letters, type `.letters`',
                 'To end the game, type `.quit`',
             ]),
@@ -705,11 +706,15 @@ class Games(commands.Cog):
         # store stats
         await crimsogames.wordle_stats(ctx.message.author, turns_taken, solution)
 
+        # award coin
+        winnings = 5 * (2 ** (6 - turns_taken)) if turns_taken < 6 else 5
+        await crimsogames.win(ctx.message.author, winnings)
+
         # print results on solve
         embed = c.crimbed(
             title='**WINNER!**',
             descr='\n'.join(matches_history),
-            footer=f'Guesses: {turns_taken}',
+            footer=f'{turns_taken} guesses · \u20A2{winnings:.2f} won!',
             thumb_name='party',
         )
 
