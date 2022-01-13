@@ -583,6 +583,7 @@ class Games(commands.Cog):
         await ctx.send(sheet)
 
     @commands.command()
+    @commands.max_concurrency(1, commands.BucketType.user)
     async def wordle(self, ctx: commands.Context) -> None:
         """Play a Wordle clone in your DMs!"""
 
@@ -707,7 +708,7 @@ class Games(commands.Cog):
         await crimsogames.wordle_stats(ctx.message.author, turns_taken, solution)
 
         # award coin
-        winnings = 5 * (2 ** (6 - turns_taken)) if turns_taken < 6 else 5
+        winnings = 2 * (2 ** (6 - turns_taken)) if turns_taken < 6 else 5
         await crimsogames.win(ctx.message.author, winnings)
 
         # print results on solve
