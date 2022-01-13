@@ -43,6 +43,7 @@ class GuessStatistic(Model):
     @classmethod
     async def get_by_discord_user(cls, discord_user: DiscordUser) -> 'GuessStatistic':
         user = await User.get_by_discord_user(discord_user)
+        print(user)
         stat, _ = await GuessStatistic.get_or_create(user=user)  # type: GuessStatistic, bool
 
         return stat

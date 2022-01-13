@@ -372,9 +372,4 @@ async def remaining_letters(right_guesses: str, wrong_guesses: str) -> List[str]
 
 
 async def wordle_stats(discord_user: DiscordUser, guesses: int, word: str) -> None:
-    stats = await WordleResults.create_result(discord_user)  # type: WordleResults
-
-    stats.guesses = guesses
-    stats.word = word
-
-    await stats.save()
+    await WordleResults.create_result(discord_user, guesses, word)

@@ -7,19 +7,21 @@ from crimsobot.models.user import User
 
 class WordleResults(Model):
     uuid = fields.UUIDField(pk=True)
-    user = fields.ForeignKeyField('models.User', related_name='wordle_results', index=True)
+    name = fields.TextField(default='wordle result')
 
-    guesses = fields.IntField(default=0)  # guesses to solve word (0 for quit)
-    word = fields.TextField(default='crimso')  # word guessed
+    user = fields.ForeignKeyField('models.User', related_name='wordle_results', index=True)
+    guesses = fields.IntField()  # guesses to solve word (0 for quit)
+    word = fields.TextField()  # word guessed
 
     created_at = fields.DatetimeField(null=True, auto_now_add=True)
 
     @classmethod
-    async def create_result(cls, discord_user: DiscordUser) -> 'WordleResults':
+    async def create_result(cls, discord_user: DiscordUser, guesses: int, word: str) -> None:
         user = await User.get_by_discord_user(discord_user)
-        stat, _ = await WordleResults.get_or_create(user=user)  # type: WordleResults, bool
 
-        return stat
+        result = WordleResults(user=user, guesses=guesses, word=word)
+
+        await result.save()
 
     class Meta:
         table = 'wordle_results'
