@@ -7,7 +7,7 @@ from discord.ext import commands
 from config import ADMIN_USER_IDS, BANNED_GUILD_IDS, DM_LOG_CHANNEL_ID, LEARNER_CHANNEL_IDS, LEARNER_USER_IDS
 from crimsobot import db
 from crimsobot.context import CrimsoContext
-from crimsobot.exceptions import LocationNotFound, NoMatchingTarotCard, StrictInputFailed
+from crimsobot.exceptions import LocationNotFound, NoMatchingTarotCard, NotDirectMessage, StrictInputFailed
 from crimsobot.models.ban import Ban
 from crimsobot.utils import markov as m, tools as c
 
@@ -117,6 +117,11 @@ class CrimsoBOT(commands.Bot):
                 error_type = 'CARD NOT FOUND'
                 traceback_needed = False
                 msg_to_user = "It seems like that tarot card doesn't exist! How curious..."
+
+            if isinstance(error.original, NotDirectMessage):
+                error_type = 'SLIDE INTO MY DMS'
+                traceback_needed = False
+                msg_to_user = 'This command can only be used in a direct message with the bot.'
 
             if isinstance(error.original, StrictInputFailed):
                 error_type = '**OOPSIE**'

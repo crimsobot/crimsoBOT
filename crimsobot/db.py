@@ -13,6 +13,7 @@ async def connect() -> None:
             'crimsobot.models.cringo_statistic',
             'crimsobot.models.fun_fact',
             'crimsobot.models.guess_statistic',
+            'crimsobot.models.wordle_results',
         ]}
     )
 

@@ -10,7 +10,7 @@ from config import ADMIN_USER_IDS
 from crimsobot.bot import CrimsoBOT
 from crimsobot.context import CrimsoContext
 from crimsobot.data.games import EMOJISTORY_RULES, MADLIBS_RULES, STORIES
-from crimsobot.exceptions import StrictInputFailed
+from crimsobot.exceptions import NotDirectMessage, StrictInputFailed
 from crimsobot.handlers.games import EmojistorySubmissionHandler, EmojistoryVotingHandler
 from crimsobot.utils import games as crimsogames, markov as m, tools as c
 from crimsobot.utils.converters import CleanedTextInput
@@ -581,6 +581,145 @@ class Games(commands.Cog):
         sheet = size * line
 
         await ctx.send(sheet)
+
+    @commands.command()
+    @commands.max_concurrency(1, commands.BucketType.user)
+    async def wordle(self, ctx: commands.Context) -> None:
+        """Play a Wordle clone in your DMs!"""
+
+        # check if direct message
+        not_dm = ctx.message.channel.type != discord.ChannelType.private
+        if not_dm:
+            raise NotDirectMessage
+
+        # tracking variables
+        matches_history = []  # list of strings
+        matched_letters = ''
+        missed_letters = ''
+
+        solution = await crimsogames.choose_solution()
+
+        # welcome message
+        embed = c.crimbed(
+            title="Let's play **WORDLE!**",
+            descr='\n'.join([
+                'Try to guess the five-letter word!',
+                'Begin your guess with a period (for example, `.bread`).',
+                'Letter is somewhere in word: 🟨',
+                'Letter is in the correct spot: 🟩',
+                'To see available letters, type `.letters`',
+                'To end the game, type `.quit`',
+            ]),
+            footer='Gameplay is unlimited; you have to either win or ".quit"!',
+            thumb_name='wordle',
+        )
+
+        await ctx.send(embed=embed)
+        await asyncio.sleep(1.8)
+
+        # check message for author, channel, content
+        def check(message: discord.Message) -> bool:
+            banned = self.bot.is_banned(message.author)
+            has_prefix = message.content.startswith('.')
+            in_channel = message.channel == ctx.message.channel
+            return not banned and has_prefix and in_channel
+
+        # user input loop
+        solved = False
+        turns_taken = 0
+
+        # begin game embed
+        embed = c.crimbed(
+            title='**HERE WE GO!**',
+            descr='Start guessing!',
+        )
+
+        await ctx.send(embed=embed)
+
+        while not solved:
+            input_valid = False
+            while input_valid is False:
+                # get user input
+                message = await self.bot.wait_for('message', check=check)
+                user_input = message.content[1:].lower().strip()
+                if user_input == 'quit':
+                    turns_taken = 0  # set turns to 0 (0 = quit in DB)
+                    embed = c.crimbed(
+                        title='**OOF!**',
+                        descr=f'The word was **{solution}**!',
+                        footer='Better luck next time!',
+                        color_name='orange',
+                        thumb_name='weary',
+                    )
+
+                    await ctx.send(embed=embed)
+
+                    # store stats
+                    await crimsogames.wordle_stats(ctx.message.author, turns_taken, solution)
+
+                    return  # game over, end function
+
+                if user_input == 'letters':
+                    remaining = await crimsogames.remaining_letters(matched_letters, missed_letters)
+                    embed = c.crimbed(
+                        title='**LETTERS**',
+                        descr=f'`{"".join(remaining)}`',
+                        thumb_name='shrug',
+                    )
+
+                    await ctx.send(embed=embed)
+
+                    continue  # back to beginning of loop
+
+                input_valid = await crimsogames.input_checker(user_input)
+
+                if not input_valid:
+                    embed = c.crimbed(
+                        title=None,
+                        descr='Your guess is not in the word list.',
+                        color_name='yellow',
+                    )
+
+                    await ctx.send(embed=embed)
+
+            match_emojis, matches, misses = await crimsogames.match_checker(user_input, solution)
+            turns_taken += 1
+
+            # make the emoji string to graph guesses
+            match_emoji_str = ''.join(match_emojis)
+
+            # check if solved
+            solved = user_input == solution
+
+            # add results to tracking variables
+            matches_history.append(f'{match_emoji_str} - `{user_input}`')
+            matched_letters += matches
+            missed_letters += misses
+
+            if not solved:
+                embed = c.crimbed(
+                    title=f'Guess #{turns_taken}: **{user_input}**',
+                    descr=match_emoji_str,
+                )
+
+                await ctx.send(embed=embed)
+
+        # store stats
+        await crimsogames.wordle_stats(ctx.message.author, turns_taken, solution)
+
+        # award coin
+        winnings = 2 * (2 ** (6 - turns_taken)) if turns_taken < 6 else 5
+        await crimsogames.win(ctx.message.author, winnings)
+
+        # print results on solve
+        embed = c.crimbed(
+            title='**WINNER!**',
+            descr='\n'.join(matches_history),
+            footer=f'{turns_taken} guesses · \u20A2{winnings:.2f} won!',
+            thumb_name='party',
+        )
+
+        await ctx.send(embed=embed)
 
 
 def setup(bot: CrimsoBOT) -> None:
