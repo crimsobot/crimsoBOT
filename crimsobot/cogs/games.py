@@ -708,7 +708,8 @@ class Games(commands.Cog):
         await crimsogames.wordle_stats(ctx.message.author, turns_taken, solution)
 
         # award coin
-        winnings = 2 * (2 ** (6 - turns_taken)) if turns_taken < 6 else 5
+        base_prize = 2.25
+        winnings = base_prize * (2 ** (6 - turns_taken)) if turns_taken < 6 else base_prize
         await crimsogames.win(ctx.message.author, winnings)
 
         # print results on solve
