@@ -406,12 +406,13 @@ async def wordle_stat_embed(user: DiscordUser) -> Embed:
         mean_guesses = sum(guesses_sans_quits) / len(guesses_sans_quits)
 
         # time for an ASCII histogram! first, a dict...
+        upper_limit = 10
         dictogram = {}
-        for ii in range(0, 9):
+        for ii in range(0, upper_limit):
             key = 'quit' if ii == 0 else str(ii)
             dictogram[key] = guesses_needed.count(ii)
 
-        dictogram['10+'] = len([x for x in guesses_needed if x >= 10])
+        dictogram[f'{upper_limit}+'] = len([x for x in guesses_needed if x >= 10])
 
         # get the highest value in the dict by which to scale all the histogram strings
         mode = max(dictogram.values())
@@ -424,6 +425,7 @@ async def wordle_stat_embed(user: DiscordUser) -> Embed:
             number_of_dashes = max_dash_length * value / mode
             dashes = '-' * round(number_of_dashes)
 
+            # formatted string for display in embed
             histogram_strings.append(f'{key.rjust(4, " ")}|{str(value).rjust(4, " ")} {dashes}')
 
         # strings are joined here because f-strings don't get along with backslashes (see field_list)
@@ -433,7 +435,7 @@ async def wordle_stat_embed(user: DiscordUser) -> Embed:
             title=f'WORDLE stats for {user}',
             descr=None,
             thumb_name='wordle',
-            footer='Thanks for playing!',
+            footer='Thanks for playing >wordle!',
         )
 
         ess = '' if n_min_guesses == 1 else 's'
