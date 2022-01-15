@@ -722,6 +722,13 @@ class Games(commands.Cog):
 
         await ctx.send(embed=embed)
 
+    @commands.command(aliases=['wstats'])
+    async def wordlestats(self, ctx: commands.Context) -> None:
+        """Check your Wordle stats!"""
+
+        embed = await crimsogames.wordle_stat_embed(ctx.message.author)
+        await ctx.send(embed=embed)
+
 
 def setup(bot: CrimsoBOT) -> None:
     bot.add_cog(Games(bot))
