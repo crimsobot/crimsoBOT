@@ -1,3 +1,5 @@
+from typing import Any
+
 from tortoise import fields
 from tortoise.models import Model
 
@@ -22,6 +24,13 @@ class WordleResults(Model):
         result = WordleResults(user=user, guesses=guesses, word=word)
 
         await result.save()
+
+    @classmethod
+    async def fetch_all_by_user(cls, discord_user: DiscordUser) -> Any:
+        user = await User.get_by_discord_user(discord_user)
+        stat = await WordleResults.filter(user=user)
+
+        return stat
 
     class Meta:
         table = 'wordle_results'

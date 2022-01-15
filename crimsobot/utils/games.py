@@ -373,3 +373,96 @@ async def remaining_letters(right_guesses: str, wrong_guesses: str) -> List[str]
 
 async def wordle_stats(discord_user: DiscordUser, guesses: int, word: str) -> None:
     await WordleResults.create_result(discord_user, guesses, word)
+
+
+async def wordle_stat_embed(user: DiscordUser) -> Embed:
+    """Return an embed of a user's Wordle stats"""
+
+    s = await WordleResults.fetch_all_by_user(user)  # type: List[WordleResults]
+
+    plays = len(s)
+
+    if plays == 0:
+        embed = c.crimbed(
+            title='Sorry—',
+            descr="You haven't played any games of WORDLE yet!",
+            thumb_name='wordle',
+            footer='Play >wordle! You will do this!',
+        )
+    else:
+        guesses_needed = []
+
+        for result in s:
+            guesses_needed.append(result.guesses)
+
+        guesses_sans_quits = [x for x in guesses_needed if x != 0]
+        quits = guesses_needed.count(0)
+        completion_pct = (plays - quits) / plays
+
+        max_guesses = max(guesses_needed)
+        min_guesses = min(guesses_sans_quits)
+        n_min_guesses = guesses_sans_quits.count(min_guesses)
+
+        mean_guesses = sum(guesses_sans_quits) / len(guesses_sans_quits)
+
+        # time for an ASCII histogram! first, a dict...
+        dictogram = {}
+        for ii in range(0, 9):
+            key = 'quit' if ii == 0 else str(ii)
+            dictogram[key] = guesses_needed.count(ii)
+
+        dictogram['10+'] = len([x for x in guesses_needed if x >= 10])
+
+        # get the highest value in the dict by which to scale all the histogram strings
+        mode = max(dictogram.values())
+        max_dash_length = 12  # chosen for best display on mobile
+
+        histogram_strings = []
+
+        for key, value in dictogram.items():
+            # scale each line of dashes
+            number_of_dashes = max_dash_length * value / mode
+            dashes = '-' * round(number_of_dashes)
+
+            histogram_strings.append(f'{key.rjust(4, " ")}|{str(value).rjust(4, " ")} {dashes}')
+
+        # strings are joined here because f-strings don't get along with backslashes (see field_list)
+        histogram_string_list = '\n'.join(histogram_strings)
+
+        embed = c.crimbed(
+            title=f'WORDLE stats for {user}',
+            descr=None,
+            thumb_name='wordle',
+            footer='Thanks for playing!',
+        )
+
+        ess = '' if n_min_guesses == 1 else 's'
+
+        # list of tuples (name, value) for embed.add_field
+        field_list = [
+            (
+                'Gameplay',
+                f'**{plays}** plays, **{quits}** quits (**{completion_pct * 100:.1f}%** completed)',
+            ),
+            (
+                'Most guesses needed',
+                f'**{max_guesses}** guesses',
+            ),
+            (
+                'Best solve',
+                f'**{min_guesses}** guesses ({n_min_guesses} time{ess})'
+            ),
+            (
+                'Average guesses (sans quits)',
+                f'**{mean_guesses:.2f}** guesses'
+            ),
+            (
+                '\u200b',
+                f'```{histogram_string_list}```',
+            )
+        ]
+
+        for field in field_list:
+            embed.add_field(name=field[0], value=field[1], inline=False)
+
+    return embed
