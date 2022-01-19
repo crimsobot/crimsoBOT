@@ -194,7 +194,7 @@ class Games(commands.Cog):
         await asyncio.sleep(3)
 
         # think emoji; processing...
-        embed.description = '...<a:guessmoji_think:595388191411011615>'
+        embed.description = 'pls to hold (rate limits!) The winner is... <a:guessmoji_think:595388191411011615>'
         await msg.edit(embed=embed)
 
         # initialize winner (will be empty if no one wins)
@@ -205,10 +205,10 @@ class Games(commands.Cog):
         # see who reacted to what
         cache_msg = discord.utils.get(self.bot.cached_messages, id=msg.id)
         for reaction in cache_msg.reactions:
-            # remove the banned and poor...
+            # get list of users who reacted to each choice
             players = await reaction.users().flatten()
 
-            # ...but only bother with this shit if someone besides the bot reacted
+            # remove the banned and poor, but only bother if someone besides the bot reacted
             if len(players) > 1:
                 for player in players:
                     is_bot = player.id == self.bot.user.id
