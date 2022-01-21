@@ -141,10 +141,16 @@ class Admin(commands.Cog):
         """List crimsoBOT's servers."""
 
         guilds = self.bot.guilds
-        await ctx.send(
-            '**Connected on {} servers:**\n'.format(len(guilds)) +
-            '\n'.join('`[{g.id}]` | {g.name}'.format(g=guild) for guild in guilds)
+
+        server_string = (
+            f'**Connected on {len(guilds)} servers:**\n' +
+            '\n'.join(f'`{guild.id}` · {guild.name}' for guild in guilds)
         )
+
+        msg_list = c.crimsplit(server_string, '\n', 1950)
+
+        for msg in msg_list:
+            await ctx.send(msg)
 
     @commands.command(hidden=True)
     @commands.is_owner()
