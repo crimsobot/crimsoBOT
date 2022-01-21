@@ -147,7 +147,7 @@ class Admin(commands.Cog):
             '\n'.join(f'`{guild.id}` · {guild.name}' for guild in guilds)
         )
 
-        msg_list = c.crimsplit(server_string, '\u200A', 1950)
+        msg_list = c.crimsplit(server_string, '\n', 1950)
 
         for msg in msg_list:
             await ctx.send(msg)
