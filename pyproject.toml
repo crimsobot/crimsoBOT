@@ -31,6 +31,7 @@ tortoise-orm = "0.16.13"
 pendulum = "^2.1.2"
 tabulate = "^0.8.7"
 timezonefinder = "^5.2.0"
+beautifulsoup4 = "^4.10.0"
 
 [tool.poetry.dev-dependencies]
 bandit = "^1.6.2"
