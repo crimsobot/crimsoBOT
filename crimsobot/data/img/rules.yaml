@@ -3,3 +3,4 @@ image:
 gif:
   cost_per_frame: 0.10
   max_frames: 300
+  

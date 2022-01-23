@@ -553,7 +553,7 @@ def process_lower_level(img: Image.Image, effect: str, arg: int) -> BytesIO:
     return fp
 
 
-async def process_image(ctx: Context, image: Optional[str], effect: str, arg: Optional[int] = None) -> Any:
+async def process_image(ctx: Context, image: Optional[str], effect: str, arg: Optional[int] = None) -> Tuple[Any, Any]:
     # grab user image and covert to RGBA
     img = await fetch_image(ctx, image)
 
@@ -568,7 +568,7 @@ async def process_image(ctx: Context, image: Optional[str], effect: str, arg: Op
             )
 
             await ctx.send(embed=embed)
-            return None
+            return None, None
 
         else:
             cost = img.n_frames * GIF_RULES['cost_per_frame']
@@ -591,7 +591,7 @@ async def process_image(ctx: Context, image: Optional[str], effect: str, arg: Op
                 )
 
                 await ctx.send(embed=embed)
-                return None
+                return None, None
 
             else:
                 # debit the user, credit the bot
