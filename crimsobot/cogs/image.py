@@ -33,8 +33,10 @@ class Image(commands.Cog):
                                   arg: Optional[int], title: str) -> None:
         """Get image, construct and send embed with result."""
         # process image
-        fp, img_format = await imagetools.process_image(ctx, image, effect, arg)
-        if fp is None:
+        try:
+            fp, img_format = await imagetools.process_image(ctx, image, effect, arg)
+        # if None is returned from utils/image.py: process_image(), then the user has already been informed
+        except TypeError:
             return
 
         # filename and file
