@@ -561,12 +561,13 @@ async def process_image(ctx: Context, image: Optional[str], effect: str, arg: Op
         if img.n_frames > GIF_RULES['max_frames']:
             embed = c.crimbed(
                 title='OOF',
-                descr=f'Too many frames! The limit is **{GIF_RULES["max_frames"]}**.',
+                descr=f"That's too many frames! The limit is **{GIF_RULES['max_frames']}**.",
+                footer='Gotta draw the line somewhere ¯\\_(ツ)_/¯',
                 color_name='orange',
                 thumb_name='weary',
             )
 
-            await ctx.send(embed=embed, delete_after=15)
+            await ctx.send(embed=embed)
             return None
 
         else:
@@ -576,8 +577,13 @@ async def process_image(ctx: Context, image: Optional[str], effect: str, arg: Op
                 embed = c.crimbed(
                     title="**GIFs ain't free!**",
                     descr='\n'.join([
-                        f"You can't afford this! GIFs cost **\u20A2{GIF_RULES['cost_per_frame']:.2f}** per frame.",
-                        f'GIF cost: **\u20A2{cost:.2f}** · Your balance: **\u20A2{bal:.2f}**',
+                        "You can't afford to process this GIF!",
+                        (
+                            f'{img.n_frames} frames \u2A09 '
+                            f'\u20A2{GIF_RULES["cost_per_frame"]:.2f}/frame = '
+                            f'**\u20A2{cost:.2f}**'
+                        ),  # lord help me it's ugly but it's flake-y
+                        f'Your balance: **\u20A2{bal:.2f}**',
                     ]),
                     footer='Play games to win crimsoCOIN! Type `>help Games` for a list.',
                     thumb_name='weary',
@@ -597,9 +603,9 @@ async def process_image(ctx: Context, image: Optional[str], effect: str, arg: Op
         title='PLS TO HOLD...',
         descr='\n'.join([
             f'Processing GIF for **{ctx.author}**...',
-            f'{img.width} x {img.height} pixels · {img.n_frames} frames',
+            f'{img.width} \u2A09 {img.height} pixels · {img.n_frames} frames',
         ]),
-        footer=f'GIF cost: \u20A2{cost:.2f} · Your balance: \u20A2{bal:.2f} -> \u20A2{new_bal:.2f}',
+        footer=f'GIF cost: \u20A2{cost:.2f} · Your balance: \u20A2{bal:.2f} ➡️ \u20A2{new_bal:.2f}',
         color_name='yellow',
         thumb_name='wizard',
     )
@@ -621,6 +627,7 @@ async def process_image(ctx: Context, image: Optional[str], effect: str, arg: Op
         n_bytes = fp.getbuffer().nbytes
 
     embed.title = 'COMPLETE!'
+    embed.description = f'Processed GIF for **{ctx.author}**!'
     embed.color = 0x5AC037
     await msg.edit(embed=embed)
 
