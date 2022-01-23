@@ -11,6 +11,7 @@ from PIL import ImageDraw
 from PIL import ImageFont
 from PIL import ImageOps
 from PIL import ImageSequence
+from bs4 import BeautifulSoup
 from discord.ext.commands import BadArgument, Context
 from scipy.signal import convolve2d
 
@@ -115,6 +116,12 @@ async def fetch_image(ctx: Context, arg: Optional[str]) -> Image.Image:
     session = aiohttp.ClientSession()
 
     async def open_img_from_url(url: str) -> Image.Image:
+        if 'tenor.com/view' in url:
+            async with session.get(url, allow_redirects=False) as response:
+                soup = BeautifulSoup(await response.text(), 'html.parser')
+                original = soup.find(property='og:image')  # the original GIF has this property in its meta tag
+                url = original['content']
+
         async with session.get(url, allow_redirects=False) as response:
             img_bytes = await response.read()
 
