@@ -155,15 +155,15 @@ class Image(commands.Cog):
     @commands.command(aliases=['emojimage', 'eimg2'])
     @commands.cooldown(1, 60, commands.BucketType.user)
     @shared_max_concurrency(eface_bucket)
-    async def eimg(self, ctx: commands.Context, image: Optional[str] = None) -> None:
+    async def eimg(self, ctx: commands.Context, image: Optional[str] = None, platform: str = 'desktop') -> None:
         """
-        Convert image to emojis with a bit more detail!
-        WARNING: Best on desktop. You will get a LOT of PMs. SVGs are no.
+        Convert image to emojis!
+        Use ">eimg [image] mobile" or "tablet" for a smaller image.
         Works best with images with good contrast and larger features.
         A one-pixel-wide line is likely not going to show up in the final product.
         """
 
-        line_list = await imagetools.make_emoji_image(ctx, image)
+        line_list = await imagetools.make_emoji_image(ctx, image, platform.lower().strip())
 
         # send line-by-line as DM
         for line in line_list:
