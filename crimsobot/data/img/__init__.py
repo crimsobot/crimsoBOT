@@ -1,6 +1,4 @@
-import json
-import os
-from typing import Dict, List, Tuple
+from typing import List, Tuple
 
 import yaml
 
@@ -8,29 +6,27 @@ from crimsobot.utils.color import LabColor, get_nearest_color, hex_to_lab, hex_t
 from crimsobot.utils.tools import clib_path_join
 
 
-def _load() -> Tuple[Dict[str, str], List[Tuple[int, int, int]], List[LabColor]]:
-    colors_path = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)),
-        'colors_emojis.json'
-    )
+_ruleset_path = clib_path_join('img', 'rules.yaml')
+with open(_ruleset_path, encoding='utf-8', errors='ignore') as rules_file:
+    _ruleset = next(yaml.safe_load_all(rules_file.read()))
 
-    # this is the list of colors and the emojis to which they correspond
-    with open(colors_path, 'r', encoding='utf-8') as file:
-        colors = json.loads(file.read())
+# these are what should be imported by other scripts
+IMAGE_RULES = _ruleset['image']
+GIF_RULES = _ruleset['gif']
+_EIMG_RULES = _ruleset['eimg']
+EIMG_WIDTH = _EIMG_RULES['width']
 
-    # these are needed to make the PIL palette list [r1, g1, b1, ..., rn, gn, bn]
-    rgb = []
-    lab = []
-    for hex_color in colors:
-        hex_digits = hex_color[1:]
+# these will be imported by utils/image.py
+color_dict = _EIMG_RULES['palette']
+rgb_color_list = []  # type: List[Tuple[int, int, int]]
 
-        rgb.append(hex_to_rgb(hex_digits))
-        lab.append(hex_to_lab(hex_digits))
+# this is used internally for the color search in lookup_emoji() below
+_lab_color_list = []  # type: List[LabColor]
 
-    return colors, rgb, lab
-
-
-color_dict, rgb_color_list, _lab_color_list = _load()
+for color in color_dict:
+    hex_color = color[1:]
+    rgb_color_list.append(hex_to_rgb(hex_color))
+    _lab_color_list.append(hex_to_lab(hex_color))
 
 
 def lookup_emoji(hex_in: str) -> str:
@@ -43,12 +39,3 @@ def lookup_emoji(hex_in: str) -> str:
             return value
 
     return 'F'  # failure to find emoji
-
-
-_ruleset_path = clib_path_join('img', 'rules.yaml')
-with open(_ruleset_path, encoding='utf-8', errors='ignore') as rules_file:
-    _ruleset = next(yaml.safe_load_all(rules_file.read()))
-
-# these are what should be imported by other scripts
-IMAGE_RULES = _ruleset['image']
-GIF_RULES = _ruleset['gif']

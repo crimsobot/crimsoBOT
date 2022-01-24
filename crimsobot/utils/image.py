@@ -15,7 +15,7 @@ from bs4 import BeautifulSoup
 from discord.ext.commands import BadArgument, Context
 from scipy.signal import convolve2d
 
-from crimsobot.data.img import GIF_RULES, IMAGE_RULES, color_dict, lookup_emoji, rgb_color_list
+from crimsobot.data.img import EIMG_WIDTH, GIF_RULES, IMAGE_RULES, color_dict, lookup_emoji, rgb_color_list
 from crimsobot.utils import games as crimsogames, tools as c
 from crimsobot.utils.color import hex_to_rgb
 
@@ -226,7 +226,7 @@ async def make_boop_img(the_booper: str, the_booped: str) -> BytesIO:
     return fp
 
 
-async def make_emoji_image(ctx: Context, user_input: Optional[str]) -> List[str]:
+async def make_emoji_image(ctx: Context, user_input: Optional[str], platform: str) -> List[str]:
     """Make image from emojis!"""
 
     # get image
@@ -244,7 +244,9 @@ async def make_emoji_image(ctx: Context, user_input: Optional[str]) -> List[str]
     if ratio > 3:
         # return a list of string(s) to remain consistent
         return ['Image is too long!']
-    input_image = input_image.resize((36, int(36 * ratio)), resample=Image.BICUBIC)
+
+    final_width = EIMG_WIDTH[platform]
+    input_image = input_image.resize((final_width, int(final_width * ratio)), resample=Image.BICUBIC)
 
     # first: quantize to palette (has to be RGB mode for that)
     palette = Image.new('P', (1, 1))
@@ -284,8 +286,10 @@ async def make_emoji_image(ctx: Context, user_input: Optional[str]) -> List[str]
 
     # numpy_image now needs to be "stringed" out, row by row
     string_list = []
+    # zero-width space to force Discord to display emojis at text height
+    spacer = '' if platform == 'desktop' else '\u200B'
     for row in numpy_image:
-        string_list.append(''.join(row))
+        string_list.append(f'{spacer}{"".join(row)}')
 
     return string_list
 
