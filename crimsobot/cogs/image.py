@@ -158,7 +158,7 @@ class Image(commands.Cog):
     async def eimg(self, ctx: commands.Context, image: Optional[str] = None, platform: str = 'desktop') -> None:
         """
         Convert image to emojis!
-        Use ">eimg [image] mobile" for a smaller image that fits on mobile.
+        Use ">eimg [image] mobile" or "tablet" for a smaller image.
         Works best with images with good contrast and larger features.
         A one-pixel-wide line is likely not going to show up in the final product.
         """
