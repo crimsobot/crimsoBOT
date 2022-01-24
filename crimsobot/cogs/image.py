@@ -34,6 +34,7 @@ class Image(commands.Cog):
         """Get image, construct and send embed with result."""
         # process image
         fp, img_format = await imagetools.process_image(ctx, image, effect, arg)
+        # if (None, None) is returned from process_image(), then the user has already been informed of issue
         if fp is None:
             return
 

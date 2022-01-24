@@ -15,7 +15,7 @@ from bs4 import BeautifulSoup
 from discord.ext.commands import BadArgument, Context
 from scipy.signal import convolve2d
 
-from crimsobot.data.img import color_dict, lookup_emoji, rgb_color_list
+from crimsobot.data.img import GIF_RULES, IMAGE_RULES, color_dict, lookup_emoji, rgb_color_list
 from crimsobot.utils import games as crimsogames, tools as c
 from crimsobot.utils.color import hex_to_rgb
 
@@ -553,66 +553,82 @@ def process_lower_level(img: Image.Image, effect: str, arg: int) -> BytesIO:
     return fp
 
 
-async def process_image(ctx: Context, image: Optional[str], effect: str, arg: Optional[int] = None) -> Any:
+async def process_image(ctx: Context, image: Optional[str], effect: str, arg: Optional[int] = None) -> Tuple[Any, Any]:
     # grab user image and covert to RGBA
     img = await fetch_image(ctx, image)
-    img_format = img.format
-
-    # if GIF, kick out if too many frames; if not, charge per frame
-    frame_limit = 200
-    cost_per_frame = 0.06
 
     if getattr(img, 'is_animated', False):
-        if img.n_frames > frame_limit:
+        if img.n_frames > GIF_RULES['max_frames']:
             embed = c.crimbed(
-                title=None,
-                descr='Too many frames! Limit is {}'.format(frame_limit),
+                title='OOF',
+                descr=f"That's too many frames! The limit is **{GIF_RULES['max_frames']}**.",
+                footer='Gotta draw the line somewhere ¯\\_(ツ)_/¯',
                 color_name='orange',
+                thumb_name='weary',
             )
-            await ctx.send(embed=embed, delete_after=15)
-            return None
+
+            await ctx.send(embed=embed)
+            return None, None
+
         else:
-            cost = img.n_frames * cost_per_frame
+            cost = img.n_frames * GIF_RULES['cost_per_frame']
             bal = await crimsogames.check_balance(ctx.author)
             if bal < cost:
                 embed = c.crimbed(
                     title="**GIFs ain't free!**",
                     descr='\n'.join([
-                        "You can't afford this! GIFs cost **\u20A2{:.2f}** per frame.".format(cost_per_frame),
-                        'GIF cost: **\u20A2{:.2f}** · Your balance: **\u20A2{:.2f}**'.format(cost, bal),
+                        "You can't afford to process this GIF!",
+                        (
+                            f'{img.n_frames} frames \u2A09 '
+                            f'\u20A2{GIF_RULES["cost_per_frame"]:.2f}/frame = '
+                            f'**\u20A2{cost:.2f}**'
+                        ),  # lord help me it's ugly but it's flake-y
+                        f'Your balance: **\u20A2{bal:.2f}**',
                     ]),
-                    footer='Play >daily, >cringo, >guessmoji, or >emojistory to win crimsoCOIN!',
+                    footer='Play games to win crimsoCOIN! Type `>help Games` for a list.',
                     thumb_name='weary',
                     color_name='orange',
                 )
-                await ctx.send(embed=embed, delete_after=20)
-                return None
+
+                await ctx.send(embed=embed)
+                return None, None
+
             else:
                 # debit the user, credit the bot
                 await crimsogames.win(ctx.author, -cost)
                 await crimsogames.win(ctx.guild.me, cost)
+                new_bal = await crimsogames.check_balance(ctx.author)
 
-    msg = await ctx.send('`{}: pls to hold...`'.format(ctx.author))
+    embed = c.crimbed(
+        title='PLS TO HOLD...',
+        descr='\n'.join([
+            f'Processing GIF for **{ctx.author}**...',
+            f'{img.width} \u2A09 {img.height} pixels · {img.n_frames} frames',
+        ]),
+        footer=f'GIF cost: \u20A2{cost:.2f} · Your balance: \u20A2{bal:.2f} ➡️ \u20A2{new_bal:.2f}',
+        color_name='yellow',
+        thumb_name='wizard',
+    )
 
+    msg = await ctx.send(embed=embed)
+
+    # original image begins processing
     fp = await process_lower_level(img, effect, arg)
-
-    await msg.edit(content='`{}: pls to hold...image processed!`'.format(ctx.author))
+    n_bytes = fp.getbuffer().nbytes
 
     # if file too large to send via Discord, then resize
-    n_bytes = fp.getbuffer().nbytes
-    max_bytes = 8000000
-
-    while n_bytes > max_bytes:
-        await msg.edit(content='`{}: pls to hold...image processed! resizing...`'.format(ctx.author))
+    while n_bytes > IMAGE_RULES['max_filesize']:
+        embed.title = 'RESIZING...'
+        await msg.edit(embed=embed)
         # recursively resize image until it meets Discord filesize limit
         img = Image.open(fp)
-        scale = 0.9
+        scale = IMAGE_RULES['max_filesize'] / n_bytes
         fp = await process_lower_level(img, 'resize', scale)
         n_bytes = fp.getbuffer().nbytes
 
-    try:
-        await msg.delete()
-    except AttributeError:
-        pass
+    embed.title = 'COMPLETE!'
+    embed.description = f'Processed GIF for **{ctx.author}**!'
+    embed.color = 0x5AC037
+    await msg.edit(embed=embed)
 
-    return fp, img_format
+    return fp, img.format

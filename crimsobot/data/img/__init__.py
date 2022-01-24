@@ -2,7 +2,10 @@ import json
 import os
 from typing import Dict, List, Tuple
 
+import yaml
+
 from crimsobot.utils.color import LabColor, get_nearest_color, hex_to_lab, hex_to_rgb
+from crimsobot.utils.tools import clib_path_join
 
 
 def _load() -> Tuple[Dict[str, str], List[Tuple[int, int, int]], List[LabColor]]:
@@ -40,3 +43,12 @@ def lookup_emoji(hex_in: str) -> str:
             return value
 
     return 'F'  # failure to find emoji
+
+
+_ruleset_path = clib_path_join('img', 'rules.yaml')
+with open(_ruleset_path, encoding='utf-8', errors='ignore') as rules_file:
+    _ruleset = next(yaml.safe_load_all(rules_file.read()))
+
+# these are what should be imported by other scripts
+IMAGE_RULES = _ruleset['image']
+GIF_RULES = _ruleset['gif']
