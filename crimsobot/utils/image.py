@@ -603,18 +603,20 @@ async def process_image(ctx: Context, image: Optional[str], effect: str, arg: Op
                 await crimsogames.win(ctx.guild.me, cost)
                 new_bal = await crimsogames.check_balance(ctx.author)
 
-    embed = c.crimbed(
-        title='PLS TO HOLD...',
-        descr='\n'.join([
-            f'Processing GIF for **{ctx.author}**...',
-            f'{img.width} \u2A09 {img.height} pixels · {img.n_frames} frames',
-        ]),
-        footer=f'GIF cost: \u20A2{cost:.2f} · Your balance: \u20A2{bal:.2f} ➡️ \u20A2{new_bal:.2f}',
-        color_name='yellow',
-        thumb_name='wizard',
-    )
+    is_gif = img.format == 'GIF'
 
-    msg = await ctx.send(embed=embed)
+    if is_gif:
+        embed = c.crimbed(
+            title='PLS TO HOLD...',
+            descr='\n'.join([
+                f'Processing GIF for **{ctx.author}**...',
+                f'{img.width} \u2A09 {img.height} pixels · {img.n_frames} frames',
+            ]),
+            footer=f'GIF cost: \u20A2{cost:.2f} · Your balance: \u20A2{bal:.2f} ➡️ \u20A2{new_bal:.2f}',
+            color_name='yellow',
+            thumb_name='wizard',
+        )
+        msg = await ctx.send(embed=embed)
 
     # original image begins processing
     fp = await process_lower_level(img, effect, arg)
@@ -622,17 +624,20 @@ async def process_image(ctx: Context, image: Optional[str], effect: str, arg: Op
 
     # if file too large to send via Discord, then resize
     while n_bytes > IMAGE_RULES['max_filesize']:
-        embed.title = 'RESIZING...'
-        await msg.edit(embed=embed)
+        if is_gif:
+            embed.title = 'RESIZING...'
+            await msg.edit(embed=embed)
+
         # recursively resize image until it meets Discord filesize limit
         img = Image.open(fp)
         scale = IMAGE_RULES['max_filesize'] / n_bytes
         fp = await process_lower_level(img, 'resize', scale)
         n_bytes = fp.getbuffer().nbytes
 
-    embed.title = 'COMPLETE!'
-    embed.description = f'Processed GIF for **{ctx.author}**!'
-    embed.color = 0x5AC037
-    await msg.edit(embed=embed)
+    if is_gif:
+        embed.title = 'COMPLETE!'
+        embed.description = f'Processed GIF for **{ctx.author}**!'
+        embed.color = 0x5AC037
+        await msg.edit(embed=embed)
 
     return fp, img.format

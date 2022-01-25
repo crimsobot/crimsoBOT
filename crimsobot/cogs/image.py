@@ -2,12 +2,14 @@ import asyncio
 import logging
 import random
 from datetime import datetime
-from typing import Callable, Optional
+from typing import Callable, List, Optional
 
 import discord
 from discord.ext import commands
 
 from crimsobot.bot import CrimsoBOT
+from crimsobot.data.img import AENIMA, IMAGE_RULES, LATERALUS, URL_CONTAINS
+from crimsobot.exceptions import NoImageFound
 from crimsobot.utils import image as imagetools, tools as c
 
 log = logging.getLogger(__name__)
@@ -28,6 +30,39 @@ def shared_max_concurrency(bucket: commands.MaxConcurrency) -> Callable[[Callabl
 class Image(commands.Cog):
     def __init__(self, bot: CrimsoBOT):
         self.bot = bot
+
+    async def get_previous_image(self, ctx: commands.Context) -> str:
+        """A quick scrape to grab an image attachment URL from a previous message."""
+
+        async def filename_to_check(filename: str) -> bool:
+            """Check if filename is an image URL."""
+            return any(x in filename for x in URL_CONTAINS)
+
+        # grab message contents (which are strings):
+        async for msg in ctx.message.channel.history(limit=IMAGE_RULES['msg_scrape_limit']):
+            # if the image is an attachment (via upload)...
+            if len(msg.attachments) > 0:
+                attachment = msg.attachments[0]
+                is_image = await filename_to_check(attachment.url)
+                if is_image:
+                    url = attachment.url  # type: str
+                    return url
+            # check for links in message...
+            elif 'http' in msg.content:
+                string_list = msg.content.split(' ')  # type: List[str]
+                for potential_image_url in string_list:
+                    is_image = await filename_to_check(potential_image_url)
+                    if is_image:
+                        return potential_image_url
+            elif len(msg.embeds) > 0:
+                embed = msg.embeds[0]
+                if not embed.image.url == discord.Embed.Empty:
+                    url = embed.image.url
+                    return url
+            else:
+                continue
+
+        raise NoImageFound
 
     async def get_image_and_embed(self, ctx: commands.Context, image: Optional[str], effect: str,
                                   arg: Optional[int], title: str) -> None:
@@ -61,6 +96,9 @@ class Image(commands.Cog):
         if not 1 <= number_of_hits <= 3:
             raise commands.BadArgument('Number of hits is out of bounds.')
 
+        if image is None:
+            image = await self.get_previous_image(ctx)  # will be a URL
+
         effect = 'acid'
         ess = '' if number_of_hits == 1 else 's'
         title = '{}: {} hit{}'.format(effect.upper(), number_of_hits, ess)
@@ -70,19 +108,11 @@ class Image(commands.Cog):
     async def aenima(self, ctx: commands.Context, image: Optional[str] = None) -> None:
 
         effect = 'aenima'
-        title = random.choice([
-            'Constant overstimulation', 'Not enough, I need more', "I'll keep digging",
-            'He had a lot of nothing to say', 'Ranting and pointing his finger', 'So long, we wish you well',
-            "What's coming through is alive", 'Consideratly killing me', 'I am too connected to you',
-            'Insecure delusions', 'Change is coming', 'Crawling on my belly',
-            'Figlio di puttana', "You think you're cool, right?", "You know I'm involved with black magic?",
-            'Vans, 501s, and a dope Beastie T', "I've got some ad-vice for you little buddy", 'Send more money',
-            'Eleven is standing still', 'Moving me with a sound', 'Under a dead Ohio Sky',
-            'Ein halbes Pfund Butter', 'Ein wenig extra Staußzucker', 'Und keine Eier',
-            'Saw the gap again today', "I am somewhere I don't wanna be", 'It will end no other way',
-            'Hey. Hey. Hey. Hey. Hey', 'Some say the end is near', 'Fret for your latte',
-            'Dreaming of that fix again', 'So good to see you once again', 'Blue as our new second sun'
-        ])
+        title = random.choice(AENIMA)
+
+        if image is None:
+            image = await self.get_previous_image(ctx)  # will be a URL
+
         await self.get_image_and_embed(ctx, image, effect, None, title)
 
     @commands.command(hidden=True)
@@ -152,16 +182,18 @@ class Image(commands.Cog):
 
         await user.send(message)
 
-    @commands.command(aliases=['emojimage', 'eimg2'])
-    @commands.cooldown(1, 60, commands.BucketType.user)
+    @commands.group(aliases=['emojimage'], invoke_without_command=True)
+    @commands.cooldown(1, 30, commands.BucketType.user)
     @shared_max_concurrency(eface_bucket)
     async def eimg(self, ctx: commands.Context, image: Optional[str] = None, platform: str = 'desktop') -> None:
         """
         Convert image to emojis!
-        Use ">eimg [image] mobile" or "tablet" for a smaller image.
+        Use ">eimg mobile" or ">eimg tablet" for a smaller image.
         Works best with images with good contrast and larger features.
-        A one-pixel-wide line is likely not going to show up in the final product.
         """
+
+        if image is None:
+            image = await self.get_previous_image(ctx)  # will be a URL
 
         line_list = await imagetools.make_emoji_image(ctx, image, platform.lower().strip())
 
@@ -169,6 +201,18 @@ class Image(commands.Cog):
         for line in line_list:
             await ctx.message.author.send(line)
             await asyncio.sleep(0.72)
+
+    @eimg.command(name='mobile', brief='Smallest emoji image!')
+    @commands.cooldown(1, 30, commands.BucketType.user)
+    @shared_max_concurrency(eface_bucket)
+    async def eimg_mobile(self, ctx: commands.Context, image: Optional[str] = None) -> None:
+        await self.eimg(ctx, image, platform='mobile')
+
+    @eimg.command(name='tablet', brief='Smaller emoji image!')
+    @commands.cooldown(1, 30, commands.BucketType.user)
+    @shared_max_concurrency(eface_bucket)
+    async def eimg_tablet(self, ctx: commands.Context, image: Optional[str] = None) -> None:
+        await self.eimg(ctx, image, platform='tablet')
 
     @commands.command(hidden=True)
     @commands.is_owner()
@@ -190,25 +234,19 @@ class Image(commands.Cog):
     @commands.command(hidden=True)
     async def lateralus(self, ctx: commands.Context, image: Optional[str] = None) -> None:
 
+        if image is None:
+            image = await self.get_previous_image(ctx)  # will be a URL
+
         effect = 'lateralus'
-        title = random.choice([
-            'Saturn ascends', 'Clutch it like a cornerstone', 'Wear the grudge like a crown',
-            "But I'm still right here", 'Gonna wait it out', 'I must keep reminding myself of this',
-            'I know the pieces fit', 'Finding beauty in the dissonance', 'Between supposed lovers',
-            'So familiar and overwhelmingly warm', 'Embrancing you, this reality here', 'So wide eyed and hopeful',
-            'This holy reality', 'All this pain is an illusion', 'Recoginize this as a holy gift',
-            'Fat little parasite', 'Suck me dry', 'I hope you choke on this',
-            'Reaching out to embrace the random', 'Witness the beauty', 'Spiral out',
-            'Mention this to me', 'Mention something, mention anything', 'Watch the weather change',
-            'My self-indulgent pitiful hole', "It's calling me...", 'Before I pine away...',
-            "I don't have a whole lot of time", "They'll triangulate on this position really soon",
-            "What we're thinking of as aliens⁠—they're extradimensional beings..."
-        ])
+        title = random.choice(LATERALUS)
         await self.get_image_and_embed(ctx, image, effect, None, title)
 
     @commands.command()
     async def needban(self, ctx: commands.Context, image: Optional[str] = None) -> None:
         """SOMEONE needs BAN. User mention, attachment, link, or emoji."""
+
+        if image is None:
+            image = await self.get_previous_image(ctx)  # will be a URL
 
         effect = 'needban'
         title = 'Need ban?'
@@ -217,6 +255,9 @@ class Image(commands.Cog):
     @commands.command()
     async def needping(self, ctx: commands.Context, image: Optional[str] = None) -> None:
         """SOMEONE needs PING. User mention, attachment, link, or emoji."""
+
+        if image is None:
+            image = await self.get_previous_image(ctx)  # will be a URL
 
         effect = 'needping'
         title = 'Need ping?'
@@ -227,10 +268,7 @@ class Image(commands.Cog):
         """Add Discord notification badge to an image."""
 
         if image is None:
-            try:
-                ctx.message.attachments[0].url
-            except IndexError:
-                raise commands.MissingRequiredArgument('no')
+            image = await self.get_previous_image(ctx)  # will be a URL
 
         embed = c.crimbed(
             title='Choose a corner:',
@@ -273,6 +311,9 @@ class Image(commands.Cog):
     @commands.command()
     async def xokked(self, ctx: commands.Context, image: Optional[str] = None) -> None:
         """Get xokked! User mention, attachment, link, or emoji."""
+
+        if image is None:
+            image = await self.get_previous_image(ctx)  # will be a URL
 
         effect = 'xokked'
         title = '<:xok:563825728102334465>'

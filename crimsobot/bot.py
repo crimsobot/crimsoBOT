@@ -7,7 +7,9 @@ from discord.ext import commands
 from config import ADMIN_USER_IDS, BANNED_GUILD_IDS, DM_LOG_CHANNEL_ID, LEARNER_CHANNEL_IDS, LEARNER_USER_IDS
 from crimsobot import db
 from crimsobot.context import CrimsoContext
-from crimsobot.exceptions import LocationNotFound, NoMatchingTarotCard, NotDirectMessage, StrictInputFailed
+from crimsobot.data.img import IMAGE_RULES
+from crimsobot.exceptions import (LocationNotFound, NoImageFound, NoMatchingTarotCard,
+                                  NotDirectMessage, StrictInputFailed)
 from crimsobot.models.ban import Ban
 from crimsobot.utils import markov as m, tools as c
 
@@ -139,6 +141,11 @@ class CrimsoBOT(commands.Bot):
                 error_type = '**not good with location**'
                 traceback_needed = False
                 msg_to_user = f'Location **{error.original.location}** not found.'
+
+            if isinstance(error.original, NoImageFound):
+                error_type = '**NO IMAGE**'
+                traceback_needed = False
+                msg_to_user = f'No image found in {IMAGE_RULES["msg_scrape_limit"]} most recent messages.'
 
         elif isinstance(error, commands.MissingRequiredArgument):
             error_type = 'MISSING ARGUMENT'
