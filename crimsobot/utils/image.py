@@ -561,7 +561,9 @@ async def process_image(ctx: Context, image: Optional[str], effect: str, arg: Op
     # grab user image and covert to RGBA
     img = await fetch_image(ctx, image)
 
-    if getattr(img, 'is_animated', False):
+    is_gif = getattr(img, 'is_animated', False)
+
+    if is_gif:
         if img.n_frames > GIF_RULES['max_frames']:
             embed = c.crimbed(
                 title='OOF',
@@ -603,20 +605,18 @@ async def process_image(ctx: Context, image: Optional[str], effect: str, arg: Op
                 await crimsogames.win(ctx.guild.me, cost)
                 new_bal = await crimsogames.check_balance(ctx.author)
 
-    is_gif = img.format == 'GIF'
-
-    if is_gif:
-        embed = c.crimbed(
-            title='PLS TO HOLD...',
-            descr='\n'.join([
-                f'Processing GIF for **{ctx.author}**...',
-                f'{img.width} \u2A09 {img.height} pixels · {img.n_frames} frames',
-            ]),
-            footer=f'GIF cost: \u20A2{cost:.2f} · Your balance: \u20A2{bal:.2f} ➡️ \u20A2{new_bal:.2f}',
-            color_name='yellow',
-            thumb_name='wizard',
-        )
-        msg = await ctx.send(embed=embed)
+            # this embed will keep user updated on processing status; will be edited below as it progresses
+            embed = c.crimbed(
+                title='PLS TO HOLD...',
+                descr='\n'.join([
+                    f'Processing GIF for **{ctx.author}**...',
+                    f'{img.width} \u2A09 {img.height} pixels · {img.n_frames} frames',
+                ]),
+                footer=f'GIF cost: \u20A2{cost:.2f} · Your balance: \u20A2{bal:.2f} ➡️ \u20A2{new_bal:.2f}',
+                color_name='yellow',
+                thumb_name='wizard',
+            )
+            msg = await ctx.send(embed=embed)
 
     # original image begins processing
     fp = await process_lower_level(img, effect, arg)
