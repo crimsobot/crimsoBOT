@@ -46,6 +46,12 @@ eimg:
     '#ff0000': 🍅
     '#004488': 👗
     '#b2ffba': 🍐
+caption:
+  width: 500
+  str_len: 40
+  buffer: 10
+  font_size: 24
+  line_height: 28
 aenima:
   - Constant overstimulation
   - Not enough, I need more

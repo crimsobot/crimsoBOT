@@ -2,7 +2,7 @@ import asyncio
 import logging
 import random
 from datetime import datetime
-from typing import Callable, List, Optional
+from typing import Any, Callable, List, Optional
 
 import discord
 from discord.ext import commands
@@ -65,7 +65,7 @@ class Image(commands.Cog):
         raise NoImageFound
 
     async def get_image_and_embed(self, ctx: commands.Context, image: Optional[str], effect: str,
-                                  arg: Optional[int], title: str) -> None:
+                                  arg: Optional[Any], title: str) -> None:
         """Get image, construct and send embed with result."""
         # process image
         fp, img_format = await imagetools.process_image(ctx, image, effect, arg)
@@ -147,6 +147,34 @@ class Image(commands.Cog):
         )
 
         await ctx.send(file=f, embed=embed)
+
+    @commands.command(hidden=True)
+    async def caption(self, ctx: commands.Context, *, caption: str, image: Optional[str] = None) -> None:
+        """
+        Caption an image!
+
+        For example, >caption Honestly quite incredible [image]
+        The [image] can be a link, upload, user mention (for avatar), OR
+        an image in a previous message.
+        """
+
+        effect = 'caption'
+        title = 'Captioned:'
+
+        if image is None:
+            try:  # first: attachment?
+                image = ctx.message.attachments[0].url
+            except IndexError:
+                try:
+                    # try next: the last thing they said might be a link or emoji, so pop it out
+                    image = caption.split(' ').pop(-1).strip()
+                    caption_new = caption.replace(image, '')
+                    await self.get_image_and_embed(ctx, image, effect, caption_new, title)
+                    return
+                except FileNotFoundError:  # returned from get_image_and_embed()
+                    image = await self.get_previous_image(ctx)  # will be a URL
+
+        await self.get_image_and_embed(ctx, image, effect, caption, title)
 
     @commands.command(hidden=True)
     @commands.cooldown(1, 8 * 60 * 60, commands.BucketType.user)

@@ -16,6 +16,8 @@ URL_CONTAINS = IMAGE_RULES['url_contains']
 
 GIF_RULES = _ruleset['gif']
 
+CAPTION_RULES = _ruleset['caption']
+
 _EIMG_RULES = _ruleset['eimg']
 EIMG_WIDTH = _EIMG_RULES['width']
 
