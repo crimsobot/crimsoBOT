@@ -17,3 +17,7 @@ class NotDirectMessage(Exception):
 
 class StopHandler(Exception):
     pass
+
+
+class NoImageFound(Exception):
+    pass

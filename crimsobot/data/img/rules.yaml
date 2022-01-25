@@ -1,5 +1,13 @@
 image:
   max_filesize: 8000000
+  msg_scrape_limit: 8
+  url_contains:
+    - .jpg
+    - .jpeg
+    - .png
+    - .webp
+    - .gif
+    - tenor.com/view
 gif:
   cost_per_frame: 0.10
   max_frames: 300
@@ -36,5 +44,70 @@ eimg:
     '#000060': 🇪🇺
     '#f8afff': 🐖
     '#ff0000': 🍅
-    '#00ffff': 👗
+    '#004488': 👗
     '#b2ffba': 🍐
+aenima:
+  - Constant overstimulation
+  - Not enough, I need more
+  - I'll keep digging
+  - He had a lot of nothing to say
+  - Ranting and pointing his finger
+  - So long, we wish you well
+  - What's coming through is alive
+  - Consideratly killing me
+  - I am too connected to you
+  - Insecure delusions
+  - Change is coming
+  - Crawling on my belly
+  - Figlio di puttana
+  - You think you're cool, right?
+  - You know I'm involved with black magic?
+  - Vans, 501s, and a dope Beastie T
+  - I've got some ad-vice for you little buddy
+  - Send more money
+  - Eleven is standing still
+  - Moving me with a sound
+  - Under a dead Ohio Sky
+  - Ein halbes Pfund Butter
+  - Ein wenig extra Staußzucker
+  - Und keine Eier
+  - Saw the gap again today
+  - I am somewhere I don't wanna be
+  - It will end no other way
+  - Hey. Hey. Hey. Hey. Hey.
+  - Some say the end is near
+  - Fret for your latte
+  - Dreaming of that fix again
+  - So good to see you once again
+  - Blue as our new second sun
+lateralus:
+  - Saturn ascends
+  - Clutch it like a cornerstone
+  - Wear the grudge like a crown
+  - But I'm still right here
+  - Gonna wait it out
+  - I must keep reminding myself of this
+  - I know the pieces fit
+  - Finding beauty in the dissonance
+  - Between supposed lovers
+  - So familiar and overwhelmingly warm
+  - Embrancing you, this reality here
+  - So wide eyed and hopeful
+  - This holy reality
+  - All this pain is an illusion
+  - Recoginize this as a holy gift
+  - Fat little parasite
+  - Suck me dry
+  - I hope you choke on this
+  - Reaching out to embrace the random
+  - Witness the beauty
+  - Spiral out
+  - Mention this to me
+  - Mention something, mention anything
+  - Watch the weather change
+  - My self-indulgent pitiful hole
+  - It's calling me...
+  - Before I pine away...
+  - I don't have a whole lot of time
+  - They'll triangulate on this position really soon
+  - What we're thinking of as aliens⁠—they're extradimensional beings...

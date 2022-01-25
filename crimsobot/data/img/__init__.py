@@ -12,9 +12,16 @@ with open(_ruleset_path, encoding='utf-8', errors='ignore') as rules_file:
 
 # these are what should be imported by other scripts
 IMAGE_RULES = _ruleset['image']
+URL_CONTAINS = IMAGE_RULES['url_contains']
+
 GIF_RULES = _ruleset['gif']
+
 _EIMG_RULES = _ruleset['eimg']
 EIMG_WIDTH = _EIMG_RULES['width']
+
+AENIMA = _ruleset['aenima']
+LATERALUS = _ruleset['lateralus']
+
 
 # these will be imported by utils/image.py
 color_dict = _EIMG_RULES['palette']
