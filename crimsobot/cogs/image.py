@@ -8,8 +8,8 @@ import discord
 from discord.ext import commands
 
 from crimsobot.bot import CrimsoBOT
-from crimsobot.data.img import AENIMA, IMAGE_RULES, LATERALUS, URL_CONTAINS
-from crimsobot.exceptions import NoImageFound
+from crimsobot.data.img import AENIMA, CAPTION_RULES, IMAGE_RULES, LATERALUS, URL_CONTAINS
+from crimsobot.exceptions import BadCaption, NoImageFound
 from crimsobot.utils import image as imagetools, tools as c
 
 log = logging.getLogger(__name__)
@@ -149,7 +149,7 @@ class Image(commands.Cog):
         await ctx.send(file=f, embed=embed)
 
     @commands.command(hidden=True)
-    async def caption(self, ctx: commands.Context, *, caption: str, image: Optional[str] = None) -> None:
+    async def caption(self, ctx: commands.Context, *, user_input: str, image: Optional[str] = None) -> None:
         """
         Caption an image!
 
@@ -157,9 +157,13 @@ class Image(commands.Cog):
         The [image] can be a link, upload, user mention (for avatar), OR
         an image in a previous message.
         """
+        # check caption
+        def check(user_caption: str) -> bool:
+            max_length = len(user_caption) < CAPTION_RULES['max_len']  # type: bool
+            return max_length
 
         effect = 'caption'
-        title = 'Captioned:'
+        title = 'Captioned!'
 
         if image is None:
             try:  # first: attachment?
@@ -167,14 +171,20 @@ class Image(commands.Cog):
             except IndexError:
                 try:
                     # try next: the last thing they said might be a link or emoji, so pop it out
-                    image = caption.split(' ').pop(-1).strip()
-                    caption_new = caption.replace(image, '')
-                    await self.get_image_and_embed(ctx, image, effect, caption_new, title)
+                    image = user_input.split(' ').pop(-1).strip()
+                    caption = user_input.replace(image, '')
+                    if check(caption):
+                        await self.get_image_and_embed(ctx, image, effect, caption, title)
+                    else:
+                        raise BadCaption
                     return
                 except FileNotFoundError:  # returned from get_image_and_embed()
                     image = await self.get_previous_image(ctx)  # will be a URL
 
-        await self.get_image_and_embed(ctx, image, effect, caption, title)
+        if check(user_input):
+            await self.get_image_and_embed(ctx, image, effect, user_input, title)
+        else:
+            raise BadCaption
 
     @commands.command(hidden=True)
     @commands.cooldown(1, 8 * 60 * 60, commands.BucketType.user)

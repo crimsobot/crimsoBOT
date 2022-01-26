@@ -419,12 +419,13 @@ def make_captioned_img(img: Image.Image, caption: str) -> Image.Image:
     ratio = width / CAPTION_RULES['width']
     img = img.resize((int(width / ratio), int(height / ratio)), resample=Image.BICUBIC)
     # get new size
-    width, height = img.size
+    width_new, height_new = img.size
 
     # 2. split caption as naturally as possible
     caption_list = c.crimsplit(caption, ' ', CAPTION_RULES['str_len'])  # type: List[str]
     caption_list = [row.strip() for row in caption_list]
-    caption_new = '\n'.join(caption_list)
+    caption_str = '\n'.join(caption_list)
+    final_caption_list = caption_str.split('\n')  # this allows the user to split the caption with their own newlines
 
     # 3. fetch font
     filename = c.clib_path_join('img', 'Roboto-BlackItalic.ttf')
@@ -433,15 +434,16 @@ def make_captioned_img(img: Image.Image, caption: str) -> Image.Image:
     font = ImageFont.truetype(BytesIO(font_bytes), CAPTION_RULES['font_size'])
 
     # 4. draw text image
-    extra_height = CAPTION_RULES['line_height'] * len(caption_list) + CAPTION_RULES['buffer']
-    position = (CAPTION_RULES['buffer'], int(0.8 * CAPTION_RULES['buffer']))  # some real trial and error 💩
-
-    text_image = Image.new('RGB', (width, extra_height), (255, 255, 255))
+    extra_height = CAPTION_RULES['line_height'] * len(final_caption_list) + CAPTION_RULES['buffer_bottom']
+    text_image = Image.new('RGB', (width_new, extra_height), (255, 255, 255))
     draw_on_text_image = ImageDraw.Draw(text_image)
-    draw_on_text_image.text(position, caption_new, font=font, fill=(0, 0, 0))
+
+    for idx, line in enumerate(final_caption_list):
+        position = (CAPTION_RULES['buffer_width'], idx * CAPTION_RULES['line_height'])
+        draw_on_text_image.text(position, line, font=font, fill=(0, 0, 0))
 
     # 5. paste input image
-    final_image = Image.new('RGBA', (width, height + extra_height), (0, 0, 0, 0))
+    final_image = Image.new('RGBA', (width_new, height_new + extra_height), (0, 0, 0, 0))
     final_image.paste(text_image, (0, 0))
     final_image.paste(img, (0, extra_height))
 
