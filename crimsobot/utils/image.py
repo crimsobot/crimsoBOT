@@ -670,8 +670,6 @@ async def process_image(ctx: Context, image: Optional[str], effect: str, arg: Op
         img = Image.open(fp)
         scale = 0.9 * IMAGE_RULES['max_filesize'] / n_bytes  # 0.9x bias to help ensure it comes in under max size
 
-        print(f'bytes: {n_bytes} · scale: {scale:.2f}')
-
         fp = await process_lower_level(img, 'resize', scale)
         n_bytes = fp.getbuffer().nbytes
 
