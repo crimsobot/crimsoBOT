@@ -48,7 +48,7 @@ eimg:
     '#b2ffba': 🍐
 caption:
   width: 500
-  str_len: 28
+  str_len: 32
   max_len: 400
   line_height: 35
   buffer_width: 10

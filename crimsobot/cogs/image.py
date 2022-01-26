@@ -148,15 +148,20 @@ class Image(commands.Cog):
 
         await ctx.send(file=f, embed=embed)
 
-    @commands.command(hidden=True)
+    @commands.command(brief='Caption an image!')
     async def caption(self, ctx: commands.Context, *, user_input: str, image: Optional[str] = None) -> None:
         """
-        Caption an image!
+        The [image] can be a link, upload, user mention (for avatar), OR an image in a previous message.
 
-        For example, >caption Honestly quite incredible [image]
-        The [image] can be a link, upload, user mention (for avatar), OR
-        an image in a previous message.
+        If your caption overflows, try adding your own line breaks, e.g.:
+
+        >caption You can add your own
+        breaks to the text
+        wherever
+        you
+        like! [image]
         """
+
         # check caption
         def check(user_caption: str) -> bool:
             max_length = len(user_caption) < CAPTION_RULES['max_len']  # type: bool
