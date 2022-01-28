@@ -48,13 +48,10 @@ eimg:
     '#b2ffba': 🍐
 caption:
   width: 500
-  str_len: 32
   max_len: 400
-  line_height: 35
-  buffer_width: 10
-  buffer_bottom: 3
-  font_size: 32
-  line_height: 34
+  buffer_width: 18
+  buffer_height: 12
+  font_size: 36
 aenima:
   - Constant overstimulation
   - Not enough, I need more

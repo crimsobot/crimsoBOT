@@ -421,26 +421,62 @@ def make_captioned_img(img: Image.Image, caption: str) -> Image.Image:
     # get new size
     width_new, height_new = img.size
 
-    # 2. split caption as naturally as possible
-    caption_list = c.crimsplit(caption, ' ', CAPTION_RULES['str_len'])  # type: List[str]
-    caption_list = [row.strip() for row in caption_list]
-    caption_str = '\n'.join(caption_list)
-    final_caption_list = caption_str.split('\n')  # this allows the user to split the caption with their own newlines
-
-    # 3. fetch font
+    # 2. fetch font
     filename = c.clib_path_join('img', 'Roboto-BlackItalic.ttf')
     with open(filename, 'rb') as f:
         font_bytes = f.read()
     font = ImageFont.truetype(BytesIO(font_bytes), CAPTION_RULES['font_size'])
 
+    # 3. split caption as neatly as possible
+    caption_newline_split = caption.split('\n')  # this will allow preservation of user-defined newlines
+    caption_list_of_lists = []
+
+    for line in caption_newline_split:
+        char_widths = []  # type: List[Tuple[str, int]]
+        for char in line:
+            char_widths.append((char, font.getsize(char)[0]))
+
+        # build each line character by character until max width reached
+        caption_line = ''
+        caption_list = []
+        caption_width = 0
+        max_width = CAPTION_RULES['width'] - 2 * CAPTION_RULES['buffer_width']
+
+        for char in char_widths:
+            if caption_width < max_width:
+                caption_line += char[0]
+            else:  # look for the last space to break the line
+                caption_line_split = caption_line.split(' ')
+                if len(caption_line_split) > 1:
+                    newline = caption_line_split[-1]
+                    caption_line_to_append = ' '.join(caption_line_split[:-1])
+                    caption_width = font.getsize(caption_line_to_append)[0]
+                    caption_list.append((caption_line_to_append, caption_width))
+                    caption_line = newline
+                    caption_line += char[0]
+                else:  # no spaces for breaking
+                    caption_width = font.getsize(caption_line)[0]
+                    caption_list.append((caption_line, caption_width))
+                    caption_line = char[0]
+
+            caption_width = font.getsize(caption_line)[0]
+
+        # append final line (which, if followed by an image argument, will include a space)
+        caption_list.append((caption_line.strip(), caption_width))
+        caption_list_of_lists.append(caption_list)
+
+    final_caption_list = [item for sublist in caption_list_of_lists for item in sublist]  # type: List[Tuple[str, int]]
+
     # 4. draw text image
-    extra_height = CAPTION_RULES['line_height'] * len(final_caption_list) + CAPTION_RULES['buffer_bottom']
+    line_height = font.getsize('y')[1] - 1  # max height of font determined by character with descender
+    extra_height = line_height * len(final_caption_list) + 2 * CAPTION_RULES['buffer_height']
     text_image = Image.new('RGB', (width_new, extra_height), (255, 255, 255))
     draw_on_text_image = ImageDraw.Draw(text_image)
 
     for idx, line in enumerate(final_caption_list):
-        position = (CAPTION_RULES['buffer_width'], idx * CAPTION_RULES['line_height'])
-        draw_on_text_image.text(position, line, font=font, fill=(0, 0, 0))
+        w = (CAPTION_RULES['width'] - line[1]) // 2
+        position = (w, idx * line_height + CAPTION_RULES['buffer_height'])
+        draw_on_text_image.text(position, line[0], font=font, fill=(0, 0, 0))
 
     # 5. paste input image
     final_image = Image.new('RGBA', (width_new, height_new + extra_height), (0, 0, 0, 0))
