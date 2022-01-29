@@ -412,7 +412,7 @@ def make_aenima_img(img: Image.Image, arg: None) -> Image.Image:
     return bg
 
 
-def make_captioned_img(img: Image.Image, caption: str) -> Image.Image:
+def make_captioned_img(img: Image.Image, caption_list: List[str]) -> Image.Image:
     """Captions an image!"""
     # 1. determine image size, resize to standardize text addition
     width, height = img.size
@@ -427,56 +427,51 @@ def make_captioned_img(img: Image.Image, caption: str) -> Image.Image:
         font_bytes = f.read()
     font = ImageFont.truetype(BytesIO(font_bytes), CAPTION_RULES['font_size'])
 
-    # 3. split caption as neatly as possible
-    caption_newline_split = caption.split('\n')  # this will allow preservation of user-defined newlines
+    # 3. build each line char by char until max width reached
     caption_list_of_lists = []
 
-    for line in caption_newline_split:
-        char_widths = []  # type: List[Tuple[str, int]]
-        for char in line:
-            char_widths.append((char, font.getsize(char)[0]))
-
-        # build each line character by character until max width reached
+    for line in caption_list:
+        # initialize holers
         caption_line = ''
-        caption_list = []
+        caption_sublist = []  # type: List[Tuple[str, int]]
         caption_width = 0
         max_width = CAPTION_RULES['width'] - 2 * CAPTION_RULES['buffer_width']
 
-        for char in char_widths:
+        for char in line:
             if caption_width < max_width:
-                caption_line += char[0]
+                caption_line += char
             else:  # look for the last space to break the line
                 caption_line_split = caption_line.split(' ')
                 if len(caption_line_split) > 1:
                     newline = caption_line_split[-1]
                     caption_line_to_append = ' '.join(caption_line_split[:-1])
                     caption_width = font.getsize(caption_line_to_append)[0]
-                    caption_list.append((caption_line_to_append, caption_width))
+                    caption_sublist.append((caption_line_to_append, caption_width))
                     caption_line = newline
-                    caption_line += char[0]
+                    caption_line += char
                 else:  # no spaces for breaking
                     caption_width = font.getsize(caption_line)[0]
-                    caption_list.append((caption_line, caption_width))
-                    caption_line = char[0]
+                    caption_sublist.append((caption_line, caption_width))
+                    caption_line = char
 
             caption_width = font.getsize(caption_line)[0]
 
         # append final line (which, if followed by an image argument, will include a space)
-        caption_list.append((caption_line.strip(), caption_width))
-        caption_list_of_lists.append(caption_list)
+        caption_sublist.append((caption_line, caption_width))
+        caption_list_of_lists.append(caption_sublist)
 
     final_caption_list = [item for sublist in caption_list_of_lists for item in sublist]  # type: List[Tuple[str, int]]
 
     # 4. draw text image
-    line_height = font.getsize('y')[1] - 1  # max height of font determined by character with descender
+    line_height = font.getsize('y')[1] - 1  # max height of font determined by char with descender
     extra_height = line_height * len(final_caption_list) + 2 * CAPTION_RULES['buffer_height']
     text_image = Image.new('RGB', (width_new, extra_height), (255, 255, 255))
     draw_on_text_image = ImageDraw.Draw(text_image)
 
-    for idx, line in enumerate(final_caption_list):
-        w = (CAPTION_RULES['width'] - line[1]) // 2
+    for idx, line_to_draw in enumerate(final_caption_list):
+        w = (CAPTION_RULES['width'] - line_to_draw[1]) // 2
         position = (w, idx * line_height + CAPTION_RULES['buffer_height'])
-        draw_on_text_image.text(position, line[0], font=font, fill=(0, 0, 0))
+        draw_on_text_image.text(position, line_to_draw[0], font=font, fill=(0, 0, 0))
 
     # 5. paste input image
     final_image = Image.new('RGBA', (width_new, height_new + extra_height), (0, 0, 0, 0))

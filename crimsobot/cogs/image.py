@@ -1,8 +1,9 @@
 import asyncio
 import logging
 import random
+import re
 from datetime import datetime
-from typing import Any, Callable, List, Optional
+from typing import Any, Callable, List, Optional, Tuple
 
 import discord
 from discord.ext import commands
@@ -149,11 +150,11 @@ class Image(commands.Cog):
         await ctx.send(file=f, embed=embed)
 
     @commands.command(brief='Caption an image!')
-    async def caption(self, ctx: commands.Context, *, user_input: str, image: Optional[str] = None) -> None:
+    async def caption(self, ctx: commands.Context, *, caption_text: str, image: Optional[str] = None) -> None:
         """
         The [image] can be a link, upload, user mention (for avatar), OR an image in a previous message.
 
-        If your caption overflows, try adding your own line breaks, e.g.:
+        You can add your own line breaks, eg:
 
         >caption You can add your own
         breaks to the text
@@ -162,34 +163,51 @@ class Image(commands.Cog):
         like! [image]
         """
 
-        # check caption
-        def check(user_caption: str) -> bool:
-            max_length = len(user_caption) < CAPTION_RULES['max_len']  # type: bool
-            return max_length
+        def clean_and_check(user_caption: str) -> Tuple[List[str], bool]:
+            """Clean the caption and check if valid"""
 
-        effect = 'caption'
-        title = 'Captioned!'
+            # remove superfluous spaces and trailing newlines
+            cleaned_caption = re.sub(' +', ' ', user_caption).strip()
 
+            # checks on caption
+            max_length = len(cleaned_caption) < CAPTION_RULES['max_len']  # type: bool
+            check = max_length
+
+            # split by newline to preserve user input of newline
+            cleaned_caption_split = cleaned_caption.split('\n')
+
+            # clean once again
+            for idx, line in enumerate(cleaned_caption_split):
+                cleaned_caption_split[idx] = line.strip()
+
+            return cleaned_caption_split, check
+
+        async def send_to_caption_helper(caption: List[str], valid: bool) -> None:
+            effect = 'caption'
+            title = 'Captioned!'
+
+            if valid:
+                await self.get_image_and_embed(ctx, image, effect, caption, title)
+            else:
+                raise BadCaption
+
+        # caption_text may contain a link or an emoji; if so, parse it out
         if image is None:
-            try:  # first: attachment?
+            try:  # first: see if there is an attachment (upload)
                 image = ctx.message.attachments[0].url
             except IndexError:
-                try:
-                    # try next: the last thing they said might be a link or emoji, so pop it out
-                    image = user_input.split(' ').pop(-1).strip()
-                    caption = user_input.replace(image, '')
-                    if check(caption):
-                        await self.get_image_and_embed(ctx, image, effect, caption, title)
-                    else:
-                        raise BadCaption
+                try:  # next: the last part of user_input might be a link or emoji...
+                    # ...so separate the last thing in user_input and try as image input
+                    image = caption_text.split(' ').pop(-1).strip()
+                    caption_text_popped = caption_text.replace(image, '')
+                    new_caption, valid_caption = clean_and_check(caption_text_popped)
+                    await send_to_caption_helper(new_caption, valid_caption)
                     return
                 except FileNotFoundError:  # returned from get_image_and_embed()
                     image = await self.get_previous_image(ctx)  # will be a URL
 
-        if check(user_input):
-            await self.get_image_and_embed(ctx, image, effect, user_input, title)
-        else:
-            raise BadCaption
+        new_caption, valid_caption = clean_and_check(caption_text)
+        await send_to_caption_helper(new_caption, valid_caption)
 
     @commands.command(hidden=True)
     @commands.cooldown(1, 8 * 60 * 60, commands.BucketType.user)
