@@ -149,7 +149,7 @@ class Image(commands.Cog):
 
         await ctx.send(file=f, embed=embed)
 
-    @commands.command(brief='Caption an image!')
+    @commands.command(brief='Caption an image!', aliases=['caltuon'])
     async def caption(self, ctx: commands.Context, *, caption_text: str, image: Optional[str] = None) -> None:
         """
         The [image] can be a link, upload, user mention (for avatar), OR an image in a previous message.
