@@ -21,3 +21,7 @@ class StopHandler(Exception):
 
 class NoImageFound(Exception):
     pass
+
+
+class BadCaption(Exception):
+    pass

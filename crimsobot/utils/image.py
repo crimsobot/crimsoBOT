@@ -6,16 +6,13 @@ import aiofiles
 import aiohttp
 import matplotlib.image as plt
 import numpy as np
-from PIL import Image
-from PIL import ImageDraw
-from PIL import ImageFont
-from PIL import ImageOps
-from PIL import ImageSequence
+from PIL import Image, ImageDraw, ImageFont, ImageOps, ImageSequence
 from bs4 import BeautifulSoup
 from discord.ext.commands import BadArgument, Context
 from scipy.signal import convolve2d
 
-from crimsobot.data.img import EIMG_WIDTH, GIF_RULES, IMAGE_RULES, color_dict, lookup_emoji, rgb_color_list
+from crimsobot.data.img import (CAPTION_RULES, EIMG_WIDTH, GIF_RULES, IMAGE_RULES,
+                                color_dict, lookup_emoji, rgb_color_list)
 from crimsobot.utils import games as crimsogames, tools as c
 from crimsobot.utils.color import hex_to_rgb
 
@@ -124,6 +121,8 @@ async def fetch_image(ctx: Context, arg: Optional[str]) -> Image.Image:
 
         async with session.get(url, allow_redirects=False) as response:
             img_bytes = await response.read()
+
+        await session.close()
 
         return Image.open(BytesIO(img_bytes))
 
@@ -413,6 +412,75 @@ def make_aenima_img(img: Image.Image, arg: None) -> Image.Image:
     return bg
 
 
+def make_captioned_img(img: Image.Image, caption_list: List[str]) -> Image.Image:
+    """Captions an image!"""
+    # 1. determine image size, resize to standardize text addition
+    width, height = img.size
+    ratio = width / CAPTION_RULES['width']
+    img = img.resize((int(width / ratio), int(height / ratio)), resample=Image.BICUBIC)
+    # get new size
+    width_new, height_new = img.size
+
+    # 2. fetch font
+    filename = c.clib_path_join('img', 'Roboto-BlackItalic.ttf')
+    with open(filename, 'rb') as f:
+        font_bytes = f.read()
+    font = ImageFont.truetype(BytesIO(font_bytes), CAPTION_RULES['font_size'])
+
+    # 3. build each line char by char until max width reached
+    caption_list_of_lists = []
+
+    for line in caption_list:
+        # initialize holers
+        caption_line = ''
+        caption_sublist = []  # type: List[Tuple[str, int]]
+        caption_width = 0
+        max_width = CAPTION_RULES['width'] - 2 * CAPTION_RULES['buffer_width']
+
+        for char in line:
+            if caption_width < max_width:
+                caption_line += char
+            else:  # look for the last space to break the line
+                caption_line_split = caption_line.split(' ')
+                if len(caption_line_split) > 1:
+                    newline = caption_line_split[-1]
+                    caption_line_to_append = ' '.join(caption_line_split[:-1])
+                    caption_width = font.getsize(caption_line_to_append)[0]
+                    caption_sublist.append((caption_line_to_append, caption_width))
+                    caption_line = newline
+                    caption_line += char
+                else:  # no spaces for breaking
+                    caption_width = font.getsize(caption_line)[0]
+                    caption_sublist.append((caption_line, caption_width))
+                    caption_line = char
+
+            caption_width = font.getsize(caption_line)[0]
+
+        # append final line (which, if followed by an image argument, will include a space)
+        caption_sublist.append((caption_line, caption_width))
+        caption_list_of_lists.append(caption_sublist)
+
+    final_caption_list = [item for sublist in caption_list_of_lists for item in sublist]  # type: List[Tuple[str, int]]
+
+    # 4. draw text image
+    line_height = font.getsize('y')[1] - 1  # max height of font determined by char with descender
+    extra_height = line_height * len(final_caption_list) + 2 * CAPTION_RULES['buffer_height']
+    text_image = Image.new('RGB', (width_new, extra_height), (255, 255, 255))
+    draw_on_text_image = ImageDraw.Draw(text_image)
+
+    for idx, line_to_draw in enumerate(final_caption_list):
+        w = (CAPTION_RULES['width'] - line_to_draw[1]) // 2
+        position = (w, idx * line_height + CAPTION_RULES['buffer_height'])
+        draw_on_text_image.text(position, line_to_draw[0], font=font, fill=(0, 0, 0))
+
+    # 5. paste input image
+    final_image = Image.new('RGBA', (width_new, height_new + extra_height), (0, 0, 0, 0))
+    final_image.paste(text_image, (0, 0))
+    final_image.paste(img, (0, extra_height))
+
+    return final_image
+
+
 def make_lateralus_img(img: Image.Image, arg: None) -> Image.Image:
     img = img.convert('RGBA')
 
@@ -540,6 +608,7 @@ def process_lower_level(img: Image.Image, effect: str, arg: int) -> BytesIO:
         function_dict: Mapping[str, Callable] = {
             'acid': make_acid_img,
             'aenima': make_aenima_img,
+            'caption': make_captioned_img,
             'lateralus': make_lateralus_img,
             'needban': make_needban_img,
             'needping': make_needping_img,
@@ -630,7 +699,8 @@ async def process_image(ctx: Context, image: Optional[str], effect: str, arg: Op
 
         # recursively resize image until it meets Discord filesize limit
         img = Image.open(fp)
-        scale = IMAGE_RULES['max_filesize'] / n_bytes
+        scale = 0.9 * IMAGE_RULES['max_filesize'] / n_bytes  # 0.9x bias to help ensure it comes in under max size
+
         fp = await process_lower_level(img, 'resize', scale)
         n_bytes = fp.getbuffer().nbytes
 
