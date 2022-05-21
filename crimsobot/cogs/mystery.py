@@ -200,7 +200,7 @@ class Mystery(commands.Cog):
             except asyncio.TimeoutError:
                 return
 
-        fp = await card.get_image_buff()
+        fp = await card.get_image_file()
         filename = 'card.png'
         f = discord.File(fp, filename)
 
