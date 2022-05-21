@@ -50,6 +50,7 @@ class CrimsoBOT(commands.Bot):
             'crimsobot.cogs.image',
             'crimsobot.cogs.mystery',
             'crimsobot.cogs.reactions',
+            'crimsobot.cogs.secret',
             'crimsobot.cogs.text',
             'crimsobot.cogs.utilities',
         ]
