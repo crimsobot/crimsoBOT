@@ -336,7 +336,7 @@ async def cringo_stat_embed(user: DiscordUser) -> Embed:
             title='CRINGO! stats for {}'.format(user),
             descr=None,
             thumb_name='jester',
-            footer='As of {d.year}-{d.month:02d}-{d.day:02d} · Regular CRINGO! only'.format(d=s.created_at),
+            footer='Since {d.year}-{d.month:02d}-{d.day:02d} · Regular CRINGO! only'.format(d=s.created_at),
         )
 
         ess = '' if s.plays == 1 else 's'
