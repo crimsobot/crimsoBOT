@@ -3,6 +3,7 @@ from typing import Any, List, Union
 
 import discord
 from discord.ext import commands
+from discord.ext.commands import Paginator
 
 from config import ADMIN_USER_IDS, BANNED_GUILD_IDS, DM_LOG_CHANNEL_ID, LEARNER_CHANNEL_IDS, LEARNER_USER_IDS
 from crimsobot import db
@@ -10,6 +11,7 @@ from crimsobot.context import CrimsoContext
 from crimsobot.data.img import CAPTION_RULES, IMAGE_RULES
 from crimsobot.exceptions import (BadCaption, LocationNotFound, NoImageFound, NoMatchingTarotCard,
                                   NotDirectMessage, StrictInputFailed)
+from crimsobot.help_command import PaginatedHelpCommand
 from crimsobot.models.ban import Ban
 from crimsobot.utils import markov as m, tools as c
 
@@ -30,11 +32,16 @@ class CrimsoBOT(commands.Bot):
 
         intents = kwargs.pop('intents', default_intents)
 
+        paginator = Paginator(max_size=1336)
+        help_command = PaginatedHelpCommand(paginator=paginator)
+        help_command = kwargs.pop('help_command', help_command)
+
         super().__init__(
             command_prefix,
             owner_ids=owner_ids,
             case_insensitive=case_insensitive,
             intents=intents,
+            help_command=help_command,
             **kwargs
         )
 
