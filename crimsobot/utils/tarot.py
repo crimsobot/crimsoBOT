@@ -1,7 +1,6 @@
 import difflib
 import io
 import random
-from enum import Enum
 from io import BytesIO
 from typing import Dict, List, Optional, Tuple
 
@@ -10,49 +9,16 @@ import yaml
 from PIL import Image
 from discord.ext import commands
 
-from crimsobot.exceptions import NoMatchingTarotCard
+from crimsobot.exceptions import NoMatchingTarotCard, NoMatchingTarotSuit
 from crimsobot.utils.image import image_to_buffer
 from crimsobot.utils.tools import clib_path_join
 
-# TODO: Add these descriptions to class Suit or appropriate place. These should be included in the >card embed.
-"""     The Major Arcana:
-        Beginning with The Fool and ending with The World, these 22 cards represent major archetypes.
-        They indicate great cosmic forces at work. Be especially attentive to what they have to say.
 
-        The Wands: The Wands are ruled by the element of fire.
-        Their sphere of influence is energy, motivation, will, and passion:
-        that which most deeply animates and ignites the soul.
-
-        The Pentacles: Ruled by the element of earth.
-        The Pentacles deal with earthly matters--
-        health, finances, the body, the domestic sphere, and one's sense of security.
-
-        The Cups: The Cups are ruled by the element of water.
-        They preside over matters of the heart.
-        Emotion, relationships, inutition, and mystery are all found within their depths.
-
-        The Swords: The Swords are ruled by the element of air.
-        Their main concern is the mind and the intellect.
-        They cut through delusion towards clarity with sometimes unforgiving sharpness.
-"""
-
-
-# TODO: descriptions to add to >tarot card embed moved to suits.yaml
-
-
-class Suit(Enum):
-    MAJOR_ARCANA = 1
-    WANDS = 2
-    PENTACLES = 3
-    CUPS = 4
-    SWORDS = 5
-
-    def __str__(self) -> str:
-        words = self.name.split('_')
-        words = [w.title() for w in words]
-        name = ' '.join(words)
-
-        return name
+class Suit:
+    def __init__(self, name: str, number: int, description: str) -> None:
+        self.name = name
+        self.number = number
+        self.description = description
 
 
 class Card:
@@ -88,8 +54,17 @@ class Card:
 
 
 class Deck:
+    _suits = []
+    _suits_as_dict = {}  # type: Dict[str, Suit]
     _deck = []  # type: List[Card]
     _deck_as_dict = {}  # type: Dict[str, Card]
+
+    @classmethod
+    async def get_suits(cls) -> List[Suit]:
+        if not cls._suits:  # If this evauluates as false-y, the list is empty
+            await cls._load_suits()
+
+        return cls._suits
 
     @classmethod
     async def get_cards(cls) -> List[Card]:
@@ -99,8 +74,12 @@ class Deck:
         return cls._deck
 
     @classmethod
-    async def get_random_cards(cls, n: int) -> List[Card]:
+    async def get_random_cards(cls, n: int, suit: str = 'all') -> List[Card]:
         deck = await cls.get_cards()
+
+        if suit != 'all':
+            suit = await cls.get_suit_by_name(suit)
+            deck = await cls.get_cards_in_suit(suit)
 
         return random.sample(deck, n)
 
@@ -108,17 +87,36 @@ class Deck:
     async def get_cards_in_suit(cls, suit: Suit) -> List[Card]:
         deck = await cls.get_cards()
 
-        return [c for c in deck if c.suit is suit]
+        return [c for c in deck if c.suit == suit.name]
+
+    @classmethod
+    async def get_suit(cls, requested_suit: str) -> Suit:
+        all_suits = await cls.get_suits()
+
+        for suit in all_suits:
+            if requested_suit == suit.name:
+                return suit
+
+        raise NoMatchingTarotSuit('Suit does not exist')
 
     @classmethod
     async def get_card(cls, suit: Suit, number: int) -> Card:
         deck = await cls.get_cards()
 
         for card in deck:
-            if card.suit is suit and card.number == number:
+            if card.suit == suit.name and card.number == number:
                 return card
 
         raise NoMatchingTarotCard('Card does not exist')
+
+    @classmethod
+    async def get_suit_by_name(cls, name: str) -> Suit:
+        await cls.get_suits()  # Make sure the suits is loaded, as that will also load _suits_as_dict
+        close_matches = difflib.get_close_matches(name.lower(), cls._suits_as_dict.keys(), cutoff=0.85)
+        if close_matches:
+            return cls._suits_as_dict[close_matches[0]]
+
+        raise NoMatchingTarotSuit('Suit does not exist')
 
     @classmethod
     async def get_card_by_name(cls, name: str) -> Card:
@@ -130,6 +128,24 @@ class Deck:
         raise NoMatchingTarotCard('Card does not exist')
 
     @classmethod
+    async def _load_suits(cls) -> None:
+        deck_path = clib_path_join('tarot', 'suits.yaml')
+
+        async with aiofiles.open(deck_path, encoding='utf-8', errors='ignore') as f:
+            contents = await f.read()
+            suits_raw = yaml.safe_load_all(contents)
+
+        suits = []
+        for suit_raw in suits_raw:
+
+            suit = Suit(suit_raw['name'], suit_raw['number'], suit_raw['description'])
+
+            suits.append(suit)
+
+        cls._suits = suits
+        cls._suits_as_dict = {suit.name.lower(): suit for suit in suits}
+
+    @classmethod
     async def _load_cards(cls) -> None:
         deck_path = clib_path_join('tarot', 'deck.yaml')
 
@@ -139,11 +155,9 @@ class Deck:
 
         deck = []
         for card_raw in deck_raw:
-            suit_raw = card_raw['suit']
-            suit = Suit[suit_raw]
 
             card = Card(
-                card_raw['name'], suit, card_raw['number'],
+                card_raw['name'], card_raw['suit'], card_raw['number'],
                 card_raw['image_filename'],
                 card_raw['description_upright'], card_raw['description_reversed'],
                 card_raw['element'], card_raw['description_long'],
@@ -171,6 +185,17 @@ async def reading(spread: str) -> Tuple[Optional[io.BytesIO], List[Tuple[str, st
         ]
         position_legend = ['PAST', 'PRESENT', 'FUTURE']
 
+    if spread == 'major3':
+        # three Major Arcana cards dealt horizontally
+        bg_size = (3 * w + 4 * space, h + 2 * space)
+        cards = await Deck.get_random_cards(3, suit='Major Arcana')
+        position = [
+            (space, space),
+            (w + 2 * space, space),
+            (2 * w + 3 * space, space)
+        ]
+        position_legend = ['PAST', 'PRESENT', 'FUTURE']
+
     elif spread == 'five':
         # five cards dealt in a cross
         bg_size = (3 * w + 4 * space, 3 * h + 4 * space)
@@ -185,8 +210,18 @@ async def reading(spread: str) -> Tuple[Optional[io.BytesIO], List[Tuple[str, st
         position_legend = ['PAST', 'PRESENT', 'FUTURE', 'REASON', 'POTENTIAL']
 
     elif spread == 'one':
+        # a single card
         bg_size = (w, h)
         cards = await Deck.get_random_cards(1)
+        position = [
+            (0, 0)
+        ]
+        position_legend = ['\u200d']
+
+    elif spread == 'major':
+        # a single Major Arcana card
+        bg_size = (w, h)
+        cards = await Deck.get_random_cards(1, suit='Major Arcana')
         position = [
             (0, 0)
         ]

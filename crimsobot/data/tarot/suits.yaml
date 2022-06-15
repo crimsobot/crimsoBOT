@@ -1,19 +1,29 @@
-suit: MAJOR_ARCANA
+name: Major Arcana
+number: 0
 description: >
-    Beginning with The Fool and ending with The World, these 22 cards represent major archetypes. They indicate great cosmic forces at work. Be especially attentive to what they have to say.
+    Beginning with The Fool and ending with The World, these 22 cards represent major archetypes. They indicate great
+    cosmic forces at work. Be especially attentive to what they have to say.
 ---
-suit: WANDS
+name: Wands
+number: 1
 description: >
-    The Wands are ruled by the element of fire. Their sphere of influence is energy, motivation, will, and passion: that which most deeply animates and ignites the soul.
+    The Wands are ruled by the element of fire. Their sphere of influence is energy, motivation, will, and passion:
+    that which most deeply animates and ignites the soul.
 ---
-suit: PENTACLES
+name: Pentacles
+number: 2
 description: >
-    Ruled by the element of earth. The Pentacles deal with earthly matters: health, finances, the body, the domestic sphere, and one's sense of security.
+    Ruled by the element of earth. The Pentacles deal with earthly matters: health, finances, the body, the domestic
+    sphere, and one's sense of security.
 ---
-suit: CUPS
+name: Cups
+number: 3
 description: >
-    The Cups are ruled by the element of water. They preside over matters of the heart. Emotion, relationships, inutition, and mystery are all found within their depths.
+    The Cups are ruled by the element of water. They preside over matters of the heart. Emotion, relationships,
+    inutition, and mystery are all found within their depths.
 ---
-suit: SWORDS
+name: Swords
+number: 4
 description: >
-    The Swords are ruled by the element of air. Their main concern is the mind and the intellect. They cut through delusion towards clarity with sometimes unforgiving sharpness.
+    The Swords are ruled by the element of air. Their main concern is the mind and the intellect. They cut through
+    delusion towards clarity with sometimes unforgiving sharpness.
