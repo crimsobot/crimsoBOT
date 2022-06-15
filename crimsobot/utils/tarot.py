@@ -38,19 +38,20 @@ class Card:
         self.description_long = description_long
         self.description_long_reversed = description_long_reversed
 
-    async def get_image(self, reverse: bool = False) -> Image.Image:
+    async def get_image_file(self) -> BytesIO:
         filename = clib_path_join('tarot', 'deck', self.image_filename)
         async with aiofiles.open(filename, 'rb') as f:
             img_bytes = await f.read()
 
-        img = Image.open(BytesIO(img_bytes))
+        return BytesIO(img_bytes)
+
+    async def get_image(self, reverse: bool = False) -> Image.Image:
+        fp = await self.get_image_file()
+        img = Image.open(fp)
         if reverse:
             img = img.rotate(180)
 
         return img
-
-    async def get_image_buff(self, reverse: bool = False) -> BytesIO:
-        return image_to_buffer([await self.get_image(reverse)])
 
 
 class Deck:

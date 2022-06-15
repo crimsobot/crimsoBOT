@@ -249,7 +249,7 @@ class Mystery(commands.Cog):
 
         suit = await Deck.get_suit(card.suit)
 
-        fp = await card.get_image_buff()
+        fp = await card.get_image_file()
         filename = 'card.png'
         f = discord.File(fp, filename)
 
