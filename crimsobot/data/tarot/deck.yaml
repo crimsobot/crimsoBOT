@@ -2,7 +2,7 @@
 # the YAML spec recommends 2-space indentation.
 ---
 name: The Fool
-suit: MAJOR_ARCANA
+suit: Major Arcana
 number: 0
 image_filename: fool.jpg
 description_upright: Sell your cleverness and buy bewilderment. -Rumi
@@ -19,7 +19,7 @@ description_long_reversed: >-
   important work.
 ---
 name: The Magician
-suit: MAJOR_ARCANA
+suit: Major Arcana
 number: 1
 image_filename: magician.jpg
 description_upright: Everything has come together, as if by magic...
@@ -38,7 +38,7 @@ description_long_reversed: >-
   a scholar.
 ---
 name: The High Priestess
-suit: MAJOR_ARCANA
+suit: Major Arcana
 number: 2
 image_filename: highpriestess.jpg
 description_upright: The High Priestess presides over the Hidden. They know the Secrets; can you?
@@ -57,7 +57,7 @@ description_long_reversed: >-
   Perhaps what is holding you back from the fertile depths is emotional: fear, trauma, or even perfectionism.
 ---
 name: The Empress
-suit: MAJOR_ARCANA
+suit: Major Arcana
 number: 3
 image_filename: empress.jpg
 description_upright: The Empress, subtle and gentle, like water carves her will into stone.
@@ -76,7 +76,7 @@ description_long_reversed: >-
   for new inspirations.
 ---
 name: The Emperor
-suit: MAJOR_ARCANA
+suit: Major Arcana
 number: 4
 image_filename: emperor.jpg
 description_upright: The Emperor is a great power. Bend the knee or suffer.
@@ -93,7 +93,7 @@ description_long_reversed: >-
   Is this the world giving way to your passions, or are you failing to assert your desires to yourself or a loved one?
 ---
 name: The Hierophant
-suit: MAJOR_ARCANA
+suit: Major Arcana
 number: 5
 image_filename: hierophant.jpg
 description_upright: Those who Seek may find guidance in the Office of the Hierophant.
@@ -111,7 +111,7 @@ description_long_reversed: >-
   attemtpting to please too many disparate parties at once.
 ---
 name: The Lovers
-suit: MAJOR_ARCANA
+suit: Major Arcana
 number: 6
 image_filename: lovers.jpg
 description_upright: Love and beauty reign—pure, if not innocent.
@@ -129,7 +129,7 @@ description_long_reversed: >-
   between two parties of a relationship.
 ---
 name: The Chariot
-suit: MAJOR_ARCANA
+suit: Major Arcana
 number: 7
 image_filename: chariot.jpg
 description_upright: A prince traverses the bridge between two. Unity, aid, victory.
@@ -148,7 +148,7 @@ description_long_reversed: >-
   and even necessary.
 ---
 name: Strength
-suit: MAJOR_ARCANA
+suit: Major Arcana
 number: 8
 image_filename: strength.jpg
 description_upright: True strength is not brutish but clever, and wielded with confidence.
@@ -166,7 +166,7 @@ description_long_reversed: >-
   gained.
 ---
 name: The Hermit
-suit: MAJOR_ARCANA
+suit: Major Arcana
 number: 9
 image_filename: hermit.jpg
 description_upright: A light shines in the darkness. Those who would gain wisdom follow it deeper, deeper...
@@ -184,7 +184,7 @@ description_long_reversed: >-
   a new light. The Hermit is a prime opportunity to do this. Examine the isolation from a tempered, wizened perspective.
 ---
 name: Wheel of Fortune
-suit: MAJOR_ARCANA
+suit: Major Arcana
 number: 10
 image_filename: wheeloffortune.jpg
 description_upright: The Wheel spins, spins, spins. Today it favors you. Tomorrow...?
@@ -205,7 +205,7 @@ description_long_reversed: >-
   may require swifter action.
 ---
 name: Justice
-suit: MAJOR_ARCANA
+suit: Major Arcana
 number: 11
 image_filename: justice.jpg
 description_upright: >-
@@ -225,7 +225,7 @@ description_long_reversed: >-
   Meditate on whether you are the perpetrator, the victim, or a witness to this.
 ---
 name: The Hanged Man
-suit: MAJOR_ARCANA
+suit: Major Arcana
 number: 12
 image_filename: hangedman.jpg
 description_upright: A new perspective is needed to see clearly. Pause and surrender to it.
@@ -245,7 +245,7 @@ description_long_reversed: >-
   of renewal and clarity.
 ---
 name: Death
-suit: MAJOR_ARCANA
+suit: Major Arcana
 number: 13
 image_filename: death.jpg
 description_upright: The Death of the old comes to clear the way for the new.
@@ -264,7 +264,7 @@ description_long_reversed: >-
   thus perpetually delaying renewal.
 ---
 name: Temperance
-suit: MAJOR_ARCANA
+suit: Major Arcana
 number: 14
 image_filename: temperance.jpg
 description_upright: Balance, moderation, and patience obtain all things.
@@ -282,7 +282,7 @@ description_long_reversed: >-
   forces to determine if this imbalance a necessary shift or a brewing dissonance.
 ---
 name: The Devil
-suit: MAJOR_ARCANA
+suit: Major Arcana
 number: 15
 image_filename: devil.jpg
 description_upright: Your Shadow Self is weary of being in chains. Set it free.
@@ -302,7 +302,7 @@ description_long_reversed: >-
   escape with every passing hour.
 ---
 name: The Tower
-suit: MAJOR_ARCANA
+suit: Major Arcana
 number: 16
 image_filename: tower.jpg
 description_upright: The Tower is struck, bringing chaos, upheaval, and the end of the illusion of control.
@@ -320,7 +320,7 @@ description_long_reversed: >-
   toward freedom and fresh air. Though you are ultimately in a better situation than before, you are still lost at sea.
 ---
 name: The Star
-suit: MAJOR_ARCANA
+suit: Major Arcana
 number: 17
 image_filename: star.jpg
 description_upright: The Stars sing with their light, a shining chorus of hope and renewal.
@@ -339,7 +339,7 @@ description_long_reversed: >-
   the stagnation and open yourself to new opportunities to rediscover wonder.
 ---
 name: The Moon
-suit: MAJOR_ARCANA
+suit: Major Arcana
 number: 18
 image_filename: moon.jpg
 description_upright: Monsters and demons come out to play in the moonlit night—but are they real?
@@ -356,7 +356,7 @@ description_long_reversed: >-
   indicate that you have already found the path and the key to handling the phantoms that dare haunt you along the way.
 ---
 name: The Sun
-suit: MAJOR_ARCANA
+suit: Major Arcana
 number: 19
 image_filename: sun.jpg
 description_upright: Light, warmth, and vitality. The Sun radiates over all, bringing abundance and cheer.
@@ -376,7 +376,7 @@ description_long_reversed: >-
   be greedy for more than your share.
 ---
 name: Judgement
-suit: MAJOR_ARCANA
+suit: Major Arcana
 number: 20
 image_filename: judgement.jpg
 description_upright: The trumpet sounds, calling you to rise from the grave into new life, into greatness. Arise!
@@ -396,7 +396,7 @@ description_long_reversed: >-
   need to focus now on your inner work to ensure your pneuma is prepared for the new world to come.
 ---
 name: The World
-suit: MAJOR_ARCANA
+suit: Major Arcana
 number: 21
 image_filename: world.jpg
 description_upright: All shall be well, all shall be well; all manner of things shall be well.
@@ -415,7 +415,7 @@ description_long_reversed: >-
   reward is so close. Be like water: carve your will patiently into the Earth.
 ---
 name: Ace of Wands
-suit: WANDS
+suit: Wands
 number: 1
 image_filename: wands-01.jpg
 description_upright: The new green shoots of spring are emerging, unfurling with pure potential.
@@ -431,7 +431,7 @@ description_long_reversed: >-
   misfocused energies and unforeseen delays. Reflect on what must be done to revive the new growth.
 ---
 name: Two of Wands
-suit: WANDS
+suit: Wands
 number: 2
 image_filename: wands-02.jpg
 description_upright: A plan of action is needed to bring inspiration to fruition.
@@ -448,7 +448,7 @@ description_long_reversed: >-
   to a visceral anxiety.
 ---
 name: Three of Wands
-suit: WANDS
+suit: Wands
 number: 3
 image_filename: wands-03.jpg
 description_upright: Progress, expansion, and opportunity. The horizon is yours.
@@ -464,7 +464,7 @@ description_long_reversed: >-
   card makes you feel in the spread. Is the doubt due diligence or self-defeating?
 ---
 name: Four of Wands
-suit: WANDS
+suit: Wands
 number: 4
 image_filename: wands-04.jpg
 description_upright: Celebration, joy, and harmony are the order of the day. Savor them.
@@ -482,7 +482,7 @@ description_long_reversed: >-
   reversed card—or any card, for that matter.)
 ---
 name: Five of Wands
-suit: WANDS
+suit: Wands
 number: 5
 image_filename: wands-05.jpg
 description_upright: Discord is sown, to no discernible end. Gridlock, tension, and futility.
@@ -498,7 +498,7 @@ description_long_reversed: >-
   rebelling against this seemingly negative energy, accept it, and perhaps then you will find a clever way forward.
 ---
 name: Six of Wands
-suit: WANDS
+suit: Wands
 number: 6
 image_filename: wands-06.jpg
 description_upright: Victory is at hand.
@@ -515,7 +515,7 @@ description_long_reversed: >-
   with a six in the Reverse; a recent trial may show signs of relenting, but be wary of celebrating too soon. 
 ---
 name: Seven of Wands
-suit: WANDS
+suit: Wands
 number: 7
 image_filename: wands-07.jpg
 description_upright: Hold your ground and let none take what you have fought hard to earn.
@@ -533,7 +533,7 @@ description_long_reversed: >-
   you, and is an invitation to reflect on how this happened.
 ---
 name: Eight of Wands
-suit: WANDS
+suit: Wands
 number: 8
 image_filename: wands-08.jpg
 description_upright: Forward motion, dynamism, propulsion. Things are in motion that cannot be stopped.
@@ -549,7 +549,7 @@ description_long_reversed: >-
   be rash or impatient.
 ---
 name: Nine of Wands
-suit: WANDS
+suit: Wands
 number: 9
 image_filename: wands-09.jpg
 description_upright: Resilience in the face of adversity. The finish line is near.
@@ -567,7 +567,7 @@ description_long_reversed: >-
   reality.
 ---
 name: Ten of Wands
-suit: WANDS
+suit: Wands
 number: 10
 image_filename: wands-10.jpg
 description_upright: The burden is great, but the rewards are rich.
@@ -586,7 +586,7 @@ description_long_reversed: >-
   onto you. As always, pay close attention to where your mind goes when presented with the imagery.
 ---
 name: Page of Wands
-suit: WANDS
+suit: Wands
 number: 11
 image_filename: wands-11.jpg
 description_upright: Inspiration, discovery, free-spiritedness. Embracing whatever may come.
@@ -603,7 +603,7 @@ description_long_reversed: >-
   you to ask of yourself: why hasn't your journey begun yet? What delays you manifesting your passion?
 ---
 name: Knight of Wands
-suit: WANDS
+suit: Wands
 number: 12
 image_filename: wands-12.jpg
 description_upright: The Knight charges forth with energy and passion, a bold explorer of the unknown.
@@ -621,7 +621,7 @@ description_long_reversed: >-
   your passion at bay? Or, possibly: is the throttle on your passion from an external source, turning back the Knight?
 ---
 name: Queen of Wands
-suit: WANDS
+suit: Wands
 number: 13
 image_filename: wands-13.jpg
 description_upright: In their garden, the Queen sits enthroned among flowers, showing their power for all to see.
@@ -638,7 +638,7 @@ description_long_reversed: >-
   witnessing yourself and reflecting upon your emotional state.
 ---
 name: King of Wands
-suit: WANDS
+suit: Wands
 number: 14
 image_filename: wands-14.jpg
 description_upright: Leadership & vision. The King unites their people towards a noble goal.
@@ -658,7 +658,7 @@ description_long_reversed: >-
   looks toward you, the Querent, to ask if the power of passion is being wielded wisely.
 ---
 name: Ace of Pentacles
-suit: PENTACLES
+suit: Pentacles
 number: 1
 image_filename: pentacles-01.jpg
 description_upright: Abundance, manifestation, and opportunity. Invest wisely.
@@ -676,7 +676,7 @@ description_long_reversed: >-
   term, but it may be wise to hold it close for the time being.
 ---
 name: Two of Pentacles
-suit: PENTACLES
+suit: Pentacles
 number: 2
 image_filename: pentacles-02.jpg
 description_upright: If resources are not managed carefully, they may fall right out of your hands.
@@ -695,7 +695,7 @@ description_long_reversed: >-
   both feet on the ground and handle new beginnings with patient hands.
 ---
 name: Three of Pentacles
-suit: PENTACLES
+suit: Pentacles
 number: 3
 image_filename: pentacles-03.jpg
 description_upright: Brick by brick the temple is built. Keep building.
@@ -714,7 +714,7 @@ description_long_reversed: >-
   introspect.
 ---
 name: Four of Pentacles
-suit: PENTACLES
+suit: Pentacles
 number: 4
 image_filename: pentacles-04.jpg
 description_upright: The fruits of labor are meant to be enjoyed, not hoarded away.
@@ -734,7 +734,7 @@ description_long_reversed: >-
   contemplate what or how you may share what you have with others.
 ---
 name: Five of Pentacles
-suit: PENTACLES
+suit: Pentacles
 number: 5
 image_filename: pentacles-05.jpg
 description_upright: Isolation, poverty, loss. Wandering the trackless wastes.
@@ -752,7 +752,7 @@ description_long_reversed: >-
   to alleviate that suffering, even if it is to remind yourself to be vigilant.
 ---
 name: Six of Pentacles
-suit: PENTACLES
+suit: Pentacles
 number: 6
 image_filename: pentacles-06.jpg
 description_upright: Wealth is meant to be shared and redistributed.
@@ -771,7 +771,7 @@ description_long_reversed: >-
   currying favor come to mind.
 ---
 name: Seven of Pentacles
-suit: PENTACLES
+suit: Pentacles
 number: 7
 image_filename: pentacles-07.jpg
 description_upright: The farmer surveys the fruits of their labor. Perseverance has obtained a rich harvest.
@@ -791,7 +791,7 @@ description_long_reversed: >-
   bygones be bygones.
 ---
 name: Eight of Pentacles
-suit: PENTACLES
+suit: Pentacles
 number: 8
 image_filename: pentacles-08.jpg
 description_upright: A master craftsperson does not become so overnight. Hone your skills patiently.
@@ -809,7 +809,7 @@ description_long_reversed: >-
   of water and a few moments of stretching can be enough to keep your whittling knife from cutting into your hand.
 ---
 name: Nine of Pentacles
-suit: PENTACLES
+suit: Pentacles
 number: 9
 image_filename: pentacles-09.jpg
 description_upright: There are few joys greater than well-deserved success.
@@ -828,7 +828,7 @@ description_long_reversed: >-
   potential, and honor your right to rest and leisure. Only in this balance can we find a life worth living.
 ---
 name: Ten of Pentacles
-suit: PENTACLES
+suit: Pentacles
 number: 10
 image_filename: pentacles-10.jpg
 description_upright: Completion, accomplishment; the work is done and it is time to let it rest.
@@ -847,7 +847,7 @@ description_long_reversed: >-
   need or desire. Contemplate whether this stasis is what you want or if now is the right time for it.
 ---
 name: Page of Pentacles
-suit: PENTACLES
+suit: Pentacles
 number: 11
 image_filename: pentacles-11.jpg
 description_upright: Development, creativity, motivation. It is time for dreams and goals to be realized.
@@ -866,7 +866,7 @@ description_long_reversed: >-
   Pentacles is a reminder of this.
 ---
 name: Knight of Pentacles
-suit: PENTACLES
+suit: Pentacles
 number: 12
 image_filename: pentacles-12.jpg
 description_upright: The Knight wisely looks before they leap, and knows the value of hard work and perseverance.
@@ -884,7 +884,7 @@ description_long_reversed: >-
   the work; do not get lost in over-meticulous planning, or even worse, idle fretting.
 ---
 name: Queen of Pentacles
-suit: PENTACLES
+suit: Pentacles
 number: 13
 image_filename: pentacles-13.jpg
 description_upright: Work-life balance is in perfect harmony, and domestic bliss ensues.
@@ -902,7 +902,7 @@ description_long_reversed: >-
   perhaps also relationships—under this lens. Are these realms of your life conducive to your higher pursuits?
 ---
 name: King of Pentacles
-suit: PENTACLES
+suit: Pentacles
 number: 14
 image_filename: pentacles-14.jpg
 description_upright: Self-discipline and the safety of routine create fertile soil for abundance.
@@ -924,7 +924,7 @@ description_long_reversed: >-
   after all. It takes constant work to keep our power in check.
 ---
 name: Ace of Cups
-suit: CUPS
+suit: Cups
 number: 1
 image_filename: cups-01.jpg
 description_upright: The Cup is a deep wellspring of love, compassion, and harmony.
@@ -943,7 +943,7 @@ description_long_reversed: >-
   to the line between processing and putting off.
 ---
 name: Two of Cups
-suit: CUPS
+suit: Cups
 number: 2
 image_filename: cups-02.jpg
 description_upright: Love flows between two people, nourishing a relationship of compassion and mutual respect.
@@ -961,7 +961,7 @@ description_long_reversed: >-
   work of loving themselves. This card in the reverse may be a reminder that you are falling behind in that work.
 ---
 name: Three of Cups
-suit: CUPS
+suit: Cups
 number: 3
 image_filename: cups-03.jpg
 description_upright: Celebration, friendship, joy. What do you have to celebrate, and with whom?
@@ -979,7 +979,7 @@ description_long_reversed: >-
   isolation to come.
 ---
 name: Four of Cups
-suit: CUPS
+suit: Cups
 number: 4
 image_filename: cups-04.jpg
 description_upright: The Cup is freely offered—will you take it or refuse?
@@ -996,7 +996,7 @@ description_long_reversed: >-
   reaffirm your boundaries and tidy up your emotional space. Who and what deserves your emotional energy?
 ---
 name: Five of Cups
-suit: CUPS
+suit: Cups
 number: 5
 image_filename: cups-05.jpg
 description_upright: >-
@@ -1013,7 +1013,7 @@ description_long_reversed: >-
   
 ---
 name: Six of Cups
-suit: CUPS
+suit: Cups
 number: 6
 image_filename: cups-06.jpg
 description_upright: Innocence and joy; nostalgia and simplicity. Cooperation and an open heart are needed.
@@ -1034,7 +1034,7 @@ description_long_reversed: >-
   between the two.
 ---
 name: Seven of Cups
-suit: CUPS
+suit: Cups
 number: 7
 image_filename: cups-07.jpg
 description_upright: Not everything is as it seems. Tread carefully and wisely.
@@ -1053,7 +1053,7 @@ description_long_reversed: >-
   next step.
 ---
 name: Eight of Cups
-suit: CUPS
+suit: Cups
 number: 8
 image_filename: cups-08.jpg
 description_upright: Turning your back on your emotions will not make them go away or make them more manageable.
@@ -1072,7 +1072,7 @@ description_long_reversed: >-
   find the hope and strength you need.
 ---
 name: Nine of Cups
-suit: CUPS
+suit: Cups
 number: 9
 image_filename: cups-09.jpg
 description_upright: Contentment, satisfaction, and gratitude. The Cups are full and refreshing.
@@ -1090,7 +1090,7 @@ description_long_reversed: >-
   care not to slip into the un-flowing pool of hedonism; that water will fester and leave you thirsty.
 ---
 name: Ten of Cups
-suit: CUPS
+suit: Cups
 number: 10
 image_filename: cups-10.jpg
 description_upright: Inner and outer worlds are in harmony and in sync.
@@ -1111,7 +1111,7 @@ description_long_reversed: >-
   they dam your flow.
 ---
 name: Page of Cups
-suit: CUPS
+suit: Cups
 number: 11
 image_filename: cups-11.jpg
 description_upright: >-
@@ -1133,7 +1133,7 @@ description_long_reversed: >-
   well-being in the real world. Learning to live an emotionally healthy life requires risk, namely vulnerability.
 ---
 name: Knight of Cups
-suit: CUPS
+suit: Cups
 number: 12
 image_filename: cups-12.jpg
 description_upright: Intuition and emotion are needed more than brute force or stoicism. Think poetry, not prose.
@@ -1153,7 +1153,7 @@ description_long_reversed: >-
   stubborn, stagnant, deflecting, and defensive to resist emotional growth.
 ---
 name: Queen of Cups
-suit: CUPS
+suit: Cups
 number: 13
 image_filename: cups-13.jpg
 description_upright: The Queen is full of compassion and sensitivity, easily perceiving the needs of others.
@@ -1174,7 +1174,7 @@ description_long_reversed: >-
   with grace, intuition, and perception, seek out what must be done to restore the balance, even if the culprit is you.
 ---
 name: King of Cups
-suit: CUPS
+suit: Cups
 number: 14
 image_filename: cups-14.jpg
 description_upright: >-
@@ -1197,7 +1197,7 @@ description_long_reversed: >-
   and the outside world, lest the waters stagnate and fester.
 ---
 name: Ace of Swords
-suit: SWORDS
+suit: Swords
 number: 1
 image_filename: swords-01.jpg
 description_upright: The great Sword slices the air, cutting a path to mental clarity.
@@ -1213,7 +1213,7 @@ description_long_reversed: >-
   potent element, but it must be handled with finesse. Apply a lighter touch; avoid overthinking or straining.
 ---
 name: Two of Swords
-suit: SWORDS
+suit: Swords
 number: 2
 image_filename: swords-02.jpg
 description_upright: Two swords, two paths. Make your choice, or perish.
@@ -1233,7 +1233,7 @@ description_long_reversed: >-
   that you should face the root cuases of your anxiety or uncertainty instead of being frozen by them.
 ---
 name: Three of Swords
-suit: SWORDS
+suit: Swords
 number: 3
 image_filename: swords-03.jpg
 description_upright: Pain and sorrow pierce the heart, an unavoidable human experience.
@@ -1250,7 +1250,7 @@ description_long_reversed: >-
   the honing of the intellect; hyperfocus cares not what it cuts.
 ---
 name: Four of Swords
-suit: SWORDS
+suit: Swords
 number: 4
 image_filename: swords-04.jpg
 description_upright: Rest the mind in meditation and contemplation. Recuperation and withdrawal are needed.
@@ -1268,7 +1268,7 @@ description_long_reversed: >-
   allow yourself to exist without constraint or purpose. Don't wait until you're in the tomb.  
 ---
 name: Five of Swords
-suit: SWORDS
+suit: Swords
 number: 5
 image_filename: swords-05.jpg
 description_upright: The battle is won, but at what cost?
@@ -1287,7 +1287,7 @@ description_long_reversed: >-
   done.
 ---
 name: Six of Swords
-suit: SWORDS
+suit: Swords
 number: 6
 image_filename: swords-06.jpg
 description_upright: There is no going back. Face the horizon bravely and accept what is.
@@ -1306,7 +1306,7 @@ description_long_reversed: >-
   problem. But this journey is inevitable; this card is an invitation to take the first step sooner than later.
 ---
 name: Seven of Swords
-suit: SWORDS
+suit: Swords
 number: 7
 image_filename: swords-07.jpg
 description_upright: The thief creeps about, their mind full of nothing but treachery and betrayal.
@@ -1328,7 +1328,7 @@ description_long_reversed: >-
   or the victim of the deceit, but chances are the deceit remains unexposed or known to few.
 ---
 name: Eight of Swords
-suit: SWORDS
+suit: Swords
 number: 8
 image_filename: swords-08.jpg
 description_upright: A ring of Swords surrounds, imprisoning the mind in fear and uncertainty.
@@ -1348,7 +1348,7 @@ description_long_reversed: >-
   it be slayed in a single strike. Under the blindfold, it is dark still, but realize there is light beyond.
 ---
 name: Nine of Swords
-suit: SWORDS
+suit: Swords
 number: 9
 image_filename: swords-09.jpg
 description_upright: Anxiety, fear, and worry turn the mind into a living nightmare. It is time to wake up.
@@ -1368,7 +1368,7 @@ description_long_reversed: >-
   clarity.
 ---
 name: Ten of Swords
-suit: SWORDS
+suit: Swords
 number: 10
 image_filename: swords-10.jpg
 description_upright: The Swords have reaped the consequences of their violence—they cannot give life, only destroy it.
@@ -1389,7 +1389,7 @@ description_long_reversed: >-
   they are, and with this clarity of mind they may begin the journey of healing and recovery. Morning is here.
 ---
 name: Page of Swords
-suit: SWORDS
+suit: Swords
 number: 11
 image_filename: swords-11.jpg
 description_upright: >-
@@ -1411,7 +1411,7 @@ description_long_reversed: >-
   seriously; if one is not inspired to be diligent in their intellectual affairs, perhaps they are in the wrong place.
 ---
 name: Knight of Swords
-suit: SWORDS
+suit: Swords
 number: 12
 image_filename: swords-12.jpg
 description_upright: >-
@@ -1431,7 +1431,7 @@ description_long_reversed: >-
   breath, and reflect on your situation; not everything needs to happen immediately.
 ---
 name: Queen of Swords
-suit: SWORDS
+suit: Swords
 number: 13
 image_filename: swords-13.jpg
 description_upright: The fierce and independent Queen is forthright to the point of bluntness. Their clear eyes see all.
@@ -1451,7 +1451,7 @@ description_long_reversed: >-
   "want-laters," between your impulses and your long-term goals.
 ---
 name: King of Swords
-suit: SWORDS
+suit: Swords
 number: 14
 image_filename: swords-14.jpg
 description_upright: Authority and truth reign. Be honest with yourself and others.

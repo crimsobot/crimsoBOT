@@ -2,6 +2,10 @@ class NoMatchingTarotCard(Exception):
     pass
 
 
+class NoMatchingTarotSuit(Exception):
+    pass
+
+
 class StrictInputFailed(Exception):
     pass
 
