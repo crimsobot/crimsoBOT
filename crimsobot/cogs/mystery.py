@@ -234,6 +234,30 @@ class Mystery(commands.Cog):
 
         await ctx.send(file=f, embed=embed)
 
+    @tarot.command(name='celtic', brief='The Celtic Cross spread.')
+    @commands.cooldown(3, 120, commands.BucketType.user)
+    async def celtic(self, ctx: commands.Context, spread: str = 'celtic') -> None:
+        """This spread presents the Cross of the current situation and the Pillar of influences."""
+
+        fp, descriptions = await tarot.reading(spread)
+        filename = 'reading.png'
+        f = discord.File(fp, filename)
+
+        embed = c.crimbed(
+            title="{}'s reading".format(ctx.author),
+            descr=None,
+            attachment=filename,
+            footer='Type ">tarot card" for more on a specific card.',
+        )
+
+        for card_tuple in descriptions:
+            embed.add_field(
+                name=card_tuple[0],
+                value=f'**{card_tuple[1]}**\n{card_tuple[2]}',
+            )
+
+        await ctx.send(file=f, embed=embed)
+
     @tarot.command(name='card', brief='Inspect an individual card.')
     @commands.max_concurrency(1, commands.BucketType.user)  # To avoid a 404: Unknown Message & other oddities
     async def card(self, ctx: commands.Context, *, card_name: str = '') -> None:

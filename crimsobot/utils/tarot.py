@@ -45,11 +45,15 @@ class Card:
 
         return BytesIO(img_bytes)
 
-    async def get_image(self, reverse: bool = False) -> Image.Image:
+    async def get_image(self, reverse: bool = False, cross: bool = False) -> Image.Image:
         fp = await self.get_image_file()
         img = Image.open(fp)
+
+        # rotate if necessary
         if reverse:
             img = img.rotate(180)
+        if cross:
+            img = img.rotate(90, expand=True)
 
         return img
 
@@ -175,6 +179,8 @@ async def reading(spread: str) -> Tuple[Optional[io.BytesIO], List[Tuple[str, st
     w, h = (200, 326)  # card size
     space = 20  # space between cards
 
+    cross_indices = None  # to indicate which cards are dealt horizontally
+
     if spread == 'ppf':
         # three cards dealt horizontally
         bg_size = (3 * w + 4 * space, h + 2 * space)
@@ -210,6 +216,37 @@ async def reading(spread: str) -> Tuple[Optional[io.BytesIO], List[Tuple[str, st
         ]
         position_legend = ['PAST', 'PRESENT', 'FUTURE', 'REASON', 'POTENTIAL']
 
+    elif spread == 'celtic':
+        # ten cards dealt in Celtic cross
+        bg_size = (3 * w + h + 5 * space, 4 * h + 5 * space)
+        cards = await Deck.get_random_cards(10)
+        position = [
+            (w + 2 * space + (h - w) // 2, (bg_size[1] - h) // 2),
+            (w + 2 * space, (bg_size[1] - w) // 2),
+            (w + 2 * space + (h - w) // 2, (bg_size[1] - h) // 2 - h - space),
+            (w + 2 * space + (h - w) // 2, (bg_size[1] + h) // 2 + space),
+            (space, (bg_size[1] - h) // 2),
+            (w + h + 3 * space, (bg_size[1] - h) // 2),
+            (2 * w + h + 4 * space, space + 3 * (h + space)),
+            (2 * w + h + 4 * space, space + 2 * (h + space)),
+            (2 * w + h + 4 * space, space + 1 * (h + space)),
+            (2 * w + h + 4 * space, space),
+        ]
+        position_legend = [
+            'QUERENT',
+            'CHALLENGE',
+            'CROWN',
+            'ROOT',
+            'PAST',
+            'FUTURE',
+            'ATTITUDE',
+            'ENVIRONMENT',
+            'HOPES & FEARS',
+            'OUTCOME'
+        ]
+
+        cross_indices = 1  # indices of cards that must be crossed
+
     elif spread == 'one':
         # a single card
         bg_size = (w, h)
@@ -234,11 +271,12 @@ async def reading(spread: str) -> Tuple[Optional[io.BytesIO], List[Tuple[str, st
     bg = Image.new('RGBA', bg_size, (0, 0, 0, 0))
 
     interpretation = []  # type: List[Tuple[str, str, str]]
-    for i, card in enumerate(cards):
+    for idx, card in enumerate(cards):
         reverse = True if random.random() < 0.12 else False
+        cross = True if cross_indices == idx else False
 
-        card_image = await card.get_image(reverse)
-        bg.paste(card_image, position[i])
+        card_image = await card.get_image(reverse, cross)
+        bg.paste(card_image, position[idx])
 
         if reverse:
             name = card.name + '\n(Reversed)'
@@ -247,6 +285,6 @@ async def reading(spread: str) -> Tuple[Optional[io.BytesIO], List[Tuple[str, st
             name = card.name
             descr = card.description_upright
 
-        interpretation.append((position_legend[i], name, descr))
+        interpretation.append((position_legend[idx], name, descr))
 
     return image_to_buffer([bg]), interpretation
