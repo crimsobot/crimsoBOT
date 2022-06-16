@@ -186,7 +186,7 @@ async def reading(spread: str) -> Tuple[Optional[io.BytesIO], List[Tuple[str, st
         ]
         position_legend = ['PAST', 'PRESENT', 'FUTURE']
 
-    if spread == 'major3':
+    elif spread == 'major3':
         # three Major Arcana cards dealt horizontally
         bg_size = (3 * w + 4 * space, h + 2 * space)
         cards = await Deck.get_random_cards(3, 'Major Arcana')
