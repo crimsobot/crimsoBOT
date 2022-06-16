@@ -22,7 +22,7 @@ class Suit:
 
 
 class Card:
-    def __init__(self, name: str, suit: Suit, number: int,
+    def __init__(self, name: str, suit: str, number: int,
                  image_filename: str,
                  description_upright: str, description_reversed: str,
                  element: str, description_long: str,
@@ -55,7 +55,7 @@ class Card:
 
 
 class Deck:
-    _suits = []
+    _suits = []  # type: List[Suit]
     _suits_as_dict = {}  # type: Dict[str, Suit]
     _deck = []  # type: List[Card]
     _deck_as_dict = {}  # type: Dict[str, Card]
@@ -75,11 +75,11 @@ class Deck:
         return cls._deck
 
     @classmethod
-    async def get_random_cards(cls, n: int, suit: str = 'all') -> List[Card]:
+    async def get_random_cards(cls, n: int, requested_suit: str = 'all') -> List[Card]:
         deck = await cls.get_cards()
 
-        if suit != 'all':
-            suit = await cls.get_suit_by_name(suit)
+        if requested_suit != 'all':
+            suit = await cls.get_suit_by_name(requested_suit)
             deck = await cls.get_cards_in_suit(suit)
 
         return random.sample(deck, n)
@@ -189,7 +189,7 @@ async def reading(spread: str) -> Tuple[Optional[io.BytesIO], List[Tuple[str, st
     if spread == 'major3':
         # three Major Arcana cards dealt horizontally
         bg_size = (3 * w + 4 * space, h + 2 * space)
-        cards = await Deck.get_random_cards(3, suit='Major Arcana')
+        cards = await Deck.get_random_cards(3, 'Major Arcana')
         position = [
             (space, space),
             (w + 2 * space, space),
@@ -222,7 +222,7 @@ async def reading(spread: str) -> Tuple[Optional[io.BytesIO], List[Tuple[str, st
     elif spread == 'major':
         # a single Major Arcana card
         bg_size = (w, h)
-        cards = await Deck.get_random_cards(1, suit='Major Arcana')
+        cards = await Deck.get_random_cards(1, 'Major Arcana')
         position = [
             (0, 0)
         ]
