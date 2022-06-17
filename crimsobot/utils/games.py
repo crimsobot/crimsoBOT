@@ -89,21 +89,14 @@ async def daily(discord_user: DiscordUser, lucky_number: int) -> Embed:
     # fetch account
     account = await CurrencyAccount.get_by_discord_user(discord_user)  # type: CurrencyAccount
 
-    # get current time
+    # get current time and time last run
     now = datetime.utcnow()
-
-    # arbitrary "last date collected" and reset time (midnight UTC)
-    reset = datetime(1969, 7, 20, 0, 0, 0)  # ymd required but will not be used
-
     last = account.ran_daily_at
 
     # check if dates are same; if so, gotta wait
     if last and last.strftime('%Y-%m-%d') == now.strftime('%Y-%m-%d'):
-        hours = (reset - now).seconds / 3600
-        minutes = (hours - int(hours)) * 60
-
         title = 'Patience...'
-        award_string = 'Daily award resets at midnight UTC, {}h{}m from now.'.format(int(hours), int(minutes + 1))
+        award_string = 'Daily award resets at midnight UTC (<t:0:t> local).'
         thumb = 'clock'
         color = 'orange'
     # if no wait, then check if winner or loser
@@ -125,9 +118,18 @@ async def daily(discord_user: DiscordUser, lucky_number: int) -> Embed:
                 '*heck*',
                 '*frick*',
                 '*womp womp*',
-                '**😩**',
+                '😩',
                 'Aw shucks.',
                 'Why even bother?',
+                'Oh, bother!',
+                'What a bungle!',
+                'Not good!',
+                'Ay Dios.',
+                "So close! (Or not; I didn't look.)",
+                '99 ways to lose, and you found one!',
+                'oof',
+                'bruh moment',
+                'Congratulations! You lost.',
             ]
             title = random.choice(title_choices)
             wrong = 'The winning number this time was **{}**, but no worries:'.format(winning_number)
