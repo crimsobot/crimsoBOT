@@ -1,4 +1,6 @@
 import asyncio
+from io import BytesIO
+from typing import List, Optional, Tuple
 
 import discord
 from discord.ext import commands
@@ -118,26 +120,48 @@ class Mystery(commands.Cog):
         await self.ppf.can_run(ctx)
         await self.ppf(ctx)
 
+    async def tarot_embed(
+        self,
+        ctx: commands.Context,
+        fp: Optional[BytesIO],
+        descriptions: List[Tuple[str, str, str]],
+        help_str: str
+    ) -> None:
+        """Create a reading embed and send."""
+
+        filename = 'reading.png'
+        f = discord.File(fp, filename)
+
+        embed = c.crimbed(
+            title="{}'s reading".format(ctx.author),
+            descr=None,
+            attachment=filename,
+            footer=f'{help_str}\nType ">tarot card" for more on a specific card.',
+        )
+
+        for card_tuple in descriptions:
+            if card_tuple[0] == '\u200d':  # one-card reading
+                embed.add_field(
+                    name=card_tuple[1],
+                    value=f'{card_tuple[2]}',
+                )
+            else:
+                embed.add_field(
+                    name=card_tuple[0],
+                    value=f'**{card_tuple[1]}**\n{card_tuple[2]}',
+                )
+
+        await ctx.send(file=f, embed=embed)
+
     @tarot.command(name='one', aliases=['1'], brief='Get a single-card reading.')
     @commands.cooldown(3, 120, commands.BucketType.user)
     async def one(self, ctx: commands.Context, spread: str = 'one') -> None:
         """This single-card reading is your answer to any question you may have."""
 
         fp, descriptions = await tarot.reading(spread)
-        filename = 'reading.png'
-        f = discord.File(fp, 'reading.png')
+        help_str = self.one.help
 
-        embed = c.crimbed(
-            title=f"{ctx.author}'s reading",
-            descr=None,
-            attachment=filename,
-            footer='Type ">tarot card" for more on a specific card.',
-        )
-
-        card_tuple = descriptions[0]
-        embed.description = f'**{card_tuple[1]}**\n{card_tuple[2]}'
-
-        await ctx.send(file=f, embed=embed)
+        await self.tarot_embed(ctx, fp, descriptions, help_str)
 
     @tarot.command(name='major', brief='Draw a single Major Arcana card.')
     @commands.cooldown(3, 120, commands.BucketType.user)
@@ -145,68 +169,29 @@ class Mystery(commands.Cog):
         """A single-card reading from the Major Arcana."""
 
         fp, descriptions = await tarot.reading(spread)
-        filename = 'reading.png'
-        f = discord.File(fp, 'reading.png')
+        help_str = self.major.help
 
-        embed = c.crimbed(
-            title=f"{ctx.author}'s reading",
-            descr=None,
-            attachment=filename,
-            footer='Type ">tarot card" for more on a specific card.',
-        )
-
-        card_tuple = descriptions[0]
-        embed.description = f'**{card_tuple[1]}**\n{card_tuple[2]}'
-
-        await ctx.send(file=f, embed=embed)
+        await self.tarot_embed(ctx, fp, descriptions, help_str)
 
     @tarot.command(name='ppf', aliases=['3', 'three'], brief='Past, present, and future.')
     @commands.cooldown(3, 120, commands.BucketType.user)
     async def ppf(self, ctx: commands.Context, spread: str = 'ppf') -> None:
-        """This three-card spread is read from left to right to explore your past, present, and future."""
+        """Explore the past, present, and future of your query."""
 
         fp, descriptions = await tarot.reading(spread)
-        filename = 'reading.png'
-        f = discord.File(fp, filename)
+        help_str = self.ppf.help
 
-        embed = c.crimbed(
-            title="{}'s reading".format(ctx.author),
-            descr=None,
-            attachment=filename,
-            footer='Type ">tarot card" for more on a specific card.',
-        )
-
-        for card_tuple in descriptions:
-            embed.add_field(
-                name=card_tuple[0],
-                value=f'**{card_tuple[1]}**\n{card_tuple[2]}',
-            )
-
-        await ctx.send(file=f, embed=embed)
+        await self.tarot_embed(ctx, fp, descriptions, help_str)
 
     @tarot.command(name='major3', aliases=['majorthree'], brief='Past, present, and future from the Major Arcana.')
     @commands.cooldown(3, 120, commands.BucketType.user)
     async def major3(self, ctx: commands.Context, spread: str = 'major3') -> None:
-        """This spread of Major Arcana cards is read from left to right to explore your past, present, and future."""
+        """Explore the past, present, and future of your query through the Major Arcana."""
 
         fp, descriptions = await tarot.reading(spread)
-        filename = 'reading.png'
-        f = discord.File(fp, filename)
+        help_str = self.major3.help
 
-        embed = c.crimbed(
-            title="{}'s reading".format(ctx.author),
-            descr=None,
-            attachment=filename,
-            footer='Type ">tarot card" for more on a specific card.',
-        )
-
-        for card_tuple in descriptions:
-            embed.add_field(
-                name=card_tuple[0],
-                value=f'**{card_tuple[1]}**\n{card_tuple[2]}',
-            )
-
-        await ctx.send(file=f, embed=embed)
+        await self.tarot_embed(ctx, fp, descriptions, help_str)
 
     @tarot.command(name='cross', aliases=['5', 'five'], brief='Look deeper into your Reason and Potential.')
     @commands.cooldown(3, 120, commands.BucketType.user)
@@ -216,23 +201,9 @@ class Mystery(commands.Cog):
         The Potential card looks toward the outcome should you change paths."""
 
         fp, descriptions = await tarot.reading(spread)
-        filename = 'reading.png'
-        f = discord.File(fp, filename)
+        help_str = self.five.help
 
-        embed = c.crimbed(
-            title="{}'s reading".format(ctx.author),
-            descr=None,
-            attachment=filename,
-            footer='Type ">tarot card" for more on a specific card.',
-        )
-
-        for card_tuple in descriptions:
-            embed.add_field(
-                name=card_tuple[0],
-                value=f'**{card_tuple[1]}**\n{card_tuple[2]}',
-            )
-
-        await ctx.send(file=f, embed=embed)
+        await self.tarot_embed(ctx, fp, descriptions, help_str)
 
     @tarot.command(name='celtic', brief='The Celtic Cross spread.')
     @commands.cooldown(3, 120, commands.BucketType.user)
@@ -240,23 +211,9 @@ class Mystery(commands.Cog):
         """This spread presents the Cross of the current situation and the Pillar of influences."""
 
         fp, descriptions = await tarot.reading(spread)
-        filename = 'reading.png'
-        f = discord.File(fp, filename)
+        help_str = self.celtic.help
 
-        embed = c.crimbed(
-            title="{}'s reading".format(ctx.author),
-            descr=None,
-            attachment=filename,
-            footer='Type ">tarot card" for more on a specific card.',
-        )
-
-        for card_tuple in descriptions:
-            embed.add_field(
-                name=card_tuple[0],
-                value=f'**{card_tuple[1]}**\n{card_tuple[2]}',
-            )
-
-        await ctx.send(file=f, embed=embed)
+        await self.tarot_embed(ctx, fp, descriptions, help_str)
 
     @tarot.command(name='card', brief='Inspect an individual card.')
     @commands.max_concurrency(1, commands.BucketType.user)  # To avoid a 404: Unknown Message & other oddities
