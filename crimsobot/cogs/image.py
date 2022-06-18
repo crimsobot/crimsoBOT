@@ -32,36 +32,53 @@ class Image(commands.Cog):
     def __init__(self, bot: CrimsoBOT):
         self.bot = bot
 
-    async def get_previous_image(self, ctx: commands.Context) -> str:
+    async def get_previous_image(self, ctx: commands.Context) -> Any:
         """A quick scrape to grab an image attachment URL from a previous message."""
 
         async def filename_to_check(filename: str) -> bool:
             """Check if filename is an image URL."""
             return any(x in filename for x in URL_CONTAINS)
 
-        # grab message contents (which are strings):
-        async for msg in ctx.message.channel.history(limit=IMAGE_RULES['msg_scrape_limit']):
-            # if the image is an attachment (via upload)...
+        async def check_msg_for_image(msg: discord.Message) -> Any:
             if len(msg.attachments) > 0:
                 attachment = msg.attachments[0]
                 is_image = await filename_to_check(attachment.url)
                 if is_image:
                     url = attachment.url  # type: str
                     return url
-            # check for links in message...
+            # check for links in message
             elif 'http' in msg.content:
                 string_list = msg.content.split(' ')  # type: List[str]
                 for potential_image_url in string_list:
                     is_image = await filename_to_check(potential_image_url)
                     if is_image:
                         return potential_image_url
+            # check for images in embeds
             elif len(msg.embeds) > 0:
                 embed = msg.embeds[0]
                 if not embed.image.url == discord.Embed.Empty:
                     url = embed.image.url
                     return url
-            else:
+
+        # first, check to see if user wants to reference a reply
+        try:
+            if ctx.message.reference.message_id is not None:
+                msg = await ctx.channel.fetch_message(ctx.message.reference.message_id)
+                url = await check_msg_for_image(msg)
+
+                return url
+
+        except AttributeError:
+            pass
+
+        # grab message contents (which are strings):
+        async for msg in ctx.message.channel.history(limit=IMAGE_RULES['msg_scrape_limit']):
+            url = await check_msg_for_image(msg)
+
+            if url is None:
                 continue
+
+            return url
 
         raise NoImageFound
 
@@ -91,7 +108,10 @@ class Image(commands.Cog):
     @commands.cooldown(2, 10, commands.BucketType.guild)
     @shared_max_concurrency(eface_bucket)
     async def acid(self, ctx: commands.Context, number_of_hits: int, image: Optional[str] = None) -> None:
-        """1-3 hits only. Can use image link, attachment, mention, or emoji."""
+        """
+        1-3 hits only. Can use image link, attachment, mention, emoji, previous message, or reply to message with an
+        image.
+        """
 
         # exception handling
         if not 1 <= number_of_hits <= 3:
@@ -152,7 +172,7 @@ class Image(commands.Cog):
     @commands.command(brief='Caption an image!')
     async def caption(self, ctx: commands.Context, *, caption_text: str, image: Optional[str] = None) -> None:
         """
-        The [image] can be a link, upload, user mention (for avatar), OR an image in a previous message.
+        The [image] can be a link, upload, user mention (for avatar), an image in a previous message, or from a reply.
 
         You can add your own line breaks, eg:
 
@@ -182,12 +202,12 @@ class Image(commands.Cog):
 
             return cleaned_caption_split, check
 
-        async def send_to_caption_helper(caption: List[str], valid: bool) -> None:
+        async def send_to_caption_helper(caption: List[str], valid: bool, img: Optional[str]) -> None:
             effect = 'caption'
             title = 'Captioned!'
 
             if valid:
-                await self.get_image_and_embed(ctx, image, effect, caption, title)
+                await self.get_image_and_embed(ctx, img, effect, caption, title)
             else:
                 raise BadCaption
 
@@ -200,14 +220,14 @@ class Image(commands.Cog):
                     # ...so separate the last thing in user_input and try as image input
                     image = caption_text.split(' ').pop(-1).strip()
                     caption_text_popped = caption_text.replace(image, '')
-                    new_caption, valid_caption = clean_and_check(caption_text_popped)
-                    await send_to_caption_helper(new_caption, valid_caption)
+                    new_caption, is_valid_caption = clean_and_check(caption_text_popped)
+                    await send_to_caption_helper(new_caption, is_valid_caption, image)
                     return
-                except FileNotFoundError:  # returned from get_image_and_embed()
+                except Exception:
                     image = await self.get_previous_image(ctx)  # will be a URL
 
-        new_caption, valid_caption = clean_and_check(caption_text)
-        await send_to_caption_helper(new_caption, valid_caption)
+        new_caption, is_valid_caption = clean_and_check(caption_text)
+        await send_to_caption_helper(new_caption, is_valid_caption, image)
 
     @commands.command(hidden=True)
     @commands.cooldown(1, 8 * 60 * 60, commands.BucketType.user)
@@ -304,7 +324,7 @@ class Image(commands.Cog):
 
     @commands.command()
     async def needban(self, ctx: commands.Context, image: Optional[str] = None) -> None:
-        """SOMEONE needs BAN. User mention, attachment, link, or emoji."""
+        """SOMEONE needs BAN. User mention, attachment, link, emoji, an image in a previous message, or from a reply."""
 
         if image is None:
             image = await self.get_previous_image(ctx)  # will be a URL
@@ -315,7 +335,9 @@ class Image(commands.Cog):
 
     @commands.command()
     async def needping(self, ctx: commands.Context, image: Optional[str] = None) -> None:
-        """SOMEONE needs PING. User mention, attachment, link, or emoji."""
+        """
+        SOMEONE needs PING. User mention, attachment, link, emoji, an image in a previous message, or from a reply.
+        """
 
         if image is None:
             image = await self.get_previous_image(ctx)  # will be a URL
@@ -371,7 +393,7 @@ class Image(commands.Cog):
 
     @commands.command()
     async def xokked(self, ctx: commands.Context, image: Optional[str] = None) -> None:
-        """Get xokked! User mention, attachment, link, or emoji."""
+        """Get xokked! User mention, attachment, link, emoji, an image in a previous message, or from a reply."""
 
         if image is None:
             image = await self.get_previous_image(ctx)  # will be a URL

@@ -13,6 +13,7 @@ from scipy.signal import convolve2d
 
 from crimsobot.data.img import (CAPTION_RULES, EIMG_WIDTH, GIF_RULES, IMAGE_RULES,
                                 color_dict, lookup_emoji, rgb_color_list)
+from crimsobot.exceptions import NoEmojiFound, NoImageFound
 from crimsobot.utils import games as crimsogames, tools as c
 from crimsobot.utils.color import hex_to_rgb
 
@@ -102,6 +103,8 @@ def find_emoji_img(emoji: str) -> Tuple[Optional[str], Optional[str]]:
         if not os.path.exists(path):
             if filename.endswith('-fe0f'):
                 filename = filename.replace('-fe0f', '')
+            else:
+                raise NoEmojiFound
             path = c.clib_path_join('emoji', filename + '.png')
 
     return path, emoji_type
@@ -110,17 +113,21 @@ def find_emoji_img(emoji: str) -> Tuple[Optional[str], Optional[str]]:
 async def fetch_image(ctx: Context, arg: Optional[str]) -> Image.Image:
     """Determine type of input, return image file."""
 
-    session = aiohttp.ClientSession()
-
     async def open_img_from_url(url: str) -> Image.Image:
+        session = aiohttp.ClientSession()
+
         if 'tenor.com/view' in url:
             async with session.get(url, allow_redirects=False) as response:
                 soup = BeautifulSoup(await response.text(), 'html.parser')
                 original = soup.find(property='og:image')  # the original GIF has this property in its meta tag
                 url = original['content']
 
-        async with session.get(url, allow_redirects=False) as response:
-            img_bytes = await response.read()
+        try:
+            async with session.get(url, allow_redirects=False) as response:
+                img_bytes = await response.read()
+        except Exception as e:
+            await session.close()
+            raise e
 
         await session.close()
 
@@ -128,34 +135,41 @@ async def fetch_image(ctx: Context, arg: Optional[str]) -> Image.Image:
 
     img = None
 
+    # 1. if attachment, that's the image to fetch
     if ctx.message.attachments:
-        # get an attachment
         link = ctx.message.attachments[0].url
         img = await open_img_from_url(link)
-    elif ctx.message.mentions:
-        # get mentioned user's avatar
-        link = str(ctx.message.mentions[0].avatar_url)
-        img = await open_img_from_url(link)
+
+    # 2. if some arg (str) has been passed, that is likely the image to fetch...
     elif arg:
         try:
-            if arg:
-                img = await open_img_from_url(arg)
+            # 2a. the arg might be a URL
+            img = await open_img_from_url(arg)
         except Exception:
-            # if not an image url, it's probably an emoji
-            big_emoji, emoji_type = find_emoji_img(arg)
-            if big_emoji is None:
-                pass
-            elif emoji_type == 'file':
-                async with aiofiles.open(big_emoji, 'rb') as f:
-                    img_bytes = await f.read()
-                img = Image.open(BytesIO(img_bytes))
-            elif emoji_type == 'url':
-                img = await open_img_from_url(big_emoji)
+            # 2b. if not an image URL, it's probably an emoji
+            try:
+                emoji_path, emoji_type = find_emoji_img(arg)
+                if emoji_path is None:
+                    pass
+                elif emoji_type == 'file':
+                    async with aiofiles.open(emoji_path, 'rb') as f:
+                        img_bytes = await f.read()
+                    img = Image.open(BytesIO(img_bytes))
+                elif emoji_type == 'url':
+                    img = await open_img_from_url(emoji_path)
+            # 2c. if that arg (str) was not a URL or an emoji, it might have been a mention..
+            # ...which we check for last so as to not grab a mention from a reply
+            except NoEmojiFound:
+                try:
+                    if ctx.message.reference.message_id is not None:
+                        pass
+                except AttributeError:
+                    # get mentioned user's avatar
+                    link = str(ctx.message.mentions[0].avatar_url)
+                    img = await open_img_from_url(link)
 
     if not img:
-        img = Image.new('RGB', (0, 0), (0, 0, 0))
-
-    await session.close()
+        raise NoImageFound
 
     return img
 

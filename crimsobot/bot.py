@@ -152,7 +152,7 @@ class CrimsoBOT(commands.Bot):
             if isinstance(error.original, NoImageFound):
                 error_type = '**NO IMAGE**'
                 traceback_needed = False
-                msg_to_user = f'No image found in {IMAGE_RULES["msg_scrape_limit"]} most recent messages.'
+                msg_to_user = f'Image must be in a reply or in {IMAGE_RULES["msg_scrape_limit"]} most recent messages.'
 
             if isinstance(error.original, BadCaption):
                 error_type = '**BAD CAPTION**'

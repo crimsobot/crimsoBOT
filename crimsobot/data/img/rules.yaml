@@ -1,6 +1,6 @@
 image:
   max_filesize: 8000000
-  msg_scrape_limit: 8
+  msg_scrape_limit: 10
   url_contains:
     - .jpg
     - .jpeg
