@@ -27,5 +27,9 @@ class NoImageFound(Exception):
     pass
 
 
+class NoEmojiFound(Exception):
+    pass
+
+
 class BadCaption(Exception):
     pass
