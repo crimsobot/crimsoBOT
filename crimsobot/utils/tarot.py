@@ -5,13 +5,15 @@ from io import BytesIO
 from typing import Dict, List, Optional, Tuple
 
 import aiofiles
+import discord
 import yaml
 from PIL import Image
 from discord.ext import commands
 
+
 from crimsobot.exceptions import NoMatchingTarotCard, NoMatchingTarotSuit
+from crimsobot.utils import tools as c
 from crimsobot.utils.image import image_to_buffer
-from crimsobot.utils.tools import clib_path_join
 
 
 class Suit:
@@ -39,7 +41,7 @@ class Card:
         self.description_long_reversed = description_long_reversed
 
     async def get_image_file(self) -> BytesIO:
-        filename = clib_path_join('tarot', 'deck', self.image_filename)
+        filename = c.clib_path_join('tarot', 'deck', self.image_filename)
         async with aiofiles.open(filename, 'rb') as f:
             img_bytes = await f.read()
 
@@ -134,7 +136,7 @@ class Deck:
 
     @classmethod
     async def _load_suits(cls) -> None:
-        deck_path = clib_path_join('tarot', 'suits.yaml')
+        deck_path = c.clib_path_join('tarot', 'suits.yaml')
 
         async with aiofiles.open(deck_path, encoding='utf-8', errors='ignore') as f:
             contents = await f.read()
@@ -152,7 +154,7 @@ class Deck:
 
     @classmethod
     async def _load_cards(cls) -> None:
-        deck_path = clib_path_join('tarot', 'deck.yaml')
+        deck_path = c.clib_path_join('tarot', 'deck.yaml')
 
         async with aiofiles.open(deck_path, encoding='utf-8', errors='ignore') as f:
             contents = await f.read()
@@ -288,3 +290,36 @@ async def reading(spread: str) -> Tuple[Optional[io.BytesIO], List[Tuple[str, st
         interpretation.append((position_legend[idx], name, descr))
 
     return image_to_buffer([bg]), interpretation
+
+
+async def tarot_embed(
+    ctx: commands.Context,
+    fp: Optional[BytesIO],
+    descriptions: List[Tuple[str, str, str]],
+    help_str: str
+) -> None:
+    """Create a reading embed and send."""
+
+    filename = 'reading.png'
+    f = discord.File(fp, filename)
+
+    embed = c.crimbed(
+        title="{}'s reading".format(ctx.author),
+        descr=None,
+        attachment=filename,
+        footer=f'{help_str}\nType ">tarot card" for more on a specific card.',
+    )
+
+    for card_tuple in descriptions:
+        if card_tuple[0] == '\u200d':  # one-card reading
+            embed.add_field(
+                name=card_tuple[1],
+                value=f'{card_tuple[2]}',
+            )
+        else:
+            embed.add_field(
+                name=card_tuple[0],
+                value=f'**{card_tuple[1]}**\n{card_tuple[2]}',
+            )
+
+    await ctx.send(file=f, embed=embed)
