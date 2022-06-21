@@ -194,10 +194,6 @@ class Mystery(commands.Cog):
         """Inspect an individual tarot card. A longer description is given for each."""
 
         if card_name:
-            # sanitize incoming tuple to string
-            # card_name_list = [''.join(word) for word in card_name]
-            # card_name_str = ' '.join(card_name_list)
-
             card = await Deck.get_card_by_name(card_name)  # type: Card
         else:
             try:
