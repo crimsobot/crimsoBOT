@@ -1,11 +1,10 @@
 import asyncio
-from io import BytesIO
-from typing import List, Optional, Tuple
 
 import discord
 from discord.ext import commands
 
 from crimsobot.bot import CrimsoBOT
+from crimsobot.exceptions import NoMatchingTarotCard
 from crimsobot.utils import tarot
 from crimsobot.utils import tools as c
 from crimsobot.utils.tarot import Card, Deck
@@ -100,8 +99,8 @@ class Mystery(commands.Cog):
         return await Deck.get_card(suit, card_number)
 
     @commands.group(invoke_without_command=True, brief='Delve into the mysteries of tarot.')
-    @commands.cooldown(3, 300, commands.BucketType.user)
-    async def tarot(self, ctx: commands.Context) -> None:
+    @commands.cooldown(3, 120, commands.BucketType.user)
+    async def tarot(self, ctx: commands.Context, *, user_input: str = '') -> None:
         """Do you seek wisdom and guidance?
         Unveil the Mysteries of the past, the present, and the future with a tarot reading.
         A brief meaning of each card appears next to its name.
@@ -112,46 +111,20 @@ class Mystery(commands.Cog):
             may help coax from you the reason you seek the tarot's guidance.
         """
 
+        # If an argument is passed and a subcommand is not triggered, users are typically trying to look up a card.
+        # The correct usage is ">tarot card [some card]".
+        if user_input:
+            try:
+                await self.card(ctx, card_name=user_input)
+            except NoMatchingTarotCard:
+                return
         # if no subcommand is provided, we give a three-card reading.
         # However, before invoking the command, we make sure that it can be run. If the command cannot be run, can_run
         # will error and the error will propogate normally. For some odd reason this doesn't catch cooldowns - even
         # though it should. Whatever. This command has a cooldown so it's fine.
-
-        await self.ppf.can_run(ctx)
-        await self.ppf(ctx)
-
-    async def tarot_embed(
-        self,
-        ctx: commands.Context,
-        fp: Optional[BytesIO],
-        descriptions: List[Tuple[str, str, str]],
-        help_str: str
-    ) -> None:
-        """Create a reading embed and send."""
-
-        filename = 'reading.png'
-        f = discord.File(fp, filename)
-
-        embed = c.crimbed(
-            title="{}'s reading".format(ctx.author),
-            descr=None,
-            attachment=filename,
-            footer=f'{help_str}\nType ">tarot card" for more on a specific card.',
-        )
-
-        for card_tuple in descriptions:
-            if card_tuple[0] == '\u200d':  # one-card reading
-                embed.add_field(
-                    name=card_tuple[1],
-                    value=f'{card_tuple[2]}',
-                )
-            else:
-                embed.add_field(
-                    name=card_tuple[0],
-                    value=f'**{card_tuple[1]}**\n{card_tuple[2]}',
-                )
-
-        await ctx.send(file=f, embed=embed)
+        else:
+            await self.ppf.can_run(ctx)
+            await self.ppf(ctx)
 
     @tarot.command(name='one', aliases=['1'], brief='Get a single-card reading.')
     @commands.cooldown(3, 120, commands.BucketType.user)
@@ -161,7 +134,7 @@ class Mystery(commands.Cog):
         fp, descriptions = await tarot.reading(spread)
         help_str = self.one.help
 
-        await self.tarot_embed(ctx, fp, descriptions, help_str)
+        await tarot.tarot_embed(ctx, fp, descriptions, help_str)
 
     @tarot.command(name='major', brief='Draw a single Major Arcana card.')
     @commands.cooldown(3, 120, commands.BucketType.user)
@@ -171,7 +144,7 @@ class Mystery(commands.Cog):
         fp, descriptions = await tarot.reading(spread)
         help_str = self.major.help
 
-        await self.tarot_embed(ctx, fp, descriptions, help_str)
+        await tarot.tarot_embed(ctx, fp, descriptions, help_str)
 
     @tarot.command(name='ppf', aliases=['3', 'three'], brief='Past, present, and future.')
     @commands.cooldown(3, 120, commands.BucketType.user)
@@ -181,7 +154,7 @@ class Mystery(commands.Cog):
         fp, descriptions = await tarot.reading(spread)
         help_str = self.ppf.help
 
-        await self.tarot_embed(ctx, fp, descriptions, help_str)
+        await tarot.tarot_embed(ctx, fp, descriptions, help_str)
 
     @tarot.command(name='major3', aliases=['majorthree'], brief='Past, present, and future from the Major Arcana.')
     @commands.cooldown(3, 120, commands.BucketType.user)
@@ -191,7 +164,7 @@ class Mystery(commands.Cog):
         fp, descriptions = await tarot.reading(spread)
         help_str = self.major3.help
 
-        await self.tarot_embed(ctx, fp, descriptions, help_str)
+        await tarot.tarot_embed(ctx, fp, descriptions, help_str)
 
     @tarot.command(name='cross', aliases=['5', 'five'], brief='Look deeper into your Reason and Potential.')
     @commands.cooldown(3, 120, commands.BucketType.user)
@@ -203,9 +176,9 @@ class Mystery(commands.Cog):
         fp, descriptions = await tarot.reading(spread)
         help_str = self.five.help
 
-        await self.tarot_embed(ctx, fp, descriptions, help_str)
+        await tarot.tarot_embed(ctx, fp, descriptions, help_str)
 
-    @tarot.command(name='celtic', brief='The Celtic Cross spread.')
+    @tarot.command(name='celtic', aliases=['Celtic'], brief='The Celtic Cross spread.')
     @commands.cooldown(3, 120, commands.BucketType.user)
     async def celtic(self, ctx: commands.Context, spread: str = 'celtic') -> None:
         """This spread presents the Cross of the current situation and the Pillar of influences."""
@@ -213,7 +186,7 @@ class Mystery(commands.Cog):
         fp, descriptions = await tarot.reading(spread)
         help_str = self.celtic.help
 
-        await self.tarot_embed(ctx, fp, descriptions, help_str)
+        await tarot.tarot_embed(ctx, fp, descriptions, help_str)
 
     @tarot.command(name='card', brief='Inspect an individual card.')
     @commands.max_concurrency(1, commands.BucketType.user)  # To avoid a 404: Unknown Message & other oddities
