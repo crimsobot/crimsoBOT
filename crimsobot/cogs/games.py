@@ -12,7 +12,7 @@ from crimsobot.context import CrimsoContext
 from crimsobot.data.games import EMOJISTORY_RULES, MADLIBS_RULES, STORIES
 from crimsobot.exceptions import NotDirectMessage, StrictInputFailed
 from crimsobot.handlers.games import EmojistorySubmissionHandler, EmojistoryVotingHandler
-from crimsobot.utils import games as crimsogames, markov as m, tools as c
+from crimsobot.utils import games as crimsogames, markov as m, tools as c, wordle
 from crimsobot.utils.converters import CleanedTextInput
 from crimsobot.utils.guess_leaderboard import GuessLeaderboard
 from crimsobot.utils.leaderboard import Leaderboard
@@ -597,7 +597,7 @@ class Games(commands.Cog):
         matched_letters = ''
         missed_letters = ''
 
-        solution = await crimsogames.choose_solution()
+        solution = await wordle.choose_solution()
 
         # welcome message
         embed = c.crimbed(
@@ -615,7 +615,7 @@ class Games(commands.Cog):
         )
 
         await ctx.send(embed=embed)
-        await asyncio.sleep(1.8)
+        await asyncio.sleep(1.2)
 
         # check message for author, channel, content
         def check(message: discord.Message) -> bool:
@@ -655,12 +655,12 @@ class Games(commands.Cog):
                     await ctx.send(embed=embed)
 
                     # store stats
-                    await crimsogames.wordle_stats(ctx.message.author, turns_taken, solution)
+                    await wordle.wordle_stats(ctx.message.author, turns_taken, solution)
 
                     return  # game over, end function
 
                 if user_input == 'letters':
-                    remaining = await crimsogames.remaining_letters(matched_letters, missed_letters)
+                    remaining = await wordle.remaining_letters(matched_letters, missed_letters)
                     embed = c.crimbed(
                         title='**LETTERS**',
                         descr=f'`{"".join(remaining)}`',
@@ -671,7 +671,7 @@ class Games(commands.Cog):
 
                     continue  # back to beginning of loop
 
-                input_valid = await crimsogames.input_checker(user_input)
+                input_valid = await wordle.input_checker(user_input)
 
                 if not input_valid:
                     embed = c.crimbed(
@@ -682,7 +682,7 @@ class Games(commands.Cog):
 
                     await ctx.send(embed=embed)
 
-            match_emojis, matches, misses = await crimsogames.match_checker(user_input, solution)
+            match_emojis, matches, misses = await wordle.match_checker(user_input, solution)
             turns_taken += 1
 
             # make the emoji string to graph guesses
@@ -705,7 +705,7 @@ class Games(commands.Cog):
                 await ctx.send(embed=embed)
 
         # store stats
-        await crimsogames.wordle_stats(ctx.message.author, turns_taken, solution)
+        await wordle.wordle_stats(ctx.message.author, turns_taken, solution)
 
         # award coin
         base_prize = 2.25
@@ -726,7 +726,7 @@ class Games(commands.Cog):
     async def wordlestats(self, ctx: commands.Context) -> None:
         """Check your Wordle stats!"""
 
-        embed = await crimsogames.wordle_stat_embed(ctx.message.author)
+        embed = await wordle.wordle_stat_embed(ctx.message.author)
         await ctx.send(embed=embed)
 
 
