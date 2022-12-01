@@ -582,7 +582,7 @@ class Games(commands.Cog):
 
         await ctx.send(sheet)
 
-    @commands.command()
+    @commands.command(aliases=['w'])
     @commands.max_concurrency(1, commands.BucketType.user)
     async def wordle(self, ctx: commands.Context) -> None:
         """Play a Wordle clone in your DMs!"""
@@ -604,10 +604,9 @@ class Games(commands.Cog):
             title="Let's play **WORDLE!**",
             descr='\n'.join([
                 'Try to guess the five-letter word!',
-                'Begin your guess with a period (for example, `.bread`).',
+                'Begin your guess with a period like this: `.bread`',
                 'Letter is somewhere in word: 🟨',
                 'Letter is in the correct spot: 🟩',
-                'To see available letters, type `.letters`',
                 'To end the game, type `.quit`',
             ]),
             footer='Gameplay is unlimited; you have to either win or ".quit"!',
@@ -659,18 +658,6 @@ class Games(commands.Cog):
 
                     return  # game over, end function
 
-                if user_input == 'letters':
-                    remaining = await wordle.remaining_letters(matched_letters, missed_letters)
-                    embed = c.crimbed(
-                        title='**LETTERS**',
-                        descr=f'`{"".join(remaining)}`',
-                        thumb_name='shrug',
-                    )
-
-                    await ctx.send(embed=embed)
-
-                    continue  # back to beginning of loop
-
                 input_valid = await wordle.input_checker(user_input)
 
                 if not input_valid:
@@ -697,9 +684,16 @@ class Games(commands.Cog):
             missed_letters += misses
 
             if not solved:
+                remaining = await wordle.remaining_letters(matched_letters, missed_letters)
                 embed = c.crimbed(
                     title=f'Guess #{turns_taken}: **{user_input}**',
-                    descr=match_emoji_str,
+                    descr='\n'.join([
+                        '\n'.join(matches_history),
+                        '',
+                        '**LETTERS**',
+                        f'`{"".join(remaining)}`',
+                    ]),
+                    thumb_name='think'
                 )
 
                 await ctx.send(embed=embed)
