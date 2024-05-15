@@ -1,8 +1,9 @@
 import asyncio
 import logging
 from datetime import datetime
-from typing import List, Optional, Tuple
 from random import randint
+from typing import List, Optional, Tuple
+
 
 import discord
 from discord.ext import commands
@@ -172,8 +173,9 @@ class Utilities(commands.Cog):
     @commands.command()
     async def color(self, ctx: commands.Context, hex_value: Optional[discord.Colour] = None) -> None:
         """Get color sample from hex value, or generate random color if not given input."""
-        if hex_value == None:
-            hex_value = imagetools.make_color_img("#%06x" % randint(0, 0xFFFFFF))
+        if hex_value is None:
+            hex_value = '#%06x' % randint(0, 0xFFFFFF)
+        print(str(hex_value))
         fp = imagetools.make_color_img(str(hex_value))
         await ctx.send(
             '**' + str(hex_value) + '**',
