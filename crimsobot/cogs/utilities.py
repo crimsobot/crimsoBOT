@@ -4,7 +4,6 @@ from datetime import datetime
 from random import randint
 from typing import List, Optional, Tuple
 
-
 import discord
 from discord.ext import commands
 
