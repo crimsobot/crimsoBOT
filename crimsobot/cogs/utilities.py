@@ -172,7 +172,7 @@ class Utilities(commands.Cog):
     @commands.command()
     async def color(self, ctx: commands.Context, hex_value: Optional[discord.Colour] = None) -> None:
         """Get color sample from hex value, or generate random color if not given input."""
-        
+
         if hex_value is None:
             hex_value = '#%06x' % randint(0, 0xFFFFFF)
         fp = imagetools.make_color_img(str(hex_value))
