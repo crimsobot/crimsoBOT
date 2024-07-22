@@ -69,7 +69,7 @@ class Games(commands.Cog):
             # check message for author, channel, content
             def check(message: discord.Message) -> bool:
                 banned = self.bot.is_banned(message.author)
-                has_prefix = message.content.startswith(prefix)
+                has_prefix = message.content.startswith(prefix)  # noqa: B023
                 in_channel = message.channel == ctx.message.channel
                 return not banned and has_prefix and in_channel
 
