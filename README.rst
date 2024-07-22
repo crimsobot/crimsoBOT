@@ -6,7 +6,7 @@ crimsoBOT is a playful and somewhat poorly-coded Discord bot.
 Installing
 ----------
 
-- Python 3.7 or higher is required
+- Python >=3.7.0, <3.11 is required.
 - You'll need to have `poetry installed <https://python-poetry.org/docs/>`_.
 
 .. code:: sh
