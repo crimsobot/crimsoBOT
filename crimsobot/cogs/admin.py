@@ -113,7 +113,7 @@ class Admin(commands.Cog):
             footer='Thanks for using crimsoBOT!'
         )
         embed.add_field(
-            name="crimsoBOT's Discord server",
+            name='Join the crimsoBOT server!',
             value='https://discord.gg/Kj3WNHX',
             inline=False
         )
@@ -123,13 +123,8 @@ class Admin(commands.Cog):
             inline=False
         )
         embed.add_field(
-            name='Support crimsoBOT server time, get a sticker!',
+            name='Support crimsoBOT server time, (maybe) get a sticker!',
             value='https://www.patreon.com/crimso',
-            inline=False
-        )
-        embed.add_field(
-            name='Buy stickers and more *a la carte*!',
-            value='https://crimsobot-store.square.site/',
             inline=False
         )
 
