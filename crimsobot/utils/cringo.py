@@ -276,22 +276,6 @@ async def cringo_score(player: CringoPlayer, turn_number: int, multiplier: int) 
             player.full_card = 1
 
 
-async def cringo_scoreboard(players: List[CringoPlayer], cursed: bool = False, game_finished: bool = False) -> str:
-    """Unpack the player objects to get something that can be sorted and displayed."""
-
-    scoreboard_rows = []
-    for player in players:
-        coin_display = 'zero' if cursed else player.winnings  # y'all dumb motherfuckers want a rounding error?
-        if game_finished:
-            row = f'{player.user} · **{player.score}** points · **{coin_display}** coin'
-        else:
-            row = f'{player.user} · **{player.score}** points'
-
-        scoreboard_rows.append(row)
-
-    return '\n'.join(scoreboard_rows)
-
-
 async def cringo_stats(player: CringoPlayer, won: bool) -> None:
     stats = await CringoStatistic.get_by_discord_user(player.user)  # type: CringoStatistic
 
@@ -333,7 +317,7 @@ async def cringo_stat_embed(user: DiscordUser) -> Embed:
         )
     else:
         embed = c.crimbed(
-            title='CRINGO! stats for {}'.format(user),
+            title=f'CRINGO! stats for {user.name}',
             descr=None,
             thumb_name='jester',
             footer='Since {d.year}-{d.month:02d}-{d.day:02d} · Regular CRINGO! only'.format(d=s.created_at),
