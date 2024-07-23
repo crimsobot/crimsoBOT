@@ -5,7 +5,7 @@ from typing import Optional
 import discord
 from discord.ext import commands
 
-from config import ADMIN_USER_IDS
+from config import ADMIN_USER_IDS, PERMISSIONS_INTEGER
 from crimsobot.bot import CrimsoBOT
 from crimsobot.models.ban import Ban
 from crimsobot.models.user import User
@@ -104,7 +104,7 @@ class Admin(commands.Cog):
         # change permissions integer here if need be
         auth_url = 'https://discordapp.com/api/oauth2/authorize?client_id={}&permissions={}&scope=bot'.format(
             self.bot.user.id,
-            473300048
+            PERMISSIONS_INTEGER
         )
         embed = c.crimbed(
             title='crimsoBOT info!',
