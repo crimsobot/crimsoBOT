@@ -10,6 +10,7 @@ from lxml import html
 from timezonefinder import TimezoneFinder
 
 from config import TOMTOM_API_KEY
+from crimsobot.exceptions import LocationNotFound, ZoomNotValid
 
 
 ISSPass = namedtuple(
@@ -92,23 +93,43 @@ def format_passes(passes: List[ISSPass]) -> str:
     return tabulate.tabulate(passes, headers=headers)
 
 
-def whereis(query: str, zoom: int) -> Tuple[Optional[float], Optional[float], Optional[str]]:
+def whereis(query: str) -> Tuple[str, int, float, float, str]:
+    """Find a location by name using the Nomanatim geocoder and return a map URL using the TomTom API.
+    """
+
+    # parse user input
+    try:
+        location_str, zoom = query.split(';', 1)
+    except ValueError:  # no zoom provided
+        location_str = query
+        zoom = '12'  # currently type str; will be converted later
+
+    # bounce API query for shitty or spammy zoom levels
+    try:
+        zoom_int = int(zoom)
+    except ValueError:
+        raise ZoomNotValid(zoom)
+
+    if not 1 <= zoom_int <= 22:
+        raise ZoomNotValid(zoom)
+
     # Nomanatim geocoder
-    location = where_are_you(query)
+    location = where_are_you(location_str.upper())
 
     # return None if no location found
     if not location:
-        return None, None, None
+        raise LocationNotFound(location_str)
 
-    lat = round(location.latitude, 6)
-    lon = round(location.longitude, 6)
+    lat = round(location.latitude, 5)
+    lon = round(location.longitude, 5)
 
     # now the URL!
     url_template = (
         'https://api.tomtom.com/map/1/staticimage?'
         'layer=basic&style=night&format=png&'
-        'key={}&zoom={}&center={},{}&width=1036&height=1036&language=NGT'
+        'key={}&zoom={}&center={},{}'  # variable input goes here!
+        '&width=600&height=600&language=NGT'
     )
-    url = url_template.format(TOMTOM_API_KEY, zoom, lon, lat)
+    url = url_template.format(TOMTOM_API_KEY, zoom_int, lon, lat)
 
-    return lat, lon, url
+    return location_str, zoom_int, lat, lon, url
