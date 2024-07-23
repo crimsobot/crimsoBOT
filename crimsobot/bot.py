@@ -10,7 +10,7 @@ from crimsobot import db
 from crimsobot.context import CrimsoContext
 from crimsobot.data.img import CAPTION_RULES, IMAGE_RULES
 from crimsobot.exceptions import (BadCaption, LocationNotFound, NoImageFound, NoMatchingTarotCard,
-                                  NotDirectMessage, StrictInputFailed)
+                                  NotDirectMessage, StrictInputFailed, ZoomNotValid)
 from crimsobot.help_command import PaginatedHelpCommand
 from crimsobot.models.ban import Ban
 from crimsobot.utils import markov as m, tools as c
@@ -148,6 +148,11 @@ class CrimsoBOT(commands.Bot):
                 error_type = '**not good with location**'
                 traceback_needed = False
                 msg_to_user = f'Location **{error.original.location}** not found.'
+
+            if isinstance(error.original, ZoomNotValid):
+                error_type = '**not good with zoom**'
+                traceback_needed = False
+                msg_to_user = f'Zoom level **{error.original.zoom}** not good!'
 
             if isinstance(error.original, NoImageFound):
                 error_type = '**NO IMAGE**'

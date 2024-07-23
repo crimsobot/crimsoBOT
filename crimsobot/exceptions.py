@@ -16,7 +16,8 @@ class LocationNotFound(Exception):
 
 
 class ZoomNotValid(Exception):
-    pass
+    def __init__(self, zoom: str) -> None:
+        self.zoom = zoom
 
 
 class NotDirectMessage(Exception):
