@@ -15,6 +15,10 @@ class LocationNotFound(Exception):
         self.location = location
 
 
+class ZoomNotValid(Exception):
+    pass
+
+
 class NotDirectMessage(Exception):
     pass
 

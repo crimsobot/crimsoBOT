@@ -8,7 +8,7 @@ import discord
 from discord.ext import commands
 
 from crimsobot.bot import CrimsoBOT
-from crimsobot.exceptions import LocationNotFound
+from crimsobot.exceptions import LocationNotFound, ZoomNotValid
 from crimsobot.utils import astronomy, image as imagetools, tools as c
 
 log = logging.getLogger(__name__)
@@ -271,16 +271,37 @@ class Utilities(commands.Cog):
     @commands.command(name='map')
     @commands.cooldown(3, 10, commands.BucketType.channel)
     async def get_map(self, ctx: commands.Context, *, location: str) -> None:
-        """Get a map of a location."""
+        """Get a map of a location using its name.
+        You can also specify a zoom level 1-22.
+        1 is zoomed out the most; 10 is the default.
 
+        Example usage: >map hell; 14
+        """
+
+        # parse user input
+        try:
+            location, zoom = location.split(';', 1)
+        except ValueError:  # no zoom provided
+            zoom = '10'  # currently type str; will be converted later
+
+        # bounce API query for shitty or spammy zoom levels
+        try:
+            zoom_int = int(zoom)
+        except ValueError:
+            raise ZoomNotValid(zoom)
+
+        if not 1 <= zoom_int <= 22:
+            raise ZoomNotValid(zoom)
+
+        # send to geocoder and map URL maker
         location = location.upper()
-        lat, lon, map_url = astronomy.whereis(location)
+        lat, lon, map_url = astronomy.whereis(location, zoom_int)
 
         if map_url is not None:
             embed = c.crimbed(
-                title='Map of {}\n{}'.format(location, map_url),
+                title=f'Map of {location}',
                 descr=None,
-                footer='{}°, {}°'.format(lat, lon)
+                footer=f'{lat}°, {lon}°'
             )
             embed.set_image(url=map_url)
         else:
