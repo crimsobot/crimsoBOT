@@ -7,10 +7,9 @@ import tabulate
 from geopy.geocoders import Nominatim
 from geopy.location import Location
 from lxml import html
-from pyshorteners import Shortener
 from timezonefinder import TimezoneFinder
 
-from config import BITLY_TOKEN, MAPQUEST_API_KEY
+from config import TOMTOM_API_KEY
 
 
 ISSPass = namedtuple(
@@ -93,7 +92,7 @@ def format_passes(passes: List[ISSPass]) -> str:
     return tabulate.tabulate(passes, headers=headers)
 
 
-def whereis(query: str) -> Tuple[Optional[float], Optional[float], Optional[str]]:
+def whereis(query: str, zoom: int) -> Tuple[Optional[float], Optional[float], Optional[str]]:
     # Nomanatim geocoder
     location = where_are_you(query)
 
@@ -104,32 +103,12 @@ def whereis(query: str) -> Tuple[Optional[float], Optional[float], Optional[str]
     lat = round(location.latitude, 6)
     lon = round(location.longitude, 6)
 
-    # get bounding box from raw dict
-    bounding = location.raw['boundingbox']
-
-    # get difference btw center and bounding box, and stretch (more if close, less if far)
-    dlat = (lat - float(bounding[0]))
-    stretch = 10 / dlat ** 0.3
-    dlat = (lat - float(bounding[0])) * stretch
-    dlon = (lon - float(bounding[2])) * stretch
-
-    # new bounding box
-    bound = [lat - dlat, lat + dlat, lon - dlon, lon + dlon]
-
     # now the URL!
     url_template = (
-        'https://www.mapquestapi.com/staticmap/v5/map?'
-        'locations={},{}&boundingbox={},{},{},{}&type=dark&size=800,600@2x&key={}'
+        'https://api.tomtom.com/map/1/staticimage?'
+        'layer=basic&style=night&format=png&'
+        'key={}&zoom={}&center={},{}&width=1036&height=1036&language=NGT'
     )
-    url = url_template.format(
-        lat, lon,
-        bound[0], bound[2], bound[1], bound[3],
-        MAPQUEST_API_KEY
-    )
+    url = url_template.format(TOMTOM_API_KEY, zoom, lon, lat)
 
-    # return url
-    # bit.ly shortner
-    shortener = Shortener(api_key=BITLY_TOKEN)
-    short_url = shortener.bitly.short(url)  # type: str
-
-    return lat, lon, short_url
+    return lat, lon, url

@@ -42,5 +42,4 @@ LEARNER_CHANNEL_IDS = {
 
 # Astronomy util API keys
 N2YO_API_KEY = None
-MAPQUEST_API_KEY = None
-BITLY_TOKEN = None
+TOMTOM_API_KEY = None
