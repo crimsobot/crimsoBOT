@@ -109,11 +109,13 @@ class CringoGame():
             title='Welcome to **CRINGO!**',
             descr='\n'.join([
                 'Match the emojis called to the emojis on your card.',
-                'If you see a match, type the column and row of the match!',
-                'Type `.<letter><number>` or `. <letter><number>`.',
+                'If you see a match, type the letter and number of the match!',
                 'You can put in multiple matches separated by a space!',
-                'For example: `.a1 b2 c4` or `. b4 c3`. Only use one period!',
-                'Missed a match on a previous turn? No problem! Put it in anyway.',
+                '',
+                'For example: `.a1 b2 c4` or `. b4 c3`',
+                '',
+                'Only use one period!',
+                'Missed a match on a previous turn? No problem! Put it in.',
                 "You'll still get your points (but with a lower multiplier).",
                 'Need to leave the game? Type `.leave` during a round.',
             ]),
@@ -159,7 +161,7 @@ class CringoGame():
     def generate_join_success_embed(self, who: discord.Member) -> discord.Embed:
         embed = c.crimbed(
             title='',
-            descr=f'**{who}** has joined the game!',
+            descr=f'**{who.name}** has joined the game!',
             color_name='green',
             thumb_name=''
         )
@@ -183,7 +185,7 @@ class CringoGame():
         CringoGame.all_players.discard(user.id)
         embed = c.crimbed(
             title=None,
-            descr=f'{user} has left the game.',
+            descr=f'**{user.name}** has left the game.',
             color_name='yellow',
         )
 
@@ -193,11 +195,11 @@ class CringoGame():
         scoreboard_rows = []
         sorted_players = sorted(self.players, key=lambda item: item.score, reverse=True)
         for player in sorted_players:
-            coin_display = 'zero' if self.cursed else round(player.winnings, 2)
+            coin_display = 0.00 if self.cursed else round(player.winnings, 2)
             if game_finished:
-                row = f'{player.user} · **{player.score}** points · **\u20A2{coin_display}**'
+                row = f'{player.user.name} · **{player.score}** points · **\u20A2{coin_display:.2f}**'
             else:
-                row = f'{player.user} · **{player.score}** points'
+                row = f'{player.user.name} · **{player.score}** points'
 
             scoreboard_rows.append(row)
 
@@ -227,7 +229,7 @@ class CringoGame():
                 CringoGame.all_players.discard(player.user.id)
                 embed = c.crimbed(
                     title=None,
-                    descr=f'{player.user} has left the game.',
+                    descr=f'{player.user.name} has left the game.',
                     color_name='yellow',
                 )
 
@@ -410,12 +412,19 @@ class Cringo(commands.Cog):
     @commands.group(aliases=['suffer'], invoke_without_command=True, brief='A quirky take on bingo.')
     @commands.max_concurrency(1, commands.BucketType.channel)
     async def cringo(self, ctx: commands.Context) -> None:
-        """A peculiar blend of slots and bingo that is totally not a ripoff of a popular 1990s PC game.
-        Points are awarded for matches [10], lines [100], and full card [1000].
-        The earlier you get a match, line, or full card, the higher the multiplier!
-        Everyone is awarded a handsome amount of crimsoCOIN for playing.
-        The more players in a game, the more crimsoCOIN everyone wins - assuming you don't get unlucky...
-        Play regular >cringo, >cringo mega, or >cringo mini!
+        """A peculiar blend of slots and bingo.
+        Totally not a ripoff of a popular 1990s PC game.
+
+        Points are awarded for:
+         - matches [10]
+         - lines [100]
+         - full card [1000]
+
+        The earlier you score, the higher the multiplier.
+        Higher score = more crimsoCOIN at the end.
+        More players = higher crimsoCOIN multiplier.
+
+        Play >cringo, >cringo mega, or >cringo mini!
         """
 
         # Fallback to regular four-line Cringo! if no command is provided, retains prior functionality
@@ -424,11 +433,13 @@ class Cringo(commands.Cog):
     @cringo.command(name='mega')
     @commands.max_concurrency(1, commands.BucketType.channel)
     async def mega(self, ctx: commands.Context) -> None:
+        """A giant 6x6 board!"""
         await CringoGame(ctx, card_size=6).start()
 
     @cringo.command(name='mini')
     @commands.max_concurrency(1, commands.BucketType.channel)
     async def mini(self, ctx: commands.Context) -> None:
+        """A ridiculous 2x2 board!"""
         await CringoGame(ctx, card_size=2).start()
 
     @cringo.group(name='lb', aliases=['clb'], invoke_without_command=True)
