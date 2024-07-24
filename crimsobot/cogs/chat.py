@@ -71,7 +71,7 @@ class Chat(commands.Cog):
 
     @commands.command(aliases=['monty'])
     async def montyward(self, ctx: commands.Context) -> None:
-        """Monty mindfuck!"""
+        """Monty mindfuck! Just try it."""
 
         footer_text = [
             'Those black spots on your bananas? Those are tarantula eggs.',
@@ -94,7 +94,10 @@ class Chat(commands.Cog):
     @commands.command(hidden=True)
     @commands.is_owner()
     async def scrape(self, ctx: commands.Context, place: str = 'here', join: str = 'space', n: int = 10000) -> None:
-        """Scrape messages from channel. >scrape [here/dm/channel_id] [space/newline]."""
+        """Scrape messages from channel. 
+        
+        >scrape [here/dm/channel_id] [space/newline]
+        """
 
         if ctx.message.author.id not in ADMIN_USER_IDS | SCRAPER_USER_IDS:
             return

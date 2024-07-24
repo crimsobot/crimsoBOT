@@ -11,9 +11,11 @@ class Text(commands.Cog):
     def __init__(self, bot: CrimsoBOT):
         self.bot = bot
 
-    @commands.command()
+    @commands.command(brief='Display text as emojis.')
     async def e(self, ctx: commands.Context, *, message: str) -> None:
-        """Convert message to emojis. Character limit ~450."""
+        """Convert a string of text to emojis.
+
+        Character limit ~450."""
 
         message = texttools.block(message)
         lines = c.crimsplit(message, ' ', limit=1900)
@@ -38,7 +40,7 @@ class Text(commands.Cog):
         output = texttools.upsidedown(text)
         await ctx.send('{}: {}'.format(ctx.message.author.mention, output))
 
-    @commands.command(aliases=['xokclock', 'xoktime', 'emojitime'])
+    @commands.command(aliases=['xokclock', 'xoktime', 'emojitime'], brief='Check the time with emojis!')
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def emojiclock(self, ctx: commands.Context, emoji: Optional[AbsurdEmojiConverter], *, location: str) -> None:
         """Get the time at location (required) in emojis!"""

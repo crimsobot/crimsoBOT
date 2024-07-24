@@ -104,13 +104,20 @@ class Image(commands.Cog):
 
         await ctx.send(file=f, embed=embed)
 
-    @commands.command(aliases=['acidify'])
+    @commands.command(aliases=['acidify'], brief='A funky image breaker.')
     @commands.cooldown(2, 10, commands.BucketType.guild)
     @shared_max_concurrency(eface_bucket)
     async def acid(self, ctx: commands.Context, number_of_hits: int, image: Optional[str] = None) -> None:
         """
-        1-3 hits only. Can use image link, attachment, mention, emoji, previous message, or reply to message with an
-        image.
+        1-3 hits only. Pace yourself.
+
+        The image input can be:
+         - image link
+         - attachment
+         - user mention
+         - emoji
+         - image in previous message
+         - a reply to message with an image
         """
 
         # exception handling
@@ -153,8 +160,10 @@ class Image(commands.Cog):
             await ctx.message.author.send(line)
             await asyncio.sleep(1)
 
-    @commands.command(brief='Boop the snoot! Must mention someone to boop.')
+    @commands.command(brief='Mention someone to boop!')
     async def boop(self, ctx: commands.Context, mention: discord.Member) -> None:
+        """Mention a user (or use their username) to give them a boop!"""
+
         fp = await imagetools.make_boop_img(ctx.author.display_name, mention.display_name)
 
         # filename and file
@@ -172,7 +181,13 @@ class Image(commands.Cog):
     @commands.command(brief='Caption an image!')
     async def caption(self, ctx: commands.Context, *, caption_text: str, image: Optional[str] = None) -> None:
         """
-        The [image] can be a link, upload, user mention (for avatar), an image in a previous message, or from a reply.
+        The image input can be:
+         - image link
+         - attachment
+         - user mention
+         - emoji
+         - image in previous message
+         - a reply to message with an image
 
         You can add your own line breaks, eg:
 
@@ -268,9 +283,21 @@ class Image(commands.Cog):
     @shared_max_concurrency(eface_bucket)
     async def eimg(self, ctx: commands.Context, image: Optional[str] = None, platform: str = 'desktop') -> None:
         """
-        Convert image to emojis!
-        Use ">eimg mobile" or ">eimg tablet" for a smaller image.
-        Works best with images with good contrast and larger features.
+        Convert an image to emojis!
+
+        Works best with images with
+        • good contrast
+        • large features
+
+        The image input can be:
+         - image link
+         - attachment
+         - user mention
+         - emoji
+         - image in previous message
+         - a reply to message with an image
+
+        Use "mobile" or "tablet" for a smaller output.
         """
 
         if image is None:
@@ -324,7 +351,16 @@ class Image(commands.Cog):
 
     @commands.command()
     async def needban(self, ctx: commands.Context, image: Optional[str] = None) -> None:
-        """SOMEONE needs BAN. User mention, attachment, link, emoji, an image in a previous message, or from a reply."""
+        """SOMEONE needs BAN.
+
+        The image input can be:
+         - image link
+         - attachment
+         - user mention
+         - emoji
+         - image in previous message
+         - a reply to message with an image
+        """
 
         if image is None:
             image = await self.get_previous_image(ctx)  # will be a URL
@@ -336,7 +372,15 @@ class Image(commands.Cog):
     @commands.command()
     async def needping(self, ctx: commands.Context, image: Optional[str] = None) -> None:
         """
-        SOMEONE needs PING. User mention, attachment, link, emoji, an image in a previous message, or from a reply.
+        SOMEONE needs PING.
+
+        The image input can be:
+         - image link
+         - attachment
+         - user mention
+         - emoji
+         - image in previous message
+         - a reply to message with an image
         """
 
         if image is None:
@@ -348,7 +392,16 @@ class Image(commands.Cog):
 
     @commands.command(aliases=['verpingt'])
     async def pingbadge(self, ctx: commands.Context, image: Optional[str] = None) -> None:
-        """Add Discord notification badge to an image."""
+        """Add Discord ping badge to an image.
+
+        The image input can be:
+         - image link
+         - attachment
+         - user mention
+         - emoji
+         - image in previous message
+         - a reply to message with an image
+        """
 
         if image is None:
             image = await self.get_previous_image(ctx)  # will be a URL
@@ -393,7 +446,16 @@ class Image(commands.Cog):
 
     @commands.command()
     async def xokked(self, ctx: commands.Context, image: Optional[str] = None) -> None:
-        """Get xokked! User mention, attachment, link, emoji, an image in a previous message, or from a reply."""
+        """Get xokked!
+
+        The image input can be:
+         - image link
+         - attachment
+         - user mention
+         - emoji
+         - image in previous message
+         - a reply to message with an image
+         """
 
         if image is None:
             image = await self.get_previous_image(ctx)  # will be a URL

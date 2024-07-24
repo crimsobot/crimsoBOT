@@ -102,13 +102,17 @@ class Mystery(commands.Cog):
     @commands.cooldown(3, 45, commands.BucketType.user)
     async def tarot(self, ctx: commands.Context, *, user_input: str = '') -> None:
         """Do you seek wisdom and guidance?
-        Unveil the Mysteries of the past, the present, and the future with a tarot reading.
-        A brief meaning of each card appears next to its name.
-        Meditate deeply upon the words of wise crimsoBOT, and all shall become clear...
 
-        You may choose to have a specific question in mind before you ask for your cards.
-        However, taking a reading without a question in mind
-            may help coax from you the reason you seek the tarot's guidance.
+        Unveil the Mysteries with a tarot reading.
+        A brief meaning of each card is given.
+
+        Approach a reading with a specific question.
+        Or take a reading with no question in mind.
+
+        Either way, ponder the wisdom of crimsoBOT.
+        And all shall become clear...
+
+        Begin with '>tarot' for a three-card reading.
         """
 
         # If an argument is passed and a subcommand is not triggered, users are typically trying to look up a card.
@@ -129,7 +133,7 @@ class Mystery(commands.Cog):
     @tarot.command(name='one', aliases=['1'], brief='Get a single-card reading.')
     @commands.cooldown(3, 45, commands.BucketType.user)
     async def one(self, ctx: commands.Context, spread: str = 'one') -> None:
-        """This single-card reading is your answer to any question you may have."""
+        """A single-card reading for simpler questions."""
 
         fp, descriptions = await tarot.reading(spread)
         help_str = self.one.help
@@ -149,29 +153,40 @@ class Mystery(commands.Cog):
     @tarot.command(name='ppf', aliases=['3'], brief='Past, present, and future.')
     @commands.cooldown(3, 45, commands.BucketType.user)
     async def ppf(self, ctx: commands.Context, spread: str = 'ppf') -> None:
-        """Explore the past, present, and future of your query."""
+        """Ponder past, present, and future of deeper queries."""
 
         fp, descriptions = await tarot.reading(spread)
         help_str = self.ppf.help
 
         await tarot.tarot_embed(ctx, fp, descriptions, help_str)
 
-    @tarot.command(name='major3', aliases=['majorthree'], brief='Past, present, and future from the Major Arcana.')
+    @tarot.command(name='major3', aliases=['majorthree'], brief='Past-present-future from the Major Arcana.')
     @commands.cooldown(3, 45, commands.BucketType.user)
     async def major3(self, ctx: commands.Context, spread: str = 'major3') -> None:
-        """Explore the past, present, and future of your query through the Major Arcana."""
+        """For more urgent questions.
+
+        The Major Arcana speaks to powerful archetypes.
+        Limit your reading to only these cards if you wish.
+        """
 
         fp, descriptions = await tarot.reading(spread)
         help_str = self.major3.help
 
         await tarot.tarot_embed(ctx, fp, descriptions, help_str)
 
-    @tarot.command(name='cross', aliases=['5'], brief='Look deeper into your Reason and Potential.')
+    @tarot.command(name='cross', aliases=['5'], brief='Look deeper into Reason and Potential.')
     @commands.cooldown(3, 45, commands.BucketType.user)
     async def five(self, ctx: commands.Context, spread: str = 'five') -> None:
-        """This spread delves deeper into the present, exploring your Reason for seeking guidance.
-        The Future card speaks toward the outcome should you stay on your current path.
-        The Potential card looks toward the outcome should you change paths."""
+        """Delve deeper into the present.
+
+        Exploring your -Reason- for seeking guidance.
+
+        The -Future- card speaks to the outcome...
+        ...should you stay on your current path.
+
+        The -Potential- card looks to the outcome...
+        ...should you change paths.
+        """
 
         fp, descriptions = await tarot.reading(spread)
         help_str = self.five.help
@@ -181,7 +196,12 @@ class Mystery(commands.Cog):
     @tarot.command(name='celtic', aliases=['Celtic'], brief='The Celtic Cross spread.')
     @commands.cooldown(3, 45, commands.BucketType.user)
     async def celtic(self, ctx: commands.Context, spread: str = 'celtic') -> None:
-        """This spread presents the Cross of the current situation and the Pillar of influences."""
+        """For advanced readers.
+
+        This spread presents both
+        • the Cross of the current situation and
+        • the Pillar of influences.
+        """
 
         fp, descriptions = await tarot.reading(spread)
         help_str = self.celtic.help
@@ -191,7 +211,10 @@ class Mystery(commands.Cog):
     @tarot.command(name='card', brief='Inspect an individual card.')
     @commands.max_concurrency(1, commands.BucketType.user)  # To avoid a 404: Unknown Message & other oddities
     async def card(self, ctx: commands.Context, *, card_name: str = '') -> None:
-        """Inspect an individual tarot card. A longer description is given for each."""
+        """Inspect an individual tarot card.
+
+        A longer description is given for each.
+        """
 
         if card_name:
             card = await Deck.get_card_by_name(card_name)  # type: Card
