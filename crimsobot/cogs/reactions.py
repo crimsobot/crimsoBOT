@@ -143,7 +143,7 @@ class Reactions(commands.Cog):
         field_list = [
             ('Subject', fact_object.subject),
             ('Body', fact_object.body[:500] + '...' if len(fact_object.body) > 500 else fact_object.body),
-            ('Added by', f'{fact_adder} ({fact_adder.id})'),
+            ('Added by', f'{fact_adder.name} ({fact_adder.id})'),
             ('Server', f'{guild.name} ({guild.id})'),
             (
                 'Added on',

@@ -99,7 +99,7 @@ class Image(commands.Cog):
             title=title,
             descr=None,
             attachment=filename,
-            footer='Requested by {}'.format(ctx.author),
+            footer='Requested by {}'.format(ctx.author.name),
         )
 
         await ctx.send(file=f, embed=embed)
@@ -162,7 +162,7 @@ class Image(commands.Cog):
         f = discord.File(fp, filename)
 
         embed = c.crimbed(
-            title='{} booped {}!'.format(ctx.author, mention),
+            title=f'{ctx.author.name} booped {mention.name}!',
             descr=None,
             attachment=filename,
         )

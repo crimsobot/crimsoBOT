@@ -106,7 +106,7 @@ class CringoLeaderboard:
                 discord_user = await ctx.bot.fetch_user(leader.user_id)
                 place = self._offset + place + 1
                 self._embed.add_field(
-                    name='{}. **{}**'.format(place, str(discord_user)),
+                    name='{}. **{}**'.format(place, str(discord_user.name)),
                     value=leader.value,
                     inline=False
                 )
