@@ -111,7 +111,7 @@ class Games(commands.Cog):
             thumb_name='8ball',
         )
         embed.add_field(
-            name='{} asks:'.format(ctx.message.author),
+            name=f'{ctx.message.author.name} asks:',
             value=question,
             inline=False
         )
@@ -324,7 +324,7 @@ class Games(commands.Cog):
         elif len(submissions.stories) == 1:
             title = '**WINNER BY DEFAULT!**'
             descr = '\n\n'.join([
-                'Only one submission by **{}**:'.format(submissions.stories[0].author),
+                f'Only one submission by **{submissions.stories[0].author.name}**:',
                 emojis,
                 submissions.stories[0].content,
             ])
@@ -377,7 +377,7 @@ class Games(commands.Cog):
             # then the embed info
             title = '**EMOJI STORY WINNER!**'
             descr = '\n\n'.join([
-                f'The winner is **{winner.author}** with {votes_for_winner} vote{s_or_no_s} for their story:',
+                f'The winner is **{winner.author.name}** with {votes_for_winner} vote{s_or_no_s} for their story:',
                 emojis,
                 winner.content,
             ])
@@ -387,7 +387,7 @@ class Games(commands.Cog):
             title=title,
             descr=descr,
             thumb_name='random',
-            footer=f'{winner.author} gets {winning_amount} crimsoCOIN!' if winner else None,
+            footer=f'{winner.author.name} gets {winning_amount:.2f} crimsoCOIN!' if winner else None,
         )
 
         await ctx.send(embed=embed)
@@ -412,9 +412,13 @@ class Games(commands.Cog):
 
         bal = await crimsogames.check_balance(whose)
 
+        balance_negative = True if bal < 0 else False
+        neg = '-' if balance_negative else ''  # negative sign on amount below if need be
+
         embed = c.crimbed(
-            title=f'\u200B\n{whose} has **\u20A2{bal:.2f}**.',
-            descr=random.choice(encourage) if bal > 0 else '=[',
+            title=random.choice(encourage) if not balance_negative else '=[',
+            descr=f"{whose.name}'s balance is\n**{neg}\u20A2{abs(bal):.2f}**.",
+            footer='Earn more by playing games! See >help games.',
             thumb_name='crimsoCOIN',
         )
 
@@ -433,8 +437,9 @@ class Games(commands.Cog):
             raise commands.BadArgument('Amount less than 0.')
         elif amount > await crimsogames.check_balance(ctx.message.author) * 0.25:
             embed = c.crimbed(
-                title=f'\u200B\n{ctx.message.author}, you cannot give more than 1/4 of your balance!',
-                descr='Check your `>balance`.',
+                title='Hold up—',
+                descr=f'{ctx.message.author.name}, you cannot give away more than 1/4 of your balance at a time!',
+                footer='Check your >balance.',
                 thumb_name='crimsoCOIN',
             )
             await ctx.send(embed=embed)
@@ -444,8 +449,14 @@ class Games(commands.Cog):
             return
 
         # transaction
+        old_bal_give = await crimsogames.check_balance(ctx.message.author)
+        old_bal_rec = await crimsogames.check_balance(recipient)
+
         await crimsogames.win(ctx.message.author, -amount)  # credit
         await crimsogames.win(recipient, amount)  # debit
+
+        new_bal_give = await crimsogames.check_balance(ctx.message.author)
+        new_bal_rec = await crimsogames.check_balance(recipient)
 
         # message (embed)
         encourage = [
@@ -459,9 +470,11 @@ class Games(commands.Cog):
         ]
 
         embed = c.crimbed(
-            title='\u200B\n{} has given {} **\u20A2{:.2f}** crimsoCOIN.'.format(ctx.message.author, recipient, amount),
-            descr=random.choice(encourage),
+            title=random.choice(encourage),
+            descr=f'{ctx.message.author.name} has given {recipient.name} **\u20A2{amount:.2f}** crimsoCOIN.',
             thumb_name='crimsoCOIN',
+            footer=f'{ctx.message.author.name}: \u20A2{old_bal_give:.2f} ➡️ \u20A2{new_bal_give:.2f}\n'
+                   f'{recipient.name}: \u20A2{old_bal_rec:.2f} ➡️ \u20A2{new_bal_rec:.2f}',
         )
 
         await ctx.send(embed=embed)
@@ -471,15 +484,19 @@ class Games(commands.Cog):
     async def cgive(self, ctx: commands.Context, recipient: discord.Member, amount: float) -> None:
         """Manual adjustment of crimsoCOIN values."""
 
-        # change to float
-        amount = float(amount)
-
+        # transaction
+        old_bal_rec = await crimsogames.check_balance(recipient)
         await crimsogames.win(recipient, amount)  # debit
+        new_bal_rec = await crimsogames.check_balance(recipient)
+
+        amount_negative = True if amount < 0 else False
+        neg = '-' if amount_negative else ''  # negative sign on amount below if need be
+
         embed = c.crimbed(
-            title="\u200B\n{} has adjusted {}'s balance by {neg}\u20A2**{:.2f}**.".format(
-                ctx.message.author, recipient, abs(amount), neg='-' if amount < 0 else ''
-            ),
-            descr='Life is inherently unfair.' if amount < 0 else 'Rejoice in your good fortune!',
+            title='Life is inherently unfair.' if amount_negative else 'Rejoice in your good fortune!',
+            descr=f"{ctx.message.author.name} has adjusted {recipient.name}'s balance by "
+                  f'**{neg}\u20A2{abs(amount):.2f}**.',
+            footer=f'{recipient.name}: \u20A2{old_bal_rec:.2f} ➡️ \u20A2{new_bal_rec:.2f}',
             thumb_name='crimsoCOIN',
         )
 

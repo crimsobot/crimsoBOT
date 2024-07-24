@@ -26,7 +26,7 @@ cringo:
     4: 9
     6: 9
 emojistory:
-  join_timer: 63
+  join_timer: 90
   minimum_length: 5
   maximum_length: 300
   vote_timer: 45

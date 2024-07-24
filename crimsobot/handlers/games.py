@@ -77,10 +77,10 @@ class EmojistorySubmissionHandler(AbstractEventGatherer):
 
             embed = c.crimbed(
                 title=None,
-                descr=f'**{message.author}** joined!',
+                descr='Story submitted!',
             )
 
-            await self.context.send(embed=embed, delete_after=8)
+            await self.context.send(embed=embed, delete_after=5)
 
 
 @must_be_event('on_message')
@@ -110,7 +110,7 @@ class EmojistoryVotingHandler(AbstractEventGatherer):
 
             embed = c.crimbed(
                 title=None,
-                descr=f'**{message.author}** voted.',
+                descr=f'**{message.author.name}** voted.',
             )
 
             await self.context.send(embed=embed, delete_after=8)
