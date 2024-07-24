@@ -304,7 +304,7 @@ async def tarot_embed(
     f = discord.File(fp, filename)
 
     embed = c.crimbed(
-        title="{}'s reading".format(ctx.author),
+        title=f"{ctx.author.name}'s reading",
         descr=None,
         attachment=filename,
         footer=f'{help_str}\nType ">tarot card" for more on a specific card.',

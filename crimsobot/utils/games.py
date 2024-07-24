@@ -212,7 +212,7 @@ async def guess_stat_embed(user: DiscordUser) -> Embed:
         )
     else:
         embed = c.crimbed(
-            title='GUESSMOJI! stats for {}'.format(user),
+            title='GUESSMOJI! stats for {}'.format(user.name),
             descr=None,
             thumb_name='crimsoCOIN',
             footer='Stat tracking as of {d.year}-{d.month:02d}-{d.day:02d}'.format(d=s.created_at),

@@ -692,7 +692,7 @@ async def process_image(ctx: Context, image: Optional[str], effect: str, arg: Op
             embed = c.crimbed(
                 title='PLS TO HOLD...',
                 descr='\n'.join([
-                    f'Processing GIF for **{ctx.author}**...',
+                    f'Processing GIF for **{ctx.author.name}**...',
                     f'{img.width} \u2A09 {img.height} pixels · {img.n_frames} frames',
                 ]),
                 footer=f'GIF cost: \u20A2{cost:.2f} · Your balance: \u20A2{bal:.2f} ➡️ \u20A2{new_bal:.2f}',
@@ -720,7 +720,7 @@ async def process_image(ctx: Context, image: Optional[str], effect: str, arg: Op
 
     if is_gif:
         embed.title = 'COMPLETE!'
-        embed.description = f'Processed GIF for **{ctx.author}**!'
+        embed.description = f'Processed GIF for **{ctx.author.name}**!'
         embed.color = 0x5AC037
         await msg.edit(embed=embed)
 

@@ -46,7 +46,7 @@ class Admin(commands.Cog):
 
         embed = c.crimbed(
             title=None,
-            descr='**{}** has been banned from using crimsoBOT.'.format(discord_user),
+            descr=f'**{discord_user.name}** has been banned from using crimsoBOT.',
             color_name='orange'
         )
 
@@ -72,7 +72,7 @@ class Admin(commands.Cog):
 
         embed = c.crimbed(
             title=None,
-            descr='**{}** has been unbanned from using crimsoBOT.'.format(discord_user),
+            descr=f'**{discord_user.name}** has been unbanned from using crimsoBOT.',
             color_name='yellow'
         )
 
@@ -87,7 +87,7 @@ class Admin(commands.Cog):
         banned_users = []
         for user_id in self.bot.banned_user_ids:
             discord_user = await self.bot.fetch_user(user_id)
-            banned_users.append('· {u.name}#{u.discriminator}'.format(u=discord_user))
+            banned_users.append('· {u.name} ({u.id})'.format(u=discord_user))
 
         if not banned_users:
             banned_users.append('No users are banned... yet')

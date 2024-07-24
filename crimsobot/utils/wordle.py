@@ -195,7 +195,7 @@ async def wordle_stat_embed(user: DiscordUser) -> Embed:
         histogram_string_list = '\n'.join(histogram_strings)
 
         embed = c.crimbed(
-            title=f'WORDLE stats for {user}',
+            title=f'WORDLE stats for {user.name}',
             descr=None,
             thumb_name='wordle',
             footer='Thanks for playing >wordle!',

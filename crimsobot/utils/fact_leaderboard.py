@@ -49,7 +49,7 @@ class FactLeaderboard:
         matches = [int(item) for item in re.findall(r'<@(\d+)>', string)]
         for user_id in matches:  # all of these will be match group 1 matches cast to int, so just plain ol' IDs
             user = ctx.bot.get_user(user_id) or await ctx.bot.fetch_user(user_id)
-            string = string.replace(f'<@{user_id}>', f'@{user}', 1)
+            string = string.replace(f'<@{user_id}>', f'@{user.name}', 1)
 
         return string
 
