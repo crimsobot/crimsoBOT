@@ -99,7 +99,7 @@ class Mystery(commands.Cog):
         return await Deck.get_card(suit, card_number)
 
     @commands.group(invoke_without_command=True, brief='Delve into the mysteries of tarot.')
-    @commands.cooldown(3, 120, commands.BucketType.user)
+    @commands.cooldown(3, 45, commands.BucketType.user)
     async def tarot(self, ctx: commands.Context, *, user_input: str = '') -> None:
         """Do you seek wisdom and guidance?
         Unveil the Mysteries of the past, the present, and the future with a tarot reading.
@@ -127,7 +127,7 @@ class Mystery(commands.Cog):
             await self.ppf(ctx)
 
     @tarot.command(name='one', aliases=['1'], brief='Get a single-card reading.')
-    @commands.cooldown(3, 120, commands.BucketType.user)
+    @commands.cooldown(3, 45, commands.BucketType.user)
     async def one(self, ctx: commands.Context, spread: str = 'one') -> None:
         """This single-card reading is your answer to any question you may have."""
 
@@ -137,7 +137,7 @@ class Mystery(commands.Cog):
         await tarot.tarot_embed(ctx, fp, descriptions, help_str)
 
     @tarot.command(name='major', brief='Draw a single Major Arcana card.')
-    @commands.cooldown(3, 120, commands.BucketType.user)
+    @commands.cooldown(3, 45, commands.BucketType.user)
     async def major(self, ctx: commands.Context, spread: str = 'major') -> None:
         """A single-card reading from the Major Arcana."""
 
@@ -146,8 +146,8 @@ class Mystery(commands.Cog):
 
         await tarot.tarot_embed(ctx, fp, descriptions, help_str)
 
-    @tarot.command(name='ppf', aliases=['3', 'three'], brief='Past, present, and future.')
-    @commands.cooldown(3, 120, commands.BucketType.user)
+    @tarot.command(name='ppf', aliases=['3'], brief='Past, present, and future.')
+    @commands.cooldown(3, 45, commands.BucketType.user)
     async def ppf(self, ctx: commands.Context, spread: str = 'ppf') -> None:
         """Explore the past, present, and future of your query."""
 
@@ -157,7 +157,7 @@ class Mystery(commands.Cog):
         await tarot.tarot_embed(ctx, fp, descriptions, help_str)
 
     @tarot.command(name='major3', aliases=['majorthree'], brief='Past, present, and future from the Major Arcana.')
-    @commands.cooldown(3, 120, commands.BucketType.user)
+    @commands.cooldown(3, 45, commands.BucketType.user)
     async def major3(self, ctx: commands.Context, spread: str = 'major3') -> None:
         """Explore the past, present, and future of your query through the Major Arcana."""
 
@@ -166,8 +166,8 @@ class Mystery(commands.Cog):
 
         await tarot.tarot_embed(ctx, fp, descriptions, help_str)
 
-    @tarot.command(name='cross', aliases=['5', 'five'], brief='Look deeper into your Reason and Potential.')
-    @commands.cooldown(3, 120, commands.BucketType.user)
+    @tarot.command(name='cross', aliases=['5'], brief='Look deeper into your Reason and Potential.')
+    @commands.cooldown(3, 45, commands.BucketType.user)
     async def five(self, ctx: commands.Context, spread: str = 'five') -> None:
         """This spread delves deeper into the present, exploring your Reason for seeking guidance.
         The Future card speaks toward the outcome should you stay on your current path.
@@ -179,7 +179,7 @@ class Mystery(commands.Cog):
         await tarot.tarot_embed(ctx, fp, descriptions, help_str)
 
     @tarot.command(name='celtic', aliases=['Celtic'], brief='The Celtic Cross spread.')
-    @commands.cooldown(3, 120, commands.BucketType.user)
+    @commands.cooldown(3, 45, commands.BucketType.user)
     async def celtic(self, ctx: commands.Context, spread: str = 'celtic') -> None:
         """This spread presents the Cross of the current situation and the Pillar of influences."""
 
