@@ -5,7 +5,7 @@ from typing import Optional
 import discord
 from discord.ext import commands
 
-from config import ADMIN_USER_IDS
+from config import ADMIN_USER_IDS, PERMISSIONS_INTEGER
 from crimsobot.bot import CrimsoBOT
 from crimsobot.models.ban import Ban
 from crimsobot.models.user import User
@@ -104,7 +104,7 @@ class Admin(commands.Cog):
         # change permissions integer here if need be
         auth_url = 'https://discordapp.com/api/oauth2/authorize?client_id={}&permissions={}&scope=bot'.format(
             self.bot.user.id,
-            473300048
+            PERMISSIONS_INTEGER
         )
         embed = c.crimbed(
             title='crimsoBOT info!',
@@ -113,7 +113,7 @@ class Admin(commands.Cog):
             footer='Thanks for using crimsoBOT!'
         )
         embed.add_field(
-            name="crimsoBOT's Discord server",
+            name='Join the crimsoBOT server!',
             value='https://discord.gg/Kj3WNHX',
             inline=False
         )
@@ -123,13 +123,8 @@ class Admin(commands.Cog):
             inline=False
         )
         embed.add_field(
-            name='Support crimsoBOT server time, get a sticker!',
+            name='Support crimsoBOT server time, (maybe) get a sticker!',
             value='https://www.patreon.com/crimso',
-            inline=False
-        )
-        embed.add_field(
-            name='Buy stickers and more *a la carte*!',
-            value='https://crimsobot-store.square.site/',
             inline=False
         )
 

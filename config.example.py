@@ -7,6 +7,9 @@ DATABASE_URL = 'sqlite:///tmp/crimsobot.sqlite3'
 # Discord bot token
 TOKEN = None
 
+# Permissions integer
+PERMISSIONS_INTEGER = None
+
 # Discord IDs
 ADMIN_USER_IDS = {
     310618614497804289,  # crimso
