@@ -94,8 +94,8 @@ class Chat(commands.Cog):
     @commands.command(hidden=True)
     @commands.is_owner()
     async def scrape(self, ctx: commands.Context, place: str = 'here', join: str = 'space', n: int = 10000) -> None:
-        """Scrape messages from channel. 
-        
+        """Scrape messages from channel.
+
         >scrape [here/dm/channel_id] [space/newline]
         """
 
