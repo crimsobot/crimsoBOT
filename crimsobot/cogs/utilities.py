@@ -21,13 +21,17 @@ class Utilities(commands.Cog):
     @commands.command(aliases=['vote'], brief='Create a poll!')
     @commands.cooldown(1, 20, commands.BucketType.guild)
     async def poll(self, ctx: commands.Context, *, poll_input: str) -> None:
-        """Make a poll! Use the form of some question;option 1;option 2;etc.
+        """Make a poll!
+
         For example:
 
         >poll What should I eat?;tacos;ramen;the rich
 
-        Polls can have up to 20 choices, but keep in mind Discord's 2000-character message limit.
-        Polls technically never close, but you can >tally the results whenever you like!
+        Polls can have up to 20 choices.
+        Keep in mind Discord's 2000-character limit.
+
+        Polls technically never close.
+        You can >tally the results whenever you like!
         """
 
         poll_pool = [
@@ -82,9 +86,16 @@ class Utilities(commands.Cog):
     @commands.command(aliases=['tally', 'votetally'], brief='Tally results of a poll!')
     @commands.cooldown(1, 20, commands.BucketType.guild)
     async def polltally(self, ctx: commands.Context, poll_id: Optional[str] = None) -> None:
-        """Tally the results of the most recent poll in a channel, or of a previous poll if you give the poll's ID.
-        You can only tally the results of a poll in the same channel as the poll.
-        Tallying a poll does not close the poll; its results can be tallied again if it's not too old."""
+        """Tally the results of a poll!
+
+        Grabs the most recent poll in a channel,
+        Grab a previous poll by using that poll's ID.
+
+        Only works in same channel as the poll.
+
+        Tallying a poll does not close the poll!
+        Results can be tallied again.
+        """
 
         # so this is kinda hacky...
         # first, check channel's message history (backwards from present) for prior polls from bot
@@ -158,7 +169,7 @@ class Utilities(commands.Cog):
 
         await ctx.send(embed=embed)
 
-    @commands.command()
+    @commands.command(brief='Ping the bot.')
     @commands.cooldown(1, 10, commands.BucketType.guild)
     async def ping(self, ctx: commands.Context) -> None:
         """Need ping? 10s cooldown after use."""
@@ -169,7 +180,7 @@ class Utilities(commands.Cog):
         ping = (time_out - time_in).microseconds / 1000
         await msg.edit(content='<:ping:569954524932997122>...{:d}ms'.format(int(ping)))
 
-    @commands.command()
+    @commands.command(brief='Get a color sample!')
     async def color(self, ctx: commands.Context, hex_value: Optional[discord.Colour] = None) -> None:
         """Get color sample from hex value, or generate random color if not given input."""
 
@@ -181,15 +192,17 @@ class Utilities(commands.Cog):
             file=discord.File(fp, 'color.jpg')
         )
 
-    @commands.command()
+    @commands.command(brief="Simplify an image's palette.")
     @commands.cooldown(2, 8, commands.BucketType.guild)
     async def palette(self, ctx: commands.Context, number_of_colors: int, link: Optional[str] = None) -> None:
         """
-        Get an image's main colors! Specify # of colors (1-10).
-        • Must follow >palette with an integer between 1 and 10 then either an attached image or a link to an image.
+        Get an image's main colors!
+
+        Must specify # of colors (1-10).
+
         • Best results typically around 5 colors.
-        • SVGs are no.
-        • Images with transparency will sometimes produce a less-than-stellar palette.
+        • SVGs do not work.
+        • Images with transparency may not work.
         """
 
         if not 1 <= number_of_colors <= 10:
@@ -215,9 +228,15 @@ class Utilities(commands.Cog):
 
         await recip.send(message, tts=tts)
 
-    @commands.command()
+    @commands.command(aliases=['bigemoji', 'emoji'], brief='Get big emoji!')
     async def bigmoji(self, ctx: commands.Context, emoji: str) -> None:
-        """Get larger version of either a default or custom emoji!"""
+        """Get a larger version of an emoji!
+
+        Get a 1036 x 1036 version of a default emoji.
+        Get up to a 128x128 version of a custom emoji.
+
+        Works with emojis from other servers.
+        """
 
         path, emoji_type = imagetools.find_emoji_img(emoji)
 
@@ -229,26 +248,38 @@ class Utilities(commands.Cog):
         except Exception:
             await ctx.send('*Not a valid emoji.*')
 
-    @commands.command(brief='Get info on when to see the ISS from the location you search!')
+    @commands.command(brief='When to see the ISS!')
     @commands.cooldown(1, 30, commands.BucketType.user)
     async def iss(self, ctx: commands.Context, *, location: str) -> None:
         """
-        Find out when the International Space Station will be visible to the naked eye from the location you search!
-        Search any location (city, postal code, address, etc).
-        The output is data from heavens-above.com that will tell you where in the sky to look and when (in local time).
+        Want to see the ISS with your naked eye? You can!
 
-        · Start: This is where the ISS becomes visible.
-          It will take a minute or so longer for it to become visible
-          because of the atomosphere and objects (such as trees) on the horizon.
-        · Highest: This is its highest point in the pass. Note the elevation in parenthesis.
-          For reference, 0° is the horizon and 90° is directly overhead.
-        · End: This is where the ISS will pass out of view.
-          In late evening passes, this happens well above the horizon.
-          You just watched the ISS pass into the Earth's shadow!
-        · Brightness: The magnitude is how bright the ISS is expected to be at your location.
-          The lower the number, the brighter the ISS will appear. For example, -3.0 is brighter than 1.0!
+        Search a location by name to find out when.
 
-        (Note: This command works in DM if you want to keep your location private.)
+        The output is data from heavens-above.com.
+        It tells you where in the sky to look (and when).
+
+        START
+        This is where the ISS becomes visible.
+        Be patient; it may take longer.
+        Trees, buildings, and the atmosphere can interfere.
+
+        HIGHEST
+        This is its highest point in the pass.
+        Note the elevation angle in parenthesis.
+        0° is the horizon and 90° is directly overhead.
+
+        END
+        This is where the ISS will pass out of view.
+        In late evening, this happens above the horizon.
+        Because the ISS passes into the Earth's shadow!
+
+        BRIGHTNESS
+        Magnitude is how bright the ISS should be.
+        Lower magnitude = brighter appearance.
+        For example, -3.0 is brighter than 1.0!
+
+        To keep your location private, use this in DMs.
         """
 
         location = location.upper()
@@ -268,7 +299,7 @@ class Utilities(commands.Cog):
             # if i is falsey it must be 0, which means we can send without the header string
             await ctx.send(f'```{string}```' if i else f'{header_string}```{string}```')
 
-    @commands.command(name='map')
+    @commands.command(name='map', brief='Look up a map!')
     @commands.cooldown(3, 10, commands.BucketType.channel)
     async def get_map(self, ctx: commands.Context, *, location: str) -> None:
         """Get a map of a location using its name.

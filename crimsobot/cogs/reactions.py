@@ -20,8 +20,11 @@ class Reactions(commands.Cog):
 
     @commands.group(aliases=['facts'], invoke_without_command=True, brief='Add and look up facts!')
     async def fact(self, ctx: commands.Context, *, subject: CleanMentions = None) -> None:
-        """Facts is a feature that allows users to add and look up facts in their server.
-        Use >help fact [command] for more info about the subcommands below.
+        """Add and look up facts in their server!
+
+        Check out more about the subcommands below.
+
+        >help fact [command]
         """
 
         if subject:
@@ -35,7 +38,8 @@ class Reactions(commands.Cog):
     @fact.command(name='about', brief='Get a fact about a subject!')
     async def fact_about(self, ctx: commands.Context, *, subject: CleanMentions) -> None:
         """Looks up a random fact about the given subject.
-        If you want to look up a specific fact, use >fact inspect.
+
+        Look up a specific fact with >fact inspect.
         You will need to know that fact's ID """
 
         try:
@@ -62,8 +66,11 @@ class Reactions(commands.Cog):
     @fact.command(name='add', brief='Add a fact!')
     @commands.cooldown(1, 9, commands.BucketType.user)
     async def fact_add(self, ctx: commands.Context, *, something: CleanMentions) -> None:
-        """Add a fact to your server's database of facts. Anyone can add a fact.
-        Fact subjects can be multiple words separated by spaces. Facts can include uploaded files and media.
+        """Add a fact to your server's database of facts!
+
+        Anyone can add a fact.
+        Fact subjects can be multiple words.
+        Facts can include uploaded files and media.
 
         Example usage: >fact add your subject; your fact
         """
@@ -114,8 +121,9 @@ class Reactions(commands.Cog):
 
     @fact.command(name='inspect', brief='Get more info about a specific fact!')
     async def fact_inspect(self, ctx: commands.Context, fact_id: int) -> None:
-        """Use this command to look up information about any fact on your server.
-        You will need a fact's ID, which is at the beginning of each fact when it shows up in the server.
+        """Look up information about any fact on your server.
+
+        You will need a fact's ID number.
         """
 
         # check if owner for server-specific override
@@ -160,8 +168,10 @@ class Reactions(commands.Cog):
     @fact.command(name='random', brief='Random fact from this server!')
     async def fact_random(self, ctx: commands.Context) -> None:
         """Looks up a random fact in the server.
-        If you want to look up a fact about a specific subject, use >fact about [subject].
+
+        This is what happens when you use just '>fact'.
         """
+
         try:
             fact_object = await FunFact.get_random(ctx.guild.id)
         except NoFactsExist:
@@ -187,7 +197,9 @@ class Reactions(commands.Cog):
     @has_guild_permissions(manage_messages=True)
     async def remove_fact(self, ctx: commands.Context, fact_id: int) -> None:
         """Remove a fact by its ID.
-        To use this command, you must have the Manage Messages permission in your server."""
+
+        You must have the Manage Messages permission.
+        """
 
         # check if owner for server-specific override
         owner = ctx.author.id in ADMIN_USER_IDS
@@ -209,8 +221,12 @@ class Reactions(commands.Cog):
                   brief='Remove all facts of a given subject.')
     @has_guild_permissions(manage_messages=True)
     async def remove_subject(self, ctx: commands.Context, *, subject: CleanMentions) -> None:
-        """Remove all facts in a server with the same subject. Useful for removing spam.
-        To use this command, you must have the Manage Messages permission in your server."""
+        """Remove all facts in a server with the same subject.
+
+        Useful for removing spam.
+
+        Must have the Manage Messages permission.
+        """
 
         facts_removed = await FunFact.delete_by_subject(subject, ctx.guild.id)
 
@@ -227,7 +243,9 @@ class Reactions(commands.Cog):
 
     @fact.command(name='lb', aliases=['leaderboard'], brief='Facts leaderboard!')
     async def fact_leaderboard(self, ctx: commands.Context, page: int = 1) -> None:
-        """Leaderboard for most facts by subject (server-specific)."""
+        """Leaderboard for most facts by subject.
+
+        This leaderboard is server-specific."""
 
         lb = FactLeaderboard(page)
         await lb.get_subject_leaders(ctx.guild.id)

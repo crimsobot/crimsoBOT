@@ -489,13 +489,20 @@ class Cringo(commands.Cog):
 
         await ctx.send(embed=embed)
 
-    @commands.command(aliases=['stats', 'cstats'])
+    @commands.command(aliases=['stats', 'cstats'], brief='Check your CRINGO! stats!')
     async def cringostats(self, ctx: commands.Context, whose: Optional[discord.Member] = None) -> None:
         """Check your or someone else's CRINGO! stats!
+
         Stats will not be counted for incomplete games.
-        Wins are counted only for games with two or more players.
-        Expected average score and lines/game were found via Monte Carlo simulation (n=2.16 million).
-        Expected matches/game and full cards are exact values.
+        Wins are counted only for games with 2+ players.
+
+        Found via Monte Carlo simulation (n = 2,160,000):
+        • Expected average score
+        • Expected lines/game
+
+        Exact values:
+        • Expected matches/game
+        • Expected full cards
         """
 
         if not whose:
