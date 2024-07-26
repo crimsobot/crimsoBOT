@@ -9,7 +9,7 @@ import discord
 from discord.ext import commands
 
 from crimsobot.bot import CrimsoBOT
-from crimsobot.data.img import AENIMA, CAPTION_RULES, IMAGE_RULES, LATERALUS, URL_CONTAINS
+from crimsobot.data.img import AENIMA, CAPTION_RULES, CURRENTS, IMAGE_RULES, LATERALUS, URL_CONTAINS
 from crimsobot.exceptions import BadCaption, NoImageFound
 from crimsobot.utils import image as imagetools, tools as c
 
@@ -132,8 +132,9 @@ class Image(commands.Cog):
         title = '{}: {} hit{}'.format(effect.upper(), number_of_hits, ess)
         await self.get_image_and_embed(ctx, image, effect, number_of_hits, title)
 
-    @commands.command(hidden=True)
+    @commands.command()
     async def aenima(self, ctx: commands.Context, image: Optional[str] = None) -> None:
+        """Make a new cover for Ænima."""
 
         effect = 'aenima'
         title = random.choice(AENIMA)
@@ -244,6 +245,50 @@ class Image(commands.Cog):
         new_caption, is_valid_caption = clean_and_check(caption_text)
         await send_to_caption_helper(new_caption, is_valid_caption, image)
 
+    @commands.command()
+    async def currents(self, ctx: commands.Context, image: Optional[str] = None) -> None:
+        """Make a new cover for Currents."""
+
+        if image is None:
+            image = await self.get_previous_image(ctx)  # will be a URL
+
+        # ask if the image should be flipped to "face right"
+        embed = c.crimbed(
+            title='Flip image?',
+            descr='\n'.join([
+                '1. Yes',
+                '2. No',
+            ]),
+            footer='You can flip the image to face right.'
+        )
+        prompt = await ctx.send(embed=embed)
+
+        # define check for position vote
+        def check(msg: discord.Message) -> bool:
+            try:
+                valid_choice = 0 < int(msg.content) <= 2
+                in_channel = msg.channel == ctx.message.channel
+                is_author = msg.author == ctx.message.author
+                return valid_choice and in_channel and is_author
+            except ValueError:
+                return False
+
+        # define default position, listen for user to specify different one
+        msg = await self.bot.wait_for('message', check=check, timeout=15)
+        if msg is None:
+            flip = 2
+        else:
+            flip = int(msg.content)
+
+        # delete prompt and vote, send image
+        if msg is not None:
+            await msg.delete()
+        await prompt.delete()
+
+        effect = 'currents'
+        title = random.choice(CURRENTS)
+        await self.get_image_and_embed(ctx, image, effect, flip, title)
+
     @commands.command(hidden=True)
     @commands.cooldown(1, 8 * 60 * 60, commands.BucketType.user)
     @shared_max_concurrency(eface_bucket)
@@ -339,8 +384,9 @@ class Image(commands.Cog):
             await user.send(line)
             await asyncio.sleep(1)
 
-    @commands.command(hidden=True)
+    @commands.command()
     async def lateralus(self, ctx: commands.Context, image: Optional[str] = None) -> None:
+        """Make a new cover for Lateralus."""
 
         if image is None:
             image = await self.get_previous_image(ctx)  # will be a URL
