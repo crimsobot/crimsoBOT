@@ -22,6 +22,7 @@ _EIMG_RULES = _ruleset['eimg']
 EIMG_WIDTH = _EIMG_RULES['width']
 
 AENIMA = _ruleset['aenima']
+CURRENTS = _ruleset['currents']
 LATERALUS = _ruleset['lateralus']
 
 

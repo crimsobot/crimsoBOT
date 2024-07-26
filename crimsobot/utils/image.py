@@ -495,6 +495,31 @@ def make_captioned_img(img: Image.Image, caption_list: List[str]) -> Image.Image
     return final_image
 
 
+def make_currents_img(img: Image.Image, flip: int) -> Image.Image:
+    img = img.convert('RGBA')
+
+    if flip == 1:
+        img = img.transpose(Image.FLIP_LEFT_RIGHT)
+
+    # 1. determine user image size, resize to fit in its place
+    width, height = img.size
+    ratio = width / 363
+    img = img.resize((int(width / ratio), int(height / ratio)), resample=Image.BICUBIC)
+
+    with Image.open(c.clib_path_join('img', 'currents_back.png')) as back:
+        back.load()
+
+    # 2. paste into cover back
+    _, height_new = img.size
+    back.paste(img, (634, 989 + 182 - height_new), img)
+
+    # 3. paste cover over result
+    with Image.open(c.clib_path_join('img', 'currents_front.png')) as front:
+        back.paste(front, (0, 0), front)
+
+    return back
+
+
 def make_lateralus_img(img: Image.Image, arg: None) -> Image.Image:
     img = img.convert('RGBA')
 
@@ -623,6 +648,7 @@ def process_lower_level(img: Image.Image, effect: str, arg: int) -> BytesIO:
             'acid': make_acid_img,
             'aenima': make_aenima_img,
             'caption': make_captioned_img,
+            'currents': make_currents_img,
             'lateralus': make_lateralus_img,
             'needban': make_needban_img,
             'needping': make_needping_img,
