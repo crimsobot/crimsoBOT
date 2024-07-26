@@ -739,7 +739,7 @@ async def process_image(ctx: Context, image: Optional[str], effect: str, arg: Op
 
         # recursively resize image until it meets Discord filesize limit
         img = Image.open(fp)
-        scale = 0.9 * IMAGE_RULES['max_filesize'] / n_bytes  # 0.9x bias to help ensure it comes in under max size
+        scale = 0.95 * IMAGE_RULES['max_filesize'] / n_bytes  # 0.95x bias to help ensure it comes in under max size
 
         fp = await process_lower_level(img, 'resize', scale)
         n_bytes = fp.getbuffer().nbytes
