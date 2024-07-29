@@ -495,10 +495,10 @@ def make_captioned_img(img: Image.Image, caption_list: List[str]) -> Image.Image
     return final_image
 
 
-def make_currents_img(img: Image.Image, flip: int) -> Image.Image:
+def make_currents_img(img: Image.Image, flip: bool) -> Image.Image:
     img = img.convert('RGBA')
 
-    if flip == 1:
+    if flip is True:
         img = img.transpose(Image.FLIP_LEFT_RIGHT)
 
     # 1. determine user image size, resize to fit in its place
