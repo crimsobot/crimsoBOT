@@ -511,7 +511,13 @@ def make_currents_img(img: Image.Image, flip: bool) -> Image.Image:
 
     # 2. paste into cover back
     _, height_new = img.size
-    back.paste(img, (254, 396 + 72 - height_new), img)
+
+    if height_new >= 145:
+        row_y = 384 + 72 - height_new
+    else:
+        row_y = 384 - height_new // 2  # help make shorter images more visible
+
+    back.paste(img, (254, row_y), img)
 
     # 3. paste cover over result
     with Image.open(c.clib_path_join('img', 'currents_front.png')) as front:
