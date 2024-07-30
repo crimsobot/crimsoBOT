@@ -513,9 +513,9 @@ def make_currents_img(img: Image.Image, flip: bool) -> Image.Image:
     _, height_new = img.size
 
     if height_new >= 145:
-        row_y = 384 + 72 - height_new
+        row_y = 396 + 72 - height_new
     else:
-        row_y = 384 - height_new // 2  # help make shorter images more visible
+        row_y = 396 - height_new // 2  # help make shorter images more visible
 
     back.paste(img, (254, row_y), img)
 
