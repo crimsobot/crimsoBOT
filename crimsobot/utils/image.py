@@ -503,7 +503,7 @@ def make_currents_img(img: Image.Image, flip: bool) -> Image.Image:
 
     # 1. determine user image size, resize to fit in its place
     width, height = img.size
-    ratio = width / 363
+    ratio = width / 145
     img = img.resize((int(width / ratio), int(height / ratio)), resample=Image.BICUBIC)
 
     with Image.open(c.clib_path_join('img', 'currents_back.png')) as back:
@@ -511,7 +511,7 @@ def make_currents_img(img: Image.Image, flip: bool) -> Image.Image:
 
     # 2. paste into cover back
     _, height_new = img.size
-    back.paste(img, (634, 989 + 182 - height_new), img)
+    back.paste(img, (254, 396 + 72 - height_new), img)
 
     # 3. paste cover over result
     with Image.open(c.clib_path_join('img', 'currents_front.png')) as front:
