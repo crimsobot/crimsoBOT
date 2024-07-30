@@ -584,23 +584,60 @@ def make_pingbadge_img(img: Image.Image, position: int) -> Image.Image:
         ratio = max(width, height) / 500
         img = img.resize((int(width / ratio), int(height / ratio)), resample=Image.BICUBIC)
 
+    # get new image size
     width, height = img.size
-    size = int(width / 3)
 
-    if position == 1:
-        corner = (0, 0)
-    elif position == 2:
-        corner = (width - size, 0)
-    elif position == 3:
-        corner = (0, height - size)
-    elif position == 4:
-        corner = (width - size, height - size)
+    # will need the image's alpha mask later
+    alpha = img.split()[-1].convert('L')
+
+    # get original badge size and determine resize factor for badge and buffer
+    with Image.open(c.clib_path_join('img', 'roundping.png')) as badge:
+        width_badge, _ = badge.size  # square image
+
+    if width <= height:
+        new_size = width // 3  # diameter/length of square
+    else:
+        new_size = height // 3
+
+    resize_factor = new_size / width_badge
+
+    # position of badge and buffer
+    if position == 1:  # ↖️
+        rotation_angle = 0
+        shift = [0, 0]
+    elif position == 2:  # ↗️
+        rotation_angle = -90
+        shift = [1, 0]
+    elif position == 3:  # ↖↙️
+        rotation_angle = 90
+        shift = [0, 1]
+    elif position == 4:  # ↘️
+        rotation_angle = 180
+        shift = [1, 1]
     else:
         raise BadArgument('Invalid position.')
 
+    badge_corner = (shift[0] * (width - new_size), shift[1] * (height - new_size))
+
+    # paste buffer
+    with Image.open(c.clib_path_join('img', 'roundping_buffer.png')) as buffer:
+        buffer_size, _ = buffer.size  # square image
+
+        new_buffer_size = int(resize_factor * buffer_size)
+        buffer = buffer.resize((new_buffer_size, new_buffer_size), resample=Image.BICUBIC)
+        buffer = buffer.rotate(rotation_angle)
+        buffer = buffer.convert('L')
+
+        delta = new_buffer_size - new_size
+
+        buffer_corner = (badge_corner[0] - shift[0] * delta, badge_corner[1] - shift[1] * delta)
+        alpha.paste(buffer, buffer_corner)
+        img.putalpha(alpha)
+
+    # paste badge
     with Image.open(c.clib_path_join('img', 'roundping.png')) as badge:
-        badge = badge.resize((size, size), resample=Image.BICUBIC)
-        img.paste(badge, corner, badge)
+        badge = badge.resize((new_size, new_size), resample=Image.BICUBIC)
+        img.paste(badge, badge_corner, badge)
 
     return img
 
