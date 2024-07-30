@@ -3,7 +3,7 @@ import logging
 import random
 import re
 from datetime import datetime
-from typing import Any, Callable, List, Optional, Tuple
+from typing import Any, Callable, Dict, List, Optional, Tuple
 
 import discord
 from discord.ext import commands
@@ -103,6 +103,36 @@ class Image(commands.Cog):
         )
 
         await ctx.send(file=f, embed=embed)
+
+    async def option_handler(self, ctx: commands.Context, prompt: discord.Message,
+                             options: Dict[str, Any], default_arg: Any) -> Any:
+        """Add emojis to an prompt-for-options embed, return an argument to pass to image handler"""
+
+        # add reactions to msg
+        for emoji in options:
+            await asyncio.sleep(0.36)
+            await prompt.add_reaction(emoji)
+
+        # define check for position vote
+        def check(reaction: discord.Reaction, user: discord.User) -> bool:
+            is_author = user == ctx.message.author
+            is_msg = reaction.message.id == prompt.id
+            is_valid = reaction.emoji in options
+
+            return is_author and is_msg and is_valid
+
+        # define default position, listen for user to specify different one
+        try:
+            reaction = await self.bot.wait_for('reaction_add', check=check, timeout=IMAGE_RULES['timeout'])
+            argument = options[reaction[0].emoji]
+        except asyncio.TimeoutError:
+            argument = default_arg  # default option is currently the last one
+
+        # delete prompt and vote, send image
+        await asyncio.sleep(0.36)
+        await prompt.delete()
+
+        return argument
 
     @commands.command(aliases=['acidify'], brief='A funky image breaker.')
     @commands.cooldown(2, 10, commands.BucketType.guild)
@@ -256,37 +286,12 @@ class Image(commands.Cog):
         embed = c.crimbed(
             title='Flip image?',
             descr='You can flip the image to face right.',
-            footer='Timeout = 10 seconds'
+            footer=f'Timeout = {IMAGE_RULES["timeout"]} seconds'
         )
         prompt = await ctx.send(embed=embed)
-        await asyncio.sleep(0.36)
 
         options = {'✅': True, '❌': False}
-
-        # add reactions to msg
-        for emoji in options:
-            await prompt.add_reaction(emoji)
-            await asyncio.sleep(0.36)
-
-        # define check for position vote
-        def check(reaction: discord.Reaction, user: discord.User) -> bool:
-            is_author = user == ctx.message.author
-            is_msg = reaction.message.id == prompt.id
-            is_valid = reaction.emoji in options
-
-            return is_author and is_msg and is_valid
-
-        # define default position, listen for user to specify different one
-        try:
-            reaction = await self.bot.wait_for('reaction_add', check=check, timeout=10)
-            flip = options[reaction[0].emoji]
-
-        except asyncio.TimeoutError:
-            flip = False
-
-        # delete prompt and vote, send image
-        await asyncio.sleep(0.36)
-        await prompt.delete()
+        flip = await self.option_handler(ctx, prompt, options, False)
 
         effect = 'currents'
         title = random.choice(CURRENTS)
@@ -458,38 +463,13 @@ class Image(commands.Cog):
         # ask if the image should be flipped to "face right"
         embed = c.crimbed(
             title='Pick a corner!',
-            descr='Use the arrows to select a corner.',
-            footer='Timeout = 10 seconds'
+            descr='Use the arrows to select the corner of the image where you want to place the badge.',
+            footer=f'Timeout = {IMAGE_RULES["timeout"]} seconds'
         )
         prompt = await ctx.send(embed=embed)
-        await asyncio.sleep(0.36)
 
         options = {'↖️': 1, '↗️': 2, '↙️': 3, '↘️': 4}
-
-        # add reactions to msg
-        for emoji in options:
-            await prompt.add_reaction(emoji)
-            await asyncio.sleep(0.36)
-
-        # define check for position vote
-        def check(reaction: discord.Reaction, user: discord.User) -> bool:
-            is_author = user == ctx.message.author
-            is_msg = reaction.message.id == prompt.id
-            is_valid = reaction.emoji in options
-
-            return is_author and is_msg and is_valid
-
-        # define default position, listen for user to specify different one
-        try:
-            reaction = await self.bot.wait_for('reaction_add', check=check, timeout=10)
-            position = options[reaction[0].emoji]
-
-        except asyncio.TimeoutError:
-            position = 4
-
-        # delete prompt and vote, send image
-        await asyncio.sleep(0.36)
-        await prompt.delete()
+        position = await self.option_handler(ctx, prompt, options, 4)
 
         effect = 'pingbadge'
         title = 'verpingt!'
