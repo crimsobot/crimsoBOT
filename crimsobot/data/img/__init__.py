@@ -24,6 +24,7 @@ EIMG_WIDTH = _EIMG_RULES['width']
 AENIMA = _ruleset['aenima']
 AEROPLANE = _ruleset['aeroplane']
 CURRENTS = _ruleset['currents']
+DAMN = _ruleset['damn']
 LATERALUS = _ruleset['lateralus']
 
 

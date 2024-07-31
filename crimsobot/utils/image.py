@@ -555,6 +555,22 @@ def make_currents_img(img: Image.Image, flip: bool) -> Image.Image:
     return back
 
 
+def make_damn_img(img: Image.Image, arg: None) -> Image.Image:
+    # 1. determine user image size, resize to fit in its place
+    width, height = img.size
+
+    # resize to width
+    ratio = width / 600
+
+    img = img.resize((int(width / ratio), int(height / ratio)), resample=Image.BICUBIC)
+
+    # 2. paste wordmark over result
+    with Image.open(c.clib_path_join('img', 'damn.png')) as wordmark:
+        img.alpha_composite(wordmark, (0, 0))
+
+    return img
+
+
 def make_lateralus_img(img: Image.Image, arg: None) -> Image.Image:
     img = img.convert('RGBA')
 
@@ -722,6 +738,7 @@ def process_lower_level(img: Image.Image, effect: str, arg: int) -> BytesIO:
             'aeroplane': make_aeroplane_img,
             'caption': make_captioned_img,
             'currents': make_currents_img,
+            'damn': make_damn_img,
             'lateralus': make_lateralus_img,
             'needban': make_needban_img,
             'needping': make_needping_img,
