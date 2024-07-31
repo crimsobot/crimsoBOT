@@ -455,6 +455,29 @@ def make_aeroplane_img(img: Image.Image, arg: None) -> Image.Image:
     return bg
 
 
+def make_bends_img(img: Image.Image, arg: None) -> Image.Image:
+    # 1. determine user image size, resize to fit in its place
+    width, height = img.size
+
+    # resize to album asset width (600 px)
+    ratio = width / 600
+
+    img = img.resize((int(width / ratio), int(height / ratio)), resample=Image.BICUBIC)
+
+    # get new size
+    width, height = img.size
+
+    # 2. paste input image over dark bg
+    bg = Image.new('RGBA', (width, height), (13, 16, 19, 255))
+    bg.alpha_composite(img)
+
+    # 3. paste wordmark over result (aligned/affixed to bottom)
+    with Image.open(c.clib_path_join('img', 'the_bends.png')) as wordmark:
+        bg.alpha_composite(wordmark, (0, height - 600))
+
+    return bg
+
+
 def make_captioned_img(img: Image.Image, caption_list: List[str]) -> Image.Image:
     """Captions an image!"""
     # 1. determine image size, resize to standardize text addition
@@ -736,6 +759,7 @@ def process_lower_level(img: Image.Image, effect: str, arg: int) -> BytesIO:
             'acid': make_acid_img,
             'aenima': make_aenima_img,
             'aeroplane': make_aeroplane_img,
+            'bends': make_bends_img,
             'caption': make_captioned_img,
             'currents': make_currents_img,
             'damn': make_damn_img,
