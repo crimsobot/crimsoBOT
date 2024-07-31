@@ -9,7 +9,7 @@ import discord
 from discord.ext import commands
 
 from crimsobot.bot import CrimsoBOT
-from crimsobot.data.img import AENIMA, CAPTION_RULES, CURRENTS, IMAGE_RULES, LATERALUS, URL_CONTAINS
+from crimsobot.data.img import AENIMA, AEROPLANE, CAPTION_RULES, CURRENTS, IMAGE_RULES, LATERALUS, URL_CONTAINS
 from crimsobot.exceptions import BadCaption, NoImageFound
 from crimsobot.utils import image as imagetools, tools as c
 
@@ -168,6 +168,18 @@ class Image(commands.Cog):
 
         effect = 'aenima'
         title = random.choice(AENIMA)
+
+        if image is None:
+            image = await self.get_previous_image(ctx)  # will be a URL
+
+        await self.get_image_and_embed(ctx, image, effect, None, title)
+
+    @commands.command()
+    async def aeroplane(self, ctx: commands.Context, image: Optional[str] = None) -> None:
+        """Make a new cover for ITAOTS."""
+
+        effect = 'aeroplane'
+        title = random.choice(AEROPLANE)
 
         if image is None:
             image = await self.get_previous_image(ctx)  # will be a URL

@@ -415,12 +415,41 @@ def make_aenima_img(img: Image.Image, arg: None) -> Image.Image:
     width, height = img.size
 
     # 2. paste over white bg
-    bg = Image.new('RGBA', (500, 500), (255, 255, 255, 255))
+    bg = Image.new('RGBA', (500, 500), (240, 230, 190, 255))
     position = int(250 - height/2)
     bg.paste(img, (163, position), img)
 
     # 3. paste cover over result
     with Image.open(c.clib_path_join('img', 'aenima_cover.png')) as cover:
+        bg.alpha_composite(cover, (0, 0))
+
+    return bg
+
+
+def make_aeroplane_img(img: Image.Image, arg: None) -> Image.Image:
+    # 1. determine user image size, resize to fit in its place
+    width, height = img.size
+
+    # resize to hole opening (141 x 160)
+    if height > width:
+        ratio = width / 141
+    else:
+        ratio = height / 160
+
+    img = img.resize((int(width / ratio), int(height / ratio)), resample=Image.BICUBIC)
+
+    # get new size
+    width, height = img.size
+
+    # 2. calculate position of image, centered over hole
+    corner = 406 - width // 2, 147 - height // 2
+
+    # 3. paste over cream white bg
+    bg = Image.new('RGBA', (600, 600), (240, 230, 190, 255))
+    bg.paste(img, corner, img)
+
+    # 4. paste cover over result
+    with Image.open(c.clib_path_join('img', 'aeroplane_cover.png')) as cover:
         bg.alpha_composite(cover, (0, 0))
 
     return bg
@@ -690,6 +719,7 @@ def process_lower_level(img: Image.Image, effect: str, arg: int) -> BytesIO:
         function_dict: Mapping[str, Callable] = {
             'acid': make_acid_img,
             'aenima': make_aenima_img,
+            'aeroplane': make_aeroplane_img,
             'caption': make_captioned_img,
             'currents': make_currents_img,
             'lateralus': make_lateralus_img,
@@ -752,9 +782,8 @@ async def process_image(ctx: Context, image: Optional[str], effect: str, arg: Op
                 return None, None
 
             else:
-                # debit the user, credit the bot
+                # debit the user
                 await crimsogames.win(ctx.author, -cost)
-                await crimsogames.win(ctx.guild.me, cost)
                 new_bal = await crimsogames.check_balance(ctx.author)
 
             # this embed will keep user updated on processing status; will be edited below as it progresses
