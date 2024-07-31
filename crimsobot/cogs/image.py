@@ -12,6 +12,7 @@ from crimsobot.bot import CrimsoBOT
 from crimsobot.data.img import (
     AENIMA,
     AEROPLANE,
+    BENDS,
     CAPTION_RULES,
     CURRENTS,
     DAMN,
@@ -189,6 +190,18 @@ class Image(commands.Cog):
 
         effect = 'aeroplane'
         title = random.choice(AEROPLANE)
+
+        if image is None:
+            image = await self.get_previous_image(ctx)  # will be a URL
+
+        await self.get_image_and_embed(ctx, image, effect, None, title)
+
+    @commands.command()
+    async def bends(self, ctx: commands.Context, image: Optional[str] = None) -> None:
+        """Make a new cover for The Bends."""
+
+        effect = 'bends'
+        title = random.choice(BENDS)
 
         if image is None:
             image = await self.get_previous_image(ctx)  # will be a URL
