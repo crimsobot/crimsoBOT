@@ -110,26 +110,26 @@ def simple_eval(expr: str) -> Any:
         raise SyntaxError(f'Expression not evaluated as constant: {expr}')
 
 
-def integer_in_range(number: Any, low: int, high: int) -> Any:
+def integer_in_range(number_in: Any, guess_str: str, low: int, high: int) -> Any:
     # is 'number' a number?
     try:
-        number = float(number)
+        number = float(number_in)
     except ValueError:
-        raise ValueError(f'{number} is not a number!')
+        raise ValueError(f'{guess_str} is not a number!')
     except TypeError:
-        raise ValueError(f'{number} is not a number!')
+        raise ValueError(f'{guess_str} is not a number!')
 
     # is 'number' (close enough to) an integer?
     try:
         delta = abs(number - round(number))
         if delta > 1e-10:  # arbitrary limit
-            raise NotAnInteger(str(number))
+            raise NotAnInteger(guess_str)
     except OverflowError:  # e.g. infinity will fail at delta
-        raise OutOfBounds(str(number))
+        raise OutOfBounds(guess_str)
 
     # is 'number' in range?
     if not low <= number <= high:
-        raise OutOfBounds(str(int(number)))
+        raise OutOfBounds(guess_str)
 
     # enforce type
     number = int(number)
@@ -140,7 +140,7 @@ def integer_in_range(number: Any, low: int, high: int) -> Any:
 async def daily(discord_user: DiscordUser, guess: str) -> Embed:
     # is the guess in range?
     try:
-        lucky_number = integer_in_range(guess, 1, 100)
+        lucky_number = integer_in_range(guess, guess, 1, 100)
     # if the guess is not already a positive integer [1 - 100]...
     except ValueError:
         # ...first check if it's a math expression...
@@ -148,25 +148,23 @@ async def daily(discord_user: DiscordUser, guess: str) -> Embed:
             lucky_number = simple_eval(guess)
 
             # but if the answer is not an integer 1-100...
-            lucky_number = integer_in_range(lucky_number, 1, 100)
+            lucky_number = integer_in_range(lucky_number, guess, 1, 100)
         # ...and if it's bounced from simple_eval(), try it as a string
         except SyntaxError:
-            # find sum of remaining characters
+            # find sum of remaining characters a-z::1-26
             lucky_number = 0
 
             for char in guess.lower():
-                if char.isalpha():
-                    # this will effectively bounce everything except lowercase a-z
-                    lucky_number += (ord(char) - 96)
-                elif char.isnumeric():
-                    lucky_number += int(char)
+                letter_value = (ord(char) - 96)
+                if char.isalpha() and 1 <= letter_value <= 26:
+                    lucky_number += letter_value
                 else:
                     pass
 
-            lucky_number = integer_in_range(lucky_number, 1, 100)
+            lucky_number = integer_in_range(lucky_number, guess, 1, 100)
         # final catchment for strings with sums outside of bounds
         except ValueError:  # the last bastion
-            raise OutOfBounds(str(lucky_number))
+            raise OutOfBounds(str(guess))
 
     # fetch account
     account = await CurrencyAccount.get_by_discord_user(discord_user)  # type: CurrencyAccount

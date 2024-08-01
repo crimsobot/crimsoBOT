@@ -212,7 +212,7 @@ class CrimsoBOT(commands.Bot):
                 color_name='orange',
                 footer='bad at computer. bad at computer!',
             )
-            await ctx.send(embed=embed, delete_after=10)
+            await ctx.send(embed=embed, delete_after=20)
         except discord.errors.Forbidden:
             error_type = 'FORBIDDEN'
             traceback_needed = True
