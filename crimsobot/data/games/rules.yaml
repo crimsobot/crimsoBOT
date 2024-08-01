@@ -25,6 +25,35 @@ cringo:
     2: 7
     4: 9
     6: 9
+daily:
+  award:
+    lose: 10
+    win: 500
+  not_yet:
+    - Patience…
+    - Calm down!
+    - 🫸 Please wait.
+    - Touch grass!
+    - Play something else!
+    - Nothing better to do?
+    - 🛑
+    - Access denied.
+  wrong_guess:
+    - heck!
+    - frick!
+    - Womp womp.
+    - 😩
+    - Aw shucks.
+    - Why even bother?
+    - Oh bother!
+    - What a bungle!
+    - Not good!
+    - Ay Dios.
+    - So close! (Or not; I didn't look.)
+    - 99 ways to lose, and you found one!
+    - oof.
+    - bruh moment.
+    - Congratulations! You lost.
 emojistory:
   join_timer: 90
   minimum_length: 5
