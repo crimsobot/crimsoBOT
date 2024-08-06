@@ -9,8 +9,17 @@ from config import ADMIN_USER_IDS, BANNED_GUILD_IDS, DM_LOG_CHANNEL_ID, LEARNER_
 from crimsobot import db
 from crimsobot.context import CrimsoContext
 from crimsobot.data.img import CAPTION_RULES, IMAGE_RULES
-from crimsobot.exceptions import (BadCaption, LocationNotFound, NoImageFound, NoMatchingTarotCard,
-                                  NotDirectMessage, StrictInputFailed, ZoomNotValid)
+from crimsobot.exceptions import (
+    BadCaption,
+    LocationNotFound,
+    NoImageFound,
+    NoMatchingTarotCard,
+    NotAnInteger,
+    NotDirectMessage,
+    OutOfBounds,
+    StrictInputFailed,
+    ZoomNotValid
+    )
 from crimsobot.help_command import PaginatedHelpCommand
 from crimsobot.models.ban import Ban
 from crimsobot.utils import markov as m, tools as c
@@ -154,6 +163,16 @@ class CrimsoBOT(commands.Bot):
                 traceback_needed = False
                 msg_to_user = f'Zoom level **{error.original.zoom}** not good!'
 
+            if isinstance(error.original, NotAnInteger):
+                error_type = '**not good with math**'
+                traceback_needed = False
+                msg_to_user = f'**{error.original.guess}** is not an integer!'
+
+            if isinstance(error.original, OutOfBounds):
+                error_type = '**not good with math**'
+                traceback_needed = False
+                msg_to_user = f'**{error.original.guess}** is out of bounds!'
+
             if isinstance(error.original, NoImageFound):
                 error_type = '**NO IMAGE**'
                 traceback_needed = False
@@ -193,7 +212,7 @@ class CrimsoBOT(commands.Bot):
                 color_name='orange',
                 footer='bad at computer. bad at computer!',
             )
-            await ctx.send(embed=embed, delete_after=10)
+            await ctx.send(embed=embed, delete_after=20)
         except discord.errors.Forbidden:
             error_type = 'FORBIDDEN'
             traceback_needed = True

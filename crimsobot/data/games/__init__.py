@@ -50,5 +50,6 @@ with open(_madlibs_stories_path, encoding='utf-8', errors='ignore') as madlibs_s
 # these are what should be imported by other scripts
 STORIES = [MadlibsStory(story) for story in _madlibs_stories]
 CRINGO_RULES = _ruleset['cringo']
+DAILY_RULES = _ruleset['daily']
 EMOJISTORY_RULES = _ruleset['emojistory']
 MADLIBS_RULES = _ruleset['madlibs']

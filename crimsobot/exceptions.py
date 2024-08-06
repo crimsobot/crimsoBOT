@@ -38,3 +38,13 @@ class NoEmojiFound(Exception):
 
 class BadCaption(Exception):
     pass
+
+
+class NotAnInteger(Exception):
+    def __init__(self, guess: str) -> None:
+        self.guess = guess
+
+
+class OutOfBounds(Exception):
+    def __init__(self, guess: str) -> None:
+        self.guess = guess

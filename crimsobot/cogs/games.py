@@ -564,15 +564,11 @@ class Games(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command(brief='A daily guessing game.')
-    async def daily(self, ctx: commands.Context, lucky_number: int) -> None:
+    async def daily(self, ctx: commands.Context, *, lucky_number: str) -> None:
         """Guess a number 1-100 and get a daily award!
 
         Good luck hitting the big jackpot!
         """
-
-        # exception handling
-        if not 1 <= lucky_number <= 100:
-            raise commands.BadArgument('Lucky number is out of bounds.')
 
         # pass to helper and spit out result in an embed
         embed = await crimsogames.daily(ctx.message.author, lucky_number)

@@ -1,12 +1,16 @@
 import random
+import re
+import sys
 from collections import Counter
-from datetime import datetime
-from typing import List, Tuple, Union
+from datetime import datetime, timezone
+from typing import Any, List, Tuple, Union
 
 import discord
 from discord import Embed
 from discord.ext import commands
 
+from crimsobot.data.games import DAILY_RULES
+from crimsobot.exceptions import NotAnInteger, OutOfBounds
 from crimsobot.models.currency_account import CurrencyAccount
 from crimsobot.models.guess_statistic import GuessStatistic
 from crimsobot.utils import tools as c
@@ -82,57 +86,123 @@ async def win(discord_user: DiscordUser, amount: float) -> None:
     account.add_to_balance(amount)
     await account.save()
 
+# simple_eval() by MestreLion via StackOverflow with changes in exception handling
+# https://stackoverflow.com/a/65945969
 
-async def daily(discord_user: DiscordUser, lucky_number: int) -> Embed:
+# Kept outside simple_eval() just for performance
+_re_simple_eval = re.compile(rb'd([\x00-\xFF]+)S\x00')
+
+
+def simple_eval(expr: str) -> Any:
+    try:
+        c = compile(expr, 'userinput', 'eval')
+    except SyntaxError:
+        raise SyntaxError(f'Malformed expression: {expr}')
+
+    m = _re_simple_eval.fullmatch(c.co_code)
+
+    if not m:
+        raise SyntaxError(f'Not a simple algebraic expression: {expr}')
+
+    try:
+        return c.co_consts[int.from_bytes(m.group(1), sys.byteorder)]
+    except IndexError:
+        raise SyntaxError(f'Expression not evaluated as constant: {expr}')
+
+
+def integer_in_range(number_in: Any, guess_str: str, low: int, high: int) -> Any:
+    # is 'number' a number?
+    try:
+        number = float(number_in)
+    except ValueError:
+        raise ValueError(f'{guess_str} is not a number!')
+    except TypeError:
+        raise ValueError(f'{guess_str} is not a number!')
+
+    # is 'number' (close enough to) an integer?
+    try:
+        delta = abs(number - round(number))
+        if delta > 1e-10:  # arbitrary limit
+            raise NotAnInteger(guess_str)
+    except OverflowError:  # e.g. infinity will fail at delta
+        raise OutOfBounds(guess_str)
+
+    # is 'number' in range?
+    if not low <= number <= high:
+        raise OutOfBounds(guess_str)
+
+    # enforce type
+    number = int(number)
+
+    return number
+
+
+async def daily(discord_user: DiscordUser, guess: str) -> Embed:
+    # is the guess in range?
+    try:
+        lucky_number = integer_in_range(guess, guess, 1, 100)
+    # if the guess is not already a positive integer [1 - 100]...
+    except ValueError:
+        # ...first check if it's a math expression...
+        try:
+            lucky_number = simple_eval(guess)
+
+            # but if the answer is not an integer 1-100...
+            lucky_number = integer_in_range(lucky_number, guess, 1, 100)
+        # ...and if it's bounced from simple_eval(), try it as a string
+        except SyntaxError:
+            # find sum of remaining characters a-z::1-26
+            lucky_number = 0
+
+            for char in guess.lower():
+                letter_value = (ord(char) - 96)
+                if char.isalpha() and 1 <= letter_value <= 26:
+                    lucky_number += letter_value
+                else:
+                    pass
+
+            lucky_number = integer_in_range(lucky_number, guess, 1, 100)
+        # final catchment for strings with sums outside of bounds
+        except ValueError:  # the last bastion
+            raise OutOfBounds(str(guess))
+
     # fetch account
     account = await CurrencyAccount.get_by_discord_user(discord_user)  # type: CurrencyAccount
 
     # get current time and time last run
     now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     last = account.ran_daily_at
 
     # check if dates are same; if so, gotta wait
     if last and last.strftime('%Y-%m-%d') == now.strftime('%Y-%m-%d'):
-        title = 'Patience...'
-        award_string = 'Daily award resets at midnight UTC (<t:0:t> local).'
+        title = random.choice(DAILY_RULES['not_yet'])
+        award_string = 'The Daily game resets at midnight UTC.'
         thumb = 'clock'
         color = 'orange'
+        footer = None
+
     # if no wait, then check if winner or loser
     else:
         winning_number = random.randint(1, 100)
 
         if winning_number == lucky_number:
-            daily_award = 500
+            daily_award = DAILY_RULES['award']['win']
 
             title = 'JACKPOT!'
-            wrong = ''  # they're not wrong!
+            if_wrong = ''  # they're not wrong!
             thumb = 'moneymouth'
             color = 'green'
+            footer = f'Your guess: {lucky_number} · Congratulations!'
 
         else:
-            daily_award = 10
+            daily_award = DAILY_RULES['award']['lose']
 
-            title_choices = [
-                '*heck*',
-                '*frick*',
-                '*womp womp*',
-                '😩',
-                'Aw shucks.',
-                'Why even bother?',
-                'Oh, bother!',
-                'What a bungle!',
-                'Not good!',
-                'Ay Dios.',
-                "So close! (Or not; I didn't look.)",
-                '99 ways to lose, and you found one!',
-                'oof',
-                'bruh moment',
-                'Congratulations! You lost.',
-            ]
-            title = random.choice(title_choices)
-            wrong = 'The winning number this time was **{}**, but no worries:'.format(winning_number)
+            title = random.choice(DAILY_RULES['wrong_guess'])
+            if_wrong = f'The winning number this time was **{winning_number}**. '
             thumb = 'crimsoCOIN'
             color = 'yellow'
+            footer = f'Your guess: {lucky_number} · Thanks for playing!'
 
         # update daily then save
         account.ran_daily_at = now
@@ -141,17 +211,18 @@ async def daily(discord_user: DiscordUser, lucky_number: int) -> Embed:
         # update their balance now (will repoen and reclose user)
         await win(discord_user, daily_award)
 
-        award_string = '{} You have been awarded your daily **\u20A2{:.2f}**!'.format(wrong, daily_award)
-        thumb = thumb
-        color = color
+        # finish up the award string with amount won
+        award_string = f'{if_wrong}You have been awarded **\u20A2{daily_award:.2f}**!'
 
-    # the embed to return
+    # embed to return
     embed = c.crimbed(
         title=title,
         descr=award_string,
         thumb_name=thumb,
         color_name=color,
+        footer=footer,
     )
+
     return embed
 
 
