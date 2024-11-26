@@ -43,7 +43,7 @@ class Reactions(commands.Cog):
         You will need to know that fact's ID """
 
         try:
-            fact_object = await FunFact.get_by_subject(subject.lower().strip(), ctx.guild.id)
+            fact_object = await FunFact.get_random_by_subject(subject.lower().strip(), ctx.guild.id)
         except NoFactsExist:
             embed = c.crimbed(
                 title='OMAN',
@@ -141,7 +141,7 @@ class Reactions(commands.Cog):
         guild = self.bot.get_guild(fact_object.guild_id)
 
         embed = c.crimbed(
-            title=f'FACT INSPECT // ID: {fact_object.uid}' + ' (admin view)' if owner else '',
+            title=f'FACT INSPECT // ID: {fact_object.uid}' + (' (admin view)' if owner else ''),
             descr=None,
             footer='Users with the Manage Messages permission can remove facts using ">fact remove [ID]"',
             thumb_name='nerd',
@@ -159,6 +159,9 @@ class Reactions(commands.Cog):
                     d=fact_object.created_at)
             ),
         ]
+
+        if not owner:
+            field_list.pop(3)  # no need to tell the plebs the server name
 
         for field in field_list:
             embed.add_field(name=field[0], value=field[1], inline=False)
@@ -192,6 +195,41 @@ class Reactions(commands.Cog):
         ])
 
         await ctx.send(return_string)
+
+    @fact.command(name='subject', brief='Get info about a specific subject of facts!')
+    async def subject_info(self, ctx: commands.Context, *, subject: CleanMentions) -> None:
+        """Look up more info about a subject.
+        """
+
+        # clean input
+        user_input = subject.split(';', 1)
+        subject = user_input.pop(0).strip().lower()
+
+        try:
+            fact_object = await FunFact.get_all_by_subject(subject, ctx.guild.id)  # TODO: this only grabs one fact
+            print(fact_object[0].__dict__)
+        except DoesNotExist:
+            embed = c.crimbed(title=None, descr=f'Subject {subject} does not exist (at least not in this server)!')
+            await ctx.send(embed=embed, delete_after=18)
+            return
+
+        embed = c.crimbed(
+            title=f'SUBJECT INSPECT // {subject}',
+            descr=None,
+            footer='Users with the Manage Messages permission can wipe a subject using ">fact wipe [subject]"',
+            thumb_name='nerd',
+            color_name='yellow',
+        )
+
+        field_list = [
+            ('Subject', subject),
+            ('Count', len(fact_object)),
+        ]
+
+        for field in field_list:
+            embed.add_field(name=field[0], value=field[1], inline=False)
+
+        await ctx.send(embed=embed)
 
     @fact.command(name='remove', aliases=['delete'], brief='Remove a fact by ID.')
     @has_guild_permissions(manage_messages=True)
