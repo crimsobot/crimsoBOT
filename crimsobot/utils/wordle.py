@@ -172,14 +172,14 @@ async def wordle_stat_embed(user: DiscordUser) -> Embed:
         upper_limit = 10
         dictogram = {}
         for ii in range(0, upper_limit):
-            key = 'quit' if ii == 0 else str(ii)
+            key = 'Q' if ii == 0 else str(ii)
             dictogram[key] = guesses_needed.count(ii)
 
-        dictogram[f'{upper_limit}+'] = len([x for x in guesses_needed if x >= 10])
+        dictogram['+'] = len([x for x in guesses_needed if x >= 10])
 
         # get the highest value in the dict by which to scale all the histogram strings
         mode = max(dictogram.values())
-        max_dash_length = 12  # chosen for best display on mobile
+        max_dash_length = 14  # chosen for best display on mobile
 
         histogram_strings = []
 
@@ -189,7 +189,7 @@ async def wordle_stat_embed(user: DiscordUser) -> Embed:
             dashes = '-' * round(number_of_dashes)
 
             # formatted string for display in embed
-            histogram_strings.append(f'{key.rjust(4, " ")}|{str(value).rjust(4, " ")} {dashes}')
+            histogram_strings.append(f'{key}|{str(value).rjust(4, " ")} {dashes}')
 
         # strings are joined here because f-strings don't get along with backslashes (see field_list)
         histogram_string_list = '\n'.join(histogram_strings)
